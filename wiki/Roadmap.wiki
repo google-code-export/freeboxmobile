@@ -3,8 +3,8 @@
 
 Prédiction des versions / fonctionnalités. Mais rien n'est figé, ca ne se fera peut être pas dans cet ordre !
 
-0.10 Accéder à sa messagerie vocale Freebox à partir de son mobile via une Messagerie Vocale Visuelle
-0.15 Etre notifié d'un nouveau message sur sa messagerie vocale Freebox par un check régulier du site Free
+ * 0.10 Accéder à sa messagerie vocale Freebox à partir de son mobile via une Messagerie Vocale Visuelle
+ * 0.15 Etre notifié d'un nouveau message sur sa messagerie vocale Freebox par un check régulier du site Free
 0.15 Programmer ses enregistrements FreeboxTV à distance (programmation simple)
 0.15 Consultation des programmations TV en cours
 0.16 Etre notifié d'un nouveau message sur sa messagerie vocale Freebox par réception d'un SMS
