@@ -14,9 +14,9 @@ Prédiction des versions / fonctionnalités. Mais rien n'est figé, ca ne se fer
  * 0.27 : Programmer ses enregistrements FreeboxTV à distance à partir du guide des programmes
  * 0.30 : Lire l'actualité Freenautes à partir de son mobile ([http://www.freenews.fr Freenews], [http://www.universfreebox.com Univers Freebox]...) via l'application !FreeboxMobile
  * 0.40 : Lire l'actualité Freenautes à partir d'un widget de bureau Android !FreeboxMobile
- * 0.50 : Accéder aux enregistrements vidéo de sa FreeboxHD à partir de son mobile (y compris lorsqu'on se trouve hors de chez soi)
+ * 0.45 : Envoyer un fax à partir de son mobile (à travers le service fax de l'offre Freebox)
  * 0.50 : Accéder aux contenus vidéo de son réseau local à partir de son mobile (y compris lorsqu'on se trouve hors de chez soi)
- * 0.60 : Envoyer un fax à partir de son mobile (à travers le service fax de l'offre Freebox)
+ * 0.60 : Accéder aux enregistrements vidéo de sa FreeboxHD à partir de son mobile (y compris lorsqu'on se trouve hors de chez soi)
  * 0.70 : Accéder aux contenus audio de son réseau local à partir de son mobile (y compris lorsqu'on se trouve hors de chez soi)
  * 0.80 : Accéder aux flux TV de sa Freebox (les chaînes du multiposte) à partir de son mobile (y compris lorsqu'on se trouve hors de chez soi)
  * 0.90 : Accéder aux flux radio de sa Freebox (et aux autres) à partir de son mobile (y compris lorsqu'on se trouve hors de chez soi)
