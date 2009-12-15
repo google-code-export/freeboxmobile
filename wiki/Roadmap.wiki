@@ -1,4 +1,4 @@
-#summary One-sentence summary of this page.
+#summary Roadmap prévisionnel du projet
 #labels Phase-Requirements,Phase-Design
 
 Prédiction des versions / fonctionnalités. Mais rien n'est figé, ca ne se fera peut être pas dans cet ordre !
