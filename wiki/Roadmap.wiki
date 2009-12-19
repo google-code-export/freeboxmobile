@@ -1,5 +1,5 @@
 #summary Roadmap prévisionnel du projet
-#labels Phase-Requirements,Phase-Design
+#labels Phase-Requirements,Phase-Design,Featured
 
 Prédiction des versions / fonctionnalités. Mais rien n'est figé, ca ne se fera peut être pas dans cet ordre !
 
