@@ -24,7 +24,8 @@ public interface Constants
     static final String KEY_SPLASH		= "splashscreen";
     
 	static final String DEBUGTAG		= "_FreeboxMobile";
-	static final String DIR_MEVO		= "/freeboxmobile/mevo";
+	static final String DIR_FBM			= "/freeboxmobile";
+	static final String DIR_MEVO		= DIR_FBM+"/mevo";
 	
 	static final int MSG_STATUS_UNLISTENED = 0;
 	static final int MSG_STATUS_LISTENED = 1;

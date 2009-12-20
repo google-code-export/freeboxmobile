@@ -98,6 +98,19 @@ public class FreeboxMobileMevo extends ListActivity implements Constants
         			}
         		}
         );
+		callbackButton.setFocusable(false);
+		callbackButton.setClickable(false);
+        deleteButton.setOnClickListener(
+        		new View.OnClickListener()
+        		{
+        			public void onClick(View view)
+        			{
+        				mAdapter.supprMsg(mAdapter.getCurrentPos());
+        			}
+        		}
+        );
+		deleteButton.setFocusable(false);
+		deleteButton.setClickable(false);
     }
     
     @Override
@@ -153,7 +166,7 @@ public class FreeboxMobileMevo extends ListActivity implements Constants
 			info = (AdapterContextMenuInfo) menuInfo;
 		    menu.setHeaderTitle(this.mAdapter.getMessageString((int) info.id,KEY_CALLER));
 		    menu.add(0, MEVO_CONTEXT_CALLBACK, 0, R.string.mevo_context_callback);
-		    menu.add(0, MEVO_CONTEXT_VIEWDETAILS, 0, R.string.mevo_context_msgdetails);
+//		    menu.add(0, MEVO_CONTEXT_VIEWDETAILS, 0, R.string.mevo_context_msgdetails);
 		    if (this.mAdapter.getMessageInt((int)info.id, KEY_STATUS) == MSG_STATUS_LISTENED)
 		    {
 			    menu.add(0, MEVO_CONTEXT_MARKUNREAD, 0, R.string.mevo_context_markunread);
@@ -164,7 +177,7 @@ public class FreeboxMobileMevo extends ListActivity implements Constants
 		    }
 		    menu.add(0, MEVO_CONTEXT_DELETE, 0, R.string.mevo_context_delete);
 //		    menu.add(0, MEVO_CONTEXT_DELETEFRMSRV, 0, R.string.mevo_context_deletefrmsrv);
-		    menu.add(0, MEVO_CONTEXT_SEND, 0, R.string.mevo_context_send);
+//		    menu.add(0, MEVO_CONTEXT_SEND, 0, R.string.mevo_context_send);
 		}
 		catch (ClassCastException e)
 		{
@@ -178,14 +191,14 @@ public class FreeboxMobileMevo extends ListActivity implements Constants
 	{
 		super.onListItemClick(l, v, pos, id);
 		mAdapter.onItemClick(pos, v, id);
+		TextView t = ((TextView) findViewById(R.id.caller_name));
+		t.setText(mAdapter.getMessageString(pos, KEY_CALLER));
+		t.setVisibility(View.VISIBLE);
+		t = ((TextView) findViewById(R.id.caller_number));
+		t.setText(mAdapter.getMessageString(pos, KEY_NB_TYPE)+" : "+mAdapter.getMessageString(pos, KEY_SOURCE));
+		t.setVisibility(View.VISIBLE);
 		if (callbackButton.isFocusable() == false)
 		{
-			TextView t = ((TextView) findViewById(R.id.caller_name));
-			t.setText(mAdapter.getMessageString(pos, KEY_CALLER));
-			t.setVisibility(View.VISIBLE);
-			t = ((TextView) findViewById(R.id.caller_number));
-			t.setText(mAdapter.getMessageString(pos, KEY_NB_TYPE)+" : "+mAdapter.getMessageString(pos, KEY_SOURCE));
-			t.setVisibility(View.VISIBLE);
 			callbackButton.setFocusable(true);
 			callbackButton.setClickable(true);
 			callbackButton.setTextColor(Color.BLACK);
