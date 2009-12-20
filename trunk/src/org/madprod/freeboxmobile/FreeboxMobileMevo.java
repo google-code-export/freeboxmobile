@@ -35,7 +35,7 @@ import android.view.ContextMenu.ContextMenuInfo;
 /**
 *
 * @author Olivier Rosello
-* $Id: FreeboxMobileMevo.java 49 2009-12-18 16:41:59Z olivier $
+* $Id$
 * 
 */
 
