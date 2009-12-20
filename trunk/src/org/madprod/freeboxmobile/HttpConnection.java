@@ -49,7 +49,7 @@ import android.widget.Toast;
 
 public class HttpConnection extends WakefullIntentService implements Constants
 {
-	private static String USER_AGENT = "Mozilla/5.0 (Linux; U; Android 1.6; fr-fr;)";
+	private static String USER_AGENT = "FreeboxMobile (Linux; U; Android; fr-fr;)";
 	 
 	private static String password = null;
 	private static String login = null;
@@ -68,7 +68,7 @@ public class HttpConnection extends WakefullIntentService implements Constants
     private static Activity MAIN_ACTIVITY;
 
     static ProgressDialog myProgressDialog = null;
-    
+
     private static final int CONNECT_CONNECTED = 1;
     private static final int CONNECT_NOT_CONNECTED = 0;
     private static final int CONNECT_LOGIN_FAILED = -2;
@@ -98,8 +98,8 @@ public class HttpConnection extends WakefullIntentService implements Constants
 	protected void onHandleIntent(Intent intent)
 	{
 		Log.i(DEBUGTAG,"HttpConnection onHandleIntent ");
-/*
-		File log = new File(Environment.getExternalStorageDirectory(), "fbm.txt");
+
+		File log = new File(Environment.getExternalStorageDirectory()+DIR_FBM, "fbm.log");
 		try
 		{
 			BufferedWriter out = new BufferedWriter (new FileWriter(log.getAbsolutePath(), true));
@@ -112,20 +112,15 @@ public class HttpConnection extends WakefullIntentService implements Constants
 		{
 			Log.e(DEBUGTAG, "Exception appending to log file ",e);
 		}
-*/
+
 		mDbHelper = new FreeboxMobileDbAdapter(this);
 		_getPrefs();
 
 		if ((login != null) && (password != null))
 		{
-			if (MAIN_ACTIVITY != null)
-			{
-				Toast.makeText(MAIN_ACTIVITY, "Mise à jour...", Toast.LENGTH_SHORT).show();
-			}
-
 			_getUpdate();
 		}
-/*
+
 		try
 		{
 			BufferedWriter out = new BufferedWriter (new FileWriter(log.getAbsolutePath(), true));
@@ -138,7 +133,7 @@ public class HttpConnection extends WakefullIntentService implements Constants
 		{
 			Log.e(DEBUGTAG, "Exception appending to log file ",e);
 		}
-*/
+
 		super.onHandleIntent(intent);
 	}
 	
@@ -154,12 +149,6 @@ public class HttpConnection extends WakefullIntentService implements Constants
 	{
 		Log.i(DEBUGTAG,"HttpConnection onDestroy");
 		super.onDestroy();
-		
-		if (MAIN_ACTIVITY != null)
-			if (connectionStatus == CONNECT_CONNECTED)
-				Toast.makeText(MAIN_ACTIVITY, "Mise à jour terminée", Toast.LENGTH_SHORT).show();
-//			else
-//				Toast.makeText(MAIN_ACTIVITY, "Erreur durant la mise à jour", Toast.LENGTH_SHORT).show();
 	}
 
 	private static void _getUpdate()
@@ -186,18 +175,34 @@ public class HttpConnection extends WakefullIntentService implements Constants
             	myProgressDialog.dismiss(); 
 			if (connectionStatus == CONNECT_CONNECTED)
 	        {
+				if (MAIN_ACTIVITY != null)
+				{
+					MAIN_ACTIVITY.runOnUiThread(new Runnable()
+						{
+							public void run()
+							{
+								myProgressDialog = ProgressDialog.show(MAIN_ACTIVITY, "Mon Compte Free", "Vérification des nouveaux messages ...", true,false);
+							}
+						});
+				}
+				else
+					myProgressDialog = null;
 	       		getMessageList();
-	       		Log.i(DEBUGTAG,"=> MESSAGES RELEVES <=");
+	            if (myProgressDialog != null)
+	            	myProgressDialog.dismiss();
 	        }
 			else
 			{
-				MAIN_ACTIVITY.runOnUiThread(new Runnable()
+				if (MAIN_ACTIVITY != null)
 				{
-					public void run()
+					MAIN_ACTIVITY.runOnUiThread(new Runnable()
 					{
-						_showConnectionError();
-					}
-				});
+						public void run()
+						{
+							_showConnectionError();
+						}
+					});
+				}
 			}
 		}
 	}
@@ -207,9 +212,10 @@ public class HttpConnection extends WakefullIntentService implements Constants
 		AlertDialog d = new AlertDialog.Builder(MAIN_ACTIVITY).create();
 		d.setTitle("Connexion impossible !");
 		d.setMessage(
-			"Impossible de se connecter au portail Free. "+
-			"Veuillez vérifier votre identifiant " +
-			"ainsi que votre mot de passe."
+			"Impossible de se connecter au portail de Free.\n"+
+			"Vérifiez votre identifiant, " +
+			"votre mot de passe et votre "+
+			"connexion à Internet (Wifi, 3G...)."
 		);
 		d.setButton("Ok", new DialogInterface.OnClickListener()
 			{
@@ -288,6 +294,11 @@ public class HttpConnection extends WakefullIntentService implements Constants
 		Cursor curs;
 		
 		Log.d(DEBUGTAG, "deleteMsg "+name);
+		if (mDbHelper == null)
+		{
+			mDbHelper = new FreeboxMobileDbAdapter(MAIN_ACTIVITY);
+		}
+
 		// On efface le fichier du message
 		file = new File(Environment.getExternalStorageDirectory().toString()+DIR_MEVO,name);
 		if (file.delete())
@@ -298,7 +309,7 @@ public class HttpConnection extends WakefullIntentService implements Constants
 		{
 			Log.d(DEBUGTAG, "Delete not ok");
 		}
-		
+
 		// On efface le message du serveur de Free
 		mDbHelper.open();
 		curs = mDbHelper.fetchMessage(name);
@@ -511,6 +522,8 @@ public class HttpConnection extends WakefullIntentService implements Constants
         {
         	HttpResponse httpResponse = null;
         	httpResponse = postRequest();
+        	if (httpResponse != null)
+        	{
         	HttpEntity responseEntity = httpResponse.getEntity();
         	BufferedReader br = new BufferedReader(new InputStreamReader(responseEntity.getContent()));
     		String s = null;
@@ -537,6 +550,7 @@ public class HttpConnection extends WakefullIntentService implements Constants
     				break;
     			}
     		}
+        	}
         }
         catch (ClientProtocolException e)
         {
@@ -582,7 +596,15 @@ public class HttpConnection extends WakefullIntentService implements Constants
    
 		postMethod.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 	
-		HttpResponse httpResponse = client.execute(postMethod);
-		return httpResponse;
+		try
+		{
+			HttpResponse httpResponse = client.execute(postMethod);
+			return httpResponse;
+		}
+		catch (IOException e)
+		{
+			Log.d(DEBUGTAG, "Connexion impossible "+e);
+			return null;
+		}
 	}
 }
