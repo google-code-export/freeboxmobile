@@ -43,7 +43,7 @@ import android.widget.Toast;
 /**
 *
 * @author Olivier Rosello
-* $Id: HttpConnection.java 50 2009-12-18 16:54:14Z olivier $
+* $Id$
 * 
 */
 

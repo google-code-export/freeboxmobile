@@ -9,7 +9,7 @@ import android.util.Log;
 /**
 *
 * @author Olivier Rosello
-* $Id: WakefullIntentService.java 48 2009-12-18 12:41:39Z olivier $
+* $Id$
 * 
 */
 

@@ -19,7 +19,7 @@ import android.view.MenuItem;
 /**
 *
 * @author Olivier Rosello
-* $Id: Config.java 49 2009-12-18 16:41:59Z olivier $
+* $Id$
 * 
 */
 

@@ -15,7 +15,7 @@ import android.util.Log;
 /**
 *
 * @author Olivier Rosello
-* $Id: Message.java 49 2009-12-18 16:41:59Z olivier $
+* $Id$
 * 
 */
 

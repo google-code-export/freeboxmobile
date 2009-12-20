@@ -5,7 +5,7 @@ import android.view.Menu;
 /**
 *
 * @author Olivier Rosello
-* $Id: Constants.java 49 2009-12-18 16:41:59Z olivier $
+* $Id$
 * 
 */
 

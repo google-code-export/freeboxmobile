@@ -16,7 +16,7 @@ import android.widget.Button;
 /**
 *
 * @author Olivier Rosello
-* $Id: freeboxmobile.java 49 2009-12-18 16:41:59Z olivier $
+* $Id$
 * 
 */
 

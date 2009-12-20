@@ -8,7 +8,7 @@ import android.util.Log;
 /**
 *
 * @author Olivier Rosello
-* $Id: OnAlarmReceiver.java 48 2009-12-18 12:41:39Z olivier $
+* $Id$
 * 
 */
 
