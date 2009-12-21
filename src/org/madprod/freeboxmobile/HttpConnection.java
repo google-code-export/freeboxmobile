@@ -267,25 +267,41 @@ public class HttpConnection extends WakefullIntentService implements Constants
 		_changeTimer(PERIOD);
 	}
 
-	public static  int checkUpdated()
-	{		
-		String l = MAIN_ACTIVITY.getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_USER, null);
-		String p = MAIN_ACTIVITY.getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_PASSWORD, null);
-
-		// Si les prefs on bougé
-		if (( l!=null && p!= null) && ((!l.equals(login)) || (!p.equals(password))))
+	public static void refreshPrefs()
+	{
+		if (MAIN_ACTIVITY != null)
 		{
-			Log.d(DEBUGTAG, "UPDATE: " + login+"/"+password+" - "+l+"/"+p);
-			login = l;
-			password = p;
-			id = null;
-			idt = null;
-			connectionStatus = CONNECT_NOT_CONNECTED;
-			_changeTimer(PERIOD);
-			return 0;
+			login = MAIN_ACTIVITY.getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_USER, null);
+			password = MAIN_ACTIVITY.getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_PASSWORD, null);		
+		}
+	}
+
+	public static int checkUpdated()
+	{
+		if (MAIN_ACTIVITY != null)
+		{
+			String l = MAIN_ACTIVITY.getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_USER, null);
+			String p = MAIN_ACTIVITY.getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_PASSWORD, null);
+	
+			// Si les prefs ont bougé
+			if (( l!=null && p!= null) && ((!l.equals(login)) || (!p.equals(password))))
+			{
+				Log.d(DEBUGTAG, "UPDATE: " + login+"/"+password+" - "+l+"/"+p);
+				login = l;
+				password = p;
+				id = null;
+				idt = null;
+				connectionStatus = CONNECT_NOT_CONNECTED;
+				_changeTimer(PERIOD);
+				return 0;
+			}
+			else
+				return -1;
 		}
 		else
+		{
 			return -1;
+		}
 	}
 
 	public static void deleteMsg(String name)
@@ -303,11 +319,11 @@ public class HttpConnection extends WakefullIntentService implements Constants
 		file = new File(Environment.getExternalStorageDirectory().toString()+DIR_MEVO,name);
 		if (file.delete())
 		{
-			Log.d(DEBUGTAG, "Delete ok");
+			Log.d(DEBUGTAG, "Delete file ok");
 		}
 		else
 		{
-			Log.d(DEBUGTAG, "Delete not ok");
+			Log.d(DEBUGTAG, "Delete file not ok");
 		}
 
 		// On efface le message du serveur de Free
@@ -319,19 +335,60 @@ public class HttpConnection extends WakefullIntentService implements Constants
 		}
 		else
 		{
-			Log.d(DEBUGTAG, "to delete: "+curs.getString(curs.getColumnIndex(KEY_DEL)));
-
-			HttpClient client = new DefaultHttpClient(new BasicHttpParams());
-			HttpGet getMethod = new HttpGet(mevoUrl+curs.getString(curs.getColumnIndex(KEY_DEL)));
-			getMethod.setHeader("User-Agent", USER_AGENT);
-			try
+			// Si le message est présent sur le serveur de Free
+			if (!(curs.getString(curs.getColumnIndex(KEY_DEL)).equals("")))
 			{
-				client.execute(getMethod);
+				if ((login == null) || (password == null))
+				{
+					refreshPrefs();
+				}
+	    		String tel = curs.getString(curs.getColumnIndex(KEY_DEL));
+	   			if (tel.indexOf("tel=")>-1)
+	   			{
+	   				tel = tel.substring(tel.indexOf("tel=")+4);
+	   				if (tel.indexOf("&")>-1)
+	   				{
+	   					tel = tel.substring(0, tel.indexOf('&'));
+	   				}
+	   				Log.d(DEBUGTAG,"tel="+tel);
+	    		}
+	   			final String partURL = "&tel="+tel+"&fichier="+curs.getString(curs.getColumnIndex(KEY_NAME));
+
+	   			// On lance la suppression sur le serveur dans un thread séparé car ca peut être long
+				Thread t = new Thread(new Runnable() {
+					@Override
+		            public void run()
+		        	{
+						// (re)connection afin d'avoir un id et idt frais :)
+						connectFree();
+			   			String url = mevoUrl+"efface_message.pl?id="+id+"&idt="+idt+partURL;
+						Log.d(DEBUGTAG,"Deleting message"+url);
+
+						// On reconstitue l'url parceque id & idt ont peut etre changé
+						if ((id != null) && (idt != null))
+						{
+							Log.d(DEBUGTAG, "Deleting on server");
+							HttpClient client = new DefaultHttpClient(new BasicHttpParams());
+							HttpGet getMethod = new HttpGet(url);
+							getMethod.setHeader("User-Agent", USER_AGENT);
+							try
+							{
+								client.execute(getMethod);
+							}
+					       	catch (IOException e)
+					       	{
+					        	Log.e(DEBUGTAG,"deleteMsg: "+e);
+					        }
+						}
+						else
+							Log.d(DEBUGTAG, "NOT Deleting on server");
+//						Log.d(DEBUGTAG, "End thread");
+		        	}
+		        });
+		//		t.setDaemon(true);
+		        t.setName("FBM Delete Message");
+		        t.start();
 			}
-	       	catch (IOException e)
-	       	{
-	        	Log.e(DEBUGTAG,"deleteMsg: "+e);
-	        }
 		}
 		// Puis on marque le message comme effacé dans la base
 		// (on l'efface pas à proprement dit de la base, ca pourrait servir pour un historique)
@@ -524,32 +581,32 @@ public class HttpConnection extends WakefullIntentService implements Constants
         	httpResponse = postRequest();
         	if (httpResponse != null)
         	{
-        	HttpEntity responseEntity = httpResponse.getEntity();
-        	BufferedReader br = new BufferedReader(new InputStreamReader(responseEntity.getContent()));
-    		String s = null;
-    		String priv = null;
-    		while ( (s=br.readLine())!=null )
-    		{
-    			if (s.indexOf("idt=")>-1)
-    			{
-    				priv = s.substring(s.indexOf("idt=")+4);
-    				if (priv.indexOf("&")>-1)
-    				{
-    					priv = priv.substring(0, priv.indexOf('&'));
-    				}
-    				else
-    				{
-    					priv = priv.substring(0, priv.indexOf('"'));
-    				}
-    				idt = priv;
-    				Log.d(DEBUGTAG,"idt :"+priv);
-    				priv = s.substring(s.indexOf("?id=")+4);
-    				priv = priv.substring(0, priv.indexOf('&'));
-    				id = priv;
-    				Log.d(DEBUGTAG,"id :"+priv);
-    				break;
-    			}
-    		}
+	        	HttpEntity responseEntity = httpResponse.getEntity();
+	        	BufferedReader br = new BufferedReader(new InputStreamReader(responseEntity.getContent()));
+	    		String s = null;
+	    		String priv = null;
+	    		while ( (s=br.readLine())!=null )
+	    		{
+	    			if (s.indexOf("idt=")>-1)
+	    			{
+	    				priv = s.substring(s.indexOf("idt=")+4);
+	    				if (priv.indexOf("&")>-1)
+	    				{
+	    					priv = priv.substring(0, priv.indexOf('&'));
+	    				}
+	    				else
+	    				{
+	    					priv = priv.substring(0, priv.indexOf('"'));
+	    				}
+	    				idt = priv;
+	    				Log.d(DEBUGTAG,"idt :"+priv);
+	    				priv = s.substring(s.indexOf("?id=")+4);
+	    				priv = priv.substring(0, priv.indexOf('&'));
+	    				id = priv;
+	    				Log.d(DEBUGTAG,"id :"+priv);
+	    				break;
+	    			}
+	    		}
         	}
         }
         catch (ClientProtocolException e)
@@ -560,7 +617,6 @@ public class HttpConnection extends WakefullIntentService implements Constants
        	{
        		e.printStackTrace();
         }
-		Log.d(DEBUGTAG,"Connect Free end");
        	if (id != null && idt != null)
        	{
        		return CONNECT_CONNECTED;
@@ -583,7 +639,7 @@ public class HttpConnection extends WakefullIntentService implements Constants
 	throws ClientProtocolException, IOException
 	{
 		String url = serverUrl;
-		Log.d(DEBUGTAG, "POST: " + url);
+		Log.d(DEBUGTAG, "POST: " + url + " login: "+login);
 
 		HttpClient client = new DefaultHttpClient(new BasicHttpParams());
 		HttpPost postMethod = new HttpPost((url));

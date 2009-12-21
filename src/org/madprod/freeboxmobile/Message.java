@@ -173,6 +173,8 @@ public class Message implements Constants
 			mp.setDataSource(src);
 			mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
 			mp.prepare();
+			mp.setScreenOnWhilePlaying(true);
+			mp.setVolume(1000,1000);
 		}
 		catch (IllegalArgumentException e)
 		{
