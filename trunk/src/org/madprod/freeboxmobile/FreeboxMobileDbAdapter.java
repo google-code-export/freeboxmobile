@@ -212,7 +212,7 @@ public class FreeboxMobileDbAdapter implements Constants
 	public long getNbUnreadMsg()
 	{
 		long id;
-		id = this.mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE + " WHERE status = '"+MSG_STATUS_UNLISTENED+"'").simpleQueryForLong();
+		id = this.mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE + " WHERE status = '"+MSG_STATUS_UNLISTENED+"' AND "+KEY_PRESENCE+" > '0'").simpleQueryForLong();
 		return id;
 	}
 	

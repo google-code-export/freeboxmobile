@@ -2,7 +2,7 @@
 <resources>
     
     <string name="app_name">Freebox Mobile</string>
-<string name="app_version">0.10RC2</string><string name="buttonTv">Télévision</string>
+<string name="app_version">0.10RC3</string><string name="buttonTv">Télévision</string>
 <string name="buttonPvr">Magnétoscope</string>
 <string name="buttonMevo">Téléphone</string>
 <string name="buttonMusic">Musique</string>
@@ -22,7 +22,7 @@
 
 <string name="mevo_text_seconds">secondes</string>
 
-<string name="mevo_title_message">&amp;nbsp;- 1 message non écouté</string>
+<string name="mevo_title_message"> - 1 message non écouté</string>
 <string name="mevo_title_nomsg"> - Pas de message non écouté</string>
 <string name="mevo_title_messages"> messages non écoutés</string>
 
