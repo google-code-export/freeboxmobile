@@ -10,6 +10,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.provider.Contacts;
+import android.provider.Contacts.Phones;
 import android.util.Log;
 
 /**
@@ -59,54 +60,64 @@ public class Message implements Constants
 				Contacts.Phones.TYPE,
 				Contacts.Phones.NUMBER,
 				Contacts.Phones.LABEL };
- 
-		Uri contactUri = Uri.withAppendedPath(Contacts.Phones.CONTENT_FILTER_URL, Uri.encode(number));
-		Cursor c = resolver.query(contactUri, projection, null, null, null);
- 
-		// if the query returns 1 or more results
-		// return the first result
-		if (c.moveToFirst())
+
+		if ((number != null) && (number.length() > 0))
 		{
-			msgValues.put(KEY_CALLER, c.getString(c.getColumnIndex(Contacts.Phones.DISPLAY_NAME)));
-			switch (c.getInt(c.getColumnIndex(Contacts.Phones.TYPE)))
+			String n = Uri.encode(number);
+			Uri contactUri = Uri.withAppendedPath(Phones.CONTENT_FILTER_URL, n);
+//	For 2.0+ :
+//			Uri lookupUri = Uri.withAppendedPath(PhoneLookup.CONTENT_URI, Uri.encode(phoneNumber));
+			Cursor c = resolver.query(contactUri, projection, null, null, null);
+			// if the query returns 1 or more results
+			// return the first result
+			if (c.moveToFirst())
 			{
-				case Contacts.Phones.TYPE_CUSTOM:
-					msgValues.put(KEY_NB_TYPE, c.getString(c.getColumnIndex(Contacts.Phones.LABEL)));
-				break;
-				case Contacts.Phones.TYPE_FAX_HOME:
-					msgValues.put(KEY_NB_TYPE, _context.getString(R.string.mevo_msgtype_fax_home));
-				break;
-				case Contacts.Phones.TYPE_FAX_WORK:
-					msgValues.put(KEY_NB_TYPE, _context.getString(R.string.mevo_msgtype_fax_work));
-				break;
-				case Contacts.Phones.TYPE_HOME:
-					msgValues.put(KEY_NB_TYPE, _context.getString(R.string.mevo_msgtype_home));
-				break;
-				case Contacts.Phones.TYPE_MOBILE:
-					msgValues.put(KEY_NB_TYPE, _context.getString(R.string.mevo_msgtype_mobile));
-				break;
-				case Contacts.Phones.TYPE_OTHER:
-					msgValues.put(KEY_NB_TYPE, _context.getString(R.string.mevo_msgtype_other));
-				break;
-				case Contacts.Phones.TYPE_PAGER:
-					msgValues.put(KEY_NB_TYPE, _context.getString(R.string.mevo_msgtype_pager));
-				break;
-				case Contacts.Phones.TYPE_WORK:
-					msgValues.put(KEY_NB_TYPE, _context.getString(R.string.mevo_msgtype_work));
-				break;
-				default:
-					msgValues.put(KEY_NB_TYPE, "???");
-				break;
+				msgValues.put(KEY_CALLER, c.getString(c.getColumnIndex(Contacts.Phones.DISPLAY_NAME)));
+				switch (c.getInt(c.getColumnIndex(Contacts.Phones.TYPE)))
+				{
+					case Contacts.Phones.TYPE_CUSTOM:
+						msgValues.put(KEY_NB_TYPE, c.getString(c.getColumnIndex(Contacts.Phones.LABEL)));
+					break;
+					case Contacts.Phones.TYPE_FAX_HOME:
+						msgValues.put(KEY_NB_TYPE, _context.getString(R.string.mevo_msgtype_fax_home));
+					break;
+					case Contacts.Phones.TYPE_FAX_WORK:
+						msgValues.put(KEY_NB_TYPE, _context.getString(R.string.mevo_msgtype_fax_work));
+					break;
+					case Contacts.Phones.TYPE_HOME:
+						msgValues.put(KEY_NB_TYPE, _context.getString(R.string.mevo_msgtype_home));
+					break;
+					case Contacts.Phones.TYPE_MOBILE:
+						msgValues.put(KEY_NB_TYPE, _context.getString(R.string.mevo_msgtype_mobile));
+					break;
+					case Contacts.Phones.TYPE_OTHER:
+						msgValues.put(KEY_NB_TYPE, _context.getString(R.string.mevo_msgtype_other));
+					break;
+					case Contacts.Phones.TYPE_PAGER:
+						msgValues.put(KEY_NB_TYPE, _context.getString(R.string.mevo_msgtype_pager));
+					break;
+					case Contacts.Phones.TYPE_WORK:
+						msgValues.put(KEY_NB_TYPE, _context.getString(R.string.mevo_msgtype_work));
+					break;
+					default:
+						msgValues.put(KEY_NB_TYPE, "???");
+					break;
+				}
+				c.close();
 			}
-			c.close();
+			else
+			{
+				c.close();
+				msgValues.put(KEY_CALLER, number);
+				msgValues.put(KEY_NB_TYPE, _context.getString(R.string.unknown));
+			}
 		}
 		else
 		{
-			c.close();
-			msgValues.put(KEY_CALLER, number);
-			msgValues.put(KEY_NB_TYPE, "Inconnu");
+			msgValues.put(KEY_CALLER, _context.getString(R.string.unknown));
+			msgValues.put(KEY_NB_TYPE, _context.getString(R.string.mevo_hidden_number));
 		}
-}
+	}
 
 	public void log()
 	{

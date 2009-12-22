@@ -4,10 +4,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.media.AudioManager;
@@ -16,6 +20,7 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnErrorListener;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -45,11 +50,11 @@ public class FreeboxMobileMevo extends ListActivity implements Constants
     static Activity mevoActivity;
     AudioManager mAudioManager;
     Cursor mCursor;
-    
+
     Button speakerButton;
     static Button callbackButton;
     static Button deleteButton;
-    
+
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -111,8 +116,17 @@ public class FreeboxMobileMevo extends ListActivity implements Constants
         );
 		deleteButton.setFocusable(false);
 		deleteButton.setClickable(false);
+		
+		SharedPreferences mgr = PreferenceManager.getDefaultSharedPreferences(this);
+		if (!mgr.getString(KEY_SPLASH_MEVO, "0").equals(this.getString(R.string.app_version)))
+		{
+			Editor editor = mgr.edit();
+			editor.putString(KEY_SPLASH_MEVO, this.getString(R.string.app_version));
+			editor.commit();
+			displayAboutMevo();
+		}
     }
-    
+
     @Override
     public void onStart()
     {
@@ -147,6 +161,7 @@ public class FreeboxMobileMevo extends ListActivity implements Constants
 	{
 		super.onStop();
 		this.mAdapter.stop();
+		HttpConnection.setUpdateListener(null);
 	}
 
     @Override
@@ -195,7 +210,14 @@ public class FreeboxMobileMevo extends ListActivity implements Constants
 		t.setText(mAdapter.getMessageString(pos, KEY_CALLER));
 		t.setVisibility(View.VISIBLE);
 		t = ((TextView) findViewById(R.id.caller_number));
-		t.setText(mAdapter.getMessageString(pos, KEY_NB_TYPE)+" : "+mAdapter.getMessageString(pos, KEY_SOURCE));
+		if ((mAdapter.getMessageString(pos, KEY_SOURCE)).equals(""))
+		{
+			t.setText(mAdapter.getMessageString(pos, KEY_NB_TYPE));			
+		}
+		else
+		{
+			t.setText(mAdapter.getMessageString(pos, KEY_NB_TYPE)+" : "+mAdapter.getMessageString(pos, KEY_SOURCE));
+		}
 		t.setVisibility(View.VISIBLE);
 		if (callbackButton.isFocusable() == false)
 		{
@@ -276,6 +298,7 @@ public class FreeboxMobileMevo extends ListActivity implements Constants
 	{
 		Log.d(DEBUGTAG,"onResume() start");
 		super.onResume();
+		HttpConnection.cancelNotif(NOTIF_MEVO);
 		mAdapter.refreshUI();
 		Log.d(DEBUGTAG,"onResume() end");
 	}
@@ -290,6 +313,26 @@ public class FreeboxMobileMevo extends ListActivity implements Constants
 		Log.d(DEBUGTAG,"onPause() end");
 	}
 	
+	private void displayAboutMevo()
+    {	
+    	AlertDialog d = new AlertDialog.Builder(this).create();
+		d.setTitle(getString(R.string.app_name));
+		d.setMessage(
+			"Incitez vos correspondants à vous laisser des messages !\n\n"+
+			"Créez une annonce d'accueil en composant **1 sur "+
+			"le téléphone de votre Freebox."
+			);
+		d.setButton("Ok", new DialogInterface.OnClickListener()
+			{
+				public void onClick(DialogInterface dialog, int which)
+				{
+					dialog.dismiss();
+				}
+			}
+			);
+		d.show();
+    }
+
     public static class MessagesAdapter extends BaseAdapter implements OnCompletionListener, OnErrorListener
     {
     	private Context mContext;
@@ -306,8 +349,24 @@ public class FreeboxMobileMevo extends ListActivity implements Constants
     		mContext = context;
     		mDbHelper = new FreeboxMobileDbAdapter(mContext);
 			msg_unit = mContext.getString(R.string.mevo_text_seconds);
+    	}
 
-//			getMessages();
+    	private void hideBouttons()
+    	{
+    		callbackButton.setFocusable(false);
+    		callbackButton.setClickable(false);
+    		callbackButton.setTextColor(0xFFFF);
+    		callbackButton.setVisibility(View.INVISIBLE);
+    		deleteButton.setFocusable(false);
+    		deleteButton.setClickable(false);
+    		deleteButton.setTextColor(0x00888888);
+    		deleteButton.setVisibility(View.INVISIBLE);
+    		TextView t = ((TextView) ((Activity) mContext).findViewById(R.id.caller_name));
+    		t.setText("");
+    		t.setVisibility(View.GONE);
+    		t = ((TextView) ((Activity) mContext).findViewById(R.id.caller_number));
+    		t.setText("");
+    		t.setVisibility(View.GONE);    		
     	}
 
     	private void getMessages()
@@ -316,27 +375,14 @@ public class FreeboxMobileMevo extends ListActivity implements Constants
 
             Log.d(DEBUGTAG,"getMessages() called");
 
-            mDbHelper.open();
-
     		play_current_mp = null;
 
+        	releaseMP();
+            mDbHelper.open();
 			messages.clear();
             if (updateMessageCount() == 0)
             {
-        		callbackButton.setFocusable(false);
-        		callbackButton.setClickable(false);
-        		callbackButton.setTextColor(0xFFFF);
-        		callbackButton.setVisibility(View.INVISIBLE);
-        		deleteButton.setFocusable(false);
-        		deleteButton.setClickable(false);
-        		deleteButton.setTextColor(0x00888888);
-        		deleteButton.setVisibility(View.INVISIBLE);
-        		TextView t = ((TextView) ((Activity) mContext).findViewById(R.id.caller_name));
-        		t.setText("");
-        		t.setVisibility(View.GONE);
-        		t = ((TextView) ((Activity) mContext).findViewById(R.id.caller_number));
-        		t.setText("");
-        		t.setVisibility(View.GONE);
+            	hideBouttons();
             }
 
         	// Get all of the rows from the database and create the item list
@@ -363,7 +409,10 @@ public class FreeboxMobileMevo extends ListActivity implements Constants
     		{
     			i.next().releaseMP();
     		}
+    		if (mDbHelper != null)
+     			mDbHelper.close();
     	}
+
     	public String getMessageString(int id, String key)
     	{
     		return ((Message) this.getItem(id)).getStringValue(key);
@@ -410,13 +459,14 @@ public class FreeboxMobileMevo extends ListActivity implements Constants
     	{
 			if (play_current_pos == id)
 			{
-				if (play_current_mp.isPlaying())
+				if ((play_current_mp != null) && (play_current_mp.isPlaying()))
 				{
 					play_current_mp.release();
 					play_current_mp = null;
 					play_current_pos = -1;
 				}
 			}
+			hideBouttons();
     		HttpConnection.deleteMsg(((Message)this.getItem(id)).getStringValue(KEY_NAME));
     	}
 
@@ -535,7 +585,10 @@ public class FreeboxMobileMevo extends ListActivity implements Constants
 			if (play_current_mp != null)
 				play_current_mp.release();
 			if (mDbHelper != null)
+			{
 				mDbHelper.close();
+				
+			}
 		}
 
 		@Override
@@ -592,6 +645,7 @@ public class FreeboxMobileMevo extends ListActivity implements Constants
 					m.setIntValue(KEY_PLAY_STATUS, PLAY_STATUS_PLAY, false);
 					play_current_mp.setOnCompletionListener(this);
 					play_current_mp.start();
+					HttpConnection.cancelNotif(NOTIF_MEVO);
 				}
 				catch (IllegalStateException e)
 				{

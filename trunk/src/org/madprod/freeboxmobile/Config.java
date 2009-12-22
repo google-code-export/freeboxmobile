@@ -34,10 +34,6 @@ public class Config extends PreferenceActivity implements OnSharedPreferenceChan
 
         getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
         addPreferencesFromResource(R.xml.prefs);
-        Log.d(DEBUGTAG,Environment.getExternalStorageDirectory().toString()+"/freeboxmobile");
-
-        File file = new File(Environment.getExternalStorageDirectory().toString()+DIR_MEVO);
-        file.mkdirs();
 
         // Initialiser d'apres les prefs actuelles
         updateLibelle(KEY_USER);
