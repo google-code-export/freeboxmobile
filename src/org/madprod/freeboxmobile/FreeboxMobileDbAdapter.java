@@ -91,7 +91,8 @@ public class FreeboxMobileDbAdapter implements Constants
 
 	public void close()
 	{
-		mDbHelper.close();
+		if (mDbHelper != null)
+			mDbHelper.close();
 	}
 
 	public boolean initTempValues()

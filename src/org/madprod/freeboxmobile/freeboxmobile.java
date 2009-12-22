@@ -1,5 +1,7 @@
 package org.madprod.freeboxmobile;
 
+import java.io.File;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -77,6 +79,11 @@ public class freeboxmobile extends Activity implements Constants
 */	
 		if (!mgr.getString(KEY_SPLASH, "0").equals(this.getString(R.string.app_version)))
 		{
+	        Log.d(DEBUGTAG,Environment.getExternalStorageDirectory().toString()+"/freeboxmobile");
+
+	        File file = new File(Environment.getExternalStorageDirectory().toString()+DIR_MEVO);
+	        file.mkdirs();
+
 			HttpConnection.refresh();
 
 			Editor editor = mgr.edit();
@@ -128,7 +135,7 @@ public class freeboxmobile extends Activity implements Constants
     private void displayAbout()
     {	
     	AlertDialog d = new AlertDialog.Builder(this).create();
-		d.setTitle("Freebox Mobile");
+		d.setTitle(getString(R.string.app_name));
 		d.setMessage(
 			"Freebox Mobile est une application "+
 			"indépendante de Free.\n\nPlus de renseignements sur "+

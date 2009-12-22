@@ -30,8 +30,11 @@ import org.apache.http.message.BasicNameValuePair;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -74,6 +77,9 @@ public class HttpConnection extends WakefullIntentService implements Constants
     private static final int CONNECT_LOGIN_FAILED = -2;
     private static int connectionStatus = CONNECT_NOT_CONNECTED;
 
+	static NotificationManager mNotificationManager = null;
+	
+
 	/* ------------------------------------------------------------------------
 	 * CREATION ET GESTION DU SERVICE
 	 * ------------------------------------------------------------------------
@@ -97,6 +103,8 @@ public class HttpConnection extends WakefullIntentService implements Constants
 	@Override
 	protected void onHandleIntent(Intent intent)
 	{
+		int newmsg = 0;
+
 		Log.i(DEBUGTAG,"HttpConnection onHandleIntent ");
 
 		File log = new File(Environment.getExternalStorageDirectory()+DIR_FBM, "fbm.log");
@@ -118,7 +126,15 @@ public class HttpConnection extends WakefullIntentService implements Constants
 
 		if ((login != null) && (password != null))
 		{
-			_getUpdate();
+			newmsg = _getUpdate();
+			if (newmsg > 0)
+			{
+				_initNotif(newmsg);
+				if (UI_UPDATE_LISTENER != null)
+				{
+					UI_UPDATE_LISTENER.updateUI();
+				}
+			}
 		}
 
 		try
@@ -151,8 +167,50 @@ public class HttpConnection extends WakefullIntentService implements Constants
 		super.onDestroy();
 	}
 
-	private static void _getUpdate()
+	public static void cancelNotif(int id)
 	{
+		if (mNotificationManager != null)
+			mNotificationManager.cancel(id);
+	}
+
+	private void _initNotif(int newmsg)
+	{
+		int icon = R.drawable.icon_fbm;
+		CharSequence tickerText;
+		CharSequence contentText;
+
+		if (mNotificationManager == null)
+		{
+			mNotificationManager= (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+		}
+		
+		if (newmsg > 1)
+		{
+			tickerText = getString(R.string.app_name)+" : "+newmsg+" "+getString(R.string.http_new_msgs);
+			contentText = newmsg+" "+getString(R.string.http_new_msgs);
+		}
+		else
+		{
+			tickerText = "FreeboxMobile : 1 "+getString(R.string.http_new_msg);
+			contentText = newmsg+" "+getString(R.string.http_new_msg);
+		}
+		long when = System.currentTimeMillis();
+
+		Notification notification = new Notification(icon, tickerText, when);
+		Context context = getApplicationContext();
+		CharSequence contentTitle = getString(R.string.app_name);
+		Intent notificationIntent = new Intent(this, FreeboxMobileMevo.class);
+		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+
+		notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
+
+		mNotificationManager.notify(NOTIF_MEVO, notification);
+	}
+
+	private static int _getUpdate()
+	{
+		int newmsg = -1;
+
 		if ((login != null) && (password != null) && (connectionStatus != CONNECT_LOGIN_FAILED))// && (id == null)
 		{
 			if (connectionStatus != CONNECT_CONNECTED)
@@ -187,7 +245,7 @@ public class HttpConnection extends WakefullIntentService implements Constants
 				}
 				else
 					myProgressDialog = null;
-	       		getMessageList();
+	       		newmsg = getMessageList();
 	            if (myProgressDialog != null)
 	            	myProgressDialog.dismiss();
 	        }
@@ -205,6 +263,7 @@ public class HttpConnection extends WakefullIntentService implements Constants
 				}
 			}
 		}
+		return newmsg;
 	}
 	
 	private static void _showConnectionError()
@@ -251,10 +310,10 @@ public class HttpConnection extends WakefullIntentService implements Constants
 
     private void _getPrefs()
     {
-		login = getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_USER, null);
+    	login = getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_USER, null);
 		password = getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_PASSWORD, null);
 		Log.d(DEBUGTAG,"hc identifiant:"+login);
-		Log.d(DEBUGTAG,"hc password:"+password);
+//		Log.d(DEBUGTAG,"hc password:"+password);
     }
 
 	/*
@@ -286,7 +345,7 @@ public class HttpConnection extends WakefullIntentService implements Constants
 			// Si les prefs ont bougé
 			if (( l!=null && p!= null) && ((!l.equals(login)) || (!p.equals(password))))
 			{
-				Log.d(DEBUGTAG, "UPDATE: " + login+"/"+password+" - "+l+"/"+p);
+				Log.d(DEBUGTAG, "UPDATE: " + login);
 				login = l;
 				password = p;
 				id = null;
@@ -401,7 +460,7 @@ public class HttpConnection extends WakefullIntentService implements Constants
        	curs.close();
 	}
 
-	public static void getMessageList()
+	public static int getMessageList()
 	{
 		String fullurl = mevoUrl + mevoListPage + "?id=" + id + "&idt=" + idt;
 		Log.d(DEBUGTAG, "GET: " + fullurl);
@@ -410,6 +469,7 @@ public class HttpConnection extends WakefullIntentService implements Constants
 		HttpGet getMethod = new HttpGet(fullurl);
 		getMethod.setHeader("User-Agent", USER_AGENT);
 		HttpResponse httpResponse = null;
+		int newmsg = -1;
 		try
 		{
 			httpResponse = client.execute(getMethod);
@@ -427,7 +487,6 @@ public class HttpConnection extends WakefullIntentService implements Constants
 			String name = null;
 			int intstatus = -1;
 			int presence = 0;
-			int newmsg = 0;
 			Cursor curs;
 			File file;
 			URL u;
@@ -436,6 +495,7 @@ public class HttpConnection extends WakefullIntentService implements Constants
 			HttpURLConnection c;
 			int len1;
 	        byte[] buffer = new byte[1024];
+	        newmsg = 0;
 	        
 	        mDbHelper.open();
 	        mDbHelper.initTempValues();
@@ -528,7 +588,7 @@ public class HttpConnection extends WakefullIntentService implements Constants
 					}
 				}
 				Log.d(DEBUGTAG,"fin extract");
-				if ((newmsg == 1) && (MAIN_ACTIVITY != null))
+/*				if ((newmsg == 1) && (MAIN_ACTIVITY != null))
 				{
 					MAIN_ACTIVITY.runOnUiThread(new Runnable()
 					{
@@ -540,7 +600,7 @@ public class HttpConnection extends WakefullIntentService implements Constants
 						}
 					});
 				}
-				else if ((newmsg > 1) && (MAIN_ACTIVITY != null))
+				else if ((newmsg >= 1) && (MAIN_ACTIVITY != null))
 				{
 					final int n = newmsg;
 					MAIN_ACTIVITY.runOnUiThread(new Runnable()
@@ -553,6 +613,7 @@ public class HttpConnection extends WakefullIntentService implements Constants
 						}
 					});
 				}
+*/
 			}
 			else
 			{
@@ -570,6 +631,8 @@ public class HttpConnection extends WakefullIntentService implements Constants
 		{
 			getMethod.abort();
 		}
+		Log.d(DEBUGTAG,"getmessage end "+newmsg);
+		return newmsg;
  	}
 
 	public static int connectFree()

@@ -22,6 +22,7 @@ public interface Constants
     static final String KEY_PASSWORD	= "password";
     static final String KEY_PREFS		= "freeboxmobile";
     static final String KEY_SPLASH		= "splashscreen";
+    static final String KEY_SPLASH_MEVO	= "splashscreen_mevo";
     
 	static final String DEBUGTAG		= "_FreeboxMobile";
 	static final String DIR_FBM			= "/freeboxmobile";
@@ -70,4 +71,6 @@ public interface Constants
 	public static final int PLAY_STATUS_STOP = 0;
 	public static final int PLAY_STATUS_PLAY = 1;
 	public static final int PLAY_STATUS_PAUSE = 2;
+	
+	public final int NOTIF_MEVO = 1;
 }
