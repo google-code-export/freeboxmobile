@@ -1,4 +1,4 @@
-#summary Historique des versions publiques de !FreeboxMobile.
+#summary Historique des versions publiques de FreeboxMobile.
 
 = Les différentes versions de !FreeboxMobile =
 
