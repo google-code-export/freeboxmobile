@@ -3,4 +3,4 @@
 = Les différentes versions de !FreeboxMobile =
 
 ||  *Date*  ||*Release*||*Version*||*Modifications*||
-||22/12/2009||    1    ||  0.10   ||Authentification Free -<br> Messagerie Vocale Visuelle - Notification de nouveaux messages||
+||22/12/2009||    1    ||  0.10   ||Authentification Free<br>Messagerie Vocale Visuelle<br>Notification de nouveaux messages||
