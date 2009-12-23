@@ -1,4 +1,4 @@
-#summary One-sentence summary of this page.
+#summary Historique des versions publiques de !FreeboxMobile.
 
 = Les différentes versions de !FreeboxMobile =
 
