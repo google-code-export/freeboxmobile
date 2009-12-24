@@ -1,4 +1,4 @@
-#summary Revue de Presse de l'application
+#summary Revue de Presse de Freebox Mobile
 #labels Featured
 
 = Revue de Presse =
