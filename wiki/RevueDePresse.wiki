@@ -1,0 +1,13 @@
+#summary Revue de Presse de l'application
+
+= Revue de Presse =
+
+Ici se trouvent des liens vers les articles qui parlent de FreeboxMobile
+
+
+= Décembre 2009 =
+
+ * [http://www.universfreebox.com/article9992.html Univers Freebox]
+ * [http://www.frandroid.com/8580/lapplication-freebox-mobile-disponible-sur-landroid-market/ FrAndroid]
+ * [http://artisan.karma-lab.net/node/1755 Artisant Numérique]
+ * 
