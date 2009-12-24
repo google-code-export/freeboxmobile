@@ -10,4 +10,6 @@ Ici se trouvent des liens vers les articles qui parlent de FreeboxMobile
  * [http://www.universfreebox.com/article9992.html Univers Freebox]
  * [http://www.frandroid.com/8580/lapplication-freebox-mobile-disponible-sur-landroid-market/ FrAndroid]
  * [http://artisan.karma-lab.net/node/1755 Artisant Numérique]
- * 
+ * [http://www.webdevonlinux.fr/2009/12/freebox-mobile-accedera-vos-service-free-depuis-votre-smartphone/ WebDevOnLinux]
+ * [http://www.sosandroid.fr/andropress/2009/12/24/freeboxmobile-application-pour-clients-free-sur-android/ SOS Android]
+ * []
