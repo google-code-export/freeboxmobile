@@ -17,7 +17,7 @@ public interface Constants
     // Period between network updates
     static final int PERIOD = 3600000; // in ms
 //    static final int PERIOD = 600000; // in ms
-    
+
     static final String KEY_USER		= "user";
     static final String KEY_PASSWORD	= "password";
     static final String KEY_PREFS		= "freeboxmobile";
@@ -68,6 +68,7 @@ public interface Constants
 	public static final String KEY_CALLER = "caller";
 	public static final String KEY_PLAY_STATUS = "img_status";
 	public static final String KEY_NB_TYPE = "nb_type";
+	public static final String KEY_QUAND_HR = "quand_hr";
 	public static final int PLAY_STATUS_STOP = 0;
 	public static final int PLAY_STATUS_PLAY = 1;
 	public static final int PLAY_STATUS_PAUSE = 2;

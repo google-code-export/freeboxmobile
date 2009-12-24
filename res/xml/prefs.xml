@@ -1,19 +1,15 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" android:title="Général" android:summary="Général">  
-        
-          
         <EditTextPreference
                 android:order="2" 
                 android:key="user" 
                 android:title="Identifiant Free"
-        />
+                android:singleLine="true"/>
         <EditTextPreference
                 android:order="3" 
                 android:key="password" 
                 android:title="Mot de passe associé"
                 android:password="true"
+                android:singleLine="true"
         />
-        
-
-
 <ListPreference android:entries="@array/entries_list_pref_pollinterval" android:entryValues="@array/entryvalue_list_pref_pollinterval" android:title="Fréquence de vérification" android:order="4" android:enabled="false" android:shouldDisableView="true" android:summary="Actuellement : 1 heure"></ListPreference>
 </PreferenceScreen>

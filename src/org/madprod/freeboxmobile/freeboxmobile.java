@@ -27,7 +27,7 @@ public class freeboxmobile extends Activity implements Constants
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
-		Log.d(DEBUGTAG,"MainActivity Create");
+		Log.d(DEBUGTAG,"MainActivity Create "+getString(R.string.app_version));
         super.onCreate(savedInstanceState);
 
         if (Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED) == false)
@@ -55,7 +55,7 @@ public class freeboxmobile extends Activity implements Constants
 					public void onClick(View view)
 					{
 				    	Intent i = new Intent();
-				    	i.setClassName("org.madprod.freeboxmobile", "org.madprod.freeboxmobile.FreeboxMobileMevo");
+				    	i.setClassName("org.madprod.freeboxmobile", "org.madprod.freeboxmobile.mvv.FreeboxMobileMevo");
 				    	startActivity(i);
 					}
 				}
@@ -77,7 +77,7 @@ public class freeboxmobile extends Activity implements Constants
 		e.remove(KEY_SPLASH);
 		e.commit();
 */	
-		if (!mgr.getString(KEY_SPLASH, "0").equals(this.getString(R.string.app_version)))
+		if (!mgr.getString(KEY_SPLASH, "0").equals(getString(R.string.app_version)))
 		{
 	        Log.d(DEBUGTAG,Environment.getExternalStorageDirectory().toString()+"/freeboxmobile");
 

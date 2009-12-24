@@ -1,6 +1,8 @@
-package org.madprod.freeboxmobile;
+package org.madprod.freeboxmobile.mvv;
 
 import java.lang.String;
+
+import org.madprod.freeboxmobile.Constants;
 
 /**
 *
@@ -17,7 +19,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-public class FreeboxMobileDbAdapter implements Constants
+public class FreeboxMobileMevoDbAdapter implements Constants
 {
 	private static final String TAG = "FreeboxMobileDbAdapter";
 	private DatabaseHelper mDbHelper;
@@ -67,7 +69,7 @@ public class FreeboxMobileDbAdapter implements Constants
 	 * @param ctx
 	 *            the Context within which to work
 	 */
-	public FreeboxMobileDbAdapter(Context ctx)
+	public FreeboxMobileMevoDbAdapter(Context ctx)
 	{
 		this.mCtx = ctx;
 	}
@@ -82,7 +84,7 @@ public class FreeboxMobileDbAdapter implements Constants
 	 * @throws SQLException
 	 *             if the database could be neither opened or created
 	 */
-	public FreeboxMobileDbAdapter open() throws SQLException
+	public FreeboxMobileMevoDbAdapter open() throws SQLException
 	{
 		mDbHelper = new DatabaseHelper(mCtx);
 		mDb = mDbHelper.getWritableDatabase();
@@ -105,16 +107,13 @@ public class FreeboxMobileDbAdapter implements Constants
 
 	public String convertDateTime(String org)
 	{
-		String dest = null;
+//		String dest = null;
 		
-		Log.d(DEBUGTAG,"= PARSE DATE 1");
 		String[] datetime = org.split(" ");
 		String[] date = datetime[1].split("/");
 		String[] time = datetime[0].split(":");
-		
-		Log.d(DEBUGTAG,"PARSE DATETIME : "+date[2]+"-"+date[1]+"-"+date[0]+" "+time[0]+":"+time[1]+":"+time[2]);
-		dest = date[2]+"-"+date[1]+"-"+date[0]+" "+time[0]+":"+time[1]+":"+time[2];
-		return dest;
+		return (date[2]+"-"+date[1]+"-"+date[0]+" "+time[0]+":"+time[1]+":"+time[2]);
+//		return dest;
 	}
 
 	/**

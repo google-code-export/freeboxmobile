@@ -1,7 +1,13 @@
-package org.madprod.freeboxmobile;
+package org.madprod.freeboxmobile.mvv;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import org.madprod.freeboxmobile.Constants;
+import org.madprod.freeboxmobile.HttpConnection;
+import org.madprod.freeboxmobile.mvv.MevoMessage;
+import org.madprod.freeboxmobile.R;
+import org.madprod.freeboxmobile.ServiceUpdateUIListener;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -336,8 +342,8 @@ public class FreeboxMobileMevo extends ListActivity implements Constants
     public static class MessagesAdapter extends BaseAdapter implements OnCompletionListener, OnErrorListener
     {
     	private Context mContext;
-    	private ArrayList<Message> messages = new ArrayList<Message>();
-        protected FreeboxMobileDbAdapter mDbHelper = null;
+    	private ArrayList<MevoMessage> messages = new ArrayList<MevoMessage>();
+        protected FreeboxMobileMevoDbAdapter mDbHelper = null;
         
         private String msg_unit;
         
@@ -347,7 +353,7 @@ public class FreeboxMobileMevo extends ListActivity implements Constants
     	public MessagesAdapter(Context context, ContentResolver cr)
     	{
     		mContext = context;
-    		mDbHelper = new FreeboxMobileDbAdapter(mContext);
+    		mDbHelper = new FreeboxMobileMevoDbAdapter(mContext);
 			msg_unit = mContext.getString(R.string.mevo_text_seconds);
     	}
 
@@ -394,7 +400,7 @@ public class FreeboxMobileMevo extends ListActivity implements Constants
             {
             	do
             	{
-            		Message m = new Message(mContext, mDbHelper);
+            		MevoMessage m = new MevoMessage(mContext, mDbHelper);
             		m.setMsgFromCursor(messagesCursor);
             		messages.add(m);
             	} while (messagesCursor.moveToNext());
@@ -404,7 +410,7 @@ public class FreeboxMobileMevo extends ListActivity implements Constants
 
     	public void releaseMP()
     	{
-    		Iterator<Message> i = messages.iterator();
+    		Iterator<MevoMessage> i = messages.iterator();
     		while (i.hasNext())
     		{
     			i.next().releaseMP();
@@ -415,12 +421,12 @@ public class FreeboxMobileMevo extends ListActivity implements Constants
 
     	public String getMessageString(int id, String key)
     	{
-    		return ((Message) this.getItem(id)).getStringValue(key);
+    		return ((MevoMessage) this.getItem(id)).getStringValue(key);
     	}
 
     	public int getMessageInt(int id, String key)
     	{
-    		return ((Message) this.getItem(id)).getIntValue(key);
+    		return ((MevoMessage) this.getItem(id)).getIntValue(key);
     	}
 
     	public int updateMessageCount()
@@ -443,7 +449,7 @@ public class FreeboxMobileMevo extends ListActivity implements Constants
 
     	public void setMessageInt(int id, String k, int val)
     	{
-    		((Message)this.getItem(id)).setIntValue(k, val, true);
+    		((MevoMessage)this.getItem(id)).setIntValue(k, val, true);
     		notifyDataSetInvalidated();
     	}
 
@@ -467,7 +473,7 @@ public class FreeboxMobileMevo extends ListActivity implements Constants
 				}
 			}
 			hideBouttons();
-    		HttpConnection.deleteMsg(((Message)this.getItem(id)).getStringValue(KEY_NAME));
+    		HttpConnection.deleteMsg(((MevoMessage)this.getItem(id)).getStringValue(KEY_NAME));
     	}
 
     	public void callback(int id)
@@ -475,18 +481,18 @@ public class FreeboxMobileMevo extends ListActivity implements Constants
     		try
     		{
     			Intent intent = new Intent(Intent.ACTION_CALL);
-    			intent.setData(Uri.parse("tel:"+((Message)this.getItem(id)).getStringValue(KEY_SOURCE)));
+    			intent.setData(Uri.parse("tel:"+((MevoMessage)this.getItem(id)).getStringValue(KEY_SOURCE)));
     			mevoActivity.startActivity(intent);
     		}
     		catch (Exception e)
     		{
-    			Log.e(DEBUGTAG,"Impossible de passer l'appel "+((Message)this.getItem(id)).getStringValue(KEY_SOURCE),e);
+    			Log.e(DEBUGTAG,"Impossible de passer l'appel "+((MevoMessage)this.getItem(id)).getStringValue(KEY_SOURCE),e);
     		}
     	}
 
     	public void logMessageInfos(int id)
     	{
-			((Message) this.getItem((int) id)).log();
+			((MevoMessage) this.getItem((int) id)).log();
     	}
     	
     	public int getCurrentPos()
@@ -517,7 +523,7 @@ public class FreeboxMobileMevo extends ListActivity implements Constants
 		{
 			ViewHolder	holder;
 
-			Message curMsg = messages.get(position);
+			MevoMessage curMsg = messages.get(position);
 			if (convertView == null)
 			{
 				holder = new ViewHolder();
@@ -535,7 +541,7 @@ public class FreeboxMobileMevo extends ListActivity implements Constants
 				holder = (ViewHolder)convertView.getTag();
 			}
 			
-			holder.quand.setText(curMsg.getStringValue(KEY_QUAND));
+			holder.quand.setText(curMsg.getStringValue(KEY_QUAND_HR));
 			holder.length.setText(curMsg.getStringValue(KEY_LENGTH)+" "+this.msg_unit);
 
 			// Ici je mettais en gras les messages présents sur le serveur. Mais inutile, pas joli.
@@ -629,7 +635,7 @@ public class FreeboxMobileMevo extends ListActivity implements Constants
 		public void onItemClick(int pos, View view, long id)
 		{
 //			ViewHolder holder = (ViewHolder) view.findViewById(R.id.ligneMevo).getTag();
-			Message m = messages.get(pos);
+			MevoMessage m = messages.get(pos);
 			Log.d(DEBUGTAG,"onITEMClick v:"+view+" pos:"+pos+" id:"+id+" cp:"+play_current_pos);
 			// Si on jouait un message d'une autre ligne,
 			// on lance le message de cette ligne à la place
