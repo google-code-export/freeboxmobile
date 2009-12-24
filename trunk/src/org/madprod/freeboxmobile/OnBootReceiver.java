@@ -25,6 +25,6 @@ public class OnBootReceiver extends BroadcastReceiver implements Constants
 		Intent i = new Intent(context, OnAlarmReceiver.class);
 		PendingIntent pi = PendingIntent.getBroadcast(context, 0, i, 0);
 		//TODO : Use setInexactRepeating to save power...
-		mgr.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), PERIOD, pi);
+		mgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), PERIOD, pi);
 	}
 }

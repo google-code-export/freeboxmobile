@@ -1,6 +1,13 @@
-package org.madprod.freeboxmobile;
+package org.madprod.freeboxmobile.mvv;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import org.madprod.freeboxmobile.Constants;
+import org.madprod.freeboxmobile.R;
+import org.madprod.freeboxmobile.mvv.FreeboxMobileMevoDbAdapter;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -20,16 +27,14 @@ import android.util.Log;
 * 
 */
 
-public class Message implements Constants
+public class MevoMessage implements Constants
 {
 	private ContentValues msgValues;
 	private Context _context;
-    protected FreeboxMobileDbAdapter mDbHelper;
+    protected FreeboxMobileMevoDbAdapter mDbHelper;
 	private MediaPlayer mp;
-    
-	// TODO : convertir le datetime en "hier, ..."
 
-	public Message(Context c, FreeboxMobileDbAdapter db)
+	public MevoMessage(Context c, FreeboxMobileMevoDbAdapter db)
 	{
 		_context = c;
 		mDbHelper = db;
@@ -41,6 +46,7 @@ public class Message implements Constants
 		msgValues.put(KEY_PRESENCE, 0);
 		msgValues.put(KEY_SOURCE, "");
 		msgValues.put(KEY_QUAND, 0);
+		msgValues.put(KEY_QUAND_HR, 0);
 		msgValues.put(KEY_LINK, "");
 		msgValues.put(KEY_DEL, "");
 		msgValues.put(KEY_NAME, "");
@@ -119,6 +125,39 @@ public class Message implements Constants
 		}
 	}
 
+	private String convertDateTimeHR(String org)
+	{
+		String ret = "";
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		try
+		{
+			Date deb = sdf.parse(org);
+			Date fin = new Date();//sdf.parse(new Date());
+			long diff = fin.getTime() - deb.getTime();
+			int nbJours = (int) (diff / 86400000);
+			String[] datetime = org.split(" ");
+//			if (nbJours == 0)
+//				ret = datetime[1];
+//			else if (nbJours == 1)
+//				ret = "Hier "+datetime[1];
+//			else
+			String[] date = datetime[0].split("-");
+			if (nbJours <366)
+			{
+				ret = date[2]+"/"+date[1]+" "+datetime[1];
+			}
+			else
+			{
+				ret = date[2]+"/"+date[1]+"/"+date[0]+" "+datetime[1];				
+			}
+		}
+		catch (ParseException e)
+		{
+			Log.e(DEBUGTAG,"PARSE DATETIME HR "+e);
+		}
+		return ret;
+	}
+
 	public void log()
 	{
 		Log.d(DEBUGTAG,"--- MSG LOG ---");
@@ -136,16 +175,17 @@ public class Message implements Constants
 	public void setMsgFromCursor(Cursor c)
 	{
 		ContentValues msgValues = this.msgValues;
-		msgValues.put(KEY_STATUS, c.getInt(c.getColumnIndex(FreeboxMobileDbAdapter.KEY_STATUS)));
-		msgValues.put(KEY_PRESENCE, c.getInt(c.getColumnIndex(FreeboxMobileDbAdapter.KEY_PRESENCE)));
-		msgValues.put(KEY_SOURCE, c.getString(c.getColumnIndex(FreeboxMobileDbAdapter.KEY_SOURCE)));
-		msgValues.put(KEY_QUAND, c.getString(c.getColumnIndex(FreeboxMobileDbAdapter.KEY_QUAND)));
-		msgValues.put(KEY_LINK, c.getString(c.getColumnIndex(FreeboxMobileDbAdapter.KEY_LINK)));
-		msgValues.put(KEY_DEL, c.getString(c.getColumnIndex(FreeboxMobileDbAdapter.KEY_DEL)));
-		msgValues.put(KEY_NAME, c.getString(c.getColumnIndex(FreeboxMobileDbAdapter.KEY_NAME)));
-		msgValues.put(KEY_LENGTH, c.getInt(c.getColumnIndex(FreeboxMobileDbAdapter.KEY_LENGTH)));
+		msgValues.put(KEY_STATUS, c.getInt(c.getColumnIndex(FreeboxMobileMevoDbAdapter.KEY_STATUS)));
+		msgValues.put(KEY_PRESENCE, c.getInt(c.getColumnIndex(FreeboxMobileMevoDbAdapter.KEY_PRESENCE)));
+		msgValues.put(KEY_SOURCE, c.getString(c.getColumnIndex(FreeboxMobileMevoDbAdapter.KEY_SOURCE)));
+		msgValues.put(KEY_QUAND, c.getString(c.getColumnIndex(FreeboxMobileMevoDbAdapter.KEY_QUAND)));
+		msgValues.put(KEY_LINK, c.getString(c.getColumnIndex(FreeboxMobileMevoDbAdapter.KEY_LINK)));
+		msgValues.put(KEY_DEL, c.getString(c.getColumnIndex(FreeboxMobileMevoDbAdapter.KEY_DEL)));
+		msgValues.put(KEY_NAME, c.getString(c.getColumnIndex(FreeboxMobileMevoDbAdapter.KEY_NAME)));
+		msgValues.put(KEY_LENGTH, c.getInt(c.getColumnIndex(FreeboxMobileMevoDbAdapter.KEY_LENGTH)));
 		getContactFromNumber(msgValues.getAsString(KEY_SOURCE));
 		this.msgValues = msgValues;
+		msgValues.put(KEY_QUAND_HR, convertDateTimeHR(c.getString(c.getColumnIndex(FreeboxMobileMevoDbAdapter.KEY_QUAND))));
 	}
 
 	public ContentValues getMessage()

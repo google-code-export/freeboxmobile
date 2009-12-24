@@ -2,7 +2,7 @@
 <resources>
     
     <string name="app_name">Freebox Mobile</string>
-<string name="app_version">0.10</string><string name="buttonTv">Télévision</string>
+<string name="app_version">0.10.1</string><string name="buttonTv">Télévision</string>
 <string name="buttonPvr">Magnétoscope</string>
 <string name="buttonMevo">Téléphone</string>
 <string name="buttonMusic">Musique</string>

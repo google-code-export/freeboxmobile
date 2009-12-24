@@ -14,7 +14,6 @@ import android.util.Log;
 
 public class OnAlarmReceiver extends BroadcastReceiver implements Constants
 {
-
 	@Override
 	public void onReceive(Context context, Intent intent)
 	{
@@ -22,5 +21,4 @@ public class OnAlarmReceiver extends BroadcastReceiver implements Constants
 		WakefullIntentService.acquireStaticLock(context);
 		context.startService(new Intent(context, HttpConnection.class));
 	}
-
 }

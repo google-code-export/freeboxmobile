@@ -26,6 +26,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.message.BasicNameValuePair; 
+import org.madprod.freeboxmobile.mvv.FreeboxMobileMevo;
+import org.madprod.freeboxmobile.mvv.FreeboxMobileMevoDbAdapter;
 
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -41,7 +43,6 @@ import android.database.Cursor;
 import android.os.Environment;
 import android.os.SystemClock;
 import android.util.Log;
-import android.widget.Toast;
  
 /**
 *
@@ -64,21 +65,21 @@ public class HttpConnection extends WakefullIntentService implements Constants
 	private static final String mevoUrl = "http://adsl.free.fr/admin/tel/";
 	private static final String mevoListPage = "notification_tel.pl";
 
-    private static FreeboxMobileDbAdapter mDbHelper;
+    private static FreeboxMobileMevoDbAdapter mDbHelper;
 
     // For Service
     public static ServiceUpdateUIListener UI_UPDATE_LISTENER;
     private static Activity MAIN_ACTIVITY;
 
     static ProgressDialog myProgressDialog = null;
-
+    static AlertDialog myAlertDialog = null;
+    
     private static final int CONNECT_CONNECTED = 1;
     private static final int CONNECT_NOT_CONNECTED = 0;
     private static final int CONNECT_LOGIN_FAILED = -2;
     private static int connectionStatus = CONNECT_NOT_CONNECTED;
 
 	static NotificationManager mNotificationManager = null;
-	
 
 	/* ------------------------------------------------------------------------
 	 * CREATION ET GESTION DU SERVICE
@@ -93,6 +94,28 @@ public class HttpConnection extends WakefullIntentService implements Constants
 	public static void setActivity(Activity activity)
 	{
 		MAIN_ACTIVITY = activity;
+		if (activity == null)
+		{
+			if (myProgressDialog != null)
+			{
+				myProgressDialog.dismiss();
+			}
+			if (myAlertDialog != null)
+			{
+				myAlertDialog.dismiss();
+			}
+		}
+		else
+		{
+			if (myProgressDialog != null)
+			{
+				myProgressDialog.show();
+			}
+			if (myAlertDialog != null)
+			{
+				myAlertDialog.show();
+			}
+		}
 	}
 
 	public static void setUpdateListener(ServiceUpdateUIListener l)
@@ -121,7 +144,7 @@ public class HttpConnection extends WakefullIntentService implements Constants
 			Log.e(DEBUGTAG, "Exception appending to log file ",e);
 		}
 
-		mDbHelper = new FreeboxMobileDbAdapter(this);
+		mDbHelper = new FreeboxMobileMevoDbAdapter(this);
 		_getPrefs();
 
 		if ((login != null) && (password != null))
@@ -230,7 +253,10 @@ public class HttpConnection extends WakefullIntentService implements Constants
 				myProgressDialog = null;
 			connectionStatus = connectFree();
             if (myProgressDialog != null)
-            	myProgressDialog.dismiss(); 
+            {
+            	myProgressDialog.dismiss();
+            	myProgressDialog = null;
+            }
 			if (connectionStatus == CONNECT_CONNECTED)
 	        {
 				if (MAIN_ACTIVITY != null)
@@ -247,7 +273,10 @@ public class HttpConnection extends WakefullIntentService implements Constants
 					myProgressDialog = null;
 	       		newmsg = getMessageList();
 	            if (myProgressDialog != null)
+	            {
 	            	myProgressDialog.dismiss();
+	            	myProgressDialog = null;
+	            }
 	        }
 			else
 			{
@@ -268,23 +297,27 @@ public class HttpConnection extends WakefullIntentService implements Constants
 	
 	private static void _showConnectionError()
 	{
-		AlertDialog d = new AlertDialog.Builder(MAIN_ACTIVITY).create();
-		d.setTitle("Connexion impossible !");
-		d.setMessage(
-			"Impossible de se connecter au portail de Free.\n"+
-			"Vérifiez votre identifiant, " +
-			"votre mot de passe et votre "+
-			"connexion à Internet (Wifi, 3G...)."
-		);
-		d.setButton("Ok", new DialogInterface.OnClickListener()
-			{
-				public void onClick(DialogInterface dialog, int which)
+		if (MAIN_ACTIVITY != null)
+		{
+			myAlertDialog = new AlertDialog.Builder(MAIN_ACTIVITY).create();
+			myAlertDialog.setTitle("Connexion impossible !");
+			myAlertDialog.setMessage(
+				"Impossible de se connecter au portail de Free.\n"+
+				"Vérifiez votre identifiant, " +
+				"votre mot de passe et votre "+
+				"connexion à Internet (Wifi, 3G...)."
+			);
+			myAlertDialog.setButton("Ok", new DialogInterface.OnClickListener()
 				{
-					dialog.dismiss();
+					public void onClick(DialogInterface dialog, int which)
+					{
+						dialog.dismiss();
+						myAlertDialog = null;
+					}
 				}
-			}
-		);
-		d.show(); 
+			);
+			myAlertDialog.show(); 
+		}
 	}
 
 	private static void _changeTimer(int ms)
@@ -371,7 +404,7 @@ public class HttpConnection extends WakefullIntentService implements Constants
 		Log.d(DEBUGTAG, "deleteMsg "+name);
 		if (mDbHelper == null)
 		{
-			mDbHelper = new FreeboxMobileDbAdapter(MAIN_ACTIVITY);
+			mDbHelper = new FreeboxMobileMevoDbAdapter(MAIN_ACTIVITY);
 		}
 
 		// On efface le fichier du message
@@ -588,32 +621,6 @@ public class HttpConnection extends WakefullIntentService implements Constants
 					}
 				}
 				Log.d(DEBUGTAG,"fin extract");
-/*				if ((newmsg == 1) && (MAIN_ACTIVITY != null))
-				{
-					MAIN_ACTIVITY.runOnUiThread(new Runnable()
-					{
-						public void run()
-						{
-							Toast.makeText(MAIN_ACTIVITY, R.string.http_new_msg , Toast.LENGTH_SHORT).show();
-				    		if (UI_UPDATE_LISTENER != null)
-				    			UI_UPDATE_LISTENER.updateUI();
-						}
-					});
-				}
-				else if ((newmsg >= 1) && (MAIN_ACTIVITY != null))
-				{
-					final int n = newmsg;
-					MAIN_ACTIVITY.runOnUiThread(new Runnable()
-					{
-						public void run()
-						{
-							Toast.makeText(MAIN_ACTIVITY, n+" "+R.string.http_new_msgs , Toast.LENGTH_SHORT).show();
-				    		if (UI_UPDATE_LISTENER != null)
-				    			UI_UPDATE_LISTENER.updateUI();
-						}
-					});
-				}
-*/
 			}
 			else
 			{
@@ -624,7 +631,7 @@ public class HttpConnection extends WakefullIntentService implements Constants
 			
 		catch (Exception e)
 		{
-			Log.e(DEBUGTAG, "getMessageList" + e.getMessage());
+			Log.e(DEBUGTAG, "getMessageList except " + e.getMessage());
 			e.printStackTrace();
 		}
 		finally

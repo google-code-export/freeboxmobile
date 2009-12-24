@@ -1,13 +1,10 @@
 package org.madprod.freeboxmobile;
 
-import java.io.File;
-
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
-import android.os.Environment;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
@@ -26,7 +23,8 @@ import android.view.MenuItem;
 public class Config extends PreferenceActivity implements OnSharedPreferenceChangeListener, Constants
 {
     private boolean inflateOK = false;
-
+    private static AlertDialog myAlertDialog = null;
+    
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -35,19 +33,28 @@ public class Config extends PreferenceActivity implements OnSharedPreferenceChan
         getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
         addPreferencesFromResource(R.xml.prefs);
 
+        HttpConnection.refreshPrefs();
         // Initialiser d'apres les prefs actuelles
         updateLibelle(KEY_USER);
         updateLibelle(KEY_PASSWORD);
         // Pas beau sur les prefs suite bug : http://code.google.com/p/android/issues/detail?id=922
         // TODO : try workaround évoqué dans le rapport de bug
         //setTheme(android.R.style.Theme_Light);
+    	if (myAlertDialog != null)
+    	{
+    		myAlertDialog.show();
+    	}   	
     }
 
     @Override
     protected void onDestroy()
     {
-    	super.onDestroy();
     	Log.d(DEBUGTAG,"PREFS onDestroy");
+    	if (myAlertDialog != null)
+    	{
+    		myAlertDialog.dismiss();
+    	}
+    	super.onDestroy();
     	HttpConnection.checkUpdated();
     }
 
@@ -123,22 +130,23 @@ public class Config extends PreferenceActivity implements OnSharedPreferenceChan
     {
 		if (item.getItemId() == R.id.aide)
 		{
-			AlertDialog d = new AlertDialog.Builder(this).create();
-			d.setTitle(null);
-			d.setMessage(
+			myAlertDialog = new AlertDialog.Builder(this).create();
+			myAlertDialog.setTitle(null);
+			myAlertDialog.setMessage(
 				"Pour avoir accès à votre messagerie vocale Freebox "+
 				"veuillez saisir votre identifiant Free "+
 				"ainsi que votre mot de passe."
 			);
-			d.setButton("Ok", new DialogInterface.OnClickListener()
+			myAlertDialog.setButton("Ok", new DialogInterface.OnClickListener()
     			{
     				public void onClick(DialogInterface dialog, int which)
     				{
     					dialog.dismiss();
+    					myAlertDialog = null;
     				}
     			}
 			);
-			d.show();      
+			myAlertDialog.show();      
 			return true;
 		}
     	return super.onMenuItemSelected(featureId, item);
