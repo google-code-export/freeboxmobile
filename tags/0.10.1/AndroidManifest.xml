@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      android:versionCode="2" package="org.madprod.freeboxmobile" android:versionName="0.10.1">
+    <application android:label="@string/app_name" android:icon="@drawable/icon_fbm">
+        <activity android:name=".freeboxmobile"
+                  android:label="@string/app_name" android:theme="@android:style/Theme.Light.NoTitleBar" android:icon="@drawable/icon_fbm">
+            
+		<intent-filter>
+
+<action android:name="android.intent.action.MAIN"></action>
+<category android:name="android.intent.category.LAUNCHER"></category>
+</intent-filter>
+</activity>
+    	<activity android:name=".Config"></activity>
+		<activity android:theme="@android:style/Theme.Light" android:name=".mvv.FreeboxMobileMevo"></activity>
+		<service android:name="HttpConnection"></service>
+		<receiver android:name=".OnBootReceiver">
+			<intent-filter>
+				<action android:name="android.intent.action.BOOT_COMPLETED" />
+			</intent-filter>
+		</receiver>
+		<receiver android:name=".OnAlarmReceiver">
+		</receiver>
+	</application>
+    <uses-sdk android:minSdkVersion="3" />
+<uses-permission android:name="android.permission.INTERNET"></uses-permission>
+
+<uses-permission android:name="android.permission.READ_CONTACTS"></uses-permission>
+<uses-permission android:name="android.permission.CALL_PHONE"></uses-permission>
+<uses-permission android:name="android.permission.CALL_PRIVILEGED"></uses-permission>
+<uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"></uses-permission>
+<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"></uses-permission>
+<uses-permission android:name="android.permission.WAKE_LOCK"></uses-permission>
+
+<support-screens
+	android:largeScreens="true"
+    android:normalScreens="true"
+    android:smallScreens="true"
+    android:anyDensity="true" />
+</manifest> 

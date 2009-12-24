@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <string name="app_name">Freebox Mobile</string>
+<string name="app_version">0.10.1</string><string name="buttonTv">Télévision</string>
+<string name="buttonPvr">Magnétoscope</string>
+<string name="buttonMevo">Téléphone</string>
+<string name="buttonMusic">Musique</string>
+<string name="buttonConfig">Configuration</string>
+<string name="buttonRadios">Radios</string>
+<string name="buttonActu">Actu Freenautes</string>
+<string name="buttonAbout">A propos</string><string name="MonCompteFree">Mon Compte Free</string>
+<string name="Identifiant">Identifiant</string>
+<string name="MotDePasse">Mot de passe</string>
+<string name="mevo_context_callback">Rappeler</string><string name="mevo_context_msgdetails">Détails du message</string>
+<string name="mevo_context_delete">Supprimer</string>
+<string name="mevo_context_deletefrmsrv">Effacer (serveur seulement)</string>
+<string name="mevo_context_send">Transférer le message</string>
+<string name="mevo_context_title">Message</string>
+<string name="mevo_context_markunread">Marquer comme non écouté</string><string name="mevo_context_markread">Marquer comme écouté</string><string name="mevo_option_update">Mettre à jour</string>
+<string name="mevo_option_config">Configuration</string>
+
+<string name="mevo_text_seconds">secondes</string>
+
+<string name="mevo_title_message"> - 1 message non écouté</string>
+<string name="mevo_title_nomsg"> - Pas de message non écouté</string>
+<string name="mevo_title_messages"> messages non écoutés</string>
+
+<string name="mevo_msgtype_fax_home">Fax personnel</string>
+<string name="mevo_msgtype_fax_work">Fax professionnel</string>
+<string name="mevo_msgtype_home">Domicile</string>
+<string name="mevo_msgtype_mobile">Mobile</string>
+<string name="mevo_msgtype_other">Autre</string>
+<string name="mevo_msgtype_work">Professionel</string>
+<string name="mevo_msgtype_pager">Pager</string><string name="mevo_hidden_number">Numéro masqué</string><string name="mevo_speaker">Haut Parleur</string><string name="http_new_msg">Nouveau Message !</string><string name="http_new_msgs">Nouveaux Messages !</string>
+
+
+
+
+<string name="unknown">Inconnu</string><string-array name="entries_list_pref_pollinterval">
+	<item>Jamais</item>
+	<item>1 heure</item>
+	<item>4 heures</item>
+	<item>8 heures</item>
+	<item>1 jour</item>
+</string-array><string-array name="entryvalue_list_pref_pollinterval"><item>0</item>
+	<item>3600000</item>
+	<item>14400000</item>
+	<item>28800000</item>
+	<item>86400000</item>
+
+</string-array>
+</resources>
