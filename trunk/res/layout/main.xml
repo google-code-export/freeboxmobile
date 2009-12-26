@@ -1,9 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical" android:id="@+id/LinearLayout01"><ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/LogoFreeboxMobile" android:src="@drawable/freebox_mobile" android:layout_gravity="center" android:layout_marginTop="10px"></ImageView><LinearLayout android:id="@+id/LinearLayout03" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_width="fill_parent" android:layout_marginTop="10px"><Button android:id="@+id/Button01" android:layout_width="wrap_content" android:layout_weight="1" android:layout_height="fill_parent" android:text="@string/buttonTv" android:width="1.0dp" android:textColor="#888888" android:clickable="false" android:focusable="false" android:textSize="19px"></Button><Button android:id="@+id/Button02" android:layout_width="wrap_content" android:layout_weight="1" android:layout_height="fill_parent" android:text="@string/buttonPvr" android:width="1.0dp" android:focusable="false" android:clickable="false" android:textColor="#888888" android:textSize="19px"></Button>
+<LinearLayout
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:id="@+id/LinearLayout01">
+	
+	
+<ImageView
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:id="@+id/LogoFreeboxMobile"
+	android:src="@drawable/freebox_mobile"
+	android:layout_gravity="center"
+	android:layout_marginTop="10px">
+</ImageView>
+	
+<LinearLayout android:id="@+id/LinearLayout03" android:layout_height="wrap_content"
+	android:orientation="horizontal" android:layout_width="fill_parent"
+	android:layout_marginTop="10px">
+	
+	<Button android:id="@+id/Button01" android:layout_width="wrap_content"
+		android:layout_weight="1" android:layout_height="fill_parent"
+		android:text="@string/buttonTv" android:width="1.0dp" android:textColor="#888888"
+		android:clickable="false" android:focusable="false" android:textSize="19px"></Button>
+		
+		
+	<Button android:layout_width="wrap_content" android:layout_weight="1"
+		android:layout_height="fill_parent" android:width="1.0dp"
+		android:text="@string/buttonPvr" android:id="@+id/magneto"
+		android:textSize="19px"></Button>
 
 
-</LinearLayout><LinearLayout android:id="@+id/LinearLayout02" android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content"><Button android:layout_width="wrap_content" android:layout_weight="1" android:layout_height="fill_parent" android:width="1.0dp" android:text="@string/buttonMevo" android:id="@+id/phone" android:textSize="19px"></Button><Button android:id="@+id/Button04" android:layout_width="wrap_content" android:layout_weight="1" android:layout_height="fill_parent" android:text="@string/buttonMusic" android:width="1.0dp" android:textColor="#888888" android:clickable="false" android:focusable="false" android:textSize="19px"></Button>
+</LinearLayout>
+
+<LinearLayout android:id="@+id/LinearLayout02" android:orientation="horizontal"
+	android:layout_width="fill_parent" android:layout_height="wrap_content">
+	
+	<Button android:layout_width="wrap_content" android:layout_weight="1"
+		android:layout_height="fill_parent" android:width="1.0dp"
+		android:text="@string/buttonMevo" android:id="@+id/phone"
+		android:textSize="19px"></Button>
+		
+	<Button android:id="@+id/Button04" android:layout_width="wrap_content"
+		android:layout_weight="1" android:layout_height="fill_parent"
+		android:text="@string/buttonMusic" android:width="1.0dp"
+		android:textColor="#888888" android:clickable="false"
+		android:focusable="false" android:textSize="19px"></Button>
 
 </LinearLayout>
 <LinearLayout android:layout_height="wrap_content" android:orientation="horizontal" android:layout_width="fill_parent" android:id="@+id/LinearLayout04">
