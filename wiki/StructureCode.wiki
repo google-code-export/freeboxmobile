@@ -4,10 +4,9 @@
 
  * Pour chaque module (Mevo, Pvr...) :
    * un dossier pour ses sources existe src/org/madprod/freeboxmovile/mvv/ par exemple
-     * dans le dossier : le nom des activity est du type HomeActivity.java / MevoActivity.java...
+     * dans le dossier : le nom des activity est du type !HomeActivity.java / !MevoActivity.java...
      * si besoin, le nom du fichier qui gère la bdd est du type : MevoDbAdapter
    * un dossier pour ses strings existe (toujours définir les strings dans le xml) : res/values/strings_mevo.xml par exemple
- * le nom des activity est de la forme : HomeActivity.java / MevoActivity.java ...
  * dans le onCreate de chaque Activity, appeler impérativement : 
-   * HttpConnection.initVars(this);
+   * !HttpConnection.initVars(this);
  * dans un service, pour se connecter au compte utilisateur de Free (avant d'effectuer des opérations réseau), utiliser : connectionStatus = HttpConnection.connectFree(); (les valeurs possibles de connectionStatus sont définies dans Constants.java)
