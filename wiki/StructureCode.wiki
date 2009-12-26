@@ -1,4 +1,5 @@
 #summary Quelques guides pour le code de FreeboxMobile
+#labels Phase-Implementation
 
 = Quelques guides / règles pour le code de !FreeboxMobile =
 
@@ -13,3 +14,4 @@
  * dans un service, pour se connecter au compte utilisateur de Free (avant d'effectuer des opérations réseau), utiliser : *connectionStatus = !HttpConnection.connectFree();*
  * pour le faire avec un progress Dialog : *connectionStatus = !HttpConnection.connectFreeUI(Activity this);*
  * (les valeurs possibles de connectionStatus sont définies dans Constants.java)
+ * lors de la publication de bugs (ou Issues), dans la mesure du possible, mettre le nom du module au début du sujet. Exemples : "HOME : xxxxxx" ou "MEVO : xxxxx" ou "PVR : xxx"...
