@@ -1,24 +1,20 @@
 package org.madprod.freeboxmobile;
 
-import java.io.IOException;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List; 
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException; 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
@@ -26,22 +22,10 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.message.BasicNameValuePair; 
-import org.madprod.freeboxmobile.mvv.FreeboxMobileMevo;
-import org.madprod.freeboxmobile.mvv.FreeboxMobileMevoDbAdapter;
 
 import android.app.Activity;
-import android.app.AlarmManager;
-import android.app.AlertDialog;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.database.Cursor;
-import android.os.Environment;
-import android.os.SystemClock;
 import android.util.Log;
  
 /**
@@ -51,686 +35,282 @@ import android.util.Log;
 * 
 */
 
-public class HttpConnection extends WakefullIntentService implements Constants
+public class HttpConnection implements Constants
 {
 	private static String USER_AGENT = "FreeboxMobile (Linux; U; Android; fr-fr;)";
-	 
-	private static String password = null;
+
 	private static String login = null;
+	private static String password = null;
 	// Variables id et idt d'accès à MonCompteFree
 	private static String id = null;
 	private static String idt = null;
 
+	private static int connectionStatus = CONNECT_NOT_CONNECTED;
+	
 	private static final String serverUrl = "http://subscribe.free.fr/login/login.pl";
-	private static final String mevoUrl = "http://adsl.free.fr/admin/tel/";
-	private static final String mevoListPage = "notification_tel.pl";
-
-    private static FreeboxMobileMevoDbAdapter mDbHelper;
-
-    // For Service
-    public static ServiceUpdateUIListener UI_UPDATE_LISTENER;
-    private static Activity MAIN_ACTIVITY;
-
-    static ProgressDialog myProgressDialog = null;
-    static AlertDialog myAlertDialog = null;
-    
-    private static final int CONNECT_CONNECTED = 1;
-    private static final int CONNECT_NOT_CONNECTED = 0;
-    private static final int CONNECT_LOGIN_FAILED = -2;
-    private static int connectionStatus = CONNECT_NOT_CONNECTED;
-
-	static NotificationManager mNotificationManager = null;
-
-	/* ------------------------------------------------------------------------
-	 * CREATION ET GESTION DU SERVICE
-	 * ------------------------------------------------------------------------
-	 */
 	
-	public HttpConnection()
-	{
-		super("HttpConnection");
-	}
+	public static ProgressDialog httpProgressDialog = null;
 
-	public static void setActivity(Activity activity)
-	{
-		MAIN_ACTIVITY = activity;
-		if (activity == null)
-		{
-			if (myProgressDialog != null)
-			{
-				myProgressDialog.dismiss();
-			}
-			if (myAlertDialog != null)
-			{
-				myAlertDialog.dismiss();
-			}
-		}
-		else
-		{
-			if (myProgressDialog != null)
-			{
-				myProgressDialog.show();
-			}
-			if (myAlertDialog != null)
-			{
-				myAlertDialog.show();
-			}
-		}
-	}
-
-	public static void setUpdateListener(ServiceUpdateUIListener l)
-	{
-		UI_UPDATE_LISTENER = l;
-	}
-	
-	@Override
-	protected void onHandleIntent(Intent intent)
-	{
-		int newmsg = 0;
-
-		Log.i(DEBUGTAG,"HttpConnection onHandleIntent ");
-
-		File log = new File(Environment.getExternalStorageDirectory()+DIR_FBM, "fbm.log");
-		try
-		{
-			BufferedWriter out = new BufferedWriter (new FileWriter(log.getAbsolutePath(), true));
-			out.write("start: ");
-			out.write(new Date().toString());
-			out.write("\n");
-			out.close();
-		}
-		catch (IOException e)
-		{
-			Log.e(DEBUGTAG, "Exception appending to log file ",e);
-		}
-
-		mDbHelper = new FreeboxMobileMevoDbAdapter(this);
-		_getPrefs();
-
-		if ((login != null) && (password != null))
-		{
-			newmsg = _getUpdate();
-			if (newmsg > 0)
-			{
-				_initNotif(newmsg);
-				if (UI_UPDATE_LISTENER != null)
-				{
-					UI_UPDATE_LISTENER.updateUI();
-				}
-			}
-		}
-
-		try
-		{
-			BufferedWriter out = new BufferedWriter (new FileWriter(log.getAbsolutePath(), true));
-			out.write("end: ");
-			out.write(new Date().toString());
-			out.write("\n\n");
-			out.close();
-		}
-		catch (IOException e)
-		{
-			Log.e(DEBUGTAG, "Exception appending to log file ",e);
-		}
-
-		super.onHandleIntent(intent);
-	}
-	
-	@Override
-	public void onCreate()
-	{
-		Log.i(DEBUGTAG,"HttpConnection onCreate");
-		super.onCreate();
-	}
-
-	@Override
-	public void onDestroy()
-	{
-		Log.i(DEBUGTAG,"HttpConnection onDestroy");
-		super.onDestroy();
-	}
-
-	public static void cancelNotif(int id)
-	{
-		if (mNotificationManager != null)
-			mNotificationManager.cancel(id);
-	}
-
-	private void _initNotif(int newmsg)
-	{
-		int icon = R.drawable.icon_fbm;
-		CharSequence tickerText;
-		CharSequence contentText;
-
-		if (mNotificationManager == null)
-		{
-			mNotificationManager= (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		}
-		
-		if (newmsg > 1)
-		{
-			tickerText = getString(R.string.app_name)+" : "+newmsg+" "+getString(R.string.http_new_msgs);
-			contentText = newmsg+" "+getString(R.string.http_new_msgs);
-		}
-		else
-		{
-			tickerText = "FreeboxMobile : 1 "+getString(R.string.http_new_msg);
-			contentText = newmsg+" "+getString(R.string.http_new_msg);
-		}
-		long when = System.currentTimeMillis();
-
-		Notification notification = new Notification(icon, tickerText, when);
-		Context context = getApplicationContext();
-		CharSequence contentTitle = getString(R.string.app_name);
-		Intent notificationIntent = new Intent(this, FreeboxMobileMevo.class);
-		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
-
-		notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
-
-		mNotificationManager.notify(NOTIF_MEVO, notification);
-	}
-
-	private static int _getUpdate()
-	{
-		int newmsg = -1;
-
-		if ((login != null) && (password != null) && (connectionStatus != CONNECT_LOGIN_FAILED))// && (id == null)
-		{
-			if (connectionStatus != CONNECT_CONNECTED)
-			{
-				if (MAIN_ACTIVITY != null)
-				{
-					MAIN_ACTIVITY.runOnUiThread(new Runnable()
-						{
-							public void run()
-							{
-								myProgressDialog = ProgressDialog.show(MAIN_ACTIVITY, "Mon Compte Free", "Connexion en cours ...", true,false);
-							}
-						});
-				}
-			}
-			else
-				myProgressDialog = null;
-			connectionStatus = connectFree();
-            if (myProgressDialog != null)
-            {
-            	myProgressDialog.dismiss();
-            	myProgressDialog = null;
-            }
-			if (connectionStatus == CONNECT_CONNECTED)
-	        {
-				if (MAIN_ACTIVITY != null)
-				{
-					MAIN_ACTIVITY.runOnUiThread(new Runnable()
-						{
-							public void run()
-							{
-								myProgressDialog = ProgressDialog.show(MAIN_ACTIVITY, "Mon Compte Free", "Vérification des nouveaux messages ...", true,false);
-							}
-						});
-				}
-				else
-					myProgressDialog = null;
-	       		newmsg = getMessageList();
-	            if (myProgressDialog != null)
-	            {
-	            	myProgressDialog.dismiss();
-	            	myProgressDialog = null;
-	            }
-	        }
-			else
-			{
-				if (MAIN_ACTIVITY != null)
-				{
-					MAIN_ACTIVITY.runOnUiThread(new Runnable()
-					{
-						public void run()
-						{
-							_showConnectionError();
-						}
-					});
-				}
-			}
-		}
-		return newmsg;
-	}
-	
-	private static void _showConnectionError()
-	{
-		if (MAIN_ACTIVITY != null)
-		{
-			myAlertDialog = new AlertDialog.Builder(MAIN_ACTIVITY).create();
-			myAlertDialog.setTitle("Connexion impossible !");
-			myAlertDialog.setMessage(
-				"Impossible de se connecter au portail de Free.\n"+
-				"Vérifiez votre identifiant, " +
-				"votre mot de passe et votre "+
-				"connexion à Internet (Wifi, 3G...)."
-			);
-			myAlertDialog.setButton("Ok", new DialogInterface.OnClickListener()
-				{
-					public void onClick(DialogInterface dialog, int which)
-					{
-						dialog.dismiss();
-						myAlertDialog = null;
-					}
-				}
-			);
-			myAlertDialog.show(); 
-		}
-	}
-
-	private static void _changeTimer(int ms)
-	{
-		AlarmManager amgr = (AlarmManager)MAIN_ACTIVITY.getSystemService(freeboxmobile.ALARM_SERVICE);
-		Intent i = new Intent(MAIN_ACTIVITY, OnAlarmReceiver.class);
-		PendingIntent pi = PendingIntent.getBroadcast(MAIN_ACTIVITY, 0, i, 0);
-		//TODO : Use setInexactRepeating to save power...
-		//TODO : Take into account ms
-		amgr.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), PERIOD, pi);
-
-		Log.i(DEBUGTAG, "Timer  changed to "+ms);
-	}
-
-	// ------------------------------------------------------------------------
-	// FIN GESTION DU SERVICE
-	// ------------------------------------------------------------------------
-	
-	
-	// ------------------------------------------------------------------------
-	// GESTION DU RESEAU
-	// ------------------------------------------------------------------------
-
+    /*
     private void _getPrefs()
     {
     	login = getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_USER, null);
 		password = getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_PASSWORD, null);
 		Log.d(DEBUGTAG,"hc identifiant:"+login);
-//		Log.d(DEBUGTAG,"hc password:"+password);
     }
+     */
+
+	/**
+	 * Init les variables statiques
+	 * Ferme le progressdialog si il était ouvert (arrive dans le cas d'un screen rotation)
+	 * Doit être appelé dans le onCreate de chaque Activity
+	 * @param a activity
+	 */
+	public static void initVars(final Activity a)
+	{
+		// On teste pour si on entre ici suite
+        if (httpProgressDialog != null)
+        {
+           	httpProgressDialog.dismiss();
+           	httpProgressDialog = null;
+        }
+		login = a.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_USER, null);
+		password = a.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_PASSWORD, null);
+	}
+
+	/**
+	 * Init les variables statiques
+	 * Cette fonction doit être utilisée par des classes n'ayant pas d'activity
+	 * @param l
+	 * @param p
+	 */
+	public static void setVars(String l, String p)
+	{
+		login = l;
+		password = p;
+	}
+	
+	public static String getId()
+	{
+		return (id);
+	}
+
+	public static String getIdt()
+	{
+		return (idt);
+	}
 
 	/*
-	 * Déclenche une nouvelle connexion afin de rafraichir messages, etc...
-	 * Pour cela, réinstalle le timer
+	 * Se connecte à Free en affichant une progress Dialog si nécessaire
 	 */
-	public static void refresh()
+	public static int connectFreeUI(final Activity a)
 	{
-		connectionStatus = CONNECT_NOT_CONNECTED;
-		_changeTimer(PERIOD);
-	}
-
-	public static void refreshPrefs()
-	{
-		if (MAIN_ACTIVITY != null)
+		if ((login != null) && (password != null) && (connectionStatus != CONNECT_LOGIN_FAILED))// && (id == null)
 		{
-			login = MAIN_ACTIVITY.getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_USER, null);
-			password = MAIN_ACTIVITY.getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_PASSWORD, null);		
-		}
-	}
-
-	public static int checkUpdated()
-	{
-		if (MAIN_ACTIVITY != null)
-		{
-			String l = MAIN_ACTIVITY.getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_USER, null);
-			String p = MAIN_ACTIVITY.getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_PASSWORD, null);
-	
-			// Si les prefs ont bougé
-			if (( l!=null && p!= null) && ((!l.equals(login)) || (!p.equals(password))))
+			if (connectionStatus != CONNECT_CONNECTED)
 			{
-				Log.d(DEBUGTAG, "UPDATE: " + login);
-				login = l;
-				password = p;
-				id = null;
-				idt = null;
-				connectionStatus = CONNECT_NOT_CONNECTED;
-				_changeTimer(PERIOD);
-				return 0;
-			}
-			else
-				return -1;
-		}
-		else
-		{
-			return -1;
-		}
-	}
-
-	public static void deleteMsg(String name)
-	{
-		File file;
-		Cursor curs;
-		
-		Log.d(DEBUGTAG, "deleteMsg "+name);
-		if (mDbHelper == null)
-		{
-			mDbHelper = new FreeboxMobileMevoDbAdapter(MAIN_ACTIVITY);
-		}
-
-		// On efface le fichier du message
-		file = new File(Environment.getExternalStorageDirectory().toString()+DIR_MEVO,name);
-		if (file.delete())
-		{
-			Log.d(DEBUGTAG, "Delete file ok");
-		}
-		else
-		{
-			Log.d(DEBUGTAG, "Delete file not ok");
-		}
-
-		// On efface le message du serveur de Free
-		mDbHelper.open();
-		curs = mDbHelper.fetchMessage(name);
-		if (curs.moveToFirst() == false)
-		{
-			Log.d(DEBUGTAG, "delete : message non trouvé !!!!");
-		}
-		else
-		{
-			// Si le message est présent sur le serveur de Free
-			if (!(curs.getString(curs.getColumnIndex(KEY_DEL)).equals("")))
-			{
-				if ((login == null) || (password == null))
-				{
-					refreshPrefs();
-				}
-	    		String tel = curs.getString(curs.getColumnIndex(KEY_DEL));
-	   			if (tel.indexOf("tel=")>-1)
-	   			{
-	   				tel = tel.substring(tel.indexOf("tel=")+4);
-	   				if (tel.indexOf("&")>-1)
-	   				{
-	   					tel = tel.substring(0, tel.indexOf('&'));
-	   				}
-	   				Log.d(DEBUGTAG,"tel="+tel);
-	    		}
-	   			final String partURL = "&tel="+tel+"&fichier="+curs.getString(curs.getColumnIndex(KEY_NAME));
-
-	   			// On lance la suppression sur le serveur dans un thread séparé car ca peut être long
-				Thread t = new Thread(new Runnable() {
-					@Override
-		            public void run()
-		        	{
-						// (re)connection afin d'avoir un id et idt frais :)
-						connectFree();
-			   			String url = mevoUrl+"efface_message.pl?id="+id+"&idt="+idt+partURL;
-						Log.d(DEBUGTAG,"Deleting message"+url);
-
-						// On reconstitue l'url parceque id & idt ont peut etre changé
-						if ((id != null) && (idt != null))
-						{
-							Log.d(DEBUGTAG, "Deleting on server");
-							HttpClient client = new DefaultHttpClient(new BasicHttpParams());
-							HttpGet getMethod = new HttpGet(url);
-							getMethod.setHeader("User-Agent", USER_AGENT);
-							try
-							{
-								client.execute(getMethod);
-							}
-					       	catch (IOException e)
-					       	{
-					        	Log.e(DEBUGTAG,"deleteMsg: "+e);
-					        }
-						}
-						else
-							Log.d(DEBUGTAG, "NOT Deleting on server");
-//						Log.d(DEBUGTAG, "End thread");
-		        	}
-		        });
-		//		t.setDaemon(true);
-		        t.setName("FBM Delete Message");
-		        t.start();
-			}
-		}
-		// Puis on marque le message comme effacé dans la base
-		// (on l'efface pas à proprement dit de la base, ca pourrait servir pour un historique)
-		mDbHelper.updateMessage(0, "", "", name);
-
-		if (UI_UPDATE_LISTENER != null)
-			UI_UPDATE_LISTENER.updateUI();
-
-		mDbHelper.close();
-       	curs.close();
-	}
-
-	public static int getMessageList()
-	{
-		String fullurl = mevoUrl + mevoListPage + "?id=" + id + "&idt=" + idt;
-		Log.d(DEBUGTAG, "GET: " + fullurl);
-
-		HttpClient client = new DefaultHttpClient(new BasicHttpParams());
-		HttpGet getMethod = new HttpGet(fullurl);
-		getMethod.setHeader("User-Agent", USER_AGENT);
-		HttpResponse httpResponse = null;
-		int newmsg = -1;
-		try
-		{
-			httpResponse = client.execute(getMethod);
-
-			HttpEntity responseEntity = httpResponse.getEntity();
-	    	BufferedReader br = new BufferedReader(new InputStreamReader(responseEntity.getContent()));
-			String s = " ";
-			String status = null;
-			String from = null;
-			String when = null;
-			String length = null;
-			String priv = null;
-			String link = null;
-			String del = null;
-			String name = null;
-			int intstatus = -1;
-			int presence = 0;
-			Cursor curs;
-			File file;
-			URL u;
-			FileOutputStream f;
-			InputStream in;
-			HttpURLConnection c;
-			int len1;
-	        byte[] buffer = new byte[1024];
-	        newmsg = 0;
-	        
-	        mDbHelper.open();
-	        mDbHelper.initTempValues();
-			while ( (s=br.readLine())!= null && s.indexOf("Provenance") == -1)
-			{
-			}
-			if (s.indexOf("Provenance")>-1)
-			{
-				while ((s=br.readLine())!= null && s.indexOf("</tbody>") == -1)
-				{
-					if (s.indexOf("<td") != -1)
+					a.runOnUiThread(new Runnable()
 					{
-						if (s.indexOf("Pas de nouveau message") != -1)
-							Log.d(DEBUGTAG,"Pas de nouveau message !");
-						else
+						public void run()
 						{
-							Log.d(DEBUGTAG,"NEW MESSAGE !");
-							priv = s.substring(s.indexOf("<td"));
-							priv = priv.substring(priv.indexOf(">")+1);
-							status = priv.substring(0,priv.indexOf("<"));
-							Log.d(DEBUGTAG,"->STATUS:"+status);
-							priv = priv.substring(priv.indexOf("<td"));
-							priv = priv.substring(priv.indexOf(">")+1);
-							from = priv.substring(0,priv.indexOf("<"));
-							Log.d(DEBUGTAG,"->FROM:"+from);
-							priv = priv.substring(priv.indexOf("<td"));
-							priv = priv.substring(priv.indexOf(">")+1);
-							when = priv.substring(0,priv.indexOf("<"));
-							Log.d(DEBUGTAG,"->WHEN:"+when);
-							priv = priv.substring(priv.indexOf("<td"));
-							priv = priv.substring(priv.indexOf(">")+1);
-							length = priv.substring(0,priv.indexOf(" "));
-							Log.d(DEBUGTAG,"->LENGTH:"+length);
-							s = br.readLine();
-							priv = s.substring(s.indexOf("href=")+6);
-							link = priv.substring(0,priv.indexOf("'"));
-							Log.d(DEBUGTAG,"->LINK:"+link);
-							priv = priv.substring(priv.indexOf("href=")+6);
-							del = priv.substring(0,priv.indexOf("'"));
-							Log.d(DEBUGTAG,"->DEL:"+del);
-							name = link.substring(link.indexOf("fichier=")+8);
-							Log.d(DEBUGTAG,"->NAME:"+name);
-							if (status.compareTo(STR_NEWMESSAGE) == 0)
-							{
-								intstatus = 0;
-							}
-							else
-							{
-								intstatus = 1;
-							}
-	
-				    	    // Get the mevo file and store it on sdcard
-					        file = new File(Environment.getExternalStorageDirectory().toString()+DIR_MEVO,name);
-					        if (file.exists() == false)
-					        {
-					        	Log.d(DEBUGTAG,"->DOWNLOADING MESSAGE");
-						        u = new URL(mevoUrl+link);
-						        c = (HttpURLConnection) u.openConnection();
-						        c.setRequestMethod("GET");
-						        c.setDoOutput(true);
-					        	c.connect();
-						        f = new FileOutputStream(file);
-						        in = c.getInputStream();
-						        len1 = 0;
-						        while ( (len1 = in.read(buffer)) > 0 )
-						        {
-						            f.write(buffer, 0, len1);
-						        }
-					        	f.close();
-					        	in.close();
-					        	Log.d(DEBUGTAG,"->MESSAGE DOWNLOADED");
-					        }
-					        presence = 4;
-					        curs = mDbHelper.fetchMessage(name);
-							if (curs.moveToFirst() == false)
-				        	{
-								// Store data in db if the message is not present in the db
-				        		Log.d(DEBUGTAG,"STORING IN DB");
-					        	mDbHelper.createMessage(intstatus, presence, from, when, link, del, Integer.parseInt(length), name);
-					        	newmsg++;
-				        	}
-				        	else
-				        	{
-								// Update data in db if the message is already present in the db
-				        		Log.d(DEBUGTAG,"UPDATING DB");
-				        		mDbHelper.updateMessage(presence, link, del, name);
-				        	}
-				        	curs.close();
+							httpProgressDialog = ProgressDialog.show(a, "Mon Compte Free", "Connexion en cours ...", true,false);
 						}
-					}
-				}
-				Log.d(DEBUGTAG,"fin extract");
+					});
 			}
 			else
-			{
-				Log.d(DEBUGTAG,"pb extract");
-			}
-			mDbHelper.close();
+				httpProgressDialog = null;
 		}
-			
-		catch (Exception e)
+		// TODO : Mettre la connexion dans un thread
+		connectionStatus = HttpConnection.connectFree();
+        if (httpProgressDialog != null)
+        {
+           	httpProgressDialog.dismiss();
+           	httpProgressDialog = null;
+        }
+        return connectionStatus;
+	}
+
+    /**
+     * Vérifie si le login et le pass ont bougé
+     * @param l nouveau login
+     * @param p nouveau mot de passe
+     * @return 1 si ils ont bougé et qu'ils ne sont pas null, 0 sinon
+     */
+	public static boolean checkUpdated(String l, String p)
+	{
+		// Si les prefs ont bougé
+		if (( l!=null && p!= null) && ((!l.equals(login)) || (!p.equals(password))))
 		{
-			Log.e(DEBUGTAG, "getMessageList except " + e.getMessage());
-			e.printStackTrace();
+			Log.d(DEBUGTAG, "UPDATE: " + login + " / " + l);
+			login = l;
+			password = p;
+			id = null;
+			idt = null;
+			connectionStatus = CONNECT_NOT_CONNECTED;
+			return true;
 		}
-		finally
-		{
-			getMethod.abort();
-		}
-		Log.d(DEBUGTAG,"getmessage end "+newmsg);
-		return newmsg;
- 	}
+		else
+			return false;
+	}
 
 	public static int connectFree()
 	{
 		Log.d(DEBUGTAG,"Connect Free start ");
         try
         {
-        	HttpResponse httpResponse = null;
-        	httpResponse = postRequest();
-        	if (httpResponse != null)
-        	{
-	        	HttpEntity responseEntity = httpResponse.getEntity();
-	        	BufferedReader br = new BufferedReader(new InputStreamReader(responseEntity.getContent()));
-	    		String s = null;
-	    		String priv = null;
-	    		while ( (s=br.readLine())!=null )
-	    		{
-	    			if (s.indexOf("idt=")>-1)
-	    			{
-	    				priv = s.substring(s.indexOf("idt=")+4);
-	    				if (priv.indexOf("&")>-1)
-	    				{
-	    					priv = priv.substring(0, priv.indexOf('&'));
-	    				}
-	    				else
-	    				{
-	    					priv = priv.substring(0, priv.indexOf('"'));
-	    				}
-	    				idt = priv;
-	    				Log.d(DEBUGTAG,"idt :"+priv);
-	    				priv = s.substring(s.indexOf("?id=")+4);
-	    				priv = priv.substring(0, priv.indexOf('&'));
-	    				id = priv;
-	    				Log.d(DEBUGTAG,"id :"+priv);
-	    				break;
-	    			}
-	    		}
-        	}
+    		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+    		nameValuePairs.add(new BasicNameValuePair("login", login));
+    		nameValuePairs.add(new BasicNameValuePair("pass", password)); 
+    		BufferedReader br = postRequest(serverUrl, nameValuePairs, true);
+    		String s = null;
+    		String priv = null;
+    		while ( (s=br.readLine())!=null )
+    		{
+    			if (s.indexOf("idt=")>-1)
+    			{
+    				priv = s.substring(s.indexOf("idt=")+4);
+    				if (priv.indexOf("&")>-1)
+    				{
+    					priv = priv.substring(0, priv.indexOf('&'));
+    				}
+    				else
+    				{
+    					priv = priv.substring(0, priv.indexOf('"'));
+    				}
+    				idt = priv;
+    				Log.d(DEBUGTAG,"idt :"+priv);
+    				priv = s.substring(s.indexOf("?id=")+4);
+    				priv = priv.substring(0, priv.indexOf('&'));
+    				id = priv;
+    				Log.d(DEBUGTAG,"id :"+priv);
+    				break;
+    			}
+    		}
         }
-        catch (ClientProtocolException e)
+        catch (Exception e)
         {
+        	Log.e(DEBUGTAG, "connectFree : "+e);
         	e.printStackTrace();
-        }
-       	catch (IOException e)
-       	{
-       		e.printStackTrace();
+        	connectionStatus = CONNECT_NOT_CONNECTED;
+        	return connectionStatus;
         }
        	if (id != null && idt != null)
        	{
-       		return CONNECT_CONNECTED;
+       		connectionStatus = CONNECT_CONNECTED;
        	}
        	else
        	{
        		Log.d(DEBUGTAG,"MonCompeFree : AUTHENTIFICATION FAILED !");
-       		return CONNECT_LOGIN_FAILED;
+       		connectionStatus = CONNECT_LOGIN_FAILED;
        	}
+       	return connectionStatus;
+	}
+
+	/**
+	 * Donwload a file
+	 * @param file destination file
+	 * @param url source url
+	 * @return 1 if success
+	 */
+	public static int getFile(File file, String url)
+	{
+		HttpURLConnection c;
+		URL u;
+		FileOutputStream f;
+		int len;
+        byte[] buffer = new byte[1024];
+
+		Log.d(DEBUGTAG,"->DOWNLOADING FILE : "+url);
+        try {
+			u = new URL(url);
+	        c = (HttpURLConnection) u.openConnection();
+	        c.setRequestMethod("GET");
+	        c.setDoOutput(true);
+	    	c.connect();
+	        f = new FileOutputStream(file);
+	        InputStream in = c.getInputStream();
+	
+			while ( (len = in.read(buffer)) > 0 )
+	        {
+	            f.write(buffer, 0, len);
+	        }
+	    	f.close();
+	    	in.close();
+	    	Log.d(DEBUGTAG,"->FILE DOWNLOADED");
+	    	return 1;
+		}
+        catch (Exception e)
+        {
+        	Log.e(DEBUGTAG, "getFile : "+e);
+			e.printStackTrace();
+			return 0;
+		}
+	}
+
+	/**
+	 * Sends a GET request
+	 * @param url : url to get
+	 * @retour true pour avec une valeur non nulle en retour (si on veut le contenu de la page ou pas)
+	 * @return HttpResponse response from the server
+	 */
+	public static BufferedReader getRequest(String url, boolean retour)
+	{
+		Log.d(DEBUGTAG, "GET: " + url);
+
+		HttpClient client = new DefaultHttpClient(new BasicHttpParams());
+		HttpGet getMethod = new HttpGet(url);
+		getMethod.setHeader("User-Agent", USER_AGENT);
+		try
+		{
+			HttpResponse httpResponse = client.execute(getMethod);
+			if ((httpResponse != null) && (retour))
+			{
+				HttpEntity responseEntity = httpResponse.getEntity();
+				return (new BufferedReader(new InputStreamReader(responseEntity.getContent())));
+			}
+			else
+				return (null);
+		}
+       	catch (IOException e)
+       	{
+        	Log.e(DEBUGTAG,"getRequest : "+e);
+        	return (null);
+        }
 	}
 
 	/**
 	* Sends a POST request
-	*
-	* @return HttpResponse response from the server
+	* @param  url : url to post
+	* @param  nameValuePairs : a list of NameValuePair with parameters to post
+	* @retour true pour avec une valeur non nulle en retour (si on veut le contenu de la page ou pas)
+	* @return HttpResponse response from the server or null
 	* @throws SocketTimeoutException
 	*             , SocketException
 	*/
-	private static HttpResponse postRequest()
-	throws ClientProtocolException, IOException
+	public static BufferedReader postRequest(String url, List<NameValuePair> nameValuePairs, boolean retour)
 	{
-		String url = serverUrl;
-		Log.d(DEBUGTAG, "POST: " + url + " login: "+login);
+		Log.d(DEBUGTAG, "POST: " + url);
 
 		HttpClient client = new DefaultHttpClient(new BasicHttpParams());
-		HttpPost postMethod = new HttpPost((url));
+		HttpPost postMethod = new HttpPost(url);
 		postMethod.setHeader("User-Agent", USER_AGENT);
-
-		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
    
-		nameValuePairs.add(new BasicNameValuePair("login", login));
-		nameValuePairs.add(new BasicNameValuePair("pass", password)); 
-   
-		postMethod.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-	
 		try
 		{
+			postMethod.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 			HttpResponse httpResponse = client.execute(postMethod);
-			return httpResponse;
+        	if ((httpResponse != null) && (retour))
+        	{
+	        	HttpEntity responseEntity = httpResponse.getEntity();
+	        	return (new BufferedReader(new InputStreamReader(responseEntity.getContent())));
+        	}
+        	else
+        		return (null);
 		}
-		catch (IOException e)
+		catch (Exception e)
 		{
-			Log.d(DEBUGTAG, "Connexion impossible "+e);
-			return null;
+			Log.e(DEBUGTAG, "postRequest : "+e);
+			return (null);
 		}
 	}
 }

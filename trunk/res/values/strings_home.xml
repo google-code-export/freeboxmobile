@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="buttonPvr">Magnétoscope</string>
+	<string name="buttonMevo">Téléphone</string>
+	<string name="buttonMusic">Musique</string>
+	<string name="buttonConfig">Configuration</string>
+	<string name="buttonRadios">Radios</string>
+	<string name="buttonActu">Actu Freenautes</string>
+	<string name="buttonAbout">A propos</string><string name="MonCompteFree">Mon Compte Free</string>
+</resources>

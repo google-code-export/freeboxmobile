@@ -33,7 +33,7 @@ public class Config extends PreferenceActivity implements OnSharedPreferenceChan
         getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
         addPreferencesFromResource(R.xml.prefs);
 
-        HttpConnection.refreshPrefs();
+        HttpConnection.initVars(this);
         // Initialiser d'apres les prefs actuelles
         updateLibelle(KEY_USER);
         updateLibelle(KEY_PASSWORD);
@@ -55,7 +55,11 @@ public class Config extends PreferenceActivity implements OnSharedPreferenceChan
     		myAlertDialog.dismiss();
     	}
     	super.onDestroy();
-    	HttpConnection.checkUpdated();
+    	// TODO : Vérifier le code de retour de checkUpdated() et mettre à jour timer pour relancer connexion
+    	HttpConnection.checkUpdated(
+    			getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_USER, null),
+    			getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_PASSWORD, null)
+    			);
     }
 
     private SharedPreferences getSharedPreferences()

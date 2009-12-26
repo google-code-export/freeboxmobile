@@ -15,8 +15,8 @@ import android.util.Log;
 
 public class WakefullIntentService extends IntentService implements Constants
 {
-	public static final String LOCK_NAME_STATIC = "org.madprod.freeboxmobile.AppService.static";
-	public static final String LOCK_NAME_LOCAL = "org.madprod.freeboxmobile.AppService.local";
+	public static final String LOCK_NAME_STATIC = "org.madprod.freeboxmobile.mevo.AppService.static";
+	public static final String LOCK_NAME_LOCAL = "org.madprod.freeboxmobile.mevo.AppService.local";
 	private static PowerManager.WakeLock lockStatic = null;
 	private PowerManager.WakeLock lockLocal = null;
 
@@ -25,7 +25,7 @@ public class WakefullIntentService extends IntentService implements Constants
 		Log.i(DEBUGTAG,"acquireStaticLock ");
 		getLock(context).acquire();
 	}
-	
+
 	synchronized private static PowerManager.WakeLock getLock(Context context)
 	{
 		if (lockStatic == null)

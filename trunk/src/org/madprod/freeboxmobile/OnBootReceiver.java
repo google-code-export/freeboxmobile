@@ -1,5 +1,8 @@
 package org.madprod.freeboxmobile;
 
+import org.madprod.freeboxmobile.mvv.MevoConstants;
+import org.madprod.freeboxmobile.mvv.OnMevoAlarmReceiver;
+
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -15,16 +18,15 @@ import android.util.Log;
 * 
 */
 
-public class OnBootReceiver extends BroadcastReceiver implements Constants
+public class OnBootReceiver extends BroadcastReceiver implements MevoConstants
 {
 	@Override
 	public void onReceive(Context context, Intent intent)
 	{
 		Log.i(DEBUGTAG,"onReceive Boot");
 		AlarmManager mgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
-		Intent i = new Intent(context, OnAlarmReceiver.class);
+		Intent i = new Intent(context, OnMevoAlarmReceiver.class);
 		PendingIntent pi = PendingIntent.getBroadcast(context, 0, i, 0);
-		//TODO : Use setInexactRepeating to save power...
 		mgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), PERIOD, pi);
 	}
 }
