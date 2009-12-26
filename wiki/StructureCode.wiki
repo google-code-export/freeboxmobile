@@ -5,7 +5,8 @@
  * Pour chaque module (Mevo, Pvr...) :
    * un dossier pour ses sources existe src/org/madprod/freeboxmovile/mvv/ par exemple
      * dans le dossier : le nom des activity est du type !HomeActivity.java / !MevoActivity.java...
-     * si besoin, le nom du fichier qui gère la bdd est du type : MevoDbAdapter
+     * si besoin, le nom du fichier de la classe qui gère la bdd est du type : !MevoDbAdapter.java
+     * si besoin, le nom du fichier de l'interface qui contient les constantes : !MevoConstants.java (l'interface doit extends Constants si besoin)
    * un dossier pour ses strings existe (toujours définir les strings dans le xml) : res/values/strings_mevo.xml par exemple
  * dans le onCreate de chaque Activity, appeler impérativement : 
    * !HttpConnection.initVars(this);
