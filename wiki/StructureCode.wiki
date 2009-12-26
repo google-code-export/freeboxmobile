@@ -3,15 +3,23 @@
 
 = Quelques guides / règles pour le code de !FreeboxMobile =
 
- * Pour chaque module (Mevo, Pvr...) :
-   * un dossier pour ses sources existe src/org/madprod/freeboxmovile/mvv/ par exemple
-     * dans le dossier : le nom des activity est du type !HomeActivity.java / !MevoActivity.java...
-     * si besoin, le nom du fichier de la classe qui gère la bdd est du type : !MevoDbAdapter.java
-     * si besoin, le nom du fichier de l'interface qui contient les constantes : !MevoConstants.java (l'interface doit *extends Constants*)
-   * un dossier pour ses strings existe (toujours définir les strings dans le xml) : res/values/strings_mevo.xml par exemple
+== Structure des dossiers & fichier==
+Pour chaque module (Mevo, Pvr...) il doit exister un dossier pour ses sources : src/org/madprod/freeboxmovile/mvv/ par exemple.
+ * dans le dossier : le nom des activity est du type !HomeActivity.java / !MevoActivity.java...
+ * si besoin, le nom du fichier de la classe qui gère la bdd est du type : !MevoDbAdapter.java
+ * si besoin, le nom du fichier de l'interface qui contient les constantes : !MevoConstants.java (l'interface doit *extends Constants*)
+Un dossier pour les strings existe (toujours définir les strings dans le xml) dans res/values/
+Définir un fichier par module : res/values/strings_mevo.xml par exemple
+
+== Dans le code==
  * dans le onCreate de chaque Activity, appeler impérativement : 
    * !HttpConnection.initVars(this);
  * dans un service, pour se connecter au compte utilisateur de Free (avant d'effectuer des opérations réseau), utiliser : *connectionStatus = !HttpConnection.connectFree();*
  * pour le faire avec un progress Dialog : *connectionStatus = !HttpConnection.connectFreeUI(Activity this);*
  * (les valeurs possibles de connectionStatus sont définies dans Constants.java)
- * lors de la publication de bugs (ou Issues), dans la mesure du possible, mettre le nom du module au début du sujet. Exemples : "HOME : xxxxxx" ou "MEVO : xxxxx" ou "PVR : xxx"...
+
+== Thèmes ==
+Dans un soucis d'homogénéisation de l'interface, les différentes Activity doivent avoir pour thème @android:style/Theme.Light.NoTitleBar ou @android:style/Theme.Light (dans le Manifest, Application Nodes -> Activity en question -> Theme)
+
+==Bugs==
+Lors de la publication de bugs (ou Issues), dans la mesure du possible, mettre le nom du module au début du sujet. Exemples : "HOME : xxxxxx" ou "MEVO : xxxxx" ou "PVR : xxx"...
