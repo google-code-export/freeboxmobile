@@ -19,7 +19,7 @@ Définir un fichier par module : res/values/strings_mevo.xml par exemple
  * (les valeurs possibles de connectionStatus sont définies dans Constants.java)
 
 == Thèmes ==
-Dans un soucis d'homogénéisation de l'interface, les différentes Activity doivent avoir pour thème @android:style/Theme.Light.NoTitleBar ou @android:style/Theme.Light (dans le Manifest, Application Nodes -> Activity en question -> Theme)
+Dans un soucis d'homogénéisation de l'interface, les différentes Activity doivent avoir pour thème @android:style/Theme.Light.!NoTitleBar ou @android:style/Theme.Light (dans le Manifest, Application Nodes -> Activity en question -> Theme)
 
 ==Bugs==
 Lors de la publication de bugs (ou Issues), dans la mesure du possible, mettre le nom du module au début du sujet. Exemples : "HOME : xxxxxx" ou "MEVO : xxxxx" ou "PVR : xxx"...
