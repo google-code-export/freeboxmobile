@@ -3,7 +3,7 @@
 
 = Quelques guides / règles pour le code de !FreeboxMobile =
 
-== Structure des dossiers & fichier==
+== Structure des dossiers & fichiers==
 Pour chaque module (Mevo, Pvr...) il doit exister un dossier pour ses sources : src/org/madprod/freeboxmovile/mvv/ par exemple.
  * dans le dossier : le nom des activity est du type !HomeActivity.java / !MevoActivity.java...
  * si besoin, le nom du fichier de la classe qui gère la bdd est du type : !MevoDbAdapter.java
