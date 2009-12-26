@@ -7,7 +7,6 @@ import java.util.Date;
 
 import org.madprod.freeboxmobile.Constants;
 import org.madprod.freeboxmobile.R;
-import org.madprod.freeboxmobile.mvv.FreeboxMobileMevoDbAdapter;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -27,14 +26,14 @@ import android.util.Log;
 * 
 */
 
-public class MevoMessage implements Constants
+public class MevoMessage implements MevoConstants
 {
 	private ContentValues msgValues;
 	private Context _context;
-    protected FreeboxMobileMevoDbAdapter mDbHelper;
+    protected MevoDbAdapter mDbHelper;
 	private MediaPlayer mp;
 
-	public MevoMessage(Context c, FreeboxMobileMevoDbAdapter db)
+	public MevoMessage(Context c, MevoDbAdapter db)
 	{
 		_context = c;
 		mDbHelper = db;
@@ -175,17 +174,17 @@ public class MevoMessage implements Constants
 	public void setMsgFromCursor(Cursor c)
 	{
 		ContentValues msgValues = this.msgValues;
-		msgValues.put(KEY_STATUS, c.getInt(c.getColumnIndex(FreeboxMobileMevoDbAdapter.KEY_STATUS)));
-		msgValues.put(KEY_PRESENCE, c.getInt(c.getColumnIndex(FreeboxMobileMevoDbAdapter.KEY_PRESENCE)));
-		msgValues.put(KEY_SOURCE, c.getString(c.getColumnIndex(FreeboxMobileMevoDbAdapter.KEY_SOURCE)));
-		msgValues.put(KEY_QUAND, c.getString(c.getColumnIndex(FreeboxMobileMevoDbAdapter.KEY_QUAND)));
-		msgValues.put(KEY_LINK, c.getString(c.getColumnIndex(FreeboxMobileMevoDbAdapter.KEY_LINK)));
-		msgValues.put(KEY_DEL, c.getString(c.getColumnIndex(FreeboxMobileMevoDbAdapter.KEY_DEL)));
-		msgValues.put(KEY_NAME, c.getString(c.getColumnIndex(FreeboxMobileMevoDbAdapter.KEY_NAME)));
-		msgValues.put(KEY_LENGTH, c.getInt(c.getColumnIndex(FreeboxMobileMevoDbAdapter.KEY_LENGTH)));
+		msgValues.put(KEY_STATUS, c.getInt(c.getColumnIndex(MevoDbAdapter.KEY_STATUS)));
+		msgValues.put(KEY_PRESENCE, c.getInt(c.getColumnIndex(MevoDbAdapter.KEY_PRESENCE)));
+		msgValues.put(KEY_SOURCE, c.getString(c.getColumnIndex(MevoDbAdapter.KEY_SOURCE)));
+		msgValues.put(KEY_QUAND, c.getString(c.getColumnIndex(MevoDbAdapter.KEY_QUAND)));
+		msgValues.put(KEY_LINK, c.getString(c.getColumnIndex(MevoDbAdapter.KEY_LINK)));
+		msgValues.put(KEY_DEL, c.getString(c.getColumnIndex(MevoDbAdapter.KEY_DEL)));
+		msgValues.put(KEY_NAME, c.getString(c.getColumnIndex(MevoDbAdapter.KEY_NAME)));
+		msgValues.put(KEY_LENGTH, c.getInt(c.getColumnIndex(MevoDbAdapter.KEY_LENGTH)));
 		getContactFromNumber(msgValues.getAsString(KEY_SOURCE));
 		this.msgValues = msgValues;
-		msgValues.put(KEY_QUAND_HR, convertDateTimeHR(c.getString(c.getColumnIndex(FreeboxMobileMevoDbAdapter.KEY_QUAND))));
+		msgValues.put(KEY_QUAND_HR, convertDateTimeHR(c.getString(c.getColumnIndex(MevoDbAdapter.KEY_QUAND))));
 	}
 
 	public ContentValues getMessage()
