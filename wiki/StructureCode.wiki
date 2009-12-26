@@ -11,4 +11,5 @@
  * dans le onCreate de chaque Activity, appeler impérativement : 
    * !HttpConnection.initVars(this);
  * dans un service, pour se connecter au compte utilisateur de Free (avant d'effectuer des opérations réseau), utiliser : *connectionStatus = !HttpConnection.connectFree();*
- * pour le faire avec un progress Dialog : *connectionStatus = !HttpConnection.connectFreeUI(Activity this);* (les valeurs possibles de connectionStatus sont définies dans Constants.java)
+ * pour le faire avec un progress Dialog : *connectionStatus = !HttpConnection.connectFreeUI(Activity this);*
+ * (les valeurs possibles de connectionStatus sont définies dans Constants.java)
