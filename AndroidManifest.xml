@@ -21,7 +21,11 @@
 		</receiver>
 		<receiver android:name=".mvv.OnMevoAlarmReceiver">
 		</receiver>
-	</application>
+	<activity android:name=".pvr.PvrActivity"></activity>
+<activity android:name=".pvr.EnregistrementsActivity"></activity>
+<activity android:name=".pvr.ProgrammationActivity"></activity>
+<activity android:name=".pvr.EnregistrementActivity"></activity>
+</application>
     <uses-sdk android:minSdkVersion="3" />
 <uses-permission android:name="android.permission.INTERNET"></uses-permission>
 

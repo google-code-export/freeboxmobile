@@ -43,6 +43,7 @@ public class HomeActivity extends Activity implements HomeConstants
         Button phoneButton = (Button) findViewById(R.id.phone);
         Button configButton = (Button) findViewById(R.id.config);
         Button aboutButton = (Button) findViewById(R.id.about);
+        Button pvrButton = (Button) findViewById(R.id.magneto);
         configButton.setOnClickListener(
 				new View.OnClickListener()
 				{
@@ -72,6 +73,17 @@ public class HomeActivity extends Activity implements HomeConstants
 					public void onClick(View view)
 					{
 						displayAbout();
+					}
+				}
+			);
+		pvrButton.setOnClickListener(
+				new View.OnClickListener()
+				{
+					public void onClick(View view)
+					{
+				    	Intent i = new Intent();
+				    	i.setClassName("org.madprod.freeboxmobile", "org.madprod.freeboxmobile.pvr.PvrActivity");
+				    	startActivity(i);
 					}
 				}
 			);
