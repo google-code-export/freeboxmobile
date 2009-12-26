@@ -8,7 +8,7 @@ Pour chaque module (Mevo, Pvr...) il doit exister un dossier pour ses sources : 
  * dans le dossier : le nom des activity est du type !HomeActivity.java / !MevoActivity.java...
  * si besoin, le nom du fichier de la classe qui gère la bdd est du type : !MevoDbAdapter.java
  * si besoin, le nom du fichier de l'interface qui contient les constantes : !MevoConstants.java (l'interface doit *extends Constants*)
-Un dossier pour les strings existe (toujours définir les strings dans le xml) dans res/values/
+Un dossier pour les strings existe (toujours définir les strings dans un xml) dans res/values/
 Définir un fichier par module : res/values/strings_mevo.xml par exemple
 
 == Dans le code==
