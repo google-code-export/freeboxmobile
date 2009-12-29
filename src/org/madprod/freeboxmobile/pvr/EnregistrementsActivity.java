@@ -67,37 +67,7 @@ public class EnregistrementsActivity extends ListActivity {
     }
     
     private boolean login() {
-    	return HttpConnection.connectFree() == HttpConnection.CONNECT_CONNECTED;
-    	
-    	/*
-    	// Requete HTTP POST
-        HTTP_Request req;
-		String url = "http://subscribe.free.fr/login/login.pl";
-        Map<String,String> vars = new HashMap<String,String>(); 
-        String login, pass;
-
-        // Récupération des identifiants
-		login = getSharedPreferences(Config.KEY_PREFS, MODE_PRIVATE).getString(Config.KEY_USER, null);
-		pass = getSharedPreferences(Config.KEY_PREFS, MODE_PRIVATE).getString(Config.KEY_PASSWORD, null);
-		
-		// Préparation des variables POST
-		if (login != null && login.trim().length() > 0
-			&& pass != null && pass.trim().length() > 0) {
-	        vars.put("login", login); 
-	        vars.put("pass", pass); 
-	        vars.put("ok", "Connexion"); 
-		}
-		else {
-			erreur("Veuillez renseigner vos identifiants dans la configuration");
-			return false;
-		}
-       
-        // Login
-        req = new HTTP_Request(url, vars);
-        req.go();
-        this.pageEnregistrements = req.getContents();
-        
-        return this.pageEnregistrements != null;*/
+    	return HttpConnection.connectFreeUI(this) == HttpConnection.CONNECT_CONNECTED;
     }
     
     private void erreur(String msgErreur) {
@@ -116,7 +86,6 @@ public class EnregistrementsActivity extends ListActivity {
         	return;
         }
         
-        //HTTP_Request req;
 		String url;
 		
         // Recup if tv
@@ -125,7 +94,7 @@ public class EnregistrementsActivity extends ListActivity {
     	url += HttpConnection.getId()+"&idt="+HttpConnection.getIdt();
     	url += "&sommaire=television";
         	
-    	contenu = recupererPage(url);
+    	contenu = HttpConnection.getPage(HttpConnection.getRequest(url, true));
     	if (contenu == null) {
     		erreur("Impossible de télécharger la liste des enregistrements");
     		return;
@@ -214,27 +183,6 @@ public class EnregistrementsActivity extends ListActivity {
     	
     	return champ;
     }
-
-    private String recupererPage(String url) {
-        StringBuilder sb = new StringBuilder();
-    	BufferedReader reader = HttpConnection.getRequest(url, true);
-    	
-    	if (reader == null) {
-    		return null;
-    	}
-
-        String line = null;
-        try {
-             while ((line = reader.readLine()) != null) {
-                  sb.append(line + "\n");
-             }
-        } catch (IOException e) {
-             e.printStackTrace();
-             return null;
-        }
-
-        return sb.toString();
-    }
     
     //@Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
@@ -249,5 +197,6 @@ public class EnregistrementsActivity extends ListActivity {
         Intent i = new Intent(this, EnregistrementActivity.class);
         i.putExtra(EnregistrementsDbAdapter.KEY_ROWID, c.getLong(c.getColumnIndex(EnregistrementsDbAdapter.KEY_ROWID)));
         startActivity(i);
+        c.close();
     }
 }

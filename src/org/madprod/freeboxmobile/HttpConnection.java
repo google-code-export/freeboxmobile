@@ -320,7 +320,7 @@ public class HttpConnection implements Constants
 	 * @return	String
 	 * @throws	IOException
 	 */
-	public String getPage(BufferedReader reader) {
+	public static String getPage(BufferedReader reader) {
 		StringBuilder sb = new StringBuilder();
 		
 		if (reader == null) {
