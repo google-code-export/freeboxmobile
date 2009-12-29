@@ -1,0 +1,13 @@
+#summary Procédure pour participer au beta-test de FreeboxMobile
+#labels Phase-QA
+
+= Comment faire partie des béta-testeurs ? =
+
+C'est très simple : il faut vous inscrire à la mailing liste !FreeboxMobile :
+- envoyer un email à freeboxmobile-request@ml.free.fr avec comme sujet : subscribe
+- suivre les instructions contenues dans le mail que vous recevrez ensuite
+- lorsqu'une version de test sera disponible, vous recevrez un email
+
+= Comment me désabonner de la mailing liste !FreeboxMobile ? =
+- envoyer un email à freeboxmobile-request@ml.free.fr avec comme sujet : unsubscribe
+- suivre les instructions contenues dans le mail que vous recevrez ensuite
