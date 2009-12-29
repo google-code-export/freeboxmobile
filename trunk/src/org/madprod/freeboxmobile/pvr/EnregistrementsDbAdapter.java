@@ -50,7 +50,7 @@ public class EnregistrementsDbAdapter {
 			        + "where_id integer not null,"
 			        + "repeat_a text);";
 
-    private static final String DATABASE_NAME = "fbxvcr";
+    private static final String DATABASE_NAME = "freeboxmobile";
     private static final String DATABASE_TABLE = "enregistrements";
     private static final int DATABASE_VERSION = 3;
 
@@ -109,20 +109,7 @@ public class EnregistrementsDbAdapter {
     public void detruire() {
 
     	mDb.rawQuery("drop table enregistrements", null);
-    	mDb.rawQuery("create table enregistrements (_id integer primary key autoincrement, "
-	        + "date text not null,"
-	        + "heure text not null,"
-	        + "duree integer not null,"
-	        + "nom text not null,"
-	        + "ide integer not null,"
-	        + "chaine_id integer not null,"
-	        + "service_id integer not null,"
-	        + "h integer not null,"
-	        + "min integer not null,"
-	        + "dur integer not null,"
-	        + "name text not null,"
-	        + "where_id integer not null,"
-	        + "repeat_a text not null)", null);
+    	mDb.rawQuery(DATABASE_CREATE, null);
     }
 
 
@@ -205,6 +192,7 @@ public class EnregistrementsDbAdapter {
                 		KEY_NOM,
                 		KEY_IDE,
                 		KEY_CHAINE_ID,
+                		KEY_SERVICE_ID,
                 		KEY_H,
                 		KEY_MIN,
                 		KEY_DUR,
@@ -231,7 +219,7 @@ public class EnregistrementsDbAdapter {
      * @return true if the enregistrement was successfully updated, false otherwise
      */
     public boolean updateEnregistrement(long rowId, String chaine, String date, String heure,
-    		String duree, String nom, String ide, String chaine_id, String h,
+    		String duree, String nom, String ide, String chaine_id, String service_id, String h,
     		String min, String dur, String name, String where_id, String repeat_a) {
         ContentValues args = new ContentValues();
         
@@ -242,6 +230,7 @@ public class EnregistrementsDbAdapter {
         args.put(KEY_NOM, nom);
         args.put(KEY_IDE, ide);
         args.put(KEY_CHAINE_ID, chaine_id);
+        args.put(KEY_SERVICE_ID, service_id);
         args.put(KEY_H, h);
         args.put(KEY_MIN, min);
         args.put(KEY_DUR, dur);
