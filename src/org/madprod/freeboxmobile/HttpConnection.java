@@ -313,4 +313,30 @@ public class HttpConnection implements Constants
 			return (null);
 		}
 	}
+	
+	/**
+	 * BufferedReader to String conversion
+	 * @param	BufferedReader
+	 * @return	String
+	 * @throws	IOException
+	 */
+	public String getPage(BufferedReader reader) {
+		StringBuilder sb = new StringBuilder();
+		
+		if (reader == null) {
+			return null;
+		}
+		
+		String line = null;
+		try {
+		     while ((line = reader.readLine()) != null) {
+		          sb.append(line + "\n");
+		     }
+		} catch (IOException e) {
+			Log.e(DEBUGTAG, "getPage: "+e);
+		     return null;
+		}
+		
+		return sb.toString();
+	}
 }
