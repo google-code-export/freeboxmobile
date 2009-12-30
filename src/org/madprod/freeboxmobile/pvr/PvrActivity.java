@@ -5,16 +5,20 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TabHost;
 
+import org.madprod.freeboxmobile.HttpConnection;
 import org.madprod.freeboxmobile.R;
 
 public class PvrActivity extends TabActivity {
 	TabHost mTabHost;
+	public static int connectionStatus = HttpConnection.CONNECT_NOT_CONNECTED;
 	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pvr);
+        
+        connectionStatus = HttpConnection.connectFreeUI(this);
 
         mTabHost = getTabHost();
         

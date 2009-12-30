@@ -52,7 +52,7 @@ public class EnregistrementsDbAdapter {
 
     private static final String DATABASE_NAME = "freeboxmobile";
     private static final String DATABASE_TABLE = "enregistrements";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
 
     private final Context mCtx;
 
@@ -64,6 +64,7 @@ public class EnregistrementsDbAdapter {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
+            Log.d(TAG, "DatabaseHelper onCreate called");
 
             db.execSQL(DATABASE_CREATE);
         }
