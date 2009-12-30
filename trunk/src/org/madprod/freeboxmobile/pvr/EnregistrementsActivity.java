@@ -1,13 +1,15 @@
 package org.madprod.freeboxmobile.pvr;
 
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -17,9 +19,12 @@ import org.madprod.freeboxmobile.HttpConnection;
 public class EnregistrementsActivity extends ListActivity {
 	private static String urlConsole = "";
 	private String tableEnregistrements;
-	private Cursor listCursor;
 	private boolean succesChargement;
 	List<String> listeEnregistrements;
+	ProgressDialog prog = null;
+    final Handler mHandler = new Handler();
+	
+	static final int MENU_UPDATE = 0;
 
     /** Called when the activity is first created. */
     @Override
@@ -32,7 +37,6 @@ public class EnregistrementsActivity extends ListActivity {
         this.succesChargement = false;
         
         updateEnregistrements();
-        afficherEnregistrements();
     }
 
 	public static String getUrlConsole() {
@@ -43,12 +47,14 @@ public class EnregistrementsActivity extends ListActivity {
         EnregistrementsDbAdapter db = new EnregistrementsDbAdapter(this);
         
         db.open();
-        listCursor = db.fetchAllEnregistrements(new String[] {
+        Cursor listCursor = db.fetchAllEnregistrements(new String[] {
         		EnregistrementsDbAdapter.KEY_ROWID,
         		EnregistrementsDbAdapter.KEY_CHAINE,
         		EnregistrementsDbAdapter.KEY_DATE});
 
 		if (listCursor != null && listCursor.moveToFirst()) {
+			succesChargement = true;
+			
             do {
      			int colChaine = listCursor.getColumnIndex("chaine");
      			int colDate = listCursor.getColumnIndex("date");
@@ -59,6 +65,8 @@ public class EnregistrementsActivity extends ListActivity {
      			
             } while (listCursor.moveToNext());
 		}
+		
+		listCursor.close();
         
         db.close();
 		
@@ -79,10 +87,10 @@ public class EnregistrementsActivity extends ListActivity {
                 android.R.layout.simple_list_item_1, listeEnregistrements));
     }
     
-    private void updateEnregistrements() {
+    private void doUpdateEnregistrements() {		
     	// On se log sur l'if free
         if (login() == false) {
-        	erreur("Impossible de se connecter ‡ la console Free");
+        	erreur("Impossible de se connecter √† la console Free");
         	return;
         }
         
@@ -93,13 +101,13 @@ public class EnregistrementsActivity extends ListActivity {
     	url  = "http://adsl.free.fr/admin/magneto.pl?id=";
     	url += HttpConnection.getId()+"&idt="+HttpConnection.getIdt();
     	url += "&sommaire=television";
-        	
+
     	contenu = HttpConnection.getPage(HttpConnection.getRequest(url, true));
     	if (contenu == null) {
-    		erreur("Impossible de tÈlÈcharger la liste des enregistrements");
+    		erreur("Impossible de t√©l√©charger la liste des enregistrements");
     		return;
     	}
-    	
+
     	int debut = contenu.indexOf("<div class=\"table block\">") + 25;
     	int fin = contenu.indexOf("<div class=\"clearer\"></div>");
 
@@ -109,7 +117,7 @@ public class EnregistrementsActivity extends ListActivity {
     		recupererEnregistrements();
     	}
     	else {
-    		erreur("Impossible de tÈlÈcharger la liste des enregistrements");
+    		erreur("Impossible de t√©l√©charger la liste des enregistrements");
 		}
     }
 
@@ -130,7 +138,7 @@ public class EnregistrementsActivity extends ListActivity {
 	        	String chaine, date, heure, duree, nom, ide, chaine_id, service_id;
 	        	String h, min, dur, name, where_id, repeat_a;
 	        	
-	        	// RÈcupÈration des infos
+	        	// R√©cup√©ration des infos
 				chaine =		recupererChamp("<strong>", "<");
 				date =			recupererChamp("<strong>", "<");
 				heure =			recupererChamp("<strong>", "<");
@@ -165,7 +173,7 @@ public class EnregistrementsActivity extends ListActivity {
     	String champ;
     	int pos;
     	
-    	// On se place au dÈbut
+    	// On se place au d√©but
     	pos = tableEnregistrements.indexOf(debut);    	
     	if (pos <= 0 || pos + debut.length() > tableEnregistrements.length()) {
     		return null;
@@ -173,7 +181,7 @@ public class EnregistrementsActivity extends ListActivity {
     	champ = tableEnregistrements.substring(pos + debut.length());
     	tableEnregistrements = tableEnregistrements.substring(pos + debut.length());
     	
-    	// On coupe aprËs la fin
+    	// On coupe apr√®s la fin
     	pos = champ.indexOf(fin);
     	if (pos <= 0 || pos > champ.length() || pos > tableEnregistrements.length()) {
     		return null;
@@ -191,12 +199,59 @@ public class EnregistrementsActivity extends ListActivity {
     	if (succesChargement == false) {
     		return;
     	}
-    	
-        Cursor c = listCursor;
+
+    	// R√©cup√©ration de l'id
+        EnregistrementsDbAdapter db = new EnregistrementsDbAdapter(this);
+        db.open();
+        Cursor c = db.fetchAllEnregistrements(new String[] { EnregistrementsDbAdapter.KEY_ROWID });
         c.moveToPosition(position);
-        Intent i = new Intent(this, EnregistrementActivity.class);
-        i.putExtra(EnregistrementsDbAdapter.KEY_ROWID, c.getLong(c.getColumnIndex(EnregistrementsDbAdapter.KEY_ROWID)));
-        startActivity(i);
+        long rowId = c.getLong(c.getColumnIndex(EnregistrementsDbAdapter.KEY_ROWID));
         c.close();
+        db.close();
+        
+        // Lancement de l'activit√©
+        Intent i = new Intent(this, EnregistrementActivity.class);
+        i.putExtra(EnregistrementsDbAdapter.KEY_ROWID, rowId);
+        startActivity(i);
+    }
+    
+    /* Creates the menu items */
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add(0, MENU_UPDATE, 0, "Mettre √† jour");
+        return true;
+    }
+
+    /* Handles item selections */
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case MENU_UPDATE:
+        	updateEnregistrements();
+            return true;
+        }
+        return false;
+    }
+
+    // Create runnable for posting
+    final Runnable mUpdateResults = new Runnable() {
+        public void run() {
+            afficherEnregistrements();
+        }
+    };
+    protected void updateEnregistrements() {
+    	prog = ProgressDialog.show(this, "Enregistrements", "Mise √† jour...", true,false);
+        Thread t = new Thread() {
+            public void run() {
+	        	listeEnregistrements.clear();
+	        	doUpdateEnregistrements();
+
+				if (prog != null) {
+					prog.dismiss();
+					prog = null;
+				}
+				
+                mHandler.post(mUpdateResults);
+            }
+        };
+        t.start();
     }
 }

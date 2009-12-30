@@ -1,21 +1,22 @@
 package org.madprod.freeboxmobile.pvr;
 
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import org.madprod.freeboxmobile.HttpConnection;
 import org.madprod.freeboxmobile.R;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -25,11 +26,19 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
-
+/**
+ * 
+ * @author bduffez
+ *
+ */
 public class ProgrammationActivity extends Activity {
 	private List<Chaine> mChaines = null;
 	private List<Disque> mDisques = null;
+	ProgressDialog prog = null;
+	Activity progAct = null;
+	final String TAG = "FreeboxMobileProg";
 
     /** Called when the activity is first created. */
     @Override
@@ -37,7 +46,12 @@ public class ProgrammationActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.programmation);
         
-        // RÈcupÈrer chaines et disques durs        
+        // Mode 24h
+        ((TimePicker) findViewById(R.id.pvrPrgHeure)).setIs24HourView(true);
+        
+        progAct = this;
+        
+        // R√©cup√©rer chaines et disques durs        
         String url = "http://adsl.free.fr/admin/magneto.pl?id=";
     	url += HttpConnection.getId()+"&idt="+HttpConnection.getIdt();
     	url += "&detail=1";
@@ -47,12 +61,12 @@ public class ProgrammationActivity extends Activity {
         int posDisques = resultat.indexOf("var disk_a = [{");
         
         if (posChaines > 0 && posDisques > 0) {
-        	// RÈcupÈration du javascript correspondant ‡ la liste des chaines
+        	// R√©cup√©ration du javascript correspondant √† la liste des chaines
         	String strChaines = resultat.substring(posChaines+14, posDisques);
         	int finChaines = strChaines.lastIndexOf("}");
         	strChaines = strChaines.substring(0, finChaines+1);
         	
-        	// RÈcupÈration du javascript correspondant ‡ la liste des disques durs
+        	// R√©cup√©ration du javascript correspondant √† la liste des disques durs
         	String strDisques = resultat.substring(posDisques+14);
         	int fin = strDisques.indexOf("}")+1;
         	strDisques = strDisques.substring(0, fin);
@@ -71,7 +85,50 @@ public class ProgrammationActivity extends Activity {
             // Activation d'un listener sur le bouton OK
             final Button button = (Button) findViewById(R.id.PrgBtnOK);
             button.setOnClickListener(new View.OnClickListener() {
+
+                final Handler mHandler = new Handler();
+                String errMsg = null;
+
+                // Create runnable for posting
+                final Runnable mUpdateResults = new Runnable() {
+                    public void run() {
+                        if (errMsg != null) {
+                        	afficherMsgErreur(errMsg);
+                        }
+                		else {
+                			Toast.makeText(progAct, "Modifications enregistr√©es!", Toast.LENGTH_SHORT);
+                			//TODO: dismiss activity
+                			//TODO: update DB
+                		}
+                    }
+                };
+                
                 public void onClick(View v) {
+                	String texte = enr == null ? "Programmation" : "Modification";
+                	texte += " de l'enregistrement en cours...";                    
+                    
+	    	    	prog = ProgressDialog.show(progAct, "Enregistrement", texte, true,false);
+                	
+                    Thread t = new Thread() {
+                        public void run() {
+            	        	errMsg = doAction();
+
+            				if (prog != null) {
+            					prog.dismiss();
+            					prog = null;
+            				}
+            				
+                            mHandler.post(mUpdateResults);
+                        }
+                    };
+                    t.start();
+                }
+                
+                /**
+                 * doAction: traite le formulaire, et envoie la requete √† la console de free
+                 * @return : String le message d'erreur, le cas √©ch√©ant, null sinon
+                 */
+                private String doAction() {
             		List<NameValuePair> postVars = new ArrayList<NameValuePair>();
             		Integer chaine, service, duree, where_id, ide = 0;
             		int h, m;
@@ -143,16 +200,42 @@ public class ProgrammationActivity extends Activity {
                 	}
 
             		// Requete HTTP
-                	HttpConnection.connectFree();
             		String url = "http://adsl.free.fr/admin/magneto.pl?id=";
             		url += HttpConnection.getId()+"&idt="+HttpConnection.getIdt();
-            		HttpConnection.postRequest(url, postVars, true);
+            		String resultat = HttpConnection.getPage(HttpConnection.postRequest(url, postVars, true));
+            		
+            		int erreurPos = resultat.indexOf("Des erreurs sont survenues :");
+            		if (erreurPos > 0) {
+            			int debutErr, finErr;
+            			String msgErreur;
+            			
+            			msgErreur = resultat.substring(erreurPos);            			
+            			debutErr = msgErreur.indexOf("<span style=\"color: #cc0000\">") + 29;
+            			finErr = msgErreur.substring(debutErr).indexOf("<");
+            			msgErreur = msgErreur.substring(debutErr, debutErr+finErr);
+            			
+            			return "Message retourn√© par la console de free:\n"+msgErreur;
+            		}
+            		
+            		return null;
                 }
             });
         }
         else {
-        	Log.d("FreeboxVCR", "Impossible de tÈlÈcharger le json");
+        	Log.d("FreeboxVCR", "Impossible de t√©l√©charger le json");
         }
+    }
+	
+	private void afficherMsgErreur(String msg) {	
+    	AlertDialog d = new AlertDialog.Builder(this).create();
+		d.setTitle("Erreur!");
+		d.setMessage(msg);
+		d.setButton("Ok", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+			}
+		});
+		d.show();
     }
     
 	// S'il s'agit d'une modification, remplir le formulaire
@@ -166,12 +249,12 @@ public class ProgrammationActivity extends Activity {
         }
         
         //TODO: faire le remplissage si on vient de l'onglet grille des programmes
-        // pour l'instant Áa ne remplit la fiche que d'un enregistrement venant
+        // pour l'instant ÔøΩa ne remplit la fiche que d'un enregistrement venant
         // de sqlite
         
         long idEnregistrement = bundle.getLong(EnregistrementsDbAdapter.KEY_ROWID);
         if (idEnregistrement > 0) {
-	        // RÈcupÈration des infos concernant cet enregistrement
+	        // R√©cup√©ration des infos concernant cet enregistrement
 	        EnregistrementsDbAdapter db = new EnregistrementsDbAdapter(this);
 	        db.open();
 	         Cursor c = db.fetchEnregistrement(idEnregistrement);
@@ -219,7 +302,7 @@ public class ProgrammationActivity extends Activity {
 		List<String> liste = new ArrayList<String>();
 		int i, size;
 		
-		// Construction de la liste de String ‡ mettre dans le spinner
+		// Construction de la liste de String ÔøΩ mettre dans le spinner
 		if (id == R.id.pvrPrgChaine) {
 			size = mChaines.size();
 			for (i = 0; i < size; i++) {
@@ -237,7 +320,7 @@ public class ProgrammationActivity extends Activity {
 		spinner.setAdapter(adapter);
     }
 	
-    // Fonctions pour rÈcupÈrer la position d'une chaine/disque dans un spinner
+    // Fonctions pour r√©cup√©rer la position d'une chaine/disque dans un spinner
 	private int getChaineSpinnerId(String chaine) {
 		int i, size = mChaines.size();
 
@@ -271,7 +354,7 @@ public class ProgrammationActivity extends Activity {
 		return mDisques;
 	}
 	//@param String: l'array de JSON (commence par { sinon crash)
-	//@param String: ce qui sÈpare deux objets JSON
+	//@param String: ce qui s√©pare deux objets JSON
 	//@param int: le nombre d'octets inutiles entre deux objets JSON
 	//@param boolean: true si c'est la liste des chaines, false si c'est celle des disques
 	private void getListe(String strSource, String sep, int shift, boolean isChaines) {
@@ -297,17 +380,17 @@ public class ProgrammationActivity extends Activity {
 				}
 			}
 			
-			// RÈcupÈration du string JSON
+			// R√©cup√©ration du string JSON
 			str = strSource.substring(0, pos);
 			
-			// Ajout ‡ la liste
+			// Ajout √† la liste
 			if (isChaines) {
 				mChaines.add(new Chaine(str));
 			} else {
 				mDisques.add(new Disque(str));
 			}
 			
-			// PrÈparation du prochain item JSON
+			// Pr√©paration du prochain item JSON
 			if (strSource.length() > pos+1) {
 				strSource = strSource.substring(pos+1);
 			}

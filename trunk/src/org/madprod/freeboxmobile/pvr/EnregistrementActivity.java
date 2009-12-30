@@ -9,6 +9,7 @@ import org.madprod.freeboxmobile.HttpConnection;
 import org.madprod.freeboxmobile.R;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -16,9 +17,11 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class EnregistrementActivity extends Activity {
 	private long idEnregistrement;
+	ProgressDialog prog = null;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -30,7 +33,7 @@ public class EnregistrementActivity extends Activity {
         Bundle bundle = getIntent().getExtras();
         
         if (bundle != null) {
-            // RÈcupÈration des infos concernant cet enregistrement
+            // R√©cup√©ration des infos concernant cet enregistrement
             EnregistrementsDbAdapter db = new EnregistrementsDbAdapter(this);
             db.open();
             idEnregistrement = bundle.getLong(EnregistrementsDbAdapter.KEY_ROWID);
@@ -38,14 +41,14 @@ public class EnregistrementActivity extends Activity {
             db.close();
             
             if (c.getCount() > 0 && c.moveToFirst()) {
-		        // RÈcupÈration des TextView
+		        // R√©cup√©ration des TextView
 		        TextView chaine = (TextView) findViewById(R.id.pvrDispChaine);
 		        TextView date = (TextView) findViewById(R.id.pvrDispDate);
 		        TextView heure = (TextView) findViewById(R.id.pvrDispHeure);
 		        TextView duree = (TextView) findViewById(R.id.pvrDispDuree);
 		        TextView nom = (TextView) findViewById(R.id.pvrDispNom);
 		        
-		        // Affichage des donnÈes
+		        // Affichage des donn√©es
 		    	chaine.setText(c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_CHAINE)));
 		    	date.setText(c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_DATE)));
 		    	heure.setText(c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_HEURE)));
@@ -57,7 +60,7 @@ public class EnregistrementActivity extends Activity {
 		    	Button modif = (Button) findViewById(R.id.pvrBtnModif);
 		    	Button suppr = (Button) findViewById(R.id.pvrBtnSuppr);
 		    	
-		    	// Modif: on lance l'activitÈ ProgrammationActivity avec le paramËtre ROWID
+		    	// Modif: on lance l'activit√© ProgrammationActivity avec le param√®tre ROWID
 		    	modif.setOnClickListener(
 		    			new View.OnClickListener() {
 		    				public void onClick(View v) {
@@ -67,11 +70,25 @@ public class EnregistrementActivity extends Activity {
 						    	startActivity(i);
 				    		}
 				    	});
-		    	
+		    	// Suppr: on supprime & ferme l'activit√©
 		    	suppr.setOnClickListener(new OnClickListener() {
 		    		public void onClick(View v) {
+		    	    	prog = ProgressDialog.show(enrAct, "Enregistrement", "Suppression en cours...", true,false);
+		    			Thread deleteThread = new Thread(new Runnable() {
+		    				public void run() {
+		    					doSuppression();
+
+		    					if (prog != null) {
+		    						prog.dismiss();
+		    						prog = null;
+		    					}
+		    				}
+		    			});
+		    			deleteThread.start();
+		    		}
+		    		
+		    		private void doSuppression() {
 		    			// TODO: Demande confirmation
-		                
 		     		    			
 		    			// Post vars pour suppression
 	                	// ide=11&chaine_id=6&service_id=0&date=31%2F12%2F2009&h=23
