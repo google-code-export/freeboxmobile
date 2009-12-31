@@ -26,7 +26,7 @@ public class EnregistrementActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.enregistrement);
+        setContentView(R.layout.pvr_enregistrement);
         
         final Activity enrAct = this;
 
@@ -73,7 +73,7 @@ public class EnregistrementActivity extends Activity {
 		    	// Suppr: on supprime & ferme l'activité
 		    	suppr.setOnClickListener(new OnClickListener() {
 		    		public void onClick(View v) {
-		    	    	prog = ProgressDialog.show(enrAct, "Enregistrement", "Suppression en cours...", true,false);
+		    	    	prog = ProgressDialog.show(enrAct, "Veuillez patienter", "Suppression en cours...", true,false);
 		    			Thread deleteThread = new Thread(new Runnable() {
 		    				public void run() {
 		    					doSuppression();

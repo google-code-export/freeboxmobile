@@ -23,7 +23,7 @@ public class PvrActivity extends TabActivity {
         mTabHost = getTabHost();
         
         mTabHost.addTab(mTabHost.newTabSpec("tab_enregistrements")
-				        		.setIndicator("EnregistrementsActivity")
+				        		.setIndicator("Enregistrements")
 				        		.setContent(new Intent(this, EnregistrementsActivity.class)));
         
         mTabHost.addTab(mTabHost.newTabSpec("tab_programmation")
@@ -33,11 +33,7 @@ public class PvrActivity extends TabActivity {
         mTabHost.addTab(mTabHost.newTabSpec("tab_grille")
         						.setIndicator("Grille des programmes")
         						.setContent(R.id.textview3));
-        /*
-        mTabHost.addTab(mTabHost.newTabSpec("tab_config")
-        						.setIndicator("Configuration")
-        						.setContent(new Intent(this, Config.class)));
-        */
+
         mTabHost.setCurrentTab(0);
     }
 }
