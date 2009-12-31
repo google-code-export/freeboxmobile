@@ -1,8 +1,10 @@
 package org.madprod.freeboxmobile.pvr;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import android.app.ListActivity;
+
+import android.app.ExpandableListActivity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
@@ -12,17 +14,19 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ExpandableListView;
 import android.widget.ListView;
+import android.widget.SimpleExpandableListAdapter;
 
 import org.madprod.freeboxmobile.HttpConnection;
+import org.madprod.freeboxmobile.R;
 
-public class EnregistrementsActivity extends ListActivity {
-	private static String urlConsole = "";
+public class EnregistrementsActivity extends ExpandableListActivity {
 	private String tableEnregistrements;
 	private boolean succesChargement;
-	List<String> listeEnregistrements;
 	ProgressDialog prog = null;
     final Handler mHandler = new Handler();
+    ListeEnregistrements listeEnregistrements;
 	
 	static final int MENU_UPDATE = 0;
 
@@ -32,36 +36,50 @@ public class EnregistrementsActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         
         HttpConnection.initVars(this);
-        
-		this.listeEnregistrements = new ArrayList<String>();
-        this.succesChargement = false;
-        
-        updateEnregistrements();
-    }
 
-	public static String getUrlConsole() {
-		return EnregistrementsActivity.urlConsole;
-	}
+		this.listeEnregistrements = new ListeEnregistrements();
+        this.succesChargement = false;
+
+        updateEnregistrementsFromConsole();
+        updateEnregistrementsFromDb();
+        afficherEnregistrements();
+    }
     
-    private void afficherEnregistrements() {
+    private void updateEnregistrementsFromDb() {
         EnregistrementsDbAdapter db = new EnregistrementsDbAdapter(this);
         
         db.open();
         Cursor listCursor = db.fetchAllEnregistrements(new String[] {
         		EnregistrementsDbAdapter.KEY_ROWID,
         		EnregistrementsDbAdapter.KEY_CHAINE,
-        		EnregistrementsDbAdapter.KEY_DATE});
+        		EnregistrementsDbAdapter.KEY_DATE,
+        		EnregistrementsDbAdapter.KEY_HEURE,
+        		EnregistrementsDbAdapter.KEY_DUREE,
+        		EnregistrementsDbAdapter.KEY_NOM
+        		});
 
 		if (listCursor != null && listCursor.moveToFirst()) {
 			succesChargement = true;
 			
             do {
-     			int colChaine = listCursor.getColumnIndex("chaine");
-     			int colDate = listCursor.getColumnIndex("date");
+     			int colChaine = listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_CHAINE);
+     			int colDate = listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_DATE);
      			String item = listCursor.getString(colChaine);
      			item += " (" + listCursor.getString(colDate) + ")";
      			
-     			listeEnregistrements.add(item);
+     			List<String> details = new ArrayList<String>();
+     			details.add("Chaîne");
+     			details.add(listCursor.getString(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_CHAINE)));
+     			details.add("Date");
+     			details.add(listCursor.getString(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_DATE)));
+     			details.add("Heure");
+     			details.add(listCursor.getString(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_HEURE)));
+     			details.add("Durée");
+     			details.add(listCursor.getString(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_DUREE)));
+     			details.add("Nom");
+     			details.add(listCursor.getString(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_NOM)));
+     			
+     			listeEnregistrements.ajouter(item, details);
      			
             } while (listCursor.moveToNext());
 		}
@@ -69,9 +87,6 @@ public class EnregistrementsActivity extends ListActivity {
 		listCursor.close();
         
         db.close();
-		
-        setListAdapter(new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, listeEnregistrements));
     }
     
     private boolean login() {
@@ -79,12 +94,9 @@ public class EnregistrementsActivity extends ListActivity {
     }
     
     private void erreur(String msgErreur) {
-		listeEnregistrements.add(msgErreur);
-		
+    	listeEnregistrements.ajouter(msgErreur);
 		succesChargement = false;
-
-        setListAdapter(new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, listeEnregistrements));
+		afficherEnregistrements();
     }
     
     private void doUpdateEnregistrements() {		
@@ -192,19 +204,19 @@ public class EnregistrementsActivity extends ListActivity {
     	return champ;
     }
     
-    //@Override
-    protected void onListItemClick(ListView l, View v, int position, long id) {
-    	super.onListItemClick(l, v, position, id);
+    @Override
+    public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+    	super.onChildClick(parent, v, groupPosition, childPosition, id);
     	
     	if (succesChargement == false) {
-    		return;
+    		return false;
     	}
 
     	// Récupération de l'id
         EnregistrementsDbAdapter db = new EnregistrementsDbAdapter(this);
         db.open();
         Cursor c = db.fetchAllEnregistrements(new String[] { EnregistrementsDbAdapter.KEY_ROWID });
-        c.moveToPosition(position);
+        c.moveToPosition(groupPosition);
         long rowId = c.getLong(c.getColumnIndex(EnregistrementsDbAdapter.KEY_ROWID));
         c.close();
         db.close();
@@ -213,6 +225,8 @@ public class EnregistrementsActivity extends ListActivity {
         Intent i = new Intent(this, EnregistrementActivity.class);
         i.putExtra(EnregistrementsDbAdapter.KEY_ROWID, rowId);
         startActivity(i);
+    	
+		return true;
     }
     
     /* Creates the menu items */
@@ -225,7 +239,9 @@ public class EnregistrementsActivity extends ListActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case MENU_UPDATE:
-        	updateEnregistrements();
+            updateEnregistrementsFromConsole();
+            updateEnregistrementsFromDb();
+            afficherEnregistrements();
             return true;
         }
         return false;
@@ -237,11 +253,12 @@ public class EnregistrementsActivity extends ListActivity {
             afficherEnregistrements();
         }
     };
-    protected void updateEnregistrements() {
-    	prog = ProgressDialog.show(this, "Enregistrements", "Mise à jour...", true,false);
+    
+    protected void updateEnregistrementsFromConsole() {
+    	prog = ProgressDialog.show(this, "Veuillez patienter", "Mise à jour...", true,false);
         Thread t = new Thread() {
             public void run() {
-	        	listeEnregistrements.clear();
+            	listeEnregistrements.vider();
 	        	doUpdateEnregistrements();
 
 				if (prog != null) {
@@ -253,5 +270,82 @@ public class EnregistrementsActivity extends ListActivity {
             }
         };
         t.start();
+    }
+
+	private class ListeEnregistrements {
+		private List<String> listeEnregistrements = null;
+		private List<List<String>> detailsEnregistrements = null;
+		
+		ListeEnregistrements() {
+			listeEnregistrements = new ArrayList<String>();
+			detailsEnregistrements = new ArrayList<List<String>>();
+		}
+		
+	    public void vider() {
+	    	listeEnregistrements.clear();
+	    	detailsEnregistrements.clear();
+	    }
+	    
+	    // Ajout d'un enregistrement à la liste, avec détails
+	    public void ajouter(String nom, List<String> details) {
+	    	listeEnregistrements.add(nom);
+	    	detailsEnregistrements.add(details);
+	    }
+	    // Ajout d'un enregistrement à la liste, sans détails == erreur
+	    public void ajouter(String message) {
+	    	listeEnregistrements.add("erreur");
+	    	ArrayList<String> details = new ArrayList<String>();
+	    	details.add(message);
+	    	detailsEnregistrements.add(details);
+	    }
+	    
+	    // Crée la liste des enregistrements
+		public List<HashMap<String, String>> createGroupList() {
+			ArrayList<HashMap<String, String>> result = new ArrayList<HashMap<String, String>>();
+			for( int i = 0 ; i < listeEnregistrements.size() ; ++i ) {
+				HashMap<String, String> map = new HashMap<String, String>();
+				map.put("enregistrement", listeEnregistrements.get(i));
+				result.add(map);
+			}
+			return result;
+		}
+		// Crée la liste des détails pour chaque enregistrement
+		public List<ArrayList<HashMap<String, String>>> createChildList() {
+			ArrayList<ArrayList<HashMap<String, String>>> result = new ArrayList<ArrayList<HashMap<String, String>>>();
+
+			for( int i = 0 ; i < detailsEnregistrements.size() ; ++i ) {
+				ArrayList<HashMap<String, String>> secList = new ArrayList<HashMap<String, String>>();
+				
+				for( int n = 0 ;
+						detailsEnregistrements.get(i) != null && n < detailsEnregistrements.get(i).size();
+						n += 2) {
+					HashMap<String, String> detail = new HashMap<String, String>();
+					detail.put("key", detailsEnregistrements.get(i).get(n));
+					detail.put("value", detailsEnregistrements.get(i).get(n+1));
+					secList.add(detail);
+				}
+				result.add(secList);
+			}
+			return result;
+		}
+	}
+    
+    private void afficherEnregistrements() {
+		SimpleExpandableListAdapter expListAdapter =
+			new SimpleExpandableListAdapter(
+				this,
+				// Group: liste des enregistrements
+				listeEnregistrements.createGroupList(),
+				R.layout.pvr_enregistrements_liste,
+				new String[] { "enregistrement" },
+				new int[] { R.id.pvr_enr_list_item },
+				
+				// Child: liste des détails pour chaque enregistrement
+				listeEnregistrements.createChildList(),
+				R.layout.pvr_enregistrements_liste,
+				new String[] { "key", "value" },
+				new int[] { R.id.pvr_enr_list_key, R.id.pvr_enr_list_value }
+			);
+		setListAdapter( expListAdapter );
     }
 }

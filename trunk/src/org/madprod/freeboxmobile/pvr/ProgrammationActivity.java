@@ -40,17 +40,52 @@ public class ProgrammationActivity extends Activity {
 	Activity progAct = null;
 	final String TAG = "FreeboxMobileProg";
 
+    final Handler mHandler = new Handler();
+
+    // Create runnable for posting
+    final Runnable mUpdateResults = new Runnable() {
+        public void run() {
+        	preparerActivite();
+        }
+    };    
+
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.programmation);
+        setContentView(R.layout.pvr_programmation);
         
         // Mode 24h
         ((TimePicker) findViewById(R.id.pvrPrgHeure)).setIs24HourView(true);
         
         progAct = this;
         
+        /**
+         * Lance un thread qui va télécharger la liste des chaines et des disques,
+         * stocker ça dans des objets et appeler preparerActivite une fois que c'est fait
+         */
+    	prog = ProgressDialog.show(progAct, "Veuillez patienter", "Chargement de la liste des chaînes disponibles...", true,false);
+    	
+        Thread t = new Thread() {
+            public void run() {
+	        	telechargerEtParser();
+
+				if (prog != null) {
+					prog.dismiss();
+					prog = null;
+				}
+				
+                mHandler.post(mUpdateResults);
+            }
+        };
+        t.start();
+    }
+    
+    /**
+     * 
+     * @return true en cas de succès, false sinon
+     */
+    private boolean telechargerEtParser() {        
         // Récupérer chaines et disques durs        
         String url = "http://adsl.free.fr/admin/magneto.pl?id=";
     	url += HttpConnection.getId()+"&idt="+HttpConnection.getIdt();
@@ -74,156 +109,158 @@ public class ProgrammationActivity extends Activity {
         	// Conversion JSON -> objet dans la RAM
         	getListeChaines(strChaines);
         	getListeDisques(strDisques);
+        	
+        	return true;
+        }
+        
+    	Log.d(TAG, "Impossible de télécharger le json");
+    	return false;
+    }
+    
+    private void preparerActivite() {
+		// Remplissage des spinners
+    	remplirSpinner(R.id.pvrPrgChaine);
+    	remplirSpinner(R.id.pvrPrgDisque);
+		
+    	// S'il s'agit d'une modification, remplir le formulaire
+    	final Cursor enr = remplirFiche();
 
-			// Remplissage des spinners
-        	remplirSpinner(R.id.pvrPrgChaine);
-        	remplirSpinner(R.id.pvrPrgDisque);
-			
-        	// S'il s'agit d'une modification, remplir le formulaire
-        	final Cursor enr = remplirFiche();
+        // Activation d'un listener sur le bouton OK
+        final Button button = (Button) findViewById(R.id.PrgBtnOK);
+        button.setOnClickListener(new View.OnClickListener() {
 
-            // Activation d'un listener sur le bouton OK
-            final Button button = (Button) findViewById(R.id.PrgBtnOK);
-            button.setOnClickListener(new View.OnClickListener() {
+            final Handler mHandler = new Handler();
+            String errMsg = null;
 
-                final Handler mHandler = new Handler();
-                String errMsg = null;
-
-                // Create runnable for posting
-                final Runnable mUpdateResults = new Runnable() {
+            // Create runnable for posting
+            final Runnable mUpdateResults = new Runnable() {
+                public void run() {
+                    if (errMsg != null) {
+                    	afficherMsgErreur(errMsg);
+                    }
+            		else {
+            			Toast.makeText(progAct, "Modifications enregistrées!", Toast.LENGTH_SHORT);
+            			//TODO: dismiss activity
+            			//TODO: update DB
+            		}
+                }
+            };
+            
+            public void onClick(View v) {
+            	String texte = enr == null ? "Programmation" : "Modification";
+            	texte += " de l'enregistrement en cours...";                    
+                
+    	    	prog = ProgressDialog.show(progAct, "Enregistrement", texte, true,false);
+            	
+                Thread t = new Thread() {
                     public void run() {
-                        if (errMsg != null) {
-                        	afficherMsgErreur(errMsg);
-                        }
-                		else {
-                			Toast.makeText(progAct, "Modifications enregistrées!", Toast.LENGTH_SHORT);
-                			//TODO: dismiss activity
-                			//TODO: update DB
-                		}
+        	        	errMsg = doAction();
+
+        				if (prog != null) {
+        					prog.dismiss();
+        					prog = null;
+        				}
+        				
+                        mHandler.post(mUpdateResults);
                     }
                 };
-                
-                public void onClick(View v) {
-                	String texte = enr == null ? "Programmation" : "Modification";
-                	texte += " de l'enregistrement en cours...";                    
-                    
-	    	    	prog = ProgressDialog.show(progAct, "Enregistrement", texte, true,false);
-                	
-                    Thread t = new Thread() {
-                        public void run() {
-            	        	errMsg = doAction();
+                t.start();
+            }
+            
+            /**
+             * doAction: traite le formulaire, et envoie la requete à la console de free
+             * @return : String le message d'erreur, le cas échéant, null sinon
+             */
+            private String doAction() {
+        		List<NameValuePair> postVars = new ArrayList<NameValuePair>();
+        		Integer chaine, service, duree, where_id, ide = 0;
+        		int h, m;
+        		String date, emission, heure, minutes;
+        		
+        		// Chaine
+        		Spinner spinnerChaines = (Spinner) findViewById(R.id.pvrPrgChaine);
+        		int chaineId = spinnerChaines.getSelectedItemPosition();
+        		chaine = mChaines.get(chaineId).getChaineId();
+        		if (enr != null) {
+        			ide = enr.getInt(enr.getColumnIndex(EnregistrementsDbAdapter.KEY_IDE));
+        		}
+        		
+        		// Service
+        		//TODO!
+        		service = 0;
+        		
+        		// Date
+        		DatePicker datePicker = (DatePicker) findViewById(R.id.pvrPrgDate);
+        		date  = datePicker.getDayOfMonth() < 10 ? "0" : "";
+        		date += datePicker.getDayOfMonth();
+        		date += "/";
+        		date += datePicker.getMonth()+1 < 10 ? "0" : "";
+        		date += datePicker.getMonth()+1;
+        		date += "/";
+        		date += datePicker.getYear();
+        		
+        		// Heure minutes
+        		TimePicker timePicker = (TimePicker) findViewById(R.id.pvrPrgHeure);
+        		h = timePicker.getCurrentHour();
+        		m = timePicker.getCurrentMinute();
+        		if (h < 10) {	heure = "0" + h; }
+        		else { 			heure = "" + h; }
+        		if (m < 10) {	minutes = "0" + m; }
+        		else { 			minutes = "" + m; }
+        		
+        		// Duree, emission, nom
+        		duree = Integer.parseInt((((TextView) findViewById(R.id.pvrPrgDuree)).getText().toString()));
+        		emission = ((TextView) findViewById(R.id.pvrPrgNom)).getText().toString();
+    
+        		// Disque
+        		int disqueId = ((Spinner) findViewById(R.id.pvrPrgDisque)).getSelectedItemPosition();
+        		where_id = mDisques.get(disqueId).getId();
 
-            				if (prog != null) {
-            					prog.dismiss();
-            					prog = null;
-            				}
-            				
-                            mHandler.post(mUpdateResults);
-                        }
-                    };
-                    t.start();
-                }
-                
-                /**
-                 * doAction: traite le formulaire, et envoie la requete à la console de free
-                 * @return : String le message d'erreur, le cas échéant, null sinon
-                 */
-                private String doAction() {
-            		List<NameValuePair> postVars = new ArrayList<NameValuePair>();
-            		Integer chaine, service, duree, where_id, ide = 0;
-            		int h, m;
-            		String date, emission, heure, minutes;
-            		
-            		// Chaine
-            		Spinner spinnerChaines = (Spinner) findViewById(R.id.pvrPrgChaine);
-            		int chaineId = spinnerChaines.getSelectedItemPosition();
-            		chaine = mChaines.get(chaineId).getChaineId();
-            		if (enr != null) {
-            			ide = enr.getInt(enr.getColumnIndex(EnregistrementsDbAdapter.KEY_IDE));
-            		}
-            		
-            		// Service
-            		//TODO!
-            		service = 0;
-            		
-            		// Date
-            		DatePicker datePicker = (DatePicker) findViewById(R.id.pvrPrgDate);
-            		date  = datePicker.getDayOfMonth() < 10 ? "0" : "";
-            		date += datePicker.getDayOfMonth();
-            		date += "/";
-            		date += datePicker.getMonth()+1 < 10 ? "0" : "";
-            		date += datePicker.getMonth()+1;
-            		date += "/";
-            		date += datePicker.getYear();
-            		
-            		// Heure minutes
-            		TimePicker timePicker = (TimePicker) findViewById(R.id.pvrPrgHeure);
-            		h = timePicker.getCurrentHour();
-            		m = timePicker.getCurrentMinute();
-            		if (h < 10) {	heure = "0" + h; }
-            		else { 			heure = "" + h; }
-            		if (m < 10) {	minutes = "0" + m; }
-            		else { 			minutes = "" + m; }
-            		
-            		// Duree, emission, nom
-            		duree = Integer.parseInt((((TextView) findViewById(R.id.pvrPrgDuree)).getText().toString()));
-            		emission = ((TextView) findViewById(R.id.pvrPrgNom)).getText().toString();
-        
-            		// Disque
-            		int disqueId = ((Spinner) findViewById(R.id.pvrPrgDisque)).getSelectedItemPosition();
-            		where_id = mDisques.get(disqueId).getId();
+        		// Creation des variables POST
+        		postVars.add(new BasicNameValuePair("chaine", chaine.toString()));
+        		postVars.add(new BasicNameValuePair("service", service.toString()));
+        		postVars.add(new BasicNameValuePair("date", date));
+        		postVars.add(new BasicNameValuePair("heure", heure));
+        		postVars.add(new BasicNameValuePair("minutes", minutes));
+        		postVars.add(new BasicNameValuePair("duree", duree.toString()));
+        		postVars.add(new BasicNameValuePair("emission", emission));
+        		postVars.add(new BasicNameValuePair("where_id", where_id.toString()));
+        		
+            	// Post vars pour modification:
+            	//chaine=12&service=0&date=10%2F01%2F2010&heure=23&minutes=09
+            	//&duree=185&emission=pouet&where_id=0&ide=12&submit=MODIFIER+L%27ENREGISTREMENT
+            	if (enr != null) {
+            		postVars.add(new BasicNameValuePair("submit", "MODIFIER+L%27ENREGISTREMENT"));
+            		postVars.add(new BasicNameValuePair("ide", ide.toString()));
+            	}
+            	//pour un ajout:
+            	// chaine=7&service=0&date=07%2F01%2F2010&heure=12&minutes=01
+            	//&duree=134&emission=pouet&where_id=0&submit=PROGRAMMER+L%27ENREGISTREMENT
+            	else {
+            		postVars.add(new BasicNameValuePair("submit", "PROGRAMMER+L%27ENREGISTREMENT"));
+            	}
 
-            		// Creation des variables POST
-            		postVars.add(new BasicNameValuePair("chaine", chaine.toString()));
-            		postVars.add(new BasicNameValuePair("service", service.toString()));
-            		postVars.add(new BasicNameValuePair("date", date));
-            		postVars.add(new BasicNameValuePair("heure", heure));
-            		postVars.add(new BasicNameValuePair("minutes", minutes));
-            		postVars.add(new BasicNameValuePair("duree", duree.toString()));
-            		postVars.add(new BasicNameValuePair("emission", emission));
-            		postVars.add(new BasicNameValuePair("where_id", where_id.toString()));
-            		
-            		//TODO: urlencode(emission)
-            		
-                	// Post vars pour modification:
-                	//chaine=12&service=0&date=10%2F01%2F2010&heure=23&minutes=09
-                	//&duree=185&emission=pouet&where_id=0&ide=12&submit=MODIFIER+L%27ENREGISTREMENT
-                	if (enr != null) {
-                		postVars.add(new BasicNameValuePair("submit", "MODIFIER+L%27ENREGISTREMENT"));
-                		postVars.add(new BasicNameValuePair("ide", ide.toString()));
-                	}
-                	//pour un ajout:
-                	// chaine=7&service=0&date=07%2F01%2F2010&heure=12&minutes=01
-                	//&duree=134&emission=pouet&where_id=0&submit=PROGRAMMER+L%27ENREGISTREMENT
-                	else {
-                		postVars.add(new BasicNameValuePair("submit", "PROGRAMMER+L%27ENREGISTREMENT"));
-                	}
-
-            		// Requete HTTP
-            		String url = "http://adsl.free.fr/admin/magneto.pl?id=";
-            		url += HttpConnection.getId()+"&idt="+HttpConnection.getIdt();
-            		String resultat = HttpConnection.getPage(HttpConnection.postRequest(url, postVars, true));
-            		
-            		int erreurPos = resultat.indexOf("Des erreurs sont survenues :");
-            		if (erreurPos > 0) {
-            			int debutErr, finErr;
-            			String msgErreur;
-            			
-            			msgErreur = resultat.substring(erreurPos);            			
-            			debutErr = msgErreur.indexOf("<span style=\"color: #cc0000\">") + 29;
-            			finErr = msgErreur.substring(debutErr).indexOf("<");
-            			msgErreur = msgErreur.substring(debutErr, debutErr+finErr);
-            			
-            			return "Message retourné par la console de free:\n"+msgErreur;
-            		}
-            		
-            		return null;
-                }
-            });
-        }
-        else {
-        	Log.d("FreeboxVCR", "Impossible de télécharger le json");
-        }
+        		// Requete HTTP
+        		String url = "http://adsl.free.fr/admin/magneto.pl?id=";
+        		url += HttpConnection.getId()+"&idt="+HttpConnection.getIdt();
+        		String resultat = HttpConnection.getPage(HttpConnection.postRequest(url, postVars, true));
+        		
+        		int erreurPos = resultat.indexOf("Des erreurs sont survenues :");
+        		if (erreurPos > 0) {
+        			int debutErr, finErr;
+        			String msgErreur;
+        			
+        			msgErreur = resultat.substring(erreurPos);            			
+        			debutErr = msgErreur.indexOf("<span style=\"color: #cc0000\">") + 29;
+        			finErr = msgErreur.substring(debutErr).indexOf("<");
+        			msgErreur = msgErreur.substring(debutErr, debutErr+finErr);
+        			
+        			return "Message retourné par la console de free:\n"+msgErreur;
+        		}
+        		
+        		return null;
+            }
+        });
     }
 	
 	private void afficherMsgErreur(String msg) {	
@@ -249,7 +286,7 @@ public class ProgrammationActivity extends Activity {
         }
         
         //TODO: faire le remplissage si on vient de l'onglet grille des programmes
-        // pour l'instant �a ne remplit la fiche que d'un enregistrement venant
+        // pour l'instant ça ne remplit la fiche que d'un enregistrement venant
         // de sqlite
         
         long idEnregistrement = bundle.getLong(EnregistrementsDbAdapter.KEY_ROWID);
@@ -302,7 +339,7 @@ public class ProgrammationActivity extends Activity {
 		List<String> liste = new ArrayList<String>();
 		int i, size;
 		
-		// Construction de la liste de String � mettre dans le spinner
+		// Construction de la liste de String à mettre dans le spinner
 		if (id == R.id.pvrPrgChaine) {
 			size = mChaines.size();
 			for (i = 0; i < size; i++) {
