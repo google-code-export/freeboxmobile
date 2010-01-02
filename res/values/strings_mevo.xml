@@ -9,6 +9,7 @@
 	<string name="mevo_context_markunread">Marquer comme non écouté</string>
 	<string name="mevo_context_markread">Marquer comme écouté</string>
 	<string name="mevo_context_sendsms">Envoyer un SMS</string>
+	<string name="mevo_context_addnumber">Ajouter le numéro au répertoire</string>
 	<string name="mevo_option_update">Mettre à jour</string>
 	<string name="mevo_option_config">Configuration</string>
 	<string name="mevo_text_seconds">secondes</string>

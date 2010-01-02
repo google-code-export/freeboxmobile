@@ -30,6 +30,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.Contacts;
+import android.provider.Contacts.Intents.Insert;
 import android.util.Log;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -191,14 +193,20 @@ public class MevoActivity extends ListActivity implements MevoConstants
 		try
 		{
 			info = (AdapterContextMenuInfo) menuInfo;
-		    menu.setHeaderTitle(this.mAdapter.getMessageString((int) info.id,KEY_CALLER));
+			int id = (int)info.id;
+
+		    menu.setHeaderTitle(this.mAdapter.getMessageString(id,KEY_CALLER));
 		    menu.add(0, MEVO_CONTEXT_CALLBACK, 0, R.string.mevo_context_callback);
-		    if (!((MevoMessage)this.mAdapter.getItem((int)info.id)).getStringValue(KEY_SOURCE).equals(""))
+		    if (!((MevoMessage)this.mAdapter.getItem(id)).getStringValue(KEY_SOURCE).equals(""))
 		    {
 		    	menu.add(0, MEVO_CONTEXT_SENDSMS, 0, R.string.mevo_context_sendsms);
 		    }
+		    if (((MevoMessage) this.mAdapter.getItem(id)).getStringValue(KEY_SOURCE).equals(((MevoMessage) this.mAdapter.getItem(id)).getStringValue(KEY_CALLER)))
+		    {
+		    	menu.add(0, MEVO_CONTEXT_ADDNUMBER, 0, R.string.mevo_context_addnumber);
+		    }
 //		    menu.add(0, MEVO_CONTEXT_VIEWDETAILS, 0, R.string.mevo_context_msgdetails);
-		    if (this.mAdapter.getMessageInt((int)info.id, KEY_STATUS) == MSG_STATUS_LISTENED)
+		    if (this.mAdapter.getMessageInt(id, KEY_STATUS) == MSG_STATUS_LISTENED)
 		    {
 			    menu.add(0, MEVO_CONTEXT_MARKUNREAD, 0, R.string.mevo_context_markunread);
 		    }
@@ -269,6 +277,9 @@ public class MevoActivity extends ListActivity implements MevoConstants
 			break;
     		case MEVO_CONTEXT_SENDSMS:
     			mAdapter.sendSMS((int)info.id);
+    		break;
+    		case MEVO_CONTEXT_ADDNUMBER:
+    			mAdapter.addNumber((int)info.id);
     		break;
     		case MEVO_CONTEXT_MARKREAD:
     			mAdapter.setMessageInt((int)info.id, KEY_STATUS,MSG_STATUS_LISTENED);
@@ -563,12 +574,29 @@ public class MevoActivity extends ListActivity implements MevoConstants
     		}
     	}
 
+    	public void addNumber(int id)
+    	{
+			Intent intent = new Intent(Intent.ACTION_INSERT_OR_EDIT);
+			intent.setType(Contacts.People.CONTENT_ITEM_TYPE);
+			intent.putExtra(Insert.PHONE, Uri.parse("tel:"+((MevoMessage)this.getItem(id)).getStringValue(KEY_SOURCE)));
+			mevoActivity.startActivity(intent);
+    	}
+
     	public void sendSMS(int id)
     	{
     		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("smsto:"+((MevoMessage)this.getItem(id)).getStringValue(KEY_SOURCE)));
 			intent.putExtra("sms_body", "Suite à ton message "); 
 			intent.setClassName("com.android.mms", "com.android.mms.ui.ComposeMessageActivity");
 			mevoActivity.startActivity(intent);		
+
+//			Ci dessous : ca serait sympa si ca fonctionnait, ca permettrait de choisir avec quelle appli envoyer le SMS
+// 			Mais ca ne foncionne pas :-(
+/*
+    		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("tel:"+((MevoMessage)this.getItem(id)).getStringValue(KEY_SOURCE)));
+			intent.putExtra("sms_body", "Suite à ton message "); 
+			intent.setType("vnd.android-dir/mms-sms");
+			mevoActivity.startActivity(intent);
+*/		
     	}
 
     	public void logMessageInfos(int id)
