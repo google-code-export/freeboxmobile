@@ -194,12 +194,11 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 		Notification notification = new Notification(icon, tickerText, when);
 		Context context = getApplicationContext();
 		CharSequence contentTitle = getString(R.string.app_name);
-		// TODO : tenir compte de la notif
+
 		Intent notificationIntent = new Intent(this, MevoActivity.class);
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
-
 		notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
-
+		notification.defaults |= Notification.DEFAULT_SOUND;
 		mNotificationManager.notify(NOTIF_MEVO, notification);
 	}
 
