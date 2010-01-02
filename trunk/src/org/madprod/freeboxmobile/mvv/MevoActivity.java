@@ -193,6 +193,10 @@ public class MevoActivity extends ListActivity implements MevoConstants
 			info = (AdapterContextMenuInfo) menuInfo;
 		    menu.setHeaderTitle(this.mAdapter.getMessageString((int) info.id,KEY_CALLER));
 		    menu.add(0, MEVO_CONTEXT_CALLBACK, 0, R.string.mevo_context_callback);
+		    if (!((MevoMessage)this.mAdapter.getItem((int)info.id)).getStringValue(KEY_SOURCE).equals(""))
+		    {
+		    	menu.add(0, MEVO_CONTEXT_SENDSMS, 0, R.string.mevo_context_sendsms);
+		    }
 //		    menu.add(0, MEVO_CONTEXT_VIEWDETAILS, 0, R.string.mevo_context_msgdetails);
 		    if (this.mAdapter.getMessageInt((int)info.id, KEY_STATUS) == MSG_STATUS_LISTENED)
 		    {
@@ -263,6 +267,9 @@ public class MevoActivity extends ListActivity implements MevoConstants
 			case MEVO_CONTEXT_CALLBACK:
 				mAdapter.callback((int)info.id);
 			break;
+    		case MEVO_CONTEXT_SENDSMS:
+    			mAdapter.sendSMS((int)info.id);
+    		break;
     		case MEVO_CONTEXT_MARKREAD:
     			mAdapter.setMessageInt((int)info.id, KEY_STATUS,MSG_STATUS_LISTENED);
     			mAdapter.updateMessageCount();
@@ -554,6 +561,14 @@ public class MevoActivity extends ListActivity implements MevoConstants
     		{
     			Log.e(DEBUGTAG,"Impossible de passer l'appel "+((MevoMessage)this.getItem(id)).getStringValue(KEY_SOURCE),e);
     		}
+    	}
+
+    	public void sendSMS(int id)
+    	{
+    		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("smsto:"+((MevoMessage)this.getItem(id)).getStringValue(KEY_SOURCE)));
+			intent.putExtra("sms_body", "Suite à ton message "); 
+			intent.setClassName("com.android.mms", "com.android.mms.ui.ComposeMessageActivity");
+			mevoActivity.startActivity(intent);		
     	}
 
     	public void logMessageInfos(int id)
