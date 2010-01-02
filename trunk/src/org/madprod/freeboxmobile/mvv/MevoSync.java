@@ -516,9 +516,9 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 
 	public static void showPdDelete()
 	{
-		myProgressDialog = ProgressDialog.show(CUR_ACTIVITY, "Suppression", "Suppression en cours", true,false);
+		myProgressDialog = ProgressDialog.show(CUR_ACTIVITY, "Suppression", "Suppression du serveur en cours...", true,false);
 	}
-	
+
 	public static void dismissPd()
 	{
 		if (myProgressDialog != null)
