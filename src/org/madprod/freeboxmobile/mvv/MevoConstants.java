@@ -13,9 +13,6 @@ import android.view.Menu;
 
 public interface MevoConstants extends Constants
 {
-    // Period between network updates
-    static final int PERIOD = 3600000; // in ms
-
     static final String KEY_SPLASH_MEVO	= "splashscreen_mevo";
 	static final String DIR_MEVO		= DIR_FBM+"/mevo";
 

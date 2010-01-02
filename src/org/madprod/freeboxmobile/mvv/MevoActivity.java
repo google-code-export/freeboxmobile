@@ -2,6 +2,8 @@ package org.madprod.freeboxmobile.mvv;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.madprod.freeboxmobile.HttpConnection;
 import org.madprod.freeboxmobile.ConnectFree;
@@ -33,9 +35,11 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -366,6 +370,10 @@ public class MevoActivity extends ListActivity implements MevoConstants
     	private ArrayList<MevoMessage> messages = new ArrayList<MevoMessage>();
         protected MevoDbAdapter mDbHelper = null;
         
+        SeekBar messageSeekBar;
+        private Timer messageTimer = new Timer();
+        private TimerTask messageUpdateTask = null;
+
         private String msg_unit;
         
         private int			play_current_pos = -1;
@@ -376,8 +384,44 @@ public class MevoActivity extends ListActivity implements MevoConstants
     		mContext = context;
     		mDbHelper = new MevoDbAdapter(mContext);
 			msg_unit = mContext.getString(R.string.mevo_text_seconds);
+			this.messageSeekBar = ((SeekBar) ((Activity) mContext).findViewById(R.id.message_seekbar));
+			this.messageSeekBar.setVisibility(View.GONE);
+			this.messageSeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener()
+			{
+				public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
+				{
+						// Si on modifie la position du player sur cet event, on le fait à chaque timer (250ms)
+                }
+				
+				public void onStartTrackingTouch(SeekBar seekBar)
+				{
+					messageUpdateTask.cancel();
+					messageTimer.purge();
+				}
+				
+				public void onStopTrackingTouch(SeekBar seekBar)
+				{
+					messageTimer.schedule(messageUpdateTask = new UpdateTimeTask(), 250, 250);
+					play_current_mp.seekTo(seekBar.getProgress());
+				}
+			});
     	}
 
+        class UpdateTimeTask extends TimerTask
+        {
+        	public void run()
+        	{
+        		setMessageSeekBar(0, play_current_mp.getCurrentPosition(), play_current_mp.getDuration());
+        	}
+        }
+
+    	public void setMessageSeekBar(int visibility, int position, int maximum)
+    	{
+    		this.messageSeekBar.setMax(maximum);
+    		this.messageSeekBar.setProgress(position);
+    		this.messageSeekBar.setVisibility(visibility);
+    	}
+    	
     	private void hideBouttons()
     	{
     		callbackButton.setFocusable(false);
@@ -393,7 +437,8 @@ public class MevoActivity extends ListActivity implements MevoConstants
     		t.setVisibility(View.GONE);
     		t = ((TextView) ((Activity) mContext).findViewById(R.id.caller_number));
     		t.setText("");
-    		t.setVisibility(View.GONE);    		
+    		t.setVisibility(View.GONE);
+			messageSeekBar.setVisibility(View.GONE);
     	}
 
     	private void getMessages()
@@ -624,6 +669,9 @@ public class MevoActivity extends ListActivity implements MevoConstants
     		Log.d(DEBUGTAG,"OnCompletion ! "+this.play_current_pos);
 			messages.get(this.play_current_pos).setIntValue(KEY_PLAY_STATUS, PLAY_STATUS_STOP, false);
     		notifyDataSetInvalidated();
+    		this.messageUpdateTask.cancel();
+    		this.messageTimer.purge();
+			this.setMessageSeekBar(0, play_current_mp.getDuration(), play_current_mp.getDuration());
 		}
 
 		@Override
@@ -631,6 +679,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
 		{
 			Log.d(DEBUGTAG,"onERROR "+what+" "+extra);
 			play_current_mp.stop();
+			this.setMessageSeekBar(-1, 0, 0);
     		notifyDataSetChanged();
 			return true;
 		}
@@ -672,13 +721,18 @@ public class MevoActivity extends ListActivity implements MevoConstants
 					m.setIntValue(KEY_PLAY_STATUS, PLAY_STATUS_PLAY, false);
 					play_current_mp.setOnCompletionListener(this);
 					play_current_mp.start();
+					this.setMessageSeekBar(0, play_current_mp.getCurrentPosition(), play_current_mp.getDuration());
+					this.messageTimer.schedule(messageUpdateTask = new UpdateTimeTask(), 250, 250);
 					MevoSync.cancelNotif(NOTIF_MEVO);
 				}
 				catch (IllegalStateException e)
 				{
 					m.setIntValue(KEY_PLAY_STATUS, PLAY_STATUS_STOP, false);
 					play_current_mp.stop();
-					Log.d(DEBUGTAG,"MEDIAPLAYER : Illegal State Exception "+e);
+					this.messageUpdateTask.cancel();
+					this.messageTimer.purge();
+					this.setMessageSeekBar(-1, 0, 0);
+					Log.e(DEBUGTAG,"MEDIAPLAYER : Illegal State Exception "+e);
 				}
 			}
 			// sinon, l'utilisateur voulait juste arreter ou reprendre le message courant
@@ -689,12 +743,17 @@ public class MevoActivity extends ListActivity implements MevoConstants
 				{
 					play_current_mp.pause();
 	        		m.setIntValue(KEY_PLAY_STATUS, PLAY_STATUS_PAUSE, false);
+	        		this.setMessageSeekBar(0, play_current_mp.getCurrentPosition(), play_current_mp.getDuration());
+	        		this.messageUpdateTask.cancel();
+					this.messageTimer.purge();
 				}
 				// Sinon on le reprend
 				else
 				{
 					this.play_current_mp.start();
 	        		m.setIntValue(KEY_PLAY_STATUS, PLAY_STATUS_PLAY, false);
+	        		this.setMessageSeekBar(0, play_current_mp.getCurrentPosition(), play_current_mp.getDuration());
+					this.messageTimer.schedule(messageUpdateTask = new UpdateTimeTask(), 250, 250);
 				}
 			}
     		notifyDataSetInvalidated();
