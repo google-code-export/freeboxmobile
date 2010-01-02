@@ -27,7 +27,7 @@ Dans un soucis d'homogénéisation de l'interface, les différentes Activity doi
 Lors de la publication de bugs (ou Issues), choisir le label *Module-nommodule* correspondant à au module sur lequel le bug est reporté.
 
 ==Commit==
-Lors des commit, préciser à quel(s) Issue(s) il participe (ou corrige) dans le message de commit.
+Lors des commit, préciser dans le message à quel(s) Issue(s) le commit participe (ou corrige).
 
 Exemple :
 {{{
@@ -35,6 +35,6 @@ Exemple :
 [ issue 20 ] : implémentation ok (merci à YodanC !)
 }}}
 
-Résultat :
+Résultat visible ici :
 http://code.google.com/p/freeboxmobile/source/detail?r=81
 (les références des issues deviennent cliquables dans lel og)
