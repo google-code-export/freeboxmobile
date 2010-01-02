@@ -30,6 +30,7 @@ public interface MevoConstants extends Constants
 	static final int MEVO_CONTEXT_SEND			= 5;
 	static final int MEVO_CONTEXT_MARKUNREAD    = 6;
 	static final int MEVO_CONTEXT_MARKREAD      = 7;
+	static final int MEVO_CONTEXT_SENDSMS		= 8;
 
     static final int MEVO_OPTION_CONFIG = Menu.FIRST;
     static final int MEVO_OPTION_REFRESH = Menu.FIRST + 1;
