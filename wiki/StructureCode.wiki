@@ -30,8 +30,10 @@ Lors de la publication de bugs (ou Issues), choisir le label *Module-nommodule* 
 Lors des commit, préciser à quel(s) Issue(s) il participe (ou corrige) dans le message de commit.
 
 Exemple :
+{{{{
 [ issue 16 ] : bug correction (timer at boot)
 [ issue 20 ] : implémentation ok (merci à YodanC !)
+}}}}
 
 Résultat :
 http://code.google.com/p/freeboxmobile/source/detail?r=81
