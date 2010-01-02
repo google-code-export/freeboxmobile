@@ -37,4 +37,4 @@ Exemple :
 
 Résultat visible ici :
 http://code.google.com/p/freeboxmobile/source/detail?r=81
-(les références des issues deviennent cliquables dans lel og)
+(les références des issues deviennent cliquables dans le log)
