@@ -1,5 +1,7 @@
 package org.madprod.freeboxmobile;
 
+import org.madprod.freeboxmobile.mvv.MevoSync;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -24,14 +26,14 @@ public class Config extends PreferenceActivity implements OnSharedPreferenceChan
 {
     private boolean inflateOK = false;
     private static AlertDialog myAlertDialog = null;
-    
+
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
 
         getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
-        addPreferencesFromResource(R.xml.prefs);
+        addPreferencesFromResource(R.xml.config_prefs);
 
         HttpConnection.initVars(this);
         // Initialiser d'apres les prefs actuelles
@@ -55,11 +57,6 @@ public class Config extends PreferenceActivity implements OnSharedPreferenceChan
     		myAlertDialog.dismiss();
     	}
     	super.onDestroy();
-    	// TODO : Vérifier le code de retour de checkUpdated() et mettre à jour timer pour relancer connexion
-    	HttpConnection.checkUpdated(
-    			getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_USER, null),
-    			getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_PASSWORD, null)
-    			);
     }
 
     private SharedPreferences getSharedPreferences()
@@ -99,13 +96,19 @@ public class Config extends PreferenceActivity implements OnSharedPreferenceChan
     	{
     		summary = "Actuellement : "+(value==null?"Non renseigné":value);
         }
-    	else
-    	{
-			if (KEY_PASSWORD.equals(key))
-			{
-				summary = "Acuellement : "+(value==null?"Non renseigné":"Renseigné");
-			}
-    	}
+    	else if (KEY_PASSWORD.equals(key))
+		{
+			summary = "Acuellement : "+(value==null?"Non renseigné":"Renseigné");
+		}
+    	else if (KEY_MEVO_PREFS_FREQ.equals(key))
+		{
+//			summary = "Acuellement : "+(value==null?"Non renseigné":value);
+    		if (value != null)
+    		{
+    			MevoSync.changeTimer(Integer.decode(value), this);
+    		}
+		}
+
     	if (summary!=null)
     	{
     		PreferenceScreen ps = getPreferenceScreen();
@@ -137,8 +140,7 @@ public class Config extends PreferenceActivity implements OnSharedPreferenceChan
 			myAlertDialog = new AlertDialog.Builder(this).create();
 			myAlertDialog.setTitle(null);
 			myAlertDialog.setMessage(
-				"Pour avoir accès à votre messagerie vocale Freebox "+
-				"veuillez saisir votre identifiant Free "+
+				"Veuillez saisir votre identifiant Free "+
 				"ainsi que votre mot de passe."
 			);
 			myAlertDialog.setButton("Ok", new DialogInterface.OnClickListener()

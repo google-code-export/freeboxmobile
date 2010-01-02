@@ -23,4 +23,20 @@
 	<string name="mevo_msgtype_pager">Pager</string>
 	<string name="mevo_hidden_number">Numéro masqué</string>
 	<string name="mevo_speaker">Haut Parleur</string>
+	<string-array name="entries_list_pref_pollinterval">
+		<item>Jamais</item>
+		<item>30 minutes</item>
+		<item>1 heure</item>
+		<item>4 heures</item>
+		<item>8 heures</item>
+		<item>1 jour</item>
+	</string-array>
+	<string-array name="entryvalue_list_pref_pollinterval">
+		<item>0</item>
+		<item>1800000</item>
+		<item>3600000</item>
+		<item>14400000</item>
+		<item>28800000</item>
+		<item>86400000</item>
+	</string-array>
 </resources>

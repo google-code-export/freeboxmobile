@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.madprod.freeboxmobile.HttpConnection;
+import org.madprod.freeboxmobile.ConnectFree;
 import org.madprod.freeboxmobile.mvv.MevoMessage;
 import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.ServiceUpdateUIListener;
@@ -24,6 +25,7 @@ import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnErrorListener;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -290,7 +292,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
 	        case MEVO_OPTION_CONFIG:
 	        	Intent i = new Intent();
 		    	i.setClassName("org.madprod.freeboxmobile", "org.madprod.freeboxmobile.Config");
-		    	startActivity(i);
+		    	startActivityForResult(i,ACTIVITY_CONFIG);
 		    	//TODO : utiliser startActivityResult et lancer une connection si prefs mis à jour
 	            return true;
 	        case MEVO_OPTION_REFRESH:
@@ -298,6 +300,25 @@ public class MevoActivity extends ListActivity implements MevoConstants
 	        	return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+   @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent)
+    {
+        super.onActivityResult(requestCode, resultCode, intent);
+        switch(requestCode)
+        {
+        	case ACTIVITY_CONFIG:
+            	if (HttpConnection.checkUpdated(
+            			getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_USER, null),
+            			getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_PASSWORD, null)
+            			))
+            	{
+            		ConnectFree.setActivity(mevoActivity);
+            		new ConnectFree().execute();
+            	}
+        		break;
+        }
     }
 
 	@Override
@@ -473,7 +494,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
 				}
 			}
 			hideBouttons();
-    		MevoSync.deleteMsg(((MevoMessage)this.getItem(id)).getStringValue(KEY_NAME), mevoActivity);
+			new DeleteMessage().execute(((MevoMessage)this.getItem(id)).getStringValue(KEY_NAME));
     	}
 
     	public void callback(int id)
@@ -528,7 +549,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
 			{
 				holder = new ViewHolder();
 				LayoutInflater inflater = LayoutInflater.from(this.mContext);
-				convertView = inflater.inflate(R.layout.messages_row, null);
+				convertView = inflater.inflate(R.layout.mevo_messages_row, null);
 				
 				holder.quand = (TextView)convertView.findViewById(R.id.quand);
 				holder.length = (TextView)convertView.findViewById(R.id.length);
@@ -685,6 +706,28 @@ public class MevoActivity extends ListActivity implements MevoConstants
 			TextView	qui;
 			TextView	length;
 			ImageView	bouton;
+		}
+		
+	    private class DeleteMessage extends AsyncTask<String, Void, Void>
+	    {
+			@Override
+			protected Void doInBackground(String... name)
+			{
+				MevoSync.deleteMsg(name[0], mevoActivity);
+				return null;
+			}
+
+			@Override
+			protected void onPreExecute()
+			{
+				MevoSync.showPdDelete();
+			}
+
+			@Override
+			protected void onPostExecute(Void r)
+			{
+				MevoSync.dismissPd();
+			}
 		}
     }
 }

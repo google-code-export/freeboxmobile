@@ -90,7 +90,7 @@ public class EnregistrementsActivity extends ExpandableListActivity {
     }
     
     private boolean login() {
-    	return HttpConnection.connectFreeUI(this) == HttpConnection.CONNECT_CONNECTED;
+    	return HttpConnection.connectFreeUI() == HttpConnection.CONNECT_CONNECTED;
     }
     
     private void erreur(String msgErreur) {

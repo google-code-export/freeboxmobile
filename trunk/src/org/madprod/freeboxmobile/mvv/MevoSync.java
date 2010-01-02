@@ -21,7 +21,6 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Environment;
@@ -262,7 +261,7 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 					{
 						public void run()
 						{
-							_showConnectionError();
+			            	HttpConnection.showError(CUR_ACTIVITY);
 						}
 					});
 				}
@@ -271,39 +270,26 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 		return newmsg;
 	}
 
-    private static void _showConnectionError()
-    {
-            if (CUR_ACTIVITY != null)
-            {
-                    myAlertDialog = new AlertDialog.Builder(CUR_ACTIVITY).create();
-                    myAlertDialog.setTitle("Connexion impossible !");
-                    myAlertDialog.setMessage(
-                            "Impossible de se connecter au portail de Free.\n"+
-                            "Vérifiez votre identifiant, " +
-                            "votre mot de passe et votre "+
-                            "connexion à Internet (Wifi, 3G...)."
-                    );
-                    myAlertDialog.setButton("Ok", new DialogInterface.OnClickListener()
-                            {
-                                    public void onClick(DialogInterface dialog, int which)
-                                    {
-                                            dialog.dismiss();
-                                            myAlertDialog = null;
-                                    }
-                            }
-                    );
-                    myAlertDialog.show(); 
-            }
-    }
-
-	private static void _changeTimer(int ms)
+	/**
+	 * Change timer to ms value (or cancel if ms == 0)
+	 * @param ms : timer value in ms
+	 * @param a : activity
+	 */
+	public static void changeTimer(int ms, Activity a)
 	{
-		AlarmManager amgr = (AlarmManager)CUR_ACTIVITY.getSystemService(HomeActivity.ALARM_SERVICE);
-		Intent i = new Intent(CUR_ACTIVITY, OnMevoAlarmReceiver.class);
-		PendingIntent pi = PendingIntent.getBroadcast(CUR_ACTIVITY, 0, i, 0);
-		//TODO : Take into account ms
-		amgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), PERIOD, pi);
-		Log.i(DEBUGTAG, "Timer  changed to "+ms);
+		AlarmManager amgr = (AlarmManager) a.getSystemService(HomeActivity.ALARM_SERVICE);
+		Intent i = new Intent(a, OnMevoAlarmReceiver.class);
+		PendingIntent pi = PendingIntent.getBroadcast(a, 0, i, 0);
+		if (ms != 0)
+		{
+			amgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), ms, pi);
+			Log.i(DEBUGTAG, "Timer  changed to "+ms);
+		}
+		else
+		{
+			amgr.cancel(pi);
+			Log.i(DEBUGTAG, "Timer canceled");			
+		}
 	}
 
 	// ------------------------------------------------------------------------
@@ -375,11 +361,11 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 	   			final String partURL = "&tel="+tel+"&fichier="+curs.getString(curs.getColumnIndex(KEY_NAME));
 
 	   			// On lance la suppression sur le serveur dans un thread séparé car ca peut être long
-				Thread t = new Thread(new Runnable() {
+/*				Thread t = new Thread(new Runnable() {
 					@Override
 		            public void run()
 		        	{
-						// (re)connection afin d'avoir un id et idt frais :)
+*/						// (re)connection afin d'avoir un id et idt frais :)
 			   			String url = mevoUrl+"efface_message.pl?id="+HttpConnection.getId()+"&idt="+HttpConnection.getIdt()+partURL;
 						Log.d(DEBUGTAG,"Deleting message"+url);
 
@@ -391,11 +377,10 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 						}
 						else
 							Log.d(DEBUGTAG, "NOT Deleting on server");
-		        	}
-		        });
-		//		t.setDaemon(true);
-		        t.setName("FBM Delete Message");
-		        t.start();
+//		        	}
+//		        });
+//		        t.setName("FBM Delete Message");
+//		        t.start();
 			}
 		}
 		// Puis on marque le message comme effacé dans la base
@@ -528,4 +513,18 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 		Log.d(DEBUGTAG,"getmessage end "+newmsg);
 		return newmsg;
  	}
+
+	public static void showPdDelete()
+	{
+		myProgressDialog = ProgressDialog.show(CUR_ACTIVITY, "Suppression", "Suppression en cours", true,false);
+	}
+	
+	public static void dismissPd()
+	{
+		if (myProgressDialog != null)
+		{
+			myProgressDialog.dismiss();
+			myProgressDialog = null;
+		}
+	}
 }
