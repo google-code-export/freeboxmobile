@@ -1,5 +1,5 @@
 #summary Historique des versions publiques de FreeboxMobile.
-#labels Featured,Private
+#labels Featured
 
 = Les différentes versions de !FreeboxMobile =
 
