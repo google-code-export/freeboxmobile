@@ -24,8 +24,10 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.message.BasicNameValuePair; 
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.util.Log;
  
 /**
@@ -50,7 +52,8 @@ public class HttpConnection implements Constants
 	private static final String serverUrl = "http://subscribe.free.fr/login/login.pl";
 	
 	public static ProgressDialog httpProgressDialog = null;
-
+	private static Activity activity = null;
+	
     /*
     private void _getPrefs()
     {
@@ -66,7 +69,7 @@ public class HttpConnection implements Constants
 	 * Doit être appelé dans le onCreate de chaque Activity
 	 * @param a activity
 	 */
-	public static void initVars(final Activity a)
+	public static void initVars(Activity a)
 	{
 		// On teste pour si on entre ici suite
         if (httpProgressDialog != null)
@@ -76,6 +79,7 @@ public class HttpConnection implements Constants
         }
 		login = a.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_USER, null);
 		password = a.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_PASSWORD, null);
+		ConnectFree.setActivity(a);
 	}
 
 	/**
@@ -100,20 +104,56 @@ public class HttpConnection implements Constants
 		return (idt);
 	}
 
+	public static void showProgressDialog(Activity a)
+	{
+		httpProgressDialog = ProgressDialog.show(a, "Mon Compte Free", "Connexion en cours ...", true,false);
+	}
+	
+	public static void dismissPd()
+	{
+		if (httpProgressDialog != null)
+		{
+			httpProgressDialog.dismiss();
+			httpProgressDialog = null;
+		}
+	}
+
+	public static void showError(Activity a)
+	{
+		AlertDialog d = new AlertDialog.Builder(a).create();
+		d.setTitle("Connexion impossible");
+		d.setMessage(
+				"Impossible de se connecter au portail de Free.\n"+
+				"Vérifiez votre identifiant, " +
+				"votre mot de passe et votre "+	
+				"connexion à Internet (Wifi, 3G...)."
+		);
+		d.setButton("Ok", new DialogInterface.OnClickListener()
+			{
+				public void onClick(DialogInterface dialog, int which)
+				{
+					dialog.dismiss();
+				}
+			}
+		);
+		d.show();
+	}
+
 	/*
 	 * Se connecte à Free en affichant une progress Dialog si nécessaire
 	 */
-	public static int connectFreeUI(final Activity a)
+	// TODO : Remove this function
+	public static int connectFreeUI()
 	{
-		if ((login != null) && (password != null) && (connectionStatus != CONNECT_LOGIN_FAILED))// && (id == null)
+		if ((activity != null) && (login != null) && (password != null) && (connectionStatus != CONNECT_LOGIN_FAILED))// && (id == null)
 		{
 			if (connectionStatus != CONNECT_CONNECTED)
 			{
-					a.runOnUiThread(new Runnable()
+					activity.runOnUiThread(new Runnable()
 					{
 						public void run()
 						{
-							httpProgressDialog = ProgressDialog.show(a, "Mon Compte Free", "Connexion en cours ...", true,false);
+							httpProgressDialog = ProgressDialog.show(activity, "Mon Compte Free", "Connexion en cours ...", true,false);
 						}
 					});
 			}
@@ -121,7 +161,7 @@ public class HttpConnection implements Constants
 				httpProgressDialog = null;
 		}
 		// TODO : Mettre la connexion dans un thread
-		connectionStatus = HttpConnection.connectFree();
+		connectionStatus = connectFree();
         if (httpProgressDialog != null)
         {
            	httpProgressDialog.dismiss();

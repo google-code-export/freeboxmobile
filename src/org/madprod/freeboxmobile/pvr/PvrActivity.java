@@ -18,7 +18,7 @@ public class PvrActivity extends TabActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pvr);
         
-        connectionStatus = HttpConnection.connectFreeUI(this);
+        connectionStatus = HttpConnection.connectFreeUI();
 
         mTabHost = getTabHost();
         

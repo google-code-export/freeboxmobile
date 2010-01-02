@@ -1,16 +1,17 @@
 package org.madprod.freeboxmobile.home;
 
-import org.madprod.freeboxmobile.Constants;
+import org.madprod.freeboxmobile.ConnectFree;
 import org.madprod.freeboxmobile.HttpConnection;
 import org.madprod.freeboxmobile.R;
-import org.madprod.freeboxmobile.mvv.MevoSync;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -27,18 +28,39 @@ import android.widget.Button;
 
 public class HomeActivity extends Activity implements HomeConstants
 {
+	private Activity homeActivity;
+
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
 		Log.d(DEBUGTAG,"MainActivity Create "+getString(R.string.app_version));
         super.onCreate(savedInstanceState);
 
+		// On teste si on est dans le cas d'un premier lancement pour cette version de l'appli
+		SharedPreferences mgr = PreferenceManager.getDefaultSharedPreferences(this);
+
+		// Simulate first launch (for test only, these lines have to be commented for release)
+/*		editor.remove(KEY_MEVO_PREFS_FREQ);
+		editor.remove(KEY_SPLASH);
+		editor.commit();
+		editor = mgr.edit();
+*/
+		if (!mgr.getString(KEY_SPLASH, "0").equals(getString(R.string.app_version)))
+		{
+	        Log.d(DEBUGTAG,Environment.getExternalStorageDirectory().toString()+"/freeboxmobile");
+			Editor editor = mgr.edit();
+			editor.putString(KEY_SPLASH, getString(R.string.app_version));
+			editor.commit();
+			displayAbout();
+		}
+
+        homeActivity = this;
         if (Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED) == false)
         	showSdCardError();
-		setContentView(R.layout.main);
+		setContentView(R.layout.home_main);
 		HttpConnection.initVars(this);
 		// TODO : est-ce vraiment utile below ?
-		MevoSync.setActivity(this);
+		//MevoSync.setActivity(this);
 
         Button phoneButton = (Button) findViewById(R.id.phone);
         Button configButton = (Button) findViewById(R.id.config);
@@ -51,8 +73,8 @@ public class HomeActivity extends Activity implements HomeConstants
 					{
 				    	Intent i = new Intent();
 				    	i.setClassName("org.madprod.freeboxmobile", "org.madprod.freeboxmobile.Config");
-//				    	startActivityForResult(i, ACTIVITY_CONFIG);
-				    	startActivity(i);
+				    	startActivityForResult(i, ACTIVITY_CONFIG);
+//				    	startActivity(i);
 				    }
 				}
 			);
@@ -87,23 +109,6 @@ public class HomeActivity extends Activity implements HomeConstants
 					}
 				}
 			);
-		// On teste si on est dans le cas d'un premier lancement pour cette version de l'appli
-		SharedPreferences mgr = PreferenceManager.getDefaultSharedPreferences(this);
-
-		// Simulate first launch (for test only, these lines have to be commented for release)
-/*		Editor e = mgr.edit();
-		e.remove(KEY_SPLASH);
-		e.commit();
-*/	
-		if (!mgr.getString(KEY_SPLASH, "0").equals(getString(R.string.app_version)))
-		{
-	        Log.d(DEBUGTAG,Environment.getExternalStorageDirectory().toString()+"/freeboxmobile");
-
-			Editor editor = mgr.edit();
-			editor.putString(KEY_SPLASH, getString(R.string.app_version));
-			editor.commit();
-			displayAbout();
-		}
     }
 
     @Override
@@ -111,7 +116,8 @@ public class HomeActivity extends Activity implements HomeConstants
     {
     	Log.d(DEBUGTAG,"MainActivity Start");
     	super.onStart();
-    	MevoSync.setActivity(this);
+    	// TODO : vérif que la suppression de la ligne ci dessous est ok
+    	//    	MevoSync.setActivity(this);
     }
     
     @Override
@@ -127,7 +133,8 @@ public class HomeActivity extends Activity implements HomeConstants
     {
     	Log.d(DEBUGTAG,"MainActivity Destroy");
     	super.onDestroy();
-    	MevoSync.setActivity(null);
+    	// TODO : vérif que la suppression de la ligne ci dessous est ok
+//    	MevoSync.setActivity(null);
     }
 
     @Override
@@ -191,7 +198,17 @@ public class HomeActivity extends Activity implements HomeConstants
         switch(requestCode)
         {
         	case ACTIVITY_CONFIG:
+            	if (HttpConnection.checkUpdated(
+            			getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_USER, null),
+            			getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_PASSWORD, null)
+            			))
+            	{
+            		ConnectFree.setActivity(homeActivity);
+            		new ConnectFree().execute();
+            	}
         		break;
         }
     }
+
+
 }
