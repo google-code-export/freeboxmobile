@@ -8,7 +8,7 @@ Prédiction des versions / fonctionnalités. Mais rien n'est figé, ca ne se fer
  * 0.17 : Programmer ses enregistrements FreeboxTV à distance (programmation simple)
  * 0.18 : Consultation des programmations TV en cours
  * 0.20 : Séparer l'application en modules différents (l'utilisateur ne sera pas obligé d'installer toutes les fonctionnalités)
- * 0.25 : Lire l'actualité Freenautes à partir de son mobile ([http://www.freenews.fr Freenews], [http://www.universfreebox.com Univers Freebox]...) via l'application !FreeboxMobile
+ * 0.25 : Lire l'actualité Freenautes à partir de son mobile ([http://www.universfreebox.com Univers Freebox]...) via l'application !FreeboxMobile
  * 0.28 : Etre notifié d'un nouveau message sur sa messagerie vocale Freebox par réception d'un email sur son compte gmail
  * 0.29 : Consulter et archiver l'historique des appels de sa Freebox à partir de son mobile (avec un lien numéro de téléphone - contact)
  * 0.30 : Programmer ses enregistrements FreeboxTV à distance à partir du guide des programmes
