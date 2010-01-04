@@ -139,6 +139,7 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 			{
 				myAlertDialog.show();
 			}
+			mNotificationManager= (NotificationManager) activity.getSystemService(NOTIFICATION_SERVICE);
 		}
 	}
 
