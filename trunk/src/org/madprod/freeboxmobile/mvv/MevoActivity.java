@@ -85,7 +85,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
         callbackButton = (Button) findViewById(R.id.MevoButtonCallback);
         deleteButton = (Button) findViewById(R.id.MevoButtonDelete);
 		if (mAudioManager.getMode() != AudioManager.MODE_IN_CALL)
-			speakerButton.setTextColor(Color.BLACK);
+			speakerButton.setTextColor(Color.GREEN);
 		else
 			speakerButton.setTextColor(Color.WHITE);
         speakerButton.setOnClickListener(
@@ -103,7 +103,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
 						{
 							mAudioManager.setMode(AudioManager.MODE_NORMAL);
 							mAudioManager.setSpeakerphoneOn(true);
-							speakerButton.setTextColor(Color.BLACK);
+							speakerButton.setTextColor(Color.GREEN);
 						}
 				    }
 				}
