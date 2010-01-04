@@ -1,5 +1,6 @@
-#summary Revue de Presse de Freebox Mobile
 #labels Featured
+
+#summary Revue de Presse de Freebox Mobile
 
 = Revue de Presse =
 
@@ -21,3 +22,6 @@ Ici se trouvent des liens vers les articles qui parlent de !FreeboxMobile
  * [http://www.degroupnews.com/actualite/n4356-freebox_mobile-logiciel-telephonie-mobilite-internet.html DegroupNews]
  * [http://www.lexpansion.com/economie/actualite-high-tech/les-services-de-free-accessibles-depuis-un-smartphone-android_221217.html L'Expansion]
  * [http://hightech.nouvelobs.com/actualites/depeche/20100101.ZDN1151/les_services_de_free_accessibles_depuis_un_smartphone_a.html NouvelObs]
+
+== Janvier 2010 ==
+ * [http://www.pcworld.fr/2010/01/04/high-tech/telephonie-voip/freebox-mobile-gerer-son-compte-depuis-mobile-android-est-possible/467241/ PCWorld]
