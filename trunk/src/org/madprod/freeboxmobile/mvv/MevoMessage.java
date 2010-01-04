@@ -5,7 +5,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.madprod.freeboxmobile.Constants;
 import org.madprod.freeboxmobile.R;
 
 import android.content.ContentResolver;
