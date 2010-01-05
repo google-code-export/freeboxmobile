@@ -2,9 +2,9 @@
 #labels Featured
 
 = Lexique =
-HOME : La page d'accueil
-MEVO : Messagerie Vocale = Module "Téléphone"
-CONFIG : Les différents panneaux de configuration
+HOME : La page d'accueil<br>
+MEVO : Messagerie Vocale = Module "Téléphone"<br>
+CONFIG : Les différents panneaux de configuration<br>
 PVR : La programmation d'enregistrements à distance = Module "Magnétoscope"
 
 = Versions publiques de !FreeboxMobile =
