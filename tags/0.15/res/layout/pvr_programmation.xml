@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:scrollbars="none">
+    
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+        
+		<TextView android:text="@string/pvrTxtChaine" android:id="@+id/TxtChaine" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+		<Spinner android:id="@+id/pvrPrgChaine" android:layout_width="fill_parent" android:layout_height="wrap_content"></Spinner>
+		<TextView android:text="@string/pvrTxtDate" android:id="@+id/TxtDate" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+		<DatePicker android:id="@+id/pvrPrgDate" android:layout_width="wrap_content" android:layout_height="wrap_content"></DatePicker>
+		<TextView android:text="@string/pvrTxtHeure" android:id="@+id/TxtHeure" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+		<TimePicker android:id="@+id/pvrPrgHeure" android:layout_width="wrap_content" android:layout_height="wrap_content"></TimePicker>
+		<TextView android:text="@string/pvrTxtDuree" android:id="@+id/TxtDuree" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+		<EditText android:text="120" android:id="@+id/pvrPrgDuree" android:layout_width="wrap_content" android:layout_height="wrap_content" android:lines="1" android:digits="0123456789" android:inputType="number" android:maxLength="3"></EditText>
+		<TextView android:text="@string/pvrTxtNom" android:id="@+id/TxtNom" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+		<EditText android:text="@string/pvrNomDefaut" android:id="@+id/pvrPrgNom" android:layout_width="fill_parent" android:layout_height="wrap_content"></EditText>
+		<TextView android:text="@string/pvrTxtDisque" android:id="@+id/TxtDisque" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+		<Spinner android:id="@+id/pvrPrgDisque" android:layout_width="fill_parent" android:layout_height="wrap_content"></Spinner>
+		<Button android:text="@string/pvrPrgBtnOK" android:id="@+id/PrgBtnOK" android:layout_width="fill_parent" android:layout_height="wrap_content" android:clickable="true"></Button>
+	
+
+</LinearLayout>
+</ScrollView>
+	

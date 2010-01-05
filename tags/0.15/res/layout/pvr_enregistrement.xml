@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+        
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1">
+        
+		<TextView android:text="@string/pvrTxtChaine" android:id="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+		<TextView android:text="@+id/pvrDispChaine" android:id="@+id/pvrDispChaine" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+		
+		<TextView android:text="@string/pvrTxtDate" android:id="@+id/TextView02" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+		<TextView android:text="@+id/pvrDispDate" android:id="@+id/pvrDispDate" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+		
+		<TextView android:text="@string/pvrTxtHeure" android:id="@+id/TextView03" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+		<TextView android:text="@+id/pvrDispHeure" android:id="@+id/pvrDispHeure" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+		
+		<TextView android:text="@string/pvrTxtDuree" android:id="@+id/TextView04" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+		<TextView android:text="@+id/pvrDispDuree" android:id="@+id/pvrDispDuree" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+		
+		<TextView android:text="@string/pvrTxtNom" android:id="@+id/TextView05" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+		<TextView android:text="@+id/pvrDispNom" android:id="@+id/pvrDispNom" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+
+	</LinearLayout>
+
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1">
+        
+        <Button android:text="@string/pvrTxtModif" android:id="@+id/pvrBtnModif" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
+		<Button android:text="@string/pvrTxtSuppr" android:id="@+id/pvrBtnSuppr" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
+		
+	</LinearLayout>
+
+</LinearLayout>
