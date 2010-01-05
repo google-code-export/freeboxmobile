@@ -6,11 +6,12 @@ HOME : La page d'accueil<br>
 MEVO : Messagerie Vocale Visuelle = Module "Téléphone"<br>
 CONFIG : Les différents panneaux de configuration<br>
 PVR : La programmation d'enregistrements à distance = Module "Magnétoscope"
+SERVICES : tout ce qui tourne en tâche de fond
 
 = Versions publiques de !FreeboxMobile =
 
 ||  *Date*  ||*Release*||*Version*||*Modifications*||
-||22/12/2009||    1    ||  0.10   ||- Authentification Free<br>- Messagerie Vocale Visuelle<br>- Notification de nouveaux messages||
+||22/12/2009||    1    ||  0.10   ||- CONFIG : Authentification Free<br>- MEVO : Première version<br>- SERVICES : Notification de nouveaux messages||
 ||24/12/2009||    2    || [http://code.google.com/p/freeboxmobile/downloads/detail?name=freeboxmobile-0.10.1.apk 0.10.1]  ||- MEVO : Format des dates amélioré<br>- Installation sur HTC Tatoo<br>- Nettoyage de code||
 ||05/01/2010||    3    ||  [http://code.google.com/p/freeboxmobile/downloads/detail?name=freeboxmobile-0.15.apk 0.15]   ||- MEVO : !ProgressBar durant écoute des messages<br>- MEVO : émission d'un son lors de la notification de nouveaux messages<br>- MEVO : Menu contextuel "répondre par SMS"<br>- MEVO : Menu contextuel "Ajouter le numéro au répertoire"<br>- MEVO : Bouton "Haut Parleur" plus clair<br>- CONFIG : Diverses améliorations||
 
