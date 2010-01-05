@@ -149,7 +149,7 @@ public class HomeActivity extends Activity implements HomeConstants
     protected void onResume()
     {
 		Log.d(DEBUGTAG,"MainActivity Resume");
-    	super.onPause();
+    	super.onResume();
     }
     
 
