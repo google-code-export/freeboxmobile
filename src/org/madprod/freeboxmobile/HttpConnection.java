@@ -52,6 +52,7 @@ public class HttpConnection implements Constants
 	private static final String serverUrl = "http://subscribe.free.fr/login/login.pl";
 	
 	public static ProgressDialog httpProgressDialog = null;
+	public static AlertDialog errorAlert = null;
 	private static Activity activity = null;
 	
     /*
@@ -74,12 +75,28 @@ public class HttpConnection implements Constants
 		// On teste pour si on entre ici suite
         if (httpProgressDialog != null)
         {
-           	httpProgressDialog.dismiss();
-           	httpProgressDialog = null;
+           	httpProgressDialog.show();
+        }
+        if (errorAlert != null)
+        {
+           	errorAlert.show();
         }
 		login = a.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_USER, null);
 		password = a.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_PASSWORD, null);
 		ConnectFree.setActivity(a);
+	}
+
+	public static void closeDisplay()
+	{
+		if (httpProgressDialog != null)
+        {
+           	httpProgressDialog.dismiss();
+        }
+       if (errorAlert != null)
+        {
+           	errorAlert.dismiss();
+        }
+//		ConnectFree.setActivity(null);
 	}
 
 	/**
@@ -120,23 +137,24 @@ public class HttpConnection implements Constants
 
 	public static void showError(Activity a)
 	{
-		AlertDialog d = new AlertDialog.Builder(a).create();
-		d.setTitle("Connexion impossible");
-		d.setMessage(
+		errorAlert = new AlertDialog.Builder(a).create();
+		errorAlert.setTitle("Connexion impossible");
+		errorAlert.setMessage(
 				"Impossible de se connecter au portail de Free.\n"+
 				"Vérifiez votre identifiant, " +
 				"votre mot de passe et votre "+	
 				"connexion à Internet (Wifi, 3G...)."
 		);
-		d.setButton("Ok", new DialogInterface.OnClickListener()
+		errorAlert.setButton("Ok", new DialogInterface.OnClickListener()
 			{
 				public void onClick(DialogInterface dialog, int which)
 				{
 					dialog.dismiss();
+					errorAlert = null;
 				}
 			}
 		);
-		d.show();
+		errorAlert.show();
 	}
 
 	/*
@@ -202,29 +220,32 @@ public class HttpConnection implements Constants
     		nameValuePairs.add(new BasicNameValuePair("login", login));
     		nameValuePairs.add(new BasicNameValuePair("pass", password)); 
     		BufferedReader br = postRequest(serverUrl, nameValuePairs, true);
-    		String s = null;
-    		String priv = null;
-    		while ( (s=br.readLine())!=null )
+    		if (br != null)
     		{
-    			if (s.indexOf("idt=")>-1)
-    			{
-    				priv = s.substring(s.indexOf("idt=")+4);
-    				if (priv.indexOf("&")>-1)
-    				{
-    					priv = priv.substring(0, priv.indexOf('&'));
-    				}
-    				else
-    				{
-    					priv = priv.substring(0, priv.indexOf('"'));
-    				}
-    				idt = priv;
-    				Log.d(DEBUGTAG,"idt :"+priv);
-    				priv = s.substring(s.indexOf("?id=")+4);
-    				priv = priv.substring(0, priv.indexOf('&'));
-    				id = priv;
-    				Log.d(DEBUGTAG,"id :"+priv);
-    				break;
-    			}
+	    		String s = null;
+	    		String priv = null;
+	    		while ( (s=br.readLine())!=null )
+	    		{
+	    			if (s.indexOf("idt=")>-1)
+	    			{
+	    				priv = s.substring(s.indexOf("idt=")+4);
+	    				if (priv.indexOf("&")>-1)
+	    				{
+	    					priv = priv.substring(0, priv.indexOf('&'));
+	    				}
+	    				else
+	    				{
+	    					priv = priv.substring(0, priv.indexOf('"'));
+	    				}
+	    				idt = priv;
+	    				Log.d(DEBUGTAG,"idt :"+priv);
+	    				priv = s.substring(s.indexOf("?id=")+4);
+	    				priv = priv.substring(0, priv.indexOf('&'));
+	    				id = priv;
+	    				Log.d(DEBUGTAG,"id :"+priv);
+	    				break;
+	    			}
+	    		}
     		}
         }
         catch (Exception e)

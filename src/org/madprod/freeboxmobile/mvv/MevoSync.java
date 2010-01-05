@@ -147,8 +147,7 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 	{
 		UI_UPDATE_LISTENER = l;
 	}
-	
-	
+
 	@Override
 	public void onCreate()
 	{
