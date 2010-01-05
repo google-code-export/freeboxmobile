@@ -252,6 +252,9 @@ public class MevoMessage implements MevoConstants
 	public void releaseMP()
 	{
 		if (mp != null)
+		{
 			mp.release();
+			mp = null;
+		}
 	}
 }

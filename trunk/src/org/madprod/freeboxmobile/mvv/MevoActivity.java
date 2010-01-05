@@ -360,8 +360,10 @@ public class MevoActivity extends ListActivity implements MevoConstants
 		super.onPause();
 		mAdapter.stopPlay();
 		mAdapter.releaseMP();
+		MevoSync.setActivity(null);
+		HttpConnection.closeDisplay();
 	}
-	
+
 	private void displayAboutMevo()
     {	
     	AlertDialog d = new AlertDialog.Builder(this).create();
@@ -557,6 +559,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
 				}
 			}
 			hideBouttons();
+			((MevoMessage) this.getItem(id)).releaseMP();
 			new DeleteMessage().execute(((MevoMessage)this.getItem(id)).getStringValue(KEY_NAME));
     	}
 

@@ -140,6 +140,7 @@ public class HomeActivity extends Activity implements HomeConstants
     {
 		Log.d(DEBUGTAG,"MainActivity Pause");
     	super.onPause();
+		HttpConnection.closeDisplay();
     }
     
     @Override
@@ -201,7 +202,7 @@ public class HomeActivity extends Activity implements HomeConstants
             			getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_PASSWORD, null)
             			))
             	{
-            		ConnectFree.setActivity(homeActivity);
+            		HttpConnection.initVars(homeActivity);
             		new ConnectFree().execute();
             	}
         		break;
