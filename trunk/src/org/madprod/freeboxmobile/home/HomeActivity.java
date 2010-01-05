@@ -96,6 +96,7 @@ public class HomeActivity extends Activity implements HomeConstants
 					}
 				}
 			);
+/*
 		pvrButton.setOnClickListener(
 				new View.OnClickListener()
 				{
@@ -107,6 +108,7 @@ public class HomeActivity extends Activity implements HomeConstants
 					}
 				}
 			);
+*/
     }
 
     @Override
@@ -158,7 +160,8 @@ public class HomeActivity extends Activity implements HomeConstants
 		d.setMessage(
 			"Freebox Mobile est une application "+
 			"indépendante de Free.\n\nPlus de renseignements sur "+
-			"http://code.google.com/p/freeboxmobile/"
+			"http://code.google.com/p/freeboxmobile/\n\n"+
+			"Version : "+getString(R.string.app_version)
 		);
 		d.setButton("Ok", new DialogInterface.OnClickListener()
 			{
