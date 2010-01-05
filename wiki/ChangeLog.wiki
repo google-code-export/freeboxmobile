@@ -5,7 +5,7 @@
 HOME : La page d'accueil<br>
 MEVO : Messagerie Vocale Visuelle = Module "Téléphone"<br>
 CONFIG : Les différents panneaux de configuration<br>
-PVR : La programmation d'enregistrements à distance = Module "Magnétoscope"
+PVR : La programmation d'enregistrements à distance = Module "Magnétoscope"<br>
 SERVICES : tout ce qui tourne en tâche de fond
 
 = Versions publiques de !FreeboxMobile =
