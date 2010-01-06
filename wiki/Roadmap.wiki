@@ -3,6 +3,8 @@
 
 Prédiction des versions / fonctionnalités. Mais rien n'est figé, ca ne se fera peut être pas dans cet ordre !
 
+Pour les fonctionnalités déjà implémentées, voir le ChangeLog.
+
  * 0.17 : Programmer ses enregistrements FreeboxTV à distance (programmation simple)
  * 0.18 : Consultation des programmations TV en cours
  * 0.20 : Séparer l'application en modules différents (l'utilisateur ne sera pas obligé d'installer toutes les fonctionnalités)
