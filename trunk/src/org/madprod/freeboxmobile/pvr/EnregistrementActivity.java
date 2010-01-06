@@ -82,6 +82,8 @@ public class EnregistrementActivity extends Activity {
 		    						prog.dismiss();
 		    						prog = null;
 		    					}
+		    					
+		    					enrAct.finish();
 		    				}
 		    			});
 		    			deleteThread.start();

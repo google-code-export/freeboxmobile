@@ -8,7 +8,7 @@
 	<string name="pvrTxtDuree">Durée</string>
 	<string name="pvrTxtNom">Nom</string>
 	<string name="pvrTxtDisque">Disque dur</string>
-	<string name="pvrPrgBtnOK">OK</string>
+	<string name="pvrTxtPrgBtnOK">OK</string>
 	<string name="pvrNomDefaut">Entrez le titre de l'émission...</string>
 	
 	<string name="pvrTxtModif">Modifier</string>

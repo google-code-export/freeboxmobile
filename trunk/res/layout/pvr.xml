@@ -19,7 +19,7 @@
                 android:id="@+id/textview3"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent" 
-                android:text="this is a third tab" />
+                android:text="Cette fonction n'est pas encore disponible" />
         </FrameLayout>
     </LinearLayout>
 </TabHost>
