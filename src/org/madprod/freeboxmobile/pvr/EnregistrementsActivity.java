@@ -21,6 +21,15 @@ import android.widget.SimpleExpandableListAdapter;
 import org.madprod.freeboxmobile.HttpConnection;
 import org.madprod.freeboxmobile.R;
 
+/**
+ * Activité Enregistrements
+ * Gère l'onglet enregistrement avec la liste des programmation d'enregistrements
+ * 
+ * Sous-classe: ListeEnregistrements
+ * 
+ * @author bduffez
+ *
+ */
 public class EnregistrementsActivity extends ExpandableListActivity {
 	private String tableEnregistrements;
 	private boolean succesChargement;
@@ -39,6 +48,8 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 
 		this.listeEnregistrements = new ListeEnregistrements();
         this.succesChargement = false;
+
+        setTheme(android.R.style.Theme_Light);
 
         updateEnregistrementsFromConsole();
         updateEnregistrementsFromDb();
@@ -99,10 +110,16 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 		afficherEnregistrements();
     }
     
+    /**
+     * Télécharge la page HTML de l'interface, et stocke la liste des enregistrements dans
+     * la base sqlite (via la fonction recupererEnregistrements)
+     */
     private void doUpdateEnregistrements() {		
     	// On se log sur l'if free
         if (login() == false) {
-        	erreur("Impossible de se connecter à la console Free");
+        	erreur("Impossible de se connecter à la console Free\n"
+        			+ "Avez-vous renseigné votre identifiant et mot de passe "
+        			+ "dans la configuration ?");
         	return;
         }
         
@@ -133,6 +150,11 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 		}
     }
 
+    /**
+     * Récupère les enregistrements depuis la table HTML de la console correspondant
+     * à la liste des enregistrements programmés
+     * Stocke cette liste dans la base sqlite
+     */
     private void recupererEnregistrements() {
     	int debut;
         
@@ -181,6 +203,12 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 		db.close();
     }
     
+    /**
+     * Récupère un "champ" (date, chaine...) pour un enregistrement programmé
+     * @param debut	identificateur du début du champ
+     * @param fin	identificateur de fin du champ
+     * @return		le texte compris entre "debut" et "fin"
+     */
     private String recupererChamp(String debut, String fin) {
     	String champ;
     	int pos;
@@ -247,15 +275,19 @@ public class EnregistrementsActivity extends ExpandableListActivity {
         return false;
     }
 
-    // Create runnable for posting
+    // Fonction exécutée quand doUpdateEnregistrements est terminé
     final Runnable mUpdateResults = new Runnable() {
         public void run() {
             afficherEnregistrements();
         }
     };
     
+    /**
+     * Télécharge la liste des enregistrements sur la console, et le stocke
+     * dans l'objet ListeEnregistrements
+     */
     protected void updateEnregistrementsFromConsole() {
-    	prog = ProgressDialog.show(this, "Veuillez patienter", "Mise à jour...", true,false);
+    	prog = ProgressDialog.show(this, "Enregistrements", "Mise à jour...", true,false);
         Thread t = new Thread() {
             public void run() {
             	listeEnregistrements.vider();
@@ -271,7 +303,37 @@ public class EnregistrementsActivity extends ExpandableListActivity {
         };
         t.start();
     }
+    
+    /**
+     * Affiche la liste des enregistrements depuis l'objet ListeEnregistrements
+     */
+    private void afficherEnregistrements() {
+		SimpleExpandableListAdapter expListAdapter =
+			new SimpleExpandableListAdapter(
+				this,
+				// Group: liste des enregistrements
+				listeEnregistrements.createGroupList(),
+				R.layout.pvr_enregistrements_liste,
+				new String[] { "enregistrement" },
+				new int[] { R.id.pvr_enr_list_item },
+				
+				// Child: liste des détails pour chaque enregistrement
+				listeEnregistrements.createChildList(),
+				R.layout.pvr_enregistrements_liste,
+				new String[] { "key", "value" },
+				new int[] { R.id.pvr_enr_list_key, R.id.pvr_enr_list_value }
+			);
+		setListAdapter(expListAdapter);
+    }
 
+    /**
+     * ListeEnregistrement
+     * classe de stockage de données, avec la liste des enregistrements programmés
+     * ainsi que des détails sur ceux-ci (date, heure...)
+     * 
+     * @author bduffez
+     *
+     */
 	private class ListeEnregistrements {
 		private List<String> listeEnregistrements = null;
 		private List<List<String>> detailsEnregistrements = null;
@@ -293,7 +355,7 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 	    }
 	    // Ajout d'un enregistrement à la liste, sans détails == erreur
 	    public void ajouter(String message) {
-	    	listeEnregistrements.add("erreur");
+	    	listeEnregistrements.add("Erreur");
 	    	ArrayList<String> details = new ArrayList<String>();
 	    	details.add(message);
 	    	detailsEnregistrements.add(details);
@@ -321,7 +383,9 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 						n += 2) {
 					HashMap<String, String> detail = new HashMap<String, String>();
 					detail.put("key", detailsEnregistrements.get(i).get(n));
-					detail.put("value", detailsEnregistrements.get(i).get(n+1));
+					if (detailsEnregistrements.get(i).size() > n+1) {
+						detail.put("value", detailsEnregistrements.get(i).get(n+1));
+					}
 					secList.add(detail);
 				}
 				result.add(secList);
@@ -329,23 +393,4 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 			return result;
 		}
 	}
-    
-    private void afficherEnregistrements() {
-		SimpleExpandableListAdapter expListAdapter =
-			new SimpleExpandableListAdapter(
-				this,
-				// Group: liste des enregistrements
-				listeEnregistrements.createGroupList(),
-				R.layout.pvr_enregistrements_liste,
-				new String[] { "enregistrement" },
-				new int[] { R.id.pvr_enr_list_item },
-				
-				// Child: liste des détails pour chaque enregistrement
-				listeEnregistrements.createChildList(),
-				R.layout.pvr_enregistrements_liste,
-				new String[] { "key", "value" },
-				new int[] { R.id.pvr_enr_list_key, R.id.pvr_enr_list_value }
-			);
-		setListAdapter( expListAdapter );
-    }
 }

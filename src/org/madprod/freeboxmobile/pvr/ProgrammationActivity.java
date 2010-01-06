@@ -19,6 +19,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnFocusChangeListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -39,13 +40,24 @@ public class ProgrammationActivity extends Activity {
 	ProgressDialog prog = null;
 	Activity progAct = null;
 	final String TAG = "FreeboxMobileProg";
+	private boolean telechargementOk = false;
+	private boolean nomEmissionSaisi = false;
 
     final Handler mHandler = new Handler();
 
     // Create runnable for posting
     final Runnable mUpdateResults = new Runnable() {
         public void run() {
-        	preparerActivite();
+        	if (telechargementOk) {
+        		preparerActivite();
+        	}
+        	else {
+        		afficherMsgErreur("Impossible de charger la liste des chaînes !\n"
+        				+ "Avez-vous renseigné votre identifiant et mot de passe ?");
+        		Button btnOk = (Button) findViewById(R.id.pvrPrgBtnOK);
+        		btnOk.setEnabled(false);
+        		btnOk.setTextColor(0xAAAAAAAA);
+        	}
         }
     };    
 
@@ -60,6 +72,19 @@ public class ProgrammationActivity extends Activity {
         
         progAct = this;
         
+        // Vider le champ quand on le clique
+        final TextView nomEmission = ((TextView) findViewById(R.id.pvrPrgNom));
+        nomEmission.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            public void onFocusChange(View v, boolean b) {
+            	if (b == true) {
+            		if (nomEmissionSaisi == false) {
+            			nomEmission.setText("");
+            			nomEmissionSaisi = true;
+            		}
+            	}
+            }
+        });
+        
         /**
          * Lance un thread qui va télécharger la liste des chaines et des disques,
          * stocker ça dans des objets et appeler preparerActivite une fois que c'est fait
@@ -68,7 +93,7 @@ public class ProgrammationActivity extends Activity {
     	
         Thread t = new Thread() {
             public void run() {
-	        	telechargerEtParser();
+	        	telechargementOk = telechargerEtParser();
 
 				if (prog != null) {
 					prog.dismiss();
@@ -126,7 +151,7 @@ public class ProgrammationActivity extends Activity {
     	final Cursor enr = remplirFiche();
 
         // Activation d'un listener sur le bouton OK
-        final Button button = (Button) findViewById(R.id.PrgBtnOK);
+        final Button button = (Button) findViewById(R.id.pvrPrgBtnOK);
         button.setOnClickListener(new View.OnClickListener() {
 
             final Handler mHandler = new Handler();
@@ -140,7 +165,7 @@ public class ProgrammationActivity extends Activity {
                     }
             		else {
             			Toast.makeText(progAct, "Modifications enregistrées!", Toast.LENGTH_SHORT);
-            			//TODO: dismiss activity
+            			finish();
             			//TODO: update DB
             		}
                 }

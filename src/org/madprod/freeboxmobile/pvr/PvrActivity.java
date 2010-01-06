@@ -1,9 +1,15 @@
 package org.madprod.freeboxmobile.pvr;
 
+import android.app.Activity;
 import android.app.TabActivity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TabHost;
+import android.widget.TabWidget;
+import android.widget.TextView;
 
 import org.madprod.freeboxmobile.HttpConnection;
 import org.madprod.freeboxmobile.R;
@@ -19,6 +25,7 @@ public class PvrActivity extends TabActivity {
         setContentView(R.layout.pvr);
         
         connectionStatus = HttpConnection.connectFreeUI();
+        setTitle(getString(R.string.app_name) + " - Magnétoscope numérique");
 
         mTabHost = getTabHost();
         

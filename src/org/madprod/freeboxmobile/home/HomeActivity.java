@@ -96,7 +96,7 @@ public class HomeActivity extends Activity implements HomeConstants
 					}
 				}
 			);
-/*
+
 		pvrButton.setOnClickListener(
 				new View.OnClickListener()
 				{
@@ -108,7 +108,7 @@ public class HomeActivity extends Activity implements HomeConstants
 					}
 				}
 			);
-*/
+
     }
 
     @Override
