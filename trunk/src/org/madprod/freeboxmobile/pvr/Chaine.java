@@ -19,7 +19,7 @@ import org.json.JSONObject;
  * 		{"pvr_mode":"private","desc":"","id":0},
  * 		{"pvr_mode":"private","desc":"HD","id":487},
  * 		{"pvr_mode":"private","desc":"standard","id":333},
- * 		{"pvr_mode":"private","desc":"bas débit","id":346}
+ * 		{"pvr_mode":"private","desc":"bas dï¿½bit","id":346}
  *  ]
  * }
  */
