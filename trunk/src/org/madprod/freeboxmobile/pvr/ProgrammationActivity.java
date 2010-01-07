@@ -171,9 +171,11 @@ public class ProgrammationActivity extends Activity {
                     progressDialog = null;
 
                     if (errMsg != null) {
+						setResult(EnregistrementsActivity.RESULT_PROG_NOK);
                         afficherMsgErreur(errMsg);
 	                }
                     else {
+						setResult(EnregistrementsActivity.RESULT_PROG_OK);
                     	Toast.makeText(progAct, "Modifications enregistrées!", Toast.LENGTH_SHORT);
                     	//TODO: repasser à l'onglet Enregistrements
                     }
@@ -192,12 +194,14 @@ public class ProgrammationActivity extends Activity {
         		List<NameValuePair> postVars = new ArrayList<NameValuePair>();
         		Integer chaine, service, duree, where_id, ide = 0;
         		int h, m;
-        		String date, emission, heure, minutes;
+        		String date, emission, heure, minutes, nomChaine;
         		
         		// Chaine
         		Spinner spinnerChaines = (Spinner) findViewById(R.id.pvrPrgChaine);
         		int chaineId = spinnerChaines.getSelectedItemPosition();
         		chaine = mChaines.get(chaineId).getChaineId();
+        		nomChaine = mChaines.get(chaineId).getName();
+        		
         		if (enr != null) {
         			ide = enr.getInt(enr.getColumnIndex(EnregistrementsDbAdapter.KEY_IDE));
         		}
@@ -274,8 +278,25 @@ public class ProgrammationActivity extends Activity {
         			
         			return "Message retourné par la console de free:\n"+msgErreur;
         		}
+        		// Pas d'erreur, on MAJ la db
+        		else {
+    				EnregistrementsDbAdapter db = new EnregistrementsDbAdapter(progAct);
+    				db.open();
+    				int rowId = ide = enr.getInt(enr.getColumnIndex(EnregistrementsDbAdapter.KEY_ROWID));
 
-            	//TODO: update DB
+    				// Modification
+        			if (enr != null) {
+        				long l = db.modifyEnregistrement(rowId, nomChaine, date, heure+"h"+minutes, duree.toString(),
+        			    		emission, ide.toString(), chaine.toString(), service.toString(), heure, minutes,
+        			    		duree.toString(), emission, where_id.toString(), "");
+        				Log.d(TAG, "MODIFIER ENR = "+l);
+        			}
+        			// Suppression
+        			else {
+        				db.deleteEnregistrement(rowId);
+        			}
+    				db.close();
+        		}
         		
         		return null;
             }
