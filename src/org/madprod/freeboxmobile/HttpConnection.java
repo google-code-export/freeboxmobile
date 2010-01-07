@@ -12,6 +12,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List; 
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -21,6 +22,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
+import org.apache.http.util.EncodingUtils;
 import org.apache.http.message.BasicNameValuePair; 
 
 import android.app.Activity;
@@ -54,7 +56,7 @@ public class HttpConnection implements Constants
 	public static ProgressDialog httpProgressDialog = null;
 	public static AlertDialog errorAlert = null;
 	private static Activity activity = null;
-	
+		
     /*
     private void _getPrefs()
     {
@@ -327,7 +329,7 @@ public class HttpConnection implements Constants
 			if ((httpResponse != null) && (retour))
 			{
 				HttpEntity responseEntity = httpResponse.getEntity();
-				return (new BufferedReader(new InputStreamReader(responseEntity.getContent())));
+				return (new BufferedReader(new InputStreamReader(responseEntity.getContent(), "ISO8859_1")));
 			}
 			else
 				return (null);
@@ -363,7 +365,7 @@ public class HttpConnection implements Constants
         	if ((httpResponse != null) && (retour))
         	{
 	        	HttpEntity responseEntity = httpResponse.getEntity();
-	        	return (new BufferedReader(new InputStreamReader(responseEntity.getContent())));
+	        	return (new BufferedReader(new InputStreamReader(responseEntity.getContent(), "ISO8859_1")));
         	}
         	else
         		return (null);
@@ -391,7 +393,7 @@ public class HttpConnection implements Constants
 		String line = null;
 		try {
 		     while ((line = reader.readLine()) != null) {
-		          sb.append(line + "\n");
+		          sb.append(line+"\n");
 		     }
 		} catch (IOException e) {
 			Log.e(DEBUGTAG, "getPage: "+e);
