@@ -15,6 +15,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -37,30 +38,10 @@ import android.widget.Toast;
 public class ProgrammationActivity extends Activity {
 	private List<Chaine> mChaines = null;
 	private List<Disque> mDisques = null;
-	ProgressDialog prog = null;
 	Activity progAct = null;
 	final String TAG = "FreeboxMobileProg";
-	private boolean telechargementOk = false;
 	private boolean nomEmissionSaisi = false;
-
-    final Handler mHandler = new Handler();
-
-    // Create runnable for posting
-    final Runnable mUpdateResults = new Runnable() {
-        public void run() {
-        	if (telechargementOk) {
-        		preparerActivite();
-        	}
-        	else {
-        		afficherMsgErreur("Impossible de charger la liste des chaînes !\n"
-        				+ "Avez-vous renseigné votre identifiant et mot de passe ?");
-        		Button btnOk = (Button) findViewById(R.id.pvrPrgBtnOK);
-        		btnOk.setEnabled(false);
-        		btnOk.setTextColor(0xAAAAAAAA);
-        	}
-        }
-    };    
-
+	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -85,25 +66,39 @@ public class ProgrammationActivity extends Activity {
             }
         });
         
-        /**
-         * Lance un thread qui va télécharger la liste des chaines et des disques,
-         * stocker ça dans des objets et appeler preparerActivite une fois que c'est fait
-         */
-    	prog = ProgressDialog.show(progAct, "Veuillez patienter", "Chargement de la liste des chaînes disponibles...", true,false);
-    	
-        Thread t = new Thread() {
-            public void run() {
-	        	telechargementOk = telechargerEtParser();
+        new TelechargerChainesDisquesTask().execute((Void[])null);
+    }
+    
+	/**
+	 * télécharge la liste des chaines et disques
+	 * @author bduffez
+	 *
+	 */
+    class TelechargerChainesDisquesTask extends AsyncTask<Void, Integer, Boolean> {
+    	ProgressDialog progressDialog = null;
 
-				if (prog != null) {
-					prog.dismiss();
-					prog = null;
-				}
-				
-                mHandler.post(mUpdateResults);
-            }
-        };
-        t.start();
+        protected void onPreExecute() {
+        	progressDialog = ProgressDialog.show(progAct, "Veuillez patienter", "Chargement de la liste des chaînes disponibles...", true, false);
+        }
+    	
+        protected Boolean doInBackground(Void... arg0) {
+        	return telechargerEtParser();
+        }
+        
+        protected void onPostExecute(Boolean telechargementOk) {
+        	if (telechargementOk == Boolean.TRUE) {
+        		preparerActivite();
+        	}
+        	else {
+        		afficherMsgErreur("Impossible de charger la liste des chaînes !\n"
+        				+ "Avez-vous renseigné votre identifiant et mot de passe ?");
+        		Button btnOk = (Button) findViewById(R.id.pvrPrgBtnOK);
+        		btnOk.setEnabled(false);
+        	}
+            
+            progressDialog.dismiss();
+            progressDialog = null;
+        }
     }
     
     /**
@@ -153,43 +148,40 @@ public class ProgrammationActivity extends Activity {
         // Activation d'un listener sur le bouton OK
         final Button button = (Button) findViewById(R.id.pvrPrgBtnOK);
         button.setOnClickListener(new View.OnClickListener() {
+        	/**
+        	 * traite le formulaire
+        	 * @author bduffez
+        	 *
+        	 */
+            class TraiterFormulaireTask extends AsyncTask<Void, Integer, String> {
+            	ProgressDialog progressDialog = null;
 
-            final Handler mHandler = new Handler();
-            String errMsg = null;
-
-            // Create runnable for posting
-            final Runnable mUpdateResults = new Runnable() {
-                public void run() {
-                    if (errMsg != null) {
-                    	afficherMsgErreur(errMsg);
-                    }
-            		else {
-            			Toast.makeText(progAct, "Modifications enregistrées!", Toast.LENGTH_SHORT);
-            			finish();
-            			//TODO: update DB
-            		}
+                protected void onPreExecute() {
+                	String texte = enr == null ? "Programmation" : "Modification";
+                	texte += " de l'enregistrement en cours...";      
+                	progressDialog = ProgressDialog.show(progAct, "Veuillez patienter", texte, true, false);
                 }
-            };
+            	
+                protected String doInBackground(Void... arg0) {
+    	        	return doAction();
+                }
+                
+                protected void onPostExecute(String errMsg) {                    
+                    progressDialog.dismiss();
+                    progressDialog = null;
+
+                    if (errMsg != null) {
+                        afficherMsgErreur(errMsg);
+	                }
+                    else {
+                    	Toast.makeText(progAct, "Modifications enregistrées!", Toast.LENGTH_SHORT);
+                    	//TODO: repasser à l'onglet Enregistrements
+                    }
+                }
+            }
             
             public void onClick(View v) {
-            	String texte = enr == null ? "Programmation" : "Modification";
-            	texte += " de l'enregistrement en cours...";                    
-                
-    	    	prog = ProgressDialog.show(progAct, "Enregistrement", texte, true,false);
-            	
-                Thread t = new Thread() {
-                    public void run() {
-        	        	errMsg = doAction();
-
-        				if (prog != null) {
-        					prog.dismiss();
-        					prog = null;
-        				}
-        				
-                        mHandler.post(mUpdateResults);
-                    }
-                };
-                t.start();
+            	new TraiterFormulaireTask().execute((Void[])null);
             }
             
             /**
@@ -282,6 +274,8 @@ public class ProgrammationActivity extends Activity {
         			
         			return "Message retourné par la console de free:\n"+msgErreur;
         		}
+
+            	//TODO: update DB
         		
         		return null;
             }
@@ -300,9 +294,11 @@ public class ProgrammationActivity extends Activity {
 		d.show();
     }
     
-	// S'il s'agit d'une modification, remplir le formulaire
-    //@return Cursor l'enregistrement si c'est une modification d'un enregistrement existant
-    // 				 null sinon
+	/**
+	 * S'il s'agit d'une modification, remplir le formulaire
+	 * @returnCursor l'enregistrement si c'est une modification d'un enregistrement existant
+	 * null sinon
+	 */
     private Cursor remplirFiche() {
 		// Est-ce un ajout ou une modification d'un enregistrement ?
 		Bundle bundle = getIntent().getExtras();	        
@@ -415,10 +411,14 @@ public class ProgrammationActivity extends Activity {
 		getListe(strDisques, "}", 1, false);
 		return mDisques;
 	}
-	//@param String: l'array de JSON (commence par { sinon crash)
-	//@param String: ce qui sépare deux objets JSON
-	//@param int: le nombre d'octets inutiles entre deux objets JSON
-	//@param boolean: true si c'est la liste des chaines, false si c'est celle des disques
+	
+	/**
+	 * Crée la liste des chaines ou des disques (selon le boolean)
+	 * @param strSource:	l'array de JSON (commence par { sinon crash)
+	 * @param sep:			ce qui sépare deux objets JSON
+	 * @param shift:		le nombre d'octets inutiles entre deux objets JSON
+	 * @param isChaines:	true si c'est la liste des chaines, false si c'est celle des disques
+	 */
 	private void getListe(String strSource, String sep, int shift, boolean isChaines) {
 		String str;
 		int pos;

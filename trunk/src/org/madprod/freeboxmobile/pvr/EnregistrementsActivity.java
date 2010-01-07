@@ -8,15 +8,14 @@ import android.app.ExpandableListActivity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ExpandableListView;
-import android.widget.ListView;
 import android.widget.SimpleExpandableListAdapter;
+import android.widget.Toast;
 
 import org.madprod.freeboxmobile.HttpConnection;
 import org.madprod.freeboxmobile.R;
@@ -33,11 +32,12 @@ import org.madprod.freeboxmobile.R;
 public class EnregistrementsActivity extends ExpandableListActivity {
 	private String tableEnregistrements;
 	private boolean succesChargement;
-	ProgressDialog prog = null;
-    final Handler mHandler = new Handler();
     ListeEnregistrements listeEnregistrements;
+    EnregistrementsActivity enrAct = null;
 	
 	static final int MENU_UPDATE = 0;
+	static final int ACTIVITY_ENREGISTREMENT = 0;
+	static final int RESULT_SUPPRESSION_OK = 0;
 
     /** Called when the activity is first created. */
     @Override
@@ -48,14 +48,101 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 
 		this.listeEnregistrements = new ListeEnregistrements();
         this.succesChargement = false;
+        enrAct = this;
 
         setTheme(android.R.style.Theme_Light);
 
-        updateEnregistrementsFromConsole();
-        updateEnregistrementsFromDb();
-        afficherEnregistrements();
+        updaterEnregistrements(true);
     }
     
+    private boolean login() {
+    	return HttpConnection.connectFreeUI() == HttpConnection.CONNECT_CONNECTED;
+    }
+    
+    private void erreur(String msgErreur) {
+    	listeEnregistrements.ajouter(msgErreur);
+		succesChargement = false;
+		afficherEnregistrements();
+    }
+    
+    public void updaterEnregistrements(boolean updateFromConsole) {
+    	new UpdateEnregistrementsTask().execute(updateFromConsole == true ? Boolean.TRUE : Boolean.FALSE);
+    }
+
+	/**
+	 * télécharge la liste des enregistrements, et l'affiche
+	 * @author bduffez
+	 *
+	 */
+    class UpdateEnregistrementsTask extends AsyncTask<Boolean, Integer, Void> {
+    	ProgressDialog progressDialog = null;
+
+        protected void onPreExecute() {
+        	progressDialog = ProgressDialog.show(enrAct, "Enregistrements", "Mise à jour...", true, false);
+        }
+    	
+        protected Void doInBackground(Boolean... arg0) {
+        	listeEnregistrements.vider();
+        	if (arg0[0] == Boolean.TRUE) {
+        		doUpdateEnregistrements();
+        	}
+			return null;
+        }
+        
+        protected void onPostExecute(Void v) {
+            updateEnregistrementsFromDb();
+            afficherEnregistrements();
+            
+            progressDialog.dismiss();
+            progressDialog = null;
+        }
+    }
+    
+    /**
+     * HTML --> DB
+     * Télécharge la page HTML de l'interface, et stocke la liste des enregistrements dans
+     * la base sqlite (via la fonction recupererEnregistrements)
+     */
+    private void doUpdateEnregistrements() {		
+    	// On se log sur l'if free
+        if (login() == false) {
+        	erreur("Impossible de se connecter à la console Free\n"
+        			+ "Avez-vous renseigné votre identifiant et mot de passe "
+        			+ "dans la configuration ?");
+        	return;
+        }
+        
+		String url;
+		
+        // Recup if tv
+        String contenu = null;
+    	url  = "http://adsl.free.fr/admin/magneto.pl?id=";
+    	url += HttpConnection.getId()+"&idt="+HttpConnection.getIdt();
+    	url += "&sommaire=television";
+
+    	contenu = HttpConnection.getPage(HttpConnection.getRequest(url, true));
+    	if (contenu == null) {
+    		erreur("Impossible de télécharger la liste des enregistrements");
+    		return;
+    	}
+
+    	int debut = contenu.indexOf("<div class=\"table block\">") + 25;
+    	int fin = contenu.indexOf("<div class=\"clearer\"></div>");
+
+    	if (debut > 25 && fin > 0) {
+    		tableEnregistrements = contenu.substring(debut, fin);
+    		succesChargement = true;
+    		recupererEnregistrements();
+    	}
+    	else {
+    		erreur("Impossible de télécharger la liste des enregistrements");
+		}
+    }
+    
+    /**
+     * DB --> RAM
+     * Se connecte à sqlite, récupère le contenu et stocke ça dans l'objet listeEnregistrements
+     */
     private void updateEnregistrementsFromDb() {
         EnregistrementsDbAdapter db = new EnregistrementsDbAdapter(this);
         
@@ -99,57 +186,30 @@ public class EnregistrementsActivity extends ExpandableListActivity {
         
         db.close();
     }
-    
-    private boolean login() {
-    	return HttpConnection.connectFreeUI() == HttpConnection.CONNECT_CONNECTED;
-    }
-    
-    private void erreur(String msgErreur) {
-    	listeEnregistrements.ajouter(msgErreur);
-		succesChargement = false;
-		afficherEnregistrements();
-    }
-    
+
     /**
-     * Télécharge la page HTML de l'interface, et stocke la liste des enregistrements dans
-     * la base sqlite (via la fonction recupererEnregistrements)
+     * RAM --> ECRAN
+     * Affiche la liste des enregistrements depuis l'objet ListeEnregistrements
      */
-    private void doUpdateEnregistrements() {		
-    	// On se log sur l'if free
-        if (login() == false) {
-        	erreur("Impossible de se connecter à la console Free\n"
-        			+ "Avez-vous renseigné votre identifiant et mot de passe "
-        			+ "dans la configuration ?");
-        	return;
-        }
-        
-		String url;
-		
-        // Recup if tv
-        String contenu = null;
-    	url  = "http://adsl.free.fr/admin/magneto.pl?id=";
-    	url += HttpConnection.getId()+"&idt="+HttpConnection.getIdt();
-    	url += "&sommaire=television";
-
-    	contenu = HttpConnection.getPage(HttpConnection.getRequest(url, true));
-    	if (contenu == null) {
-    		erreur("Impossible de télécharger la liste des enregistrements");
-    		return;
-    	}
-
-    	int debut = contenu.indexOf("<div class=\"table block\">") + 25;
-    	int fin = contenu.indexOf("<div class=\"clearer\"></div>");
-
-    	if (debut > 25 && fin > 0) {
-    		tableEnregistrements = contenu.substring(debut, fin);
-    		succesChargement = true;
-    		recupererEnregistrements();
-    	}
-    	else {
-    		erreur("Impossible de télécharger la liste des enregistrements");
-		}
+    private void afficherEnregistrements() {
+		SimpleExpandableListAdapter expListAdapter =
+			new SimpleExpandableListAdapter(
+				this,
+				// Group: liste des enregistrements
+				listeEnregistrements.createGroupList(),
+				R.layout.pvr_enregistrements_liste,
+				new String[] { "enregistrement" },
+				new int[] { R.id.pvr_enr_list_item },
+				
+				// Child: liste des détails pour chaque enregistrement
+				listeEnregistrements.createChildList(),
+				R.layout.pvr_enregistrements_liste,
+				new String[] { "key", "value" },
+				new int[] { R.id.pvr_enr_list_key, R.id.pvr_enr_list_value }
+			);
+		setListAdapter(expListAdapter);
     }
-
+    
     /**
      * Récupère les enregistrements depuis la table HTML de la console correspondant
      * à la liste des enregistrements programmés
@@ -252,9 +312,20 @@ public class EnregistrementsActivity extends ExpandableListActivity {
         // Lancement de l'activité
         Intent i = new Intent(this, EnregistrementActivity.class);
         i.putExtra(EnregistrementsDbAdapter.KEY_ROWID, rowId);
-        startActivity(i);
+        startActivityForResult(i, ACTIVITY_ENREGISTREMENT);
     	
 		return true;
+    }
+    
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    	if (requestCode == ACTIVITY_ENREGISTREMENT) {
+    		updaterEnregistrements(false);
+    		
+    		if (resultCode == RESULT_SUPPRESSION_OK) {
+    			// TODO: Pourquoi qu'elle marche pas cette tartine ?!! 
+    			Toast.makeText(this, "Modifications enregistrées!", Toast.LENGTH_LONG);
+    		}
+    	}
     }
     
     /* Creates the menu items */
@@ -267,67 +338,13 @@ public class EnregistrementsActivity extends ExpandableListActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case MENU_UPDATE:
-            updateEnregistrementsFromConsole();
-            updateEnregistrementsFromDb();
-            afficherEnregistrements();
+            updaterEnregistrements(true);
             return true;
         }
         return false;
     }
 
-    // Fonction exécutée quand doUpdateEnregistrements est terminé
-    final Runnable mUpdateResults = new Runnable() {
-        public void run() {
-            afficherEnregistrements();
-        }
-    };
-    
     /**
-     * Télécharge la liste des enregistrements sur la console, et le stocke
-     * dans l'objet ListeEnregistrements
-     */
-    protected void updateEnregistrementsFromConsole() {
-    	prog = ProgressDialog.show(this, "Enregistrements", "Mise à jour...", true,false);
-        Thread t = new Thread() {
-            public void run() {
-            	listeEnregistrements.vider();
-	        	doUpdateEnregistrements();
-
-				if (prog != null) {
-					prog.dismiss();
-					prog = null;
-				}
-				
-                mHandler.post(mUpdateResults);
-            }
-        };
-        t.start();
-    }
-    
-    /**
-     * Affiche la liste des enregistrements depuis l'objet ListeEnregistrements
-     */
-    private void afficherEnregistrements() {
-		SimpleExpandableListAdapter expListAdapter =
-			new SimpleExpandableListAdapter(
-				this,
-				// Group: liste des enregistrements
-				listeEnregistrements.createGroupList(),
-				R.layout.pvr_enregistrements_liste,
-				new String[] { "enregistrement" },
-				new int[] { R.id.pvr_enr_list_item },
-				
-				// Child: liste des détails pour chaque enregistrement
-				listeEnregistrements.createChildList(),
-				R.layout.pvr_enregistrements_liste,
-				new String[] { "key", "value" },
-				new int[] { R.id.pvr_enr_list_key, R.id.pvr_enr_list_value }
-			);
-		setListAdapter(expListAdapter);
-    }
-
-    /**
-     * ListeEnregistrement
      * classe de stockage de données, avec la liste des enregistrements programmés
      * ainsi que des détails sur ceux-ci (date, heure...)
      * 

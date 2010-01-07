@@ -12,6 +12,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -21,14 +22,14 @@ import android.widget.Toast;
 
 public class EnregistrementActivity extends Activity {
 	private long idEnregistrement;
-	ProgressDialog prog = null;
+	Activity enregistrementActivity = null;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pvr_enregistrement);
         
-        final Activity enrAct = this;
+        enregistrementActivity = this;
 
         Bundle bundle = getIntent().getExtras();
         
@@ -72,32 +73,53 @@ public class EnregistrementActivity extends Activity {
 				    	});
 		    	// Suppr: on supprime & ferme l'activité
 		    	suppr.setOnClickListener(new OnClickListener() {
-		    		public void onClick(View v) {
-		    	    	prog = ProgressDialog.show(enrAct, "Veuillez patienter", "Suppression en cours...", true,false);
-		    			Thread deleteThread = new Thread(new Runnable() {
-		    				public void run() {
-		    					doSuppression();
+		    		class DeleteEnregistrementTask extends AsyncTask<Void, Integer, Void> {
+		    			ProgressDialog progressDialog = null;
+						
+						protected void onPreExecute() {
+			    	    	progressDialog = ProgressDialog.show(enregistrementActivity, "Veuillez patienter", "Suppression en cours...", true,false);
+						}
 
-		    					if (prog != null) {
-		    						prog.dismiss();
-		    						prog = null;
-		    					}
-		    					
-		    					enrAct.finish();
-		    				}
-		    			});
-		    			deleteThread.start();
+						@Override
+						protected Void doInBackground(Void... params) {
+	    					doSuppression();
+	    					
+	    					// TODO: vérifier la réponse de free, si la suppression a bien
+	    					// été faite!
+	    					
+	    					EnregistrementsDbAdapter db = new EnregistrementsDbAdapter(enregistrementActivity);
+	    					db.open();
+			                db.deleteEnregistrement(idEnregistrement);
+			                db.close();
+
+							return null;
+						}
+						
+						protected void onPostExecute(Void v) {
+							progressDialog.dismiss();
+							progressDialog = null;
+							setResult(EnregistrementsActivity.RESULT_SUPPRESSION_OK);
+							enregistrementActivity.finish();
+						}
+		    		}
+		    		
+		    		public void onClick(View v) {
+		    			new DeleteEnregistrementTask().execute((Void[])null);
 		    		}
 		    		
 		    		private void doSuppression() {
 		    			// TODO: Demande confirmation
+		    			
+		                // Vars
+	            		List<NameValuePair> postVars = new ArrayList<NameValuePair>();
+	            		String ide, chaine_id, service_id, date, h, min, dur, name, where_id, repeat_a;
 		     		    			
 		    			// Post vars pour suppression
 	                	// ide=11&chaine_id=6&service_id=0&date=31%2F12%2F2009&h=23
 	                	// &min=09&dur=15&name=titre&where_id=0&repeat_a=&supp=Supprimer
 		    			
 		    			// DB
-		                EnregistrementsDbAdapter db = new EnregistrementsDbAdapter(enrAct);
+		                EnregistrementsDbAdapter db = new EnregistrementsDbAdapter(enregistrementActivity);
 		                db.open();
 		                Cursor c = db.fetchEnregistrement(idEnregistrement);
 		                db.close();
@@ -105,10 +127,6 @@ public class EnregistrementActivity extends Activity {
 		                if (c == null || c.moveToFirst() == false) {
 		                	return;
 		                }
-		    			
-		                // Vars
-	            		List<NameValuePair> postVars = new ArrayList<NameValuePair>();
-	            		String ide, chaine_id, service_id, date, h, min, dur, name, where_id, repeat_a;
 
 	            		ide = c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_IDE));
 	            		chaine_id = c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_CHAINE_ID));
@@ -138,7 +156,6 @@ public class EnregistrementActivity extends Activity {
 	            		postVars.add(new BasicNameValuePair("supp", "Supprimer"));
 	            		
 	            		// Requete HTTP
-	                	int a = HttpConnection.connectFree();
 	            		String url = "http://adsl.free.fr/admin/magneto.pl?id=";
 	            		url += HttpConnection.getId()+"&idt="+HttpConnection.getIdt();
 	            		HttpConnection.postRequest(url, postVars, true);
