@@ -145,6 +145,42 @@ public class EnregistrementsDbAdapter {
 
         return mDb.insert(DATABASE_TABLE, null, initialValues);
     }
+    
+    /**
+     * Modifies an existing enregistrement using the title and body provided. If the enregistrement is
+     * successfully created return the new rowId for that enregistrement, otherwise return
+     * a -1 to indicate failure.
+     * 
+     * @param title the title of the enregistrement
+     * @param body the body of the enregistrement
+     * @return rowId or -1 if failed
+     */
+    public long modifyEnregistrement(int rowId, String chaine, String date, String heure, String duree,
+    		String nom, String ide, String chaine_id, String service_id, String h, String min,
+    		String dur, String name, String where_id, String repeat_a) {
+        ContentValues newValues = new ContentValues();
+        
+        newValues.put(KEY_CHAINE, chaine);
+        newValues.put(KEY_DATE, date);
+        newValues.put(KEY_HEURE, heure);
+        newValues.put(KEY_DUREE, duree);
+        newValues.put(KEY_NOM, nom);
+        newValues.put(KEY_IDE, ide);
+        newValues.put(KEY_CHAINE_ID, chaine_id);
+        newValues.put(KEY_SERVICE_ID, service_id);
+        newValues.put(KEY_H, h);
+        newValues.put(KEY_MIN, min);
+        newValues.put(KEY_DUR, dur);
+        newValues.put(KEY_NAME, name);
+        newValues.put(KEY_WHERE_ID, where_id);
+        newValues.put(KEY_REPEAT_A, repeat_a);
+        
+        String[] strRowId = new String[] { new Integer(rowId).toString() };
+        
+        Log.d(TAG, "MODIF = "+newValues.toString());
+
+        return mDb.update(DATABASE_TABLE, newValues, KEY_ROWID+" = ?", strRowId);
+    }
 
     /**
      * Delete the enregistrement with the given rowId

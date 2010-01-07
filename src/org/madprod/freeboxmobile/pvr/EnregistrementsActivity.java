@@ -36,8 +36,13 @@ public class EnregistrementsActivity extends ExpandableListActivity {
     EnregistrementsActivity enrAct = null;
 	
 	static final int MENU_UPDATE = 0;
+
 	static final int ACTIVITY_ENREGISTREMENT = 0;
+	static final int ACTIVITY_PROGRAMMATION = 1;
+	
 	static final int RESULT_SUPPRESSION_OK = 0;
+	static final int RESULT_PROG_OK = 1;
+	static final int RESULT_PROG_NOK = 2;
 
     /** Called when the activity is first created. */
     @Override

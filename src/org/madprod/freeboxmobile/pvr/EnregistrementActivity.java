@@ -68,7 +68,7 @@ public class EnregistrementActivity extends Activity {
 		    					Intent i = new Intent();
 		    					i.setClassName("org.madprod.freeboxmobile", "org.madprod.freeboxmobile.pvr.ProgrammationActivity");
 				    			i.putExtra(EnregistrementsDbAdapter.KEY_ROWID, idEnregistrement);
-						    	startActivity(i);
+						    	startActivityForResult(i, EnregistrementsActivity.ACTIVITY_PROGRAMMATION);
 				    		}
 				    	});
 		    	// Suppr: on supprime & ferme l'activité
@@ -165,5 +165,9 @@ public class EnregistrementActivity extends Activity {
             
             c.close();
         }
+    }
+	
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    	finish();
     }
 }
