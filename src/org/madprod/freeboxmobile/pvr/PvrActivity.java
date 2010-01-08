@@ -17,12 +17,15 @@ import org.madprod.freeboxmobile.R;
 public class PvrActivity extends TabActivity {
 	TabHost mTabHost;
 	public static int connectionStatus = HttpConnection.CONNECT_NOT_CONNECTED;
+	public static PvrActivity activity = null;
 	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pvr);
+        
+        activity = this;
         
         connectionStatus = HttpConnection.connectFreeUI();
         setTitle(getString(R.string.app_name) + " - Magnétoscope numérique");
@@ -42,5 +45,9 @@ public class PvrActivity extends TabActivity {
         						.setContent(R.id.textview3));
 
         mTabHost.setCurrentTab(0);
+    }
+    
+    public void goFirstTab() {
+    	getTabHost().setCurrentTab(0);
     }
 }

@@ -33,7 +33,7 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 	private String tableEnregistrements;
 	private boolean succesChargement;
     ListeEnregistrements listeEnregistrements;
-    EnregistrementsActivity enrAct = null;
+    public static EnregistrementsActivity enrAct = null;
 	
 	static final int MENU_UPDATE = 0;
 

@@ -177,8 +177,15 @@ public class ProgrammationActivity extends Activity {
                     else {
 						setResult(EnregistrementsActivity.RESULT_PROG_OK);
                     	Toast.makeText(progAct, "Modifications enregistrées!", Toast.LENGTH_SHORT);
-                    	//TODO: repasser à l'onglet Enregistrements
+                    	
+                    	if (enr != null) {
+                            finish();
+                    	} else {
+                    		PvrActivity.activity.goFirstTab();
+                    	}
                     }
+        			
+        			EnregistrementsActivity.enrAct.updaterEnregistrements(false);
                 }
             }
             
@@ -282,19 +289,23 @@ public class ProgrammationActivity extends Activity {
         		else {
     				EnregistrementsDbAdapter db = new EnregistrementsDbAdapter(progAct);
     				db.open();
-    				int rowId = ide = enr.getInt(enr.getColumnIndex(EnregistrementsDbAdapter.KEY_ROWID));
 
     				// Modification
         			if (enr != null) {
+        				int rowId = enr.getInt(enr.getColumnIndex(EnregistrementsDbAdapter.KEY_ROWID));
         				long l = db.modifyEnregistrement(rowId, nomChaine, date, heure+"h"+minutes, duree.toString(),
         			    		emission, ide.toString(), chaine.toString(), service.toString(), heure, minutes,
         			    		duree.toString(), emission, where_id.toString(), "");
         				Log.d(TAG, "MODIFIER ENR = "+l);
         			}
-        			// Suppression
+        			// Ajout
         			else {
-        				db.deleteEnregistrement(rowId);
+        				long l = db.createEnregistrement(nomChaine, date, heure+"h"+minutes, duree.toString(),
+        			    		emission, ide.toString(), chaine.toString(), service.toString(), heure, minutes,
+        			    		duree.toString(), emission, where_id.toString(), "");
+        				Log.d(TAG, "AJOUTER ENR = "+l);
         			}
+        			
     				db.close();
         		}
         		
