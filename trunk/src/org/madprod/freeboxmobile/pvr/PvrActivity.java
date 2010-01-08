@@ -52,7 +52,7 @@ public class PvrActivity extends TabActivity {
         mTabHost.setCurrentTab(0);
     }
     
-    public void goFirstTab() {
-    	getTabHost().setCurrentTab(0);
+    public void goToTab(int tabId) {
+    	getTabHost().setCurrentTab(tabId);
     }
 }

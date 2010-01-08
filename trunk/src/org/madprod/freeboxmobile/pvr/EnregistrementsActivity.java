@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import android.app.AlertDialog;
 import android.app.ExpandableListActivity;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
@@ -34,8 +36,9 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 	private boolean succesChargement;
     ListeEnregistrements listeEnregistrements;
     public static EnregistrementsActivity enrAct = null;
-	
+
 	static final int MENU_UPDATE = 0;
+	static final int MENU_ADD = 1;
 
 	static final int ACTIVITY_ENREGISTREMENT = 0;
 	static final int ACTIVITY_PROGRAMMATION = 1;
@@ -65,9 +68,15 @@ public class EnregistrementsActivity extends ExpandableListActivity {
     }
     
     private void erreur(String msgErreur) {
-    	listeEnregistrements.ajouter(msgErreur);
-		succesChargement = false;
-		afficherEnregistrements();
+    	AlertDialog d = new AlertDialog.Builder(this).create();
+		d.setTitle("Erreur!");
+		d.setMessage(msgErreur);
+		d.setButton("Ok", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+			}
+		});
+		d.show();
     }
     
     public void updaterEnregistrements(boolean updateFromConsole) {
@@ -79,25 +88,39 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 	 * @author bduffez
 	 *
 	 */
-    class UpdateEnregistrementsTask extends AsyncTask<Boolean, Integer, Void> {
+    class UpdateEnregistrementsTask extends AsyncTask<Boolean, Integer, Boolean> {
     	ProgressDialog progressDialog = null;
 
         protected void onPreExecute() {
         	progressDialog = ProgressDialog.show(enrAct, "Enregistrements", "Mise à jour...", true, false);
         }
     	
-        protected Void doInBackground(Boolean... arg0) {
+        protected Boolean doInBackground(Boolean... arg0) {
         	listeEnregistrements.vider();
+        	
+        	// On se log sur l'if free
+            if (login() == false) {
+            	return false;
+            }
+            
         	if (arg0[0] == Boolean.TRUE) {
-        		doUpdateEnregistrements();
+        		return doUpdateEnregistrements();
         	}
-			return null;
+        	
+			return Boolean.TRUE;
         }
         
-        protected void onPostExecute(Void v) {
-            updateEnregistrementsFromDb();
-            afficherEnregistrements();
-            
+        protected void onPostExecute(Boolean succes) {
+        	if (succes == Boolean.TRUE) {
+	            updateEnregistrementsFromDb();
+	            afficherEnregistrements();
+        	}
+        	else {
+            	erreur("Impossible de se connecter à la console Free\n"
+            			+ "Avez-vous renseigné votre identifiant et mot de passe "
+            			+ "dans la configuration ?");
+        	}
+        	
             progressDialog.dismiss();
             progressDialog = null;
         }
@@ -108,15 +131,7 @@ public class EnregistrementsActivity extends ExpandableListActivity {
      * Télécharge la page HTML de l'interface, et stocke la liste des enregistrements dans
      * la base sqlite (via la fonction recupererEnregistrements)
      */
-    private void doUpdateEnregistrements() {		
-    	// On se log sur l'if free
-        if (login() == false) {
-        	erreur("Impossible de se connecter à la console Free\n"
-        			+ "Avez-vous renseigné votre identifiant et mot de passe "
-        			+ "dans la configuration ?");
-        	return;
-        }
-        
+    private boolean doUpdateEnregistrements() {		
 		String url;
 		
         // Recup if tv
@@ -127,8 +142,7 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 
     	contenu = HttpConnection.getPage(HttpConnection.getRequest(url, true));
     	if (contenu == null) {
-    		erreur("Impossible de télécharger la liste des enregistrements");
-    		return;
+    		return false;
     	}
 
     	int debut = contenu.indexOf("<div class=\"table block\">") + 25;
@@ -137,11 +151,10 @@ public class EnregistrementsActivity extends ExpandableListActivity {
     	if (debut > 25 && fin > 0) {
     		tableEnregistrements = contenu.substring(debut, fin);
     		succesChargement = true;
-    		recupererEnregistrements();
+    		return recupererEnregistrements();
     	}
-    	else {
-    		erreur("Impossible de télécharger la liste des enregistrements");
-		}
+    	
+    	return false;
     }
     
     /**
@@ -220,7 +233,7 @@ public class EnregistrementsActivity extends ExpandableListActivity {
      * à la liste des enregistrements programmés
      * Stocke cette liste dans la base sqlite
      */
-    private void recupererEnregistrements() {
+    private boolean recupererEnregistrements() {
     	int debut;
         
         // SQLite
@@ -266,6 +279,8 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 		} while (true);
 		
 		db.close();
+		
+		return true;
     }
     
     /**
@@ -335,7 +350,8 @@ public class EnregistrementsActivity extends ExpandableListActivity {
     
     /* Creates the menu items */
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, MENU_UPDATE, 0, "Mettre à jour");
+        menu.add(0, MENU_UPDATE, 0, "Mettre à jour").setIcon(android.R.drawable.ic_menu_rotate);
+        menu.add(0, MENU_ADD, 1, "Ajouter").setIcon(android.R.drawable.ic_menu_add);
         return true;
     }
 
@@ -344,6 +360,9 @@ public class EnregistrementsActivity extends ExpandableListActivity {
         switch (item.getItemId()) {
         case MENU_UPDATE:
             updaterEnregistrements(true);
+            return true;
+        case MENU_ADD:
+        	PvrActivity.activity.goToTab(1);
             return true;
         }
         return false;
