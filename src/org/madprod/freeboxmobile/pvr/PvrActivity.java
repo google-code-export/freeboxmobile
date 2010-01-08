@@ -1,14 +1,11 @@
 package org.madprod.freeboxmobile.pvr;
 
-import android.app.Activity;
 import android.app.TabActivity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
+import android.widget.ImageView;
 import android.widget.TabHost;
-import android.widget.TabWidget;
 import android.widget.TextView;
 
 import org.madprod.freeboxmobile.HttpConnection;
@@ -31,17 +28,25 @@ public class PvrActivity extends TabActivity {
         setTitle(getString(R.string.app_name) + " - Magnétoscope numérique");
 
         mTabHost = getTabHost();
+        ImageView tab1, tab2, tab3;
+
+        tab1 = new ImageView(this);
+        tab1.setImageDrawable(getResources().getDrawable(android.R.drawable.ic_menu_view));
+        tab2 = new ImageView(this);
+        tab2.setImageDrawable(getResources().getDrawable(android.R.drawable.ic_menu_add));
+        tab3 = new ImageView(this);
+        tab3.setImageDrawable(getResources().getDrawable(android.R.drawable.ic_menu_info_details));
         
         mTabHost.addTab(mTabHost.newTabSpec("tab_enregistrements")
-				        		.setIndicator("Enregistrements")
+				        		.setIndicator(tab1)
 				        		.setContent(new Intent(this, EnregistrementsActivity.class)));
         
         mTabHost.addTab(mTabHost.newTabSpec("tab_programmation")
-        						.setIndicator("Programmer")
+        						.setIndicator(tab2)
         						.setContent(new Intent(this, ProgrammationActivity.class)));
 
         mTabHost.addTab(mTabHost.newTabSpec("tab_grille")
-        						.setIndicator("Grille des programmes")
+        						.setIndicator(tab3)
         						.setContent(R.id.textview3));
 
         mTabHost.setCurrentTab(0);
