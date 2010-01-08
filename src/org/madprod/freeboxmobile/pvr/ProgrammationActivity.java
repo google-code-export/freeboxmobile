@@ -181,7 +181,7 @@ public class ProgrammationActivity extends Activity {
                     	if (enr != null) {
                             finish();
                     	} else {
-                    		PvrActivity.activity.goFirstTab();
+                    		PvrActivity.activity.goToTab(0);
                     	}
                     }
         			
