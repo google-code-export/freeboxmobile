@@ -35,6 +35,9 @@ Exemple pour simplement mettre un lien vers l'issue dans le log svn :
 [ issue 20 ] : implémentation ok (merci à YodanC !)
 }}}
 
+Résultat visible ici :
+http://code.google.com/p/freeboxmobile/source/detail?r=81
+
 Exemple pour marquer l'issue comme "Fixed" automatiquement (et faire le lien automatique dans l'issue vers le commit) :
 {{{
  Fixes issue 81
