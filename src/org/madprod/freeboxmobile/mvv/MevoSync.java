@@ -425,7 +425,7 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 			while ( (s=br.readLine())!= null && s.indexOf("Provenance") == -1)
 			{
 			}
-			if (s.indexOf("Provenance")>-1)
+			if ((s != null) && (s.indexOf("Provenance")>-1))
 			{
 				while ((s=br.readLine())!= null && s.indexOf("</tbody>") == -1)
 				{

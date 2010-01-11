@@ -102,7 +102,6 @@ public class Config extends PreferenceActivity implements OnSharedPreferenceChan
 		}
     	else if (KEY_MEVO_PREFS_FREQ.equals(key))
 		{
-//			summary = "Acuellement : "+(value==null?"Non renseigné":value);
     		if (value != null)
     		{
     			MevoSync.changeTimer(Integer.decode(value), this);

@@ -72,7 +72,6 @@ public class HomeActivity extends Activity implements HomeConstants
 				    	Intent i = new Intent();
 				    	i.setClassName("org.madprod.freeboxmobile", "org.madprod.freeboxmobile.Config");
 				    	startActivityForResult(i, ACTIVITY_CONFIG);
-//				    	startActivity(i);
 				    }
 				}
 			);
