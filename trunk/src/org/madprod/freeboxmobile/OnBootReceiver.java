@@ -8,9 +8,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.SystemClock;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 /**
@@ -25,8 +23,8 @@ public class OnBootReceiver extends BroadcastReceiver implements MevoConstants
 	@Override
 	public void onReceive(Context context, Intent intent)
 	{
-		SharedPreferences spmgr = PreferenceManager.getDefaultSharedPreferences(context);
-		String ms = spmgr.getString(KEY_MEVO_PREFS_FREQ, "0");
+		String ms = context.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_MEVO_PREFS_FREQ, "0");
+		Log.d(DEBUGTAG, "On Boot Receiver ! "+ms);
 		if (!ms.equals("0"))
 		{
 			Log.i(DEBUGTAG,"onReceive Boot");
