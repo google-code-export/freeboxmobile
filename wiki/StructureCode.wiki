@@ -29,12 +29,16 @@ Lors de la publication de bugs (ou Issues), choisir le label *Module-nommodule* 
 ==Commit==
 Lors des commit, préciser dans le message à quel(s) Issue(s) le commit participe (ou corrige).
 
-Exemple :
+Exemple pour simplement mettre un lien vers l'issue dans le log svn :
 {{{
 [ issue 16 ] : bug correction (timer at boot)
 [ issue 20 ] : implémentation ok (merci à YodanC !)
 }}}
 
+Exemple pour marquer l'issue comme "Fixed" automatiquement (et faire le lien automatique dans l'issue vers le commit) :
+{{{
+ Fixes issue 81
+}}}
+
 Résultat visible ici :
-http://code.google.com/p/freeboxmobile/source/detail?r=81
-(les références des issues deviennent cliquables dans le log)
+http://code.google.com/p/freeboxmobile/issues/detail?id=81
