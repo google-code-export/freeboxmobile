@@ -15,6 +15,8 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.Toast;
@@ -51,7 +53,7 @@ public class EnregistrementsActivity extends ExpandableListActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+        setContentView(R.layout.pvr);
         HttpConnection.initVars(this);
 
 		this.listeEnregistrements = new ListeEnregistrements();
@@ -59,6 +61,14 @@ public class EnregistrementsActivity extends ExpandableListActivity {
         enrAct = this;
 
         setTheme(android.R.style.Theme_Light);
+        setTitle(getString(R.string.app_name) + " - Magnétoscope numérique");
+        
+        ((Button) findViewById(R.id.pvrBtnProg)).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+        		ajouterNouvelEnregistrement();
+        	}
+        });
 
         updaterEnregistrements(true);
     }
@@ -221,7 +231,7 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 				
 				// Child: liste des détails pour chaque enregistrement
 				listeEnregistrements.createChildList(),
-				R.layout.pvr_enregistrements_liste,
+				R.layout.pvr_enregistrements_details,
 				new String[] { "key", "value" },
 				new int[] { R.id.pvr_enr_list_key, R.id.pvr_enr_list_value }
 			);
@@ -362,10 +372,16 @@ public class EnregistrementsActivity extends ExpandableListActivity {
             updaterEnregistrements(true);
             return true;
         case MENU_ADD:
-        	PvrActivity.activity.goToTab(1);
+        	ajouterNouvelEnregistrement();
             return true;
         }
         return false;
+    }
+    
+    void ajouterNouvelEnregistrement() {
+    	Intent i = new Intent();
+    	i.setClassName("org.madprod.freeboxmobile", "org.madprod.freeboxmobile.pvr.ProgrammationActivity");
+    	startActivity(i);
     }
 
     /**

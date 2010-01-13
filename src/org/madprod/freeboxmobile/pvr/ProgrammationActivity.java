@@ -178,11 +178,7 @@ public class ProgrammationActivity extends Activity {
 						setResult(EnregistrementsActivity.RESULT_PROG_OK);
                     	Toast.makeText(progAct, "Modifications enregistrées!", Toast.LENGTH_SHORT);
                     	
-                    	if (enr != null) {
-                            finish();
-                    	} else {
-                    		PvrActivity.activity.goToTab(0);
-                    	}
+                    	finish();
                     }
         			
         			EnregistrementsActivity.enrAct.updaterEnregistrements(false);

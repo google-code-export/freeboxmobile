@@ -14,5 +14,8 @@
 	<string name="pvrTxtModif">Modifier</string>
 	<string name="pvrTxtSuppr">Supprimer</string>
 	
+	<string name="pvrTxtBtnProg">Ajouter</string>
+	<string name="pvrTxtBtnGrille">Programme TV</string>
+	
 	
 </resources>
