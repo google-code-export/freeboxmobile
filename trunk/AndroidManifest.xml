@@ -20,7 +20,6 @@
 		</receiver>
 		<receiver android:name=".mvv.OnMevoAlarmReceiver">
 		</receiver>
-		<activity android:theme="@android:style/Theme.Light" android:name=".pvr.PvrActivity"></activity>
 		<activity android:theme="@android:style/Theme.Light" android:name=".pvr.EnregistrementsActivity"></activity>
 		<activity android:theme="@android:style/Theme.Light" android:name=".pvr.ProgrammationActivity"></activity>
 		<activity android:theme="@android:style/Theme.Light" android:name=".pvr.EnregistrementActivity"></activity>
