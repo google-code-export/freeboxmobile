@@ -245,6 +245,8 @@ public class EnregistrementsActivity extends ExpandableListActivity {
      */
     private boolean recupererEnregistrements() {
     	int debut;
+    	String chaine, date, heure, duree, nom, ide, chaine_id, service_id;
+    	String h, min, dur, name, where_id, repeat_a;
         
         // SQLite
         EnregistrementsDbAdapter db = new EnregistrementsDbAdapter(this);
@@ -256,9 +258,6 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 			
 			if (debut > 0) {
 				tableEnregistrements = tableEnregistrements.substring(debut);
-				
-	        	String chaine, date, heure, duree, nom, ide, chaine_id, service_id;
-	        	String h, min, dur, name, where_id, repeat_a;
 	        	
 	        	// Récupération des infos
 				chaine =		recupererChamp("<strong>", "<");
