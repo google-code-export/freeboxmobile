@@ -366,6 +366,29 @@ public class HttpConnection implements Constants
         	return (null);
         }
 	}
+	public static InputStream getRequestIS(String url) {
+		Log.d(DEBUGTAG, "GET: " + url);
+
+		HttpClient client = new DefaultHttpClient(new BasicHttpParams());
+		HttpGet getMethod = new HttpGet(url);
+		getMethod.setHeader("User-Agent", USER_AGENT);
+		try
+		{
+			HttpResponse httpResponse = client.execute(getMethod);
+			if ((httpResponse != null))
+			{
+				HttpEntity responseEntity = httpResponse.getEntity();
+				return responseEntity.getContent();
+			}
+			else
+				return (null);
+		}
+       	catch (IOException e)
+       	{
+        	Log.e(DEBUGTAG,"getRequest : "+e);
+        	return (null);
+        }
+	}
 
 	/**
 	* Sends a POST request

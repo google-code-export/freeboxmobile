@@ -1,5 +1,6 @@
 package org.madprod.freeboxmobile.pvr;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,16 +8,21 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.madprod.freeboxmobile.HttpConnection;
 import org.madprod.freeboxmobile.R;
+import org.madprod.freeboxmobile.guide.Guide;
+import org.madprod.freeboxmobile.guide.Guide.Chaines.Chaines_Chaine;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,6 +54,10 @@ public class EnregistrementActivity extends Activity {
 		        TextView heure = (TextView) findViewById(R.id.pvrDispHeure);
 		        TextView duree = (TextView) findViewById(R.id.pvrDispDuree);
 		        TextView nom = (TextView) findViewById(R.id.pvrDispNom);
+		        
+		        // Logo
+		        int canalChaine = c.getInt(c.getColumnIndex(EnregistrementsDbAdapter.KEY_CHAINE_ID));
+		        new TelechargerLogoChaineTask().execute(canalChaine);
 		        
 		        // Affichage des données
 		    	chaine.setText(c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_CHAINE)));
@@ -164,6 +174,39 @@ public class EnregistrementActivity extends Activity {
             }
             
             c.close();
+        }
+    }
+	
+
+	/**
+	 * télécharge le logo d'une chaine
+	 * @author bduffez
+	 *
+	 */
+    class TelechargerLogoChaineTask extends AsyncTask<Integer, Integer, Bitmap> {
+        protected void onPreExecute() {
+        }
+    	
+        protected Bitmap doInBackground(Integer... arg0) {
+    		String url = "http://adsl.free.fr/admin/magneto.pl?id=";
+    		url += "id="+HttpConnection.getId();
+    		url += "&idt="+HttpConnection.getIdt();
+    		url += "&ajax=get_chaines";
+    		url += "&date=2010-01-14+19%3A00%3A00";//3A = :
+    		String json = HttpConnection.getPage(HttpConnection.getRequest(url, true));
+    		Guide guideTv = new Guide(json, false, true, false); 
+    		url = "http://adsl.free.fr/im/chaines/";
+    		Chaines_Chaine chaine = guideTv.getChaine(arg0[0]);
+    		url += chaine.getImage();
+    		InputStream is = HttpConnection.getRequestIS(url);
+    		return BitmapFactory.decodeStream(is);
+        }
+        
+        protected void onPostExecute(Bitmap bmp) {
+    		ImageView im = (ImageView) findViewById(R.id.pvrLogoChaine);
+    		if (bmp != null) {
+    			im.setImageBitmap(bmp);
+    		}
         }
     }
 	
