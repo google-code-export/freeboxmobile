@@ -4,6 +4,7 @@ import android.app.TabActivity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Build;
 import android.widget.ImageView;
 import android.widget.TabHost;
 import android.widget.TextView;
@@ -28,26 +29,44 @@ public class PvrActivity extends TabActivity {
         setTitle(getString(R.string.app_name) + " - Magnétoscope numérique");
 
         mTabHost = getTabHost();
-        ImageView tab1, tab2, tab3;
-
-        tab1 = new ImageView(this);
-        tab1.setImageDrawable(getResources().getDrawable(android.R.drawable.ic_menu_view));
-        tab2 = new ImageView(this);
-        tab2.setImageDrawable(getResources().getDrawable(android.R.drawable.ic_menu_add));
-        tab3 = new ImageView(this);
-        tab3.setImageDrawable(getResources().getDrawable(android.R.drawable.ic_menu_info_details));
         
-        mTabHost.addTab(mTabHost.newTabSpec("tab_enregistrements")
-				        		.setIndicator(tab1)
-				        		.setContent(new Intent(this, EnregistrementsActivity.class)));
-        
-        mTabHost.addTab(mTabHost.newTabSpec("tab_programmation")
-        						.setIndicator(tab2)
-        						.setContent(new Intent(this, ProgrammationActivity.class)));
-
-        mTabHost.addTab(mTabHost.newTabSpec("tab_grille")
-        						.setIndicator(tab3)
-        						.setContent(R.id.textview3));
+        // Android 1.5 (<1.6)
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.DONUT) {
+	        mTabHost.addTab(mTabHost.newTabSpec("tab_enregistrements")
+					        		.setIndicator("Enregistrements")
+					        		.setContent(new Intent(this, EnregistrementsActivity.class)));
+	        
+	        mTabHost.addTab(mTabHost.newTabSpec("tab_programmation")
+	        						.setIndicator("Programmation")
+	        						.setContent(new Intent(this, ProgrammationActivity.class)));
+	
+	        mTabHost.addTab(mTabHost.newTabSpec("tab_grille")
+	        						.setIndicator("Guide TV")
+	        						.setContent(R.id.textview3));
+        }
+        // Android >= 1.6
+        else {
+	        ImageView tab1, tab2, tab3;
+	
+	        tab1 = new ImageView(this);
+	        tab1.setImageDrawable(getResources().getDrawable(android.R.drawable.ic_menu_view));
+	        tab2 = new ImageView(this);
+	        tab2.setImageDrawable(getResources().getDrawable(android.R.drawable.ic_menu_add));
+	        tab3 = new ImageView(this);
+	        tab3.setImageDrawable(getResources().getDrawable(android.R.drawable.ic_menu_info_details));
+	        
+	        mTabHost.addTab(mTabHost.newTabSpec("tab_enregistrements")
+					        		.setIndicator(tab1)
+					        		.setContent(new Intent(this, EnregistrementsActivity.class)));
+	        
+	        mTabHost.addTab(mTabHost.newTabSpec("tab_programmation")
+	        						.setIndicator(tab2)
+	        						.setContent(new Intent(this, ProgrammationActivity.class)));
+	
+	        mTabHost.addTab(mTabHost.newTabSpec("tab_grille")
+	        						.setIndicator(tab3)
+	        						.setContent(R.id.textview3));
+        }
 
         mTabHost.setCurrentTab(0);
     }
