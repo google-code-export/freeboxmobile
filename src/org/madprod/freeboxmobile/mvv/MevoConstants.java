@@ -14,7 +14,7 @@ import android.view.Menu;
 public interface MevoConstants extends Constants
 {
     static final String KEY_SPLASH_MEVO	= "splashscreen_mevo";
-	static final String DIR_MEVO		= DIR_FBM+"/mevo";
+	static final String DIR_MEVO		= "/mevo/";
 
 	static final int MSG_STATUS_UNLISTENED = 0;
 	static final int MSG_STATUS_LISTENED = 1;

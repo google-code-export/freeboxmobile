@@ -14,6 +14,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
@@ -80,8 +82,7 @@ public class HomeActivity extends Activity implements HomeConstants
 				{
 					public void onClick(View view)
 					{
-				    	Intent i = new Intent();
-				    	i.setClassName("org.madprod.freeboxmobile", "org.madprod.freeboxmobile.mvv.MevoActivity");
+				    	Intent i = new Intent(homeActivity, org.madprod.freeboxmobile.mvv.MevoActivity.class);
 				    	startActivity(i);
 					}
 				}
@@ -101,8 +102,7 @@ public class HomeActivity extends Activity implements HomeConstants
 				{
 					public void onClick(View view)
 					{
-				    	Intent i = new Intent();
-				    	i.setClassName("org.madprod.freeboxmobile", "org.madprod.freeboxmobile.pvr.PvrActivity");
+				    	Intent i = new Intent(homeActivity, org.madprod.freeboxmobile.pvr.PvrActivity.class);
 				    	startActivity(i);
 					}
 				}
@@ -151,7 +151,32 @@ public class HomeActivity extends Activity implements HomeConstants
     	super.onResume();
     }
     
+	@Override
+    public boolean onCreateOptionsMenu(Menu menu)
+	{
+        super.onCreateOptionsMenu(menu);
 
+        menu.add(0, HOME_OPTION_COMPTES, 0, R.string.home_option_comptes).setIcon(android.R.drawable.ic_menu_myplaces);
+        menu.add(0, HOME_OPTION_CONFIG, 1, R.string.home_option_config).setIcon(android.R.drawable.ic_menu_preferences);
+        menu.add(0, HOME_OPTION_SHARE, 1, R.string.home_option_share).setIcon(android.R.drawable.ic_menu_share);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+    	switch (item.getItemId())
+    	{
+    		case HOME_OPTION_COMPTES:
+//		    	Intent i = new Intent();
+//		    	i.setClassName("org.madprod.freeboxmobile", "org.madprod.freeboxmobile.home.ComptesActivity");
+    			Intent i = new Intent(this, ComptesActivity.class);
+		    	startActivity(i);
+    			return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+    
     private void displayAbout()
     {	
     	AlertDialog d = new AlertDialog.Builder(this).create();

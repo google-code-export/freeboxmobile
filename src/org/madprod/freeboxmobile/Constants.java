@@ -18,7 +18,7 @@ public interface Constants
     static final String KEY_MEVO_PREFS_FREQ	= "mevo_freq";
 
 	static final String DEBUGTAG		= "_FreeboxMobile";
-	static final String DIR_FBM			= "/freeboxmobile";
+	static final String DIR_FBM			= "/freeboxmobile/";
 
     public static final int CONNECT_LOGIN_FAILED = -1;
     public static final int CONNECT_NOT_CONNECTED = 0;

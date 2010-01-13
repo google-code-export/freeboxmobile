@@ -28,8 +28,7 @@
 		
 	<Button android:layout_width="wrap_content" android:layout_weight="1"
 		android:layout_height="fill_parent" android:width="1.0dp"
-		android:text="@string/buttonPvr" android:id="@+id/magneto"
-		android:textSize="19px"></Button>
+		android:text="@string/buttonPvr" android:textSize="19px" android:id="@+id/magneto"></Button>
 
 
 </LinearLayout>
