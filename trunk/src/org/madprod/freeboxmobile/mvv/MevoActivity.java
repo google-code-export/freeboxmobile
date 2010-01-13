@@ -29,6 +29,7 @@ import android.media.MediaPlayer.OnErrorListener;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.Contacts;
 import android.provider.Contacts.Intents.Insert;
@@ -79,7 +80,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
         registerForContextMenu(getListView());
         mAdapter = new MessagesAdapter(this, getContentResolver()); 
         setListAdapter(mAdapter);
-        mevoActivity = this;
+        mevoActivity = this;        
 		mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         speakerButton = (Button) findViewById(R.id.MevoButtonSpeaker);
         callbackButton = (Button) findViewById(R.id.MevoButtonCallback);
@@ -693,7 +694,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
 			holder.qui.setKeyListener(null);
 			if (!curMsg.isMPInit())
 			{
-					curMsg.setMsgSource("/sdcard/freeboxmobile/mevo/"+curMsg.getStringValue(KEY_NAME));
+					curMsg.setMsgSource(Environment.getExternalStorageDirectory().toString()+DIR_FBM+HttpConnection.getIdentifiant()+DIR_MEVO+curMsg.getStringValue(KEY_NAME));
 			}
 			return convertView;
 		}

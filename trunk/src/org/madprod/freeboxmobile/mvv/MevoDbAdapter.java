@@ -2,6 +2,8 @@ package org.madprod.freeboxmobile.mvv;
 
 import java.lang.String;
 
+import org.madprod.freeboxmobile.HttpConnection;
+
 /**
 *
 * @author Olivier Rosello
@@ -19,17 +21,17 @@ import android.util.Log;
 
 public class MevoDbAdapter implements MevoConstants
 {
-	private static final String TAG = "FreeboxMobileDbAdapter";
 	private DatabaseHelper mDbHelper;
 	private SQLiteDatabase mDb;
 
-	private static final String DATABASE_NAME = "freeboxmobile";
+	public static final String DATABASE_NAME = "freeboxmobile";
 	private static final String DATABASE_TABLE = "mevo";
 	private static final int DATABASE_VERSION = 3;
 
 	/**
 	 * Database creation sql statement
 	 */
+	// TODO : Utiliser les constantes de MevoConstantes là dedans...
 	private static final String DATABASE_CREATE =
 		"create table "+DATABASE_TABLE+" (_id integer primary key autoincrement, "
 			+ "status integer not null, presence integer not null, source text not null, quand datetime not null, "
@@ -41,7 +43,7 @@ public class MevoDbAdapter implements MevoConstants
 	{
 		DatabaseHelper(Context context)
 		{
-			super(context, DATABASE_NAME, null, DATABASE_VERSION);
+			super(context, DATABASE_NAME+"_"+HttpConnection.getIdentifiant(), null, DATABASE_VERSION);
 		}
 
 		@Override
@@ -53,7 +55,7 @@ public class MevoDbAdapter implements MevoConstants
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
 		{
-			Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
+			Log.w(DEBUGTAG, "MevoDbAdapter : Upgrading database from version " + oldVersion + " to "
 					+ newVersion + ", which will destroy all old data");
 			db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE);
 			onCreate(db);
@@ -70,6 +72,7 @@ public class MevoDbAdapter implements MevoConstants
 	public MevoDbAdapter(Context ctx)
 	{
 		this.mCtx = ctx;
+//		Log.d(DEBUGTAG,"DATABASE PATH : "+ctx.getDatabasePath("tptp"));
 	}
 
 	/**

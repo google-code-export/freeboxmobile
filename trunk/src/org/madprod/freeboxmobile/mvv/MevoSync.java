@@ -140,6 +140,36 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 				myAlertDialog.show();
 			}
 			mNotificationManager= (NotificationManager) activity.getSystemService(NOTIFICATION_SERVICE);
+
+	        // Si l'application a été utilisée avant le support du multicomptes, on migre les données
+	        File f = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_MEVO);
+	        if (f.exists())
+	        {
+	        	Log.d(DEBUGTAG, "Ancienne config sans multicompte : migration messages...");
+	        	File nf = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+HttpConnection.getIdentifiant());
+	        	nf.mkdirs();
+	        	if (f.renameTo(new File(nf, f.getName())))
+	        	{
+	        		Log.d(DEBUGTAG, "ok");
+	        	}
+	        	else
+	        	{
+	        		Log.d(DEBUGTAG, " notok");
+	        	}
+	        }
+	        File old_db = activity.getDatabasePath(MevoDbAdapter.DATABASE_NAME);
+	        if (old_db.exists())
+	        {
+	        	Log.d(DEBUGTAG, "Ancienne config sans multicomptes : migration base de données... "+HttpConnection.getIdentifiant());
+	        	if (old_db.renameTo(activity.getDatabasePath(MevoDbAdapter.DATABASE_NAME+"_"+HttpConnection.getIdentifiant())))
+	        	{
+	        		Log.d(DEBUGTAG, "ok");
+	        	}
+	        	else
+	        	{
+	        		Log.d(DEBUGTAG, " notok");
+	        	}
+	        }
 		}
 	}
 
@@ -181,13 +211,13 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 		
 		if (newmsg > 1)
 		{
-			tickerText = getString(R.string.app_name)+" : "+newmsg+" "+getString(R.string.http_new_msgs);
-			contentText = newmsg+" "+getString(R.string.http_new_msgs);
+			tickerText = getString(R.string.app_name)+" : "+newmsg+" "+getString(R.string.mevo_new_msgs);
+			contentText = newmsg+" "+getString(R.string.mevo_new_msgs);
 		}
 		else
 		{
-			tickerText = "FreeboxMobile : 1 "+getString(R.string.http_new_msg);
-			contentText = newmsg+" "+getString(R.string.http_new_msg);
+			tickerText = "FreeboxMobile : 1 "+getString(R.string.mevo_new_msg);
+			contentText = newmsg+" "+getString(R.string.mevo_new_msg);
 		}
 		long when = System.currentTimeMillis();
 
@@ -326,7 +356,7 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 		}
 
 		// On efface le fichier du message
-		file = new File(Environment.getExternalStorageDirectory().toString()+DIR_MEVO,name);
+		file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+HttpConnection.getIdentifiant()+DIR_MEVO,name);
 		if (file.delete())
 		{
 			Log.d(DEBUGTAG, "Delete file ok");
@@ -418,7 +448,7 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 			File file;
 			
 	        newmsg = 0;
-	        file = new File(Environment.getExternalStorageDirectory().toString()+DIR_MEVO);
+	        file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+HttpConnection.getIdentifiant()+DIR_MEVO);
 	        file.mkdirs();
 	        mDbHelper.open();
 	        mDbHelper.initTempValues();
@@ -471,7 +501,7 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 							}
 	
 				    	    // Get the mevo file and store it on sdcard
-					        file = new File(Environment.getExternalStorageDirectory().toString()+DIR_MEVO,name);
+					        file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+HttpConnection.getIdentifiant()+DIR_MEVO,name);
 					        if (file.exists() == false)
 					        {
 								HttpConnection.getFile(file, mevoUrl+link);

@@ -96,12 +96,11 @@ public class HttpConnection implements Constants
         {
            	errorAlert.dismiss();
         }
-//		ConnectFree.setActivity(null);
 	}
 
 	/**
 	 * Init les variables statiques
-	 * Cette fonction doit être utilisée par des classes n'ayant pas d'activity
+	 * Cette fonction doit être utilisée par des classes n'ayant pas d'activity (à la place de initVars)
 	 * @param l
 	 * @param p
 	 */
@@ -111,6 +110,11 @@ public class HttpConnection implements Constants
 		password = p;
 	}
 	
+	public static String getIdentifiant()
+	{
+		return (login);
+	}
+
 	public static String getId()
 	{
 		return (id);
@@ -171,14 +175,14 @@ public class HttpConnection implements Constants
 					{
 						public void run()
 						{
-							httpProgressDialog = ProgressDialog.show(activity, "Mon Compte Free", "Connexion en cours ...", true,false);
+							showProgressDialog(activity);
+//							httpProgressDialog = ProgressDialog.show(activity, "Mon Compte Free", "Connexion en cours ...", true,false);
 						}
 					});
 			}
 			else
 				httpProgressDialog = null;
 		}
-		// TODO : Mettre la connexion dans un thread
 		connectionStatus = connectFree();
         if (httpProgressDialog != null)
         {
@@ -210,15 +214,30 @@ public class HttpConnection implements Constants
 		else
 			return false;
 	}
-
+	
 	public static int connectFree()
 	{
+		return HttpConnection.connectionFree(login, password, false);
+	}
+
+	/**
+	 * connectionFree : identifie sur le portail de Free avec le login/pass demandé
+	 * @param l : login (identifiant = numéro de téléphone Freebox)
+	 * @param p : password (mot de passe Freebox)
+	 * @param check : true = juste vérifier les identifiant / false : se connecter (ie stocker id & idt)
+	 * @return CONNECT_CONNECTED || CONNECT_NOT_CONNECTED || CONNECT_LOGIN_FAILED
+	 */
+	public static int connectionFree(String l, String p, boolean check)
+	{
+		String m_id = null;
+		String m_idt = null;
+
 		Log.d(DEBUGTAG,"Connect Free start ");
         try
         {
     		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-    		nameValuePairs.add(new BasicNameValuePair("login", login));
-    		nameValuePairs.add(new BasicNameValuePair("pass", password)); 
+    		nameValuePairs.add(new BasicNameValuePair("login", l));
+    		nameValuePairs.add(new BasicNameValuePair("pass", p)); 
     		BufferedReader br = postRequest(serverUrl, nameValuePairs, true);
     		if (br != null)
     		{
@@ -237,11 +256,11 @@ public class HttpConnection implements Constants
 	    				{
 	    					priv = priv.substring(0, priv.indexOf('"'));
 	    				}
-	    				idt = priv;
+	    				m_idt = priv;
 	    				Log.d(DEBUGTAG,"idt :"+priv);
 	    				priv = s.substring(s.indexOf("?id=")+4);
 	    				priv = priv.substring(0, priv.indexOf('&'));
-	    				id = priv;
+	    				m_id = priv;
 	    				Log.d(DEBUGTAG,"id :"+priv);
 	    				break;
 	    			}
@@ -253,16 +272,25 @@ public class HttpConnection implements Constants
         	Log.e(DEBUGTAG, "connectFree : "+e);
         	e.printStackTrace();
         	connectionStatus = CONNECT_NOT_CONNECTED;
+        	id = null;
+        	idt = null;
         	return connectionStatus;
         }
-       	if (id != null && idt != null)
+       	if (m_id != null && m_idt != null)
        	{
        		connectionStatus = CONNECT_CONNECTED;
+       		if (check == false)
+       		{
+       			id = m_id;
+       			idt = m_idt;
+       		}
        	}
        	else
        	{
        		Log.d(DEBUGTAG,"MonCompeFree : AUTHENTIFICATION FAILED !");
        		connectionStatus = CONNECT_LOGIN_FAILED;
+       		id = null;
+       		idt = null;
        	}
        	return connectionStatus;
 	}
