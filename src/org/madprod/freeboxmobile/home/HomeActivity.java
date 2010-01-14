@@ -1,6 +1,5 @@
 package org.madprod.freeboxmobile.home;
 
-import org.madprod.freeboxmobile.ConnectFree;
 import org.madprod.freeboxmobile.HttpConnection;
 import org.madprod.freeboxmobile.R;
 
@@ -12,8 +11,9 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.Environment;
-import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
@@ -35,7 +35,7 @@ public class HomeActivity extends Activity implements HomeConstants
         super.onCreate(savedInstanceState);
 
 		// On teste si on est dans le cas d'un premier lancement pour cette version de l'appli
-		SharedPreferences mgr = PreferenceManager.getDefaultSharedPreferences(this);
+		SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 
 		// Simulate first launch (for test only, these lines have to be commented for release)
 /*		editor.remove(KEY_MEVO_PREFS_FREQ);
@@ -57,31 +57,16 @@ public class HomeActivity extends Activity implements HomeConstants
         	showSdCardError();
 		setContentView(R.layout.home_main);
 		HttpConnection.initVars(this);
-		// TODO : est-ce vraiment utile below ?
-		//MevoSync.setActivity(this);
 
         Button phoneButton = (Button) findViewById(R.id.phone);
-        Button configButton = (Button) findViewById(R.id.config);
         Button aboutButton = (Button) findViewById(R.id.about);
         Button pvrButton = (Button) findViewById(R.id.magneto);
-        configButton.setOnClickListener(
-				new View.OnClickListener()
-				{
-					public void onClick(View view)
-					{
-				    	Intent i = new Intent();
-				    	i.setClassName("org.madprod.freeboxmobile", "org.madprod.freeboxmobile.Config");
-				    	startActivityForResult(i, ACTIVITY_CONFIG);
-				    }
-				}
-			);
 		phoneButton.setOnClickListener(
 				new View.OnClickListener()
 				{
 					public void onClick(View view)
 					{
-				    	Intent i = new Intent();
-				    	i.setClassName("org.madprod.freeboxmobile", "org.madprod.freeboxmobile.mvv.MevoActivity");
+				    	Intent i = new Intent(homeActivity, org.madprod.freeboxmobile.mvv.MevoActivity.class);
 				    	startActivity(i);
 					}
 				}
@@ -101,7 +86,7 @@ public class HomeActivity extends Activity implements HomeConstants
 				{
 					public void onClick(View view)
 					{
-				    	Intent i = new Intent(homeActivity, org.madprod.freeboxmobile.pvr.EnregistrementsActivity.class);
+				    	Intent i = new Intent(homeActivity, org.madprod.freeboxmobile.pvr.PvrActivity.class);
 				    	startActivity(i);
 					}
 				}
@@ -114,8 +99,6 @@ public class HomeActivity extends Activity implements HomeConstants
     {
     	Log.d(DEBUGTAG,"MainActivity Start");
     	super.onStart();
-    	// TODO : vérif que la suppression de la ligne ci dessous est ok
-    	//    	MevoSync.setActivity(this);
     }
     
     @Override
@@ -131,8 +114,6 @@ public class HomeActivity extends Activity implements HomeConstants
     {
     	Log.d(DEBUGTAG,"MainActivity Destroy");
     	super.onDestroy();
-    	// TODO : vérif que la suppression de la ligne ci dessous est ok
-//    	MevoSync.setActivity(null);
     }
 
     @Override
@@ -150,7 +131,37 @@ public class HomeActivity extends Activity implements HomeConstants
     	super.onResume();
     }
     
+	@Override
+    public boolean onCreateOptionsMenu(Menu menu)
+	{
+        super.onCreateOptionsMenu(menu);
 
+        menu.add(0, HOME_OPTION_COMPTES, 0, R.string.home_option_comptes).setIcon(android.R.drawable.ic_menu_myplaces);
+        menu.add(0, HOME_OPTION_CONFIG, 1, R.string.home_option_config).setIcon(android.R.drawable.ic_menu_preferences);
+        menu.add(0, HOME_OPTION_SHARE, 1, R.string.home_option_share).setIcon(android.R.drawable.ic_menu_share);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+    	Intent i;
+
+    	switch (item.getItemId())
+    	{
+    		case HOME_OPTION_COMPTES:
+    			i = new Intent(this, ComptesActivity.class);
+		    	startActivityForResult(i, ACTIVITY_COMPTES);
+    			return true;
+    		case HOME_OPTION_CONFIG:
+		    	i = new Intent();
+		    	i.setClassName("org.madprod.freeboxmobile", "org.madprod.freeboxmobile.Config");
+		    	startActivity(i);
+		    	return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+    
     private void displayAbout()
     {	
     	AlertDialog d = new AlertDialog.Builder(this).create();
@@ -197,18 +208,16 @@ public class HomeActivity extends Activity implements HomeConstants
         super.onActivityResult(requestCode, resultCode, intent);
         switch(requestCode)
         {
-        	case ACTIVITY_CONFIG:
+        	case ACTIVITY_COMPTES:
             	if (HttpConnection.checkUpdated(
             			getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_USER, null),
             			getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_PASSWORD, null)
             			))
             	{
             		HttpConnection.initVars(homeActivity);
-            		new ConnectFree().execute();
+//            		new ConnectFree().execute();
             	}
         		break;
         }
     }
-
-
 }

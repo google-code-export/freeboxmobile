@@ -22,11 +22,11 @@ public class ComptesDbAdapter implements HomeConstants
 
     private static final String DATABASE_NAME = "comptes";
     private static final String DATABASE_TABLE = "comptes";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     private static final String DATABASE_CREATE =
         "create table " + DATABASE_TABLE + " (" + KEY_ROWID + " integer primary key autoincrement, "
-                + KEY_TITLE +" text not null, " + KEY_LOGIN + " text not null, "
+                + KEY_TITLE +" text not null, " + KEY_USER + " text not null, "
                 + KEY_PASSWORD + " text not null);";
 
     private final Context mCtx;
@@ -49,7 +49,7 @@ public class ComptesDbAdapter implements HomeConstants
     	{
     		Log.d(DEBUGTAG, "ComptesDbAdapter : Upgrading database from version " + oldVersion + " to "
                 + newVersion + ", which will destroy all old data");
-    		db.execSQL("DROP TABLE IF EXISTS notes");
+    		db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE);
     		onCreate(db);
     	}
     }
@@ -96,11 +96,11 @@ public class ComptesDbAdapter implements HomeConstants
      * @param password the password of the compte
      * @return rowId or -1 if failed
      */
-    public long createCompte(String title, String login, String password)
+    public long createCompte(String title, String user, String password)
     {
         ContentValues initialValues = new ContentValues();
         initialValues.put(KEY_TITLE, title);
-        initialValues.put(KEY_LOGIN, login);
+        initialValues.put(KEY_USER, user);
         initialValues.put(KEY_PASSWORD, password);
         return mDb.insert(DATABASE_TABLE, null, initialValues);
     }
@@ -124,7 +124,7 @@ public class ComptesDbAdapter implements HomeConstants
     public Cursor fetchAllComptes()
     {
         return mDb.query(DATABASE_TABLE, new String[] {KEY_ROWID, KEY_TITLE,
-                KEY_LOGIN, KEY_PASSWORD}, null, null, null, null, null);
+                KEY_USER, KEY_PASSWORD}, null, null, null, null, null);
     }
 
     /**
@@ -138,7 +138,7 @@ public class ComptesDbAdapter implements HomeConstants
     {
         Cursor mCursor =
                 mDb.query(true, DATABASE_TABLE, new String[] {KEY_ROWID,
-                        KEY_TITLE, KEY_LOGIN, KEY_PASSWORD}, KEY_ROWID + "=" + rowId, null,
+                        KEY_TITLE, KEY_USER, KEY_PASSWORD}, KEY_ROWID + "=" + rowId, null,
                         null, null, null, null);
         if (mCursor != null)
         {
@@ -158,13 +158,82 @@ public class ComptesDbAdapter implements HomeConstants
      * @param password value to set compte password to
      * @return true if the note was successfully updated, false otherwise
      */
-    public boolean updateCompte(long rowId, String title, String login, String password)
+    public boolean updateCompte(long rowId, String title, String user, String password)
     {
         ContentValues args = new ContentValues();
         args.put(KEY_TITLE, title);
-        args.put(KEY_LOGIN, login);
+        args.put(KEY_USER, user);
         args.put(KEY_PASSWORD, password);
 
         return mDb.update(DATABASE_TABLE, args, KEY_ROWID + "=" + rowId, null) > 0;
+    }
+
+    /**
+     * isValuePresent returns true if value is present in column key 
+     * @param key
+     * @param value
+     * @return
+     */
+    public boolean isValuePresent(String key, String value)
+    {
+    	Cursor mCursor = mDb.query(true, DATABASE_TABLE, new String[] {
+        		}, key + "='" + value + "'", null,
+                null, null, null, null);
+	    if ((mCursor != null) && (mCursor.moveToFirst()))
+	    {
+	    	return true;
+	    }
+	    else
+	    {
+	    	return false;
+	    }    	
+    }
+
+
+    public Cursor fetchFromTitle(String title)
+    {
+    	Cursor mCursor = mDb.query(true, DATABASE_TABLE, new String[] {
+            		KEY_TITLE, KEY_USER, KEY_PASSWORD}, KEY_TITLE + "='" + title + "'", null,
+                    null, null, null, null);
+        if (mCursor != null)
+        {
+            mCursor.moveToFirst();
+        }
+        return mCursor;
+    }
+
+    /**
+     * getLoginFromTitle returns login associated with given rowid
+     * @param id
+     * @return login
+     */
+    public String getLoginFromId(Integer id)
+    {
+    	Cursor mCursor = mDb.query(true, DATABASE_TABLE, new String[] {
+            		KEY_USER}, KEY_ROWID + "='" + id + "'", null,
+                    null, null, null, null);
+	    if ((mCursor != null) && (mCursor.moveToFirst()))
+	    {
+	        return mCursor.getString(mCursor.getColumnIndexOrThrow(KEY_USER));
+	    }
+	    else
+	    {
+	    	return null;
+	    }
+    }
+    
+    /**
+     * getCompteNumber : retourne le nombre de comptes présents dans la bdd
+     * @return nombre de comptes présents ds la bdd
+     */
+    public int getComptesNumber()
+    {
+		Cursor mCursor = mDb.query(true, DATABASE_TABLE, new String[] {
+        		}, null, null, null, null, null, null);
+	    if (mCursor != null)
+	    {
+	    	return mCursor.getCount();
+	    }
+	    return 0;
     }
 }

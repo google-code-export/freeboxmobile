@@ -9,11 +9,11 @@ package org.madprod.freeboxmobile;
 
 public interface Constants
 {
-	// utilisé par pour lancé l'Activity de Config...
-    static final int ACTIVITY_CONFIG = 0;
+    static final int ACTIVITY_COMPTES = 0;
 
     static final String KEY_USER		= "user";
     static final String KEY_PASSWORD	= "password";
+    static final String KEY_TITLE		= "title";
     static final String KEY_PREFS		= "freeboxmobile";
     static final String KEY_MEVO_PREFS_FREQ	= "mevo_freq";
 

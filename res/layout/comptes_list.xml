@@ -3,7 +3,7 @@
       android:layout_width="wrap_content"
     android:layout_height="wrap_content" android:orientation="vertical">
 
-  <TextView android:id="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/compte_actif"></TextView><Spinner android:id="@+id/Spinner01" android:layout_width="wrap_content" android:layout_height="wrap_content"></Spinner><TextView android:id="@+id/TextView02" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/comptes_liste"></TextView><ListView android:id="@android:id/list"
+  <TextView android:id="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/compte_actif"></TextView><Spinner android:id="@+id/Spinner01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:prompt="@string/compte_choose"></Spinner><TextView android:id="@+id/TextView02" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/comptes_liste"></TextView><ListView android:id="@android:id/list"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"></ListView>
   <TextView android:id="@android:id/empty"
@@ -11,5 +11,7 @@
         android:layout_height="wrap_content" android:text="@string/comptes_empty"/>
 
 
+
+<LinearLayout android:id="@+id/LinearLayout01" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_width="fill_parent" android:gravity="right"><Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/comptes_button_new" android:id="@+id/comptes_button_new"></Button></LinearLayout>
 
 </LinearLayout>

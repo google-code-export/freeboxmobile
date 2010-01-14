@@ -1,3 +1,0 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android"><item android:id="@+id/aide" android:title="Aide" android:titleCondensed="Aide" android:icon="@android:drawable/ic_menu_help"></item>
-
-</menu>
