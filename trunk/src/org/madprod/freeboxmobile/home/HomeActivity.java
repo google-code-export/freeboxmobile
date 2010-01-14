@@ -86,7 +86,7 @@ public class HomeActivity extends Activity implements HomeConstants
 				{
 					public void onClick(View view)
 					{
-				    	Intent i = new Intent(homeActivity, org.madprod.freeboxmobile.pvr.PvrActivity.class);
+				    	Intent i = new Intent(homeActivity, org.madprod.freeboxmobile.pvr.EnregistrementsActivity.class);
 				    	startActivity(i);
 					}
 				}
