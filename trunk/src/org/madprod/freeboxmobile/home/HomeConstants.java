@@ -22,9 +22,6 @@ public interface HomeConstants extends Constants
     // Pour la gestion des comptes
     // DB
     public static final String KEY_ROWID = "_id";
-    public static final String KEY_TITLE = "title";
-    public static final String KEY_LOGIN = "login";
-    public static final String KEY_PASSWORD = "password";
     
     // MENUS
     static final int COMPTES_OPTION_NEW = Menu.FIRST;

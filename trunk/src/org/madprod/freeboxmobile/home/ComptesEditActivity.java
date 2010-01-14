@@ -25,7 +25,7 @@ import android.widget.Toast;
 public class ComptesEditActivity extends Activity implements Constants
 {
 	private EditText mTitleText;
-    private EditText mLoginText;
+    private EditText mUserText;
     private EditText mPasswordText;
     private Long mRowId;
     private ComptesDbAdapter mDbHelper;
@@ -41,9 +41,10 @@ public class ComptesEditActivity extends Activity implements Constants
         exit = RESULT_CANCELED;
         
         setContentView(R.layout.comptes_edit);
-       
+        setTitle(getString(R.string.app_name)+" - Edition Compte Freebox");
+
         mTitleText = (EditText) findViewById(R.id.comptes_edit_nom);
-        mLoginText = (EditText) findViewById(R.id.comptes_edit_login);
+        mUserText = (EditText) findViewById(R.id.comptes_edit_user);
         mPasswordText = (EditText) findViewById(R.id.comptes_edit_password);
 
         Button confirmButton = (Button) findViewById(R.id.comptes_button_ok);
@@ -72,29 +73,41 @@ public class ComptesEditActivity extends Activity implements Constants
                 Bundle bundle = new Bundle();
 
                 String title = mTitleText.getText().toString();
-                String login = mLoginText.getText().toString();
+                String user = mUserText.getText().toString();
                 String password = mPasswordText.getText().toString();
                 Log.d(DEBUGTAG, "ici <"+title+">");
 
-                if (!title.equals("") && !login.equals("") && !password.equals(""))
+                if (!title.equals("") && !user.equals("") && !password.equals(""))
                 {
-	                bundle.putString(ComptesDbAdapter.KEY_TITLE, mTitleText.getText().toString());
-	                bundle.putString(ComptesDbAdapter.KEY_LOGIN, mLoginText.getText().toString());
-	                bundle.putString(ComptesDbAdapter.KEY_PASSWORD, mPasswordText.getText().toString());
-	                if (mRowId != null)
-	                {
-	                    bundle.putLong(ComptesDbAdapter.KEY_ROWID, mRowId);
-	                }
-	                // TODO : A QUOI SERT LE INTENT ?
-	                Intent mIntent = new Intent();
-	                mIntent.putExtras(bundle);
-	                setResult(RESULT_OK, mIntent);
-	                new CheckFree().execute(new Payload(login, password, mIntent));
+                	if (mDbHelper.isValuePresent(ComptesDbAdapter.KEY_TITLE, title))
+                	{
+                    	Toast t = Toast.makeText(ComptesEditActivity.this, "Un compte avec ce nom existe déjà !",Toast.LENGTH_LONG);
+                    	t.show();
+                	}
+                	else if (mDbHelper.isValuePresent(ComptesDbAdapter.KEY_USER, user))
+                	{
+                    	Toast t = Toast.makeText(ComptesEditActivity.this, "Un compte avec cet identifiant existe déjà !",Toast.LENGTH_LONG);
+                    	t.show();                		
+                	}
+                	else
+                	{
+		                bundle.putString(ComptesDbAdapter.KEY_TITLE, title);
+		                bundle.putString(ComptesDbAdapter.KEY_USER, user);
+		                bundle.putString(ComptesDbAdapter.KEY_PASSWORD, password);
+		                if (mRowId != null)
+		                {
+		                    bundle.putLong(ComptesDbAdapter.KEY_ROWID, mRowId);
+		                }
+		                // TODO : A QUOI SERT LE INTENT ?
+		                Intent mIntent = new Intent();
+		                mIntent.putExtras(bundle);
+		                setResult(RESULT_OK, mIntent);
+		                new CheckFree().execute(new Payload(user, password, mIntent));
+                	}
                 }
                 else
                 {
-                	Toast t;
-                	t = Toast.makeText(ComptesEditActivity.this, "Veuillez remplir tous les champs !",Toast.LENGTH_LONG);
+                	Toast t = Toast.makeText(ComptesEditActivity.this, "Veuillez remplir tous les champs !",Toast.LENGTH_LONG);
                 	t.show();
                 }
             }
@@ -108,7 +121,7 @@ public class ComptesEditActivity extends Activity implements Constants
             Cursor compte = mDbHelper.fetchCompte(mRowId);
             startManagingCursor(compte);
             mTitleText.setText(compte.getString(compte.getColumnIndexOrThrow(ComptesDbAdapter.KEY_TITLE)));
-            mLoginText.setText(compte.getString(compte.getColumnIndexOrThrow(ComptesDbAdapter.KEY_LOGIN)));
+            mUserText.setText(compte.getString(compte.getColumnIndexOrThrow(ComptesDbAdapter.KEY_USER)));
             mPasswordText.setText(compte.getString(compte.getColumnIndexOrThrow(ComptesDbAdapter.KEY_PASSWORD)));
 //            stopManagingCursor(compte);
         }
@@ -147,7 +160,7 @@ public class ComptesEditActivity extends Activity implements Constants
     	if (exit == RESULT_OK)
     	{
 	        String title = mTitleText.getText().toString();
-	        String login = mLoginText.getText().toString();
+	        String login = mUserText.getText().toString();
 	        String password = mPasswordText.getText().toString();
 	
 	        if (mRowId == null)

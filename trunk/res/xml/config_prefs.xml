@@ -1,7 +1,5 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" android:summary="Configuration" android:title="Configuration">  
-        <PreferenceCategory android:summary="Général" android:title="Général">
-
-<EditTextPreference android:order="2" android:key="user" android:title="Identifiant Free" android:inputType="phone" android:singleLine="true" /><EditTextPreference android:order="3" android:key="password" android:title="Mot de passe associé" android:password="true" android:singleLine="true" /></PreferenceCategory>
+        
         <PreferenceCategory android:summary="Modules" android:title="Modules"></PreferenceCategory>
 <PreferenceScreen android:title="@string/buttonMevo" android:summary="Configuration de la messagerie vocale"><ListPreference android:entries="@array/entries_list_pref_pollinterval" android:entryValues="@array/entryvalue_list_pref_pollinterval" android:title="Fréquence de vérification" android:order="4" android:shouldDisableView="true" android:enabled="true" android:key="mevo_freq" android:summary="Fréquence de vérification de nouveaux messages" android:defaultValue="3600000"></ListPreference></PreferenceScreen>
 

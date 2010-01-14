@@ -6,7 +6,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.madprod.freeboxmobile.HttpConnection;
-import org.madprod.freeboxmobile.ConnectFree;
 import org.madprod.freeboxmobile.mvv.MevoMessage;
 import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.ServiceUpdateUIListener;
@@ -30,7 +29,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.preference.PreferenceManager;
 import android.provider.Contacts;
 import android.provider.Contacts.Intents.Insert;
 import android.util.Log;
@@ -132,7 +130,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
 		deleteButton.setFocusable(false);
 		deleteButton.setClickable(false);
 		
-		SharedPreferences mgr = PreferenceManager.getDefaultSharedPreferences(this);
+		SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 		if (!mgr.getString(KEY_SPLASH_MEVO, "0").equals(this.getString(R.string.app_version)))
 		{
 			Editor editor = mgr.edit();
@@ -263,7 +261,6 @@ public class MevoActivity extends ListActivity implements MevoConstants
         super.onCreateOptionsMenu(menu);
 
         menu.add(0, MEVO_OPTION_REFRESH, 0, R.string.mevo_option_update).setIcon(android.R.drawable.ic_menu_rotate);
-        menu.add(0, MEVO_OPTION_CONFIG, 1, R.string.mevo_option_config).setIcon(android.R.drawable.ic_menu_preferences);
         return true;
     }
 
@@ -312,36 +309,11 @@ public class MevoActivity extends ListActivity implements MevoConstants
     {
     	switch (item.getItemId())
     	{
-	        case MEVO_OPTION_CONFIG:
-	        	Intent i = new Intent();
-		    	i.setClassName("org.madprod.freeboxmobile", "org.madprod.freeboxmobile.Config");
-		    	startActivityForResult(i,ACTIVITY_CONFIG);
-		    	//TODO : utiliser startActivityResult et lancer une connection si prefs mis à jour
-	            return true;
 	        case MEVO_OPTION_REFRESH:
 	        	MevoSync.refresh();
 	        	return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-   @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent intent)
-    {
-        super.onActivityResult(requestCode, resultCode, intent);
-        switch(requestCode)
-        {
-        	case ACTIVITY_CONFIG:
-            	if (HttpConnection.checkUpdated(
-            			getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_USER, null),
-            			getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_PASSWORD, null)
-            			))
-            	{
-            		ConnectFree.setActivity(mevoActivity);
-            		new ConnectFree().execute();
-            	}
-        		break;
-        }
     }
 
 	@Override

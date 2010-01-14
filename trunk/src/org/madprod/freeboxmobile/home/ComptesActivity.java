@@ -4,16 +4,23 @@ import org.madprod.freeboxmobile.R;
 
 import android.app.ListActivity;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.Spinner;
+import android.widget.Toast;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 
 /**
 *
@@ -26,8 +33,7 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 {
     private static final int COMPTE_CREATE=0;
     private static final int COMPTE_EDIT=1;
-    
-//	private int mCompteNumber = 1;
+
 	private ComptesDbAdapter mDbHelper;
     private Cursor mComptesCursor;
 
@@ -39,19 +45,19 @@ public class ComptesActivity extends ListActivity implements HomeConstants
         setContentView(R.layout.comptes_list);
         mDbHelper = new ComptesDbAdapter(this);
         mDbHelper.open();
-        fillData();
         registerForContextMenu(getListView());
+        setTitle(getString(R.string.app_name)+" - Comptes Freebox");
+        Button newButton = (Button) findViewById(R.id.comptes_button_new);
+        newButton.setOnClickListener(new Button.OnClickListener()
+        {
+        	public void onClick(View view)
+        	{
+        		createCompte();
+        	}
+        });
+
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
-        boolean result = super.onCreateOptionsMenu(menu);
-        menu.add(0, COMPTES_OPTION_NEW, 0, R.string.comptes_option_new);
-        return result;
-    }
-
-    // TODO : GERE LE DELETE
     @Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo)
     {
@@ -60,17 +66,37 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 	}
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
+	public boolean onContextItemSelected(MenuItem item)
     {
-    	switch (item.getItemId())
-    	{
-	    	case COMPTES_OPTION_NEW:
-	    		createCompte();
-	            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-    
+		switch(item.getItemId())
+		{
+			// TODO : Pas de delete s'il s'agit du compte actif
+    		case COMPTES_OPTION_DELETE:
+    			AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+    			String selected = getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_USER, null);
+    			if (mDbHelper.getComptesNumber() < 2)
+    			{
+                	Toast t = Toast.makeText(ComptesActivity.this, "Il doit rester au moins un compte !",Toast.LENGTH_LONG);
+                	t.show();
+    			}
+    			else
+    			{
+    				if (mDbHelper.getLoginFromId((int) info.id).equals(selected))
+	    			{
+	                	Toast t = Toast.makeText(ComptesActivity.this, "Impossible de supprimer le compte actif !",Toast.LENGTH_LONG);
+	                	t.show();
+	    			}
+	    			else
+	    			{
+		    			mDbHelper.deleteCompte(info.id);
+		    			fillData();
+	    			}
+    			}
+    			return true;
+		}
+		return super.onContextItemSelected(item);
+	}
+
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id)
     {
@@ -84,6 +110,7 @@ public class ComptesActivity extends ListActivity implements HomeConstants
     protected void onStart()
     {
     	super.onStart();
+        fillData();
     }
     
     @Override
@@ -124,10 +151,68 @@ public class ComptesActivity extends ListActivity implements HomeConstants
     {
         mComptesCursor = mDbHelper.fetchAllComptes();
         startManagingCursor(mComptesCursor);
-        String[] from = new String[]{ComptesDbAdapter.KEY_TITLE};
-        int[] to = new int[]{R.id.text1};
+        Log.d(DEBUGTAG, "Bordel:"+mComptesCursor.getCount());
+        String[] from = new String[]{KEY_TITLE};
+        int[] to = new int[]{R.id.comptes_liste_row};
         SimpleCursorAdapter comptes = new SimpleCursorAdapter(this, R.layout.comptes_row, mComptesCursor, from, to);
         setListAdapter(comptes);
-//        stopManagingCursor(mComptesCursor);
+
+        Spinner s = (Spinner) findViewById(R.id.Spinner01);
+        ArrayAdapter<String> liste = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
+        liste.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        s.setAdapter(liste);
+        int titleColumnIndex = mComptesCursor.getColumnIndexOrThrow(KEY_TITLE);
+        int loginColumnIndex = mComptesCursor.getColumnIndexOrThrow(KEY_USER);
+        int pos = 0;
+        String selected = getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_USER, null);
+        if (selected == null)
+        {
+        	liste.add("-- pas de compte selectionné --");
+        }
+
+        if (mComptesCursor.moveToFirst())
+        {
+        	do
+        	{
+        		liste.add(mComptesCursor.getString(titleColumnIndex));
+        		if (mComptesCursor.getString(loginColumnIndex).equals(selected))
+        		{
+        			s.setSelection(pos);
+        		}
+        		pos++;
+        	}
+       		while (mComptesCursor.moveToNext());
+        }
+        s.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View v, int i, long l)
+			{
+				Cursor c = mDbHelper.fetchFromTitle(parent.getSelectedItem().toString());
+				startManagingCursor(c);
+				if (c.getCount() > 0)
+				{
+					SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
+					Editor editor = mgr.edit();
+					editor.putString(KEY_USER, c.getString(c.getColumnIndexOrThrow(KEY_USER)));
+					editor.putString(KEY_PASSWORD, c.getString(c.getColumnIndexOrThrow(KEY_PASSWORD)));
+					editor.putString(KEY_TITLE, c.getString(c.getColumnIndexOrThrow(KEY_TITLE)));
+					editor.commit();
+				}
+				else
+				{
+                	Toast t = Toast.makeText(ComptesActivity.this, "Impossible de selectionner ce compte",Toast.LENGTH_LONG);
+                	t.show();
+				}
+				c.close();
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0)
+			{
+				// TODO Auto-generated method stub	
+			}
+        });
+        //mComptesCursor.close();
     }
 }
