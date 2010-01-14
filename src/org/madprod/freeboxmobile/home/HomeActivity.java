@@ -11,6 +11,10 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.Environment;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.URLSpan;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -138,7 +142,8 @@ public class HomeActivity extends Activity implements HomeConstants
 
         menu.add(0, HOME_OPTION_COMPTES, 0, R.string.home_option_comptes).setIcon(android.R.drawable.ic_menu_myplaces);
         menu.add(0, HOME_OPTION_CONFIG, 1, R.string.home_option_config).setIcon(android.R.drawable.ic_menu_preferences);
-        menu.add(0, HOME_OPTION_SHARE, 1, R.string.home_option_share).setIcon(android.R.drawable.ic_menu_share);
+        menu.add(0, HOME_OPTION_SHARE, 2, R.string.home_option_share).setIcon(android.R.drawable.ic_menu_share);
+        menu.add(0, HOME_OPTION_ABOUT, 3, R.string.buttonAbout).setIcon(android.R.drawable.ic_menu_help);
         return true;
     }
 
@@ -158,10 +163,29 @@ public class HomeActivity extends Activity implements HomeConstants
 		    	i.setClassName("org.madprod.freeboxmobile", "org.madprod.freeboxmobile.Config");
 		    	startActivity(i);
 		    	return true;
+    		case HOME_OPTION_ABOUT:
+    			displayAbout();
+    			return true;
+    		case HOME_OPTION_SHARE:
+    			shareApp();
+    			return true;
         }
         return super.onOptionsItemSelected(item);
     }
     
+    private void shareApp()
+    {
+    	SpannableString ss = new SpannableString(getResources().getString(R.string.mail_link));
+    	ss.setSpan(new URLSpan(getResources().getString(R.string.app_url)), 0, ss.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+    	SpannableStringBuilder ssb = new SpannableStringBuilder(getResources().getString(R.string.mail_text1)).append(' ').append(ss);
+    	Intent i = new Intent(Intent.ACTION_SEND)
+    		.putExtra(Intent.EXTRA_TEXT, ssb)
+    		.putExtra(Intent.EXTRA_SUBJECT, 
+    				getString(R.string.mail_subject)) 
+    				.setType("message/rfc822");
+    	startActivity(Intent.createChooser(i,  "Titre:")); 
+    }
+
     private void displayAbout()
     {	
     	AlertDialog d = new AlertDialog.Builder(this).create();
