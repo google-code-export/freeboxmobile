@@ -30,16 +30,17 @@ public class ComptesEditActivity extends Activity implements Constants
     private Long mRowId;
     private ComptesDbAdapter mDbHelper;
     private static int exit;
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
+    	Log.d(DEBUGTAG,"EditActivity Create ");
         super.onCreate(savedInstanceState);
         
         mDbHelper = new ComptesDbAdapter(this);
         mDbHelper.open();
         exit = RESULT_CANCELED;
-        
+
         setContentView(R.layout.comptes_edit);
         setTitle(getString(R.string.app_name)+" - Edition Compte Freebox");
 
@@ -49,14 +50,17 @@ public class ComptesEditActivity extends Activity implements Constants
 
         Button confirmButton = (Button) findViewById(R.id.comptes_button_ok);
         Button cancelButton = (Button) findViewById(R.id.comptes_button_cancel);
-       
+
         mRowId = savedInstanceState != null ? savedInstanceState.getLong(ComptesDbAdapter.KEY_ROWID) : null;
+        Log.d(DEBUGTAG,"rowid1 "+mRowId);
         if (mRowId == null)
         {
 			Bundle extras = getIntent().getExtras();            
 			mRowId = extras != null ? extras.getLong(ComptesDbAdapter.KEY_ROWID) : null;
         }
-
+        if (mRowId != null && mRowId == -1)
+        	mRowId = null;
+        Log.d(DEBUGTAG,"rowid2 "+mRowId);
         populateFields();
 
         cancelButton.setOnClickListener(new Button.OnClickListener()
@@ -116,6 +120,7 @@ public class ComptesEditActivity extends Activity implements Constants
     
     private void populateFields()
     {
+    	Log.d(DEBUGTAG,"EditActivity PopulateFields "+mRowId+" "+mDbHelper);
         if (mRowId != null)
         {
             Cursor compte = mDbHelper.fetchCompte(mRowId);
@@ -130,13 +135,22 @@ public class ComptesEditActivity extends Activity implements Constants
     @Override
     protected void onSaveInstanceState(Bundle outState)
     {
+    	Log.d(DEBUGTAG,"EditActivity SaveInstanceState "+ComptesDbAdapter.KEY_ROWID+" "+mRowId);
         super.onSaveInstanceState(outState);
-        outState.putLong(ComptesDbAdapter.KEY_ROWID, mRowId);
+        if (mRowId != null)
+        {
+        	outState.putLong(ComptesDbAdapter.KEY_ROWID, mRowId);
+        }
+        else
+        {
+        	outState.putLong(ComptesDbAdapter.KEY_ROWID, -1);
+        }
     }
     
     @Override
     protected void onPause()
     {
+    	Log.d(DEBUGTAG,"EditActivity Pause ");
         super.onPause();
         saveState();
     }
@@ -144,6 +158,7 @@ public class ComptesEditActivity extends Activity implements Constants
     @Override
     protected void onResume()
     {
+    	Log.d(DEBUGTAG,"EditActivity Resume ");
         super.onResume();
         populateFields();
     }
@@ -151,6 +166,7 @@ public class ComptesEditActivity extends Activity implements Constants
     @Override
     protected void onDestroy()
     {
+    	Log.d(DEBUGTAG,"EditActivity Destroy ");
     	mDbHelper.close();
         super.onDestroy();
     }

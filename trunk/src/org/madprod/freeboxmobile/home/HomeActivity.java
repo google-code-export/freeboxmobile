@@ -1,5 +1,6 @@
 package org.madprod.freeboxmobile.home;
 
+import org.madprod.freeboxmobile.Config;
 import org.madprod.freeboxmobile.HttpConnection;
 import org.madprod.freeboxmobile.R;
 
@@ -159,8 +160,8 @@ public class HomeActivity extends Activity implements HomeConstants
 		    	startActivityForResult(i, ACTIVITY_COMPTES);
     			return true;
     		case HOME_OPTION_CONFIG:
-		    	i = new Intent();
-		    	i.setClassName("org.madprod.freeboxmobile", "org.madprod.freeboxmobile.Config");
+		    	i = new Intent(this, Config.class);
+//		    	i.setClassName("org.madprod.freeboxmobile", "org.madprod.freeboxmobile.Config");
 		    	startActivity(i);
 		    	return true;
     		case HOME_OPTION_ABOUT:
@@ -183,18 +184,18 @@ public class HomeActivity extends Activity implements HomeConstants
     		.putExtra(Intent.EXTRA_SUBJECT, 
     				getString(R.string.mail_subject)) 
     				.setType("message/rfc822");
-    	startActivity(Intent.createChooser(i,  "Titre:")); 
+    	startActivity(Intent.createChooser(i,  "Choisissez votre logiciel de mail")); 
     }
 
     private void displayAbout()
     {	
     	AlertDialog d = new AlertDialog.Builder(this).create();
 		d.setTitle(getString(R.string.app_name));
-		d.setMessage(
+    	d.setMessage(
 			"Freebox Mobile est une application "+
 			"indépendante de Free.\n\nPlus de renseignements sur "+
 			"http://code.google.com/p/freeboxmobile/\n\n"+
-			"Version : "+getString(R.string.app_version)
+			" Version : "+getString(R.string.app_version)
 		);
 		d.setButton("Ok", new DialogInterface.OnClickListener()
 			{
