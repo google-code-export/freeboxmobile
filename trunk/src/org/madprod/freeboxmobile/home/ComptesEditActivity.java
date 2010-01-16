@@ -37,6 +37,8 @@ public class ComptesEditActivity extends Activity implements Constants
     	Log.d(DEBUGTAG,"EditActivity Create ");
         super.onCreate(savedInstanceState);
         
+        HttpConnection.initVars(ComptesEditActivity.this);
+
         mDbHelper = new ComptesDbAdapter(this);
         mDbHelper.open();
         exit = RESULT_CANCELED;
@@ -168,6 +170,7 @@ public class ComptesEditActivity extends Activity implements Constants
     {
     	Log.d(DEBUGTAG,"EditActivity Destroy ");
     	mDbHelper.close();
+    	HttpConnection.closeDisplay();
         super.onDestroy();
     }
 
