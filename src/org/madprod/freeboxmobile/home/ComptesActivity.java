@@ -151,7 +151,6 @@ public class ComptesActivity extends ListActivity implements HomeConstants
     {
         mComptesCursor = mDbHelper.fetchAllComptes();
         startManagingCursor(mComptesCursor);
-        Log.d(DEBUGTAG, "Bordel:"+mComptesCursor.getCount());
         String[] from = new String[]{KEY_TITLE};
         int[] to = new int[]{R.id.comptes_liste_row};
         SimpleCursorAdapter comptes = new SimpleCursorAdapter(this, R.layout.comptes_row, mComptesCursor, from, to);
