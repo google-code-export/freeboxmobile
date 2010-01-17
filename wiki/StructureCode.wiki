@@ -12,13 +12,17 @@ Un dossier pour les strings existe (toujours définir les strings dans un xml) d
 Définir un fichier par module : res/values/strings_mevo.xml par exemple
 
 == Dans le code==
+=== Utiliser la connexion à la console de Free===
  * dans le onCreate de chaque Activity, appeler impérativement : 
    * *!HttpConnection.initVars(this);*
- * dans un service, pour se connecter au compte utilisateur de Free (avant d'effectuer des opérations réseau), utiliser :
+ * dans le onDestroy de chaque Activity, appeler impérativement :
+   * *!HttpConnection.closeDisplay();*
+ * dans une ASyncTask (cf !ComptesEditActivity pour exemple), pour se connecter au compte utilisateur de Free (avant d'effectuer des opérations réseau), utiliser :
    * *connectionStatus = !HttpConnection.connectFree();*
- * pour le faire avec un progress Dialog :
-   * *connectionStatus = !HttpConnection.connectFreeUI(Activity this);*
  * (les valeurs possibles de connectionStatus sont définies dans Constants.java)
+===Gérer le multicomptes===
+Les utilisateurs peuvent utiliser !FreeboxMobile sur plusieurs comptes Freebox. Toutefois, un seul compte est actif à un moment donné. Les modules ont besoin de savoir quel est le compte actif (notamment lors du démarrage du module).
+Documentation à compléter...
 
 == Thèmes ==
 Dans un soucis d'homogénéisation de l'interface, les différentes Activity doivent avoir pour thème *@android:style/Theme.Light.!NoTitleBar* ou *@android:style/Theme.Light* (dans le Manifest, Application Nodes -> Activity en question -> Theme)
