@@ -5,6 +5,7 @@ Prédiction des versions / fonctionnalités. Mais rien n'est figé, ca ne se fer
 
 Pour les fonctionnalités déjà implémentées, voir le ChangeLog.
 
+ * 0.16 : Gérer plusieurs comptes Freebox différents
  * 0.17 : Programmer ses enregistrements FreeboxTV à distance (programmation simple)
  * 0.18 : Consultation des programmations TV en cours
  * 0.20 : Séparer l'application en modules différents (l'utilisateur ne sera pas obligé d'installer toutes les fonctionnalités)
@@ -22,6 +23,3 @@ Pour les fonctionnalités déjà implémentées, voir le ChangeLog.
  * 0.80 : Accéder aux flux TV de sa Freebox (les chaînes du multiposte) à partir de son mobile (y compris lorsqu'on se trouve hors de chez soi)
  * 0.90 : Accéder aux flux radio de sa Freebox (et aux autres) à partir de son mobile (y compris lorsqu'on se trouve hors de chez soi)
  * 1.00 : Préconfigurer une application SIP ([https://code.google.com/p/sipdroid/ SIP Droid] ?) afin qu'elle utilise le service SIP Freebox
-
-Version indéterminée :
- * Gérer plusieurs comptes Freebox différents
