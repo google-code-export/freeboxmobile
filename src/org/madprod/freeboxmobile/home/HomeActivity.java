@@ -91,8 +91,19 @@ public class HomeActivity extends Activity implements HomeConstants
 				{
 					public void onClick(View view)
 					{
-				    	Intent i = new Intent(homeActivity, org.madprod.freeboxmobile.pvr.EnregistrementsActivity.class);
-				    	startActivity(i);
+				    	AlertDialog d = new AlertDialog.Builder(homeActivity).create();
+						d.setTitle(getString(R.string.app_name));
+				    	d.setMessage("Bientot ! :)");
+						d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
+							{
+								public void onClick(DialogInterface dialog, int which)
+								{
+									dialog.dismiss();
+								}
+							});
+						d.show();
+//				    	Intent i = new Intent(homeActivity, org.madprod.freeboxmobile.pvr.EnregistrementsActivity.class);
+//				    	startActivity(i);
 					}
 				}
 			);
