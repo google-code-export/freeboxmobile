@@ -10,6 +10,16 @@ SERVICES : tout ce qui tourne en tâche de fond
 
 = Versions publiques de !FreeboxMobile =
 
+== [http://code.google.com/p/freeboxmobile/downloads/detail?name=freeboxmobile-0.10.1.apk 0.10.1] ==
+Test
+
+== 0.10 ==
+Sortie le 22/12/2009<br>
+Release : 1
+ * CONFIG : Authentification Free
+ * *MEVO : Première version*
+ * SERVICES : Notification de nouveaux messages
+
 ||  *Date*  ||*Release*||*Version*||*Modifications*||
 ||22/12/2009||    1    ||  0.10   ||- CONFIG : Authentification Free<br>- *MEVO : Première version*<br>- SERVICES : Notification de nouveaux messages||
 ||24/12/2009||    2    || [http://code.google.com/p/freeboxmobile/downloads/detail?name=freeboxmobile-0.10.1.apk 0.10.1]  ||- MEVO : Format des dates amélioré<br>- Installation sur HTC Tatoo<br>- Nettoyage de code||
