@@ -36,7 +36,7 @@ Release : 1
 
 = Versions beta de !FreeboxMobile =
 == 0.16rc1 ==
-Sortie le (pas encore)<br>
+Sortie le 18/01/2010<br>
 Release : 4
  * CONFIG : Support du multicomptes
  * HOME : Affichage des nouveautés (cette page)
