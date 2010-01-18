@@ -41,6 +41,7 @@ public class HttpConnection implements Constants
 {
 	private static String USER_AGENT = "FreeboxMobile (Linux; U; Android; fr-fr;)";
 
+	private static String title = null;
 	private static String login = null;
 	private static String password = null;
 	// Variables id et idt d'accès à MonCompteFree
@@ -81,6 +82,7 @@ public class HttpConnection implements Constants
         {
            	errorAlert.show();
         }
+        title = a.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_TITLE, null);
 		login = a.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_USER, null);
 		password = a.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_PASSWORD, null);
 		ConnectFree.setActivity(a);
@@ -110,6 +112,11 @@ public class HttpConnection implements Constants
 		password = p;
 	}
 	
+	public static String getTitle()
+	{
+		return (title);
+	}
+
 	public static String getIdentifiant()
 	{
 		return (login);

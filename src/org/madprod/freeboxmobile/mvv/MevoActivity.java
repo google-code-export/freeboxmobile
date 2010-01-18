@@ -346,7 +346,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
 			"Créez une annonce d'accueil en composant **1 sur "+
 			"le téléphone de votre Freebox."
 			);
-		d.setButton("Ok", new DialogInterface.OnClickListener()
+		d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
 			{
 				public void onClick(DialogInterface dialog, int which)
 				{
@@ -493,14 +493,15 @@ public class MevoActivity extends ListActivity implements MevoConstants
     		int nb = (int) mDbHelper.getNbUnreadMsg();
     		switch (nb)
     		{
-    			case 0:
+/*    			case 0:
         			((Activity) mContext).setTitle(mContext.getString(R.string.app_name)+" "+mContext.getString(R.string.mevo_title_nomsg) );    				
     			break;
     			case 1:
         			((Activity) mContext).setTitle(mContext.getString(R.string.app_name)+" "+mContext.getString(R.string.mevo_title_message) );    				
         		break;
-        		default:
-        			((Activity) mContext).setTitle(mContext.getString(R.string.app_name)+" - "+nb+" "+mContext.getString(R.string.mevo_title_messages) );
+*/        		default:
+//        			((Activity) mContext).setTitle(mContext.getString(R.string.app_name)+" ("+nb+") "+mContext.getString(R.string.mevo_title_messages) );
+        			((Activity) mContext).setTitle(mContext.getString(R.string.app_name)+" "+mContext.getString(R.string.mevo_title_mevo)+" ("+nb+") - "+HttpConnection.getTitle());
         		break;
     		}
     		return nb;

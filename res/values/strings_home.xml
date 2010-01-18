@@ -10,6 +10,8 @@
 	<string name="home_option_comptes">Comptes</string>
 	<string name="home_option_config">Configuration</string>
 	<string name="home_option_share">Partager FreeboxMobile</string>
+	<string name="whatsnew_title">Nouveautés</string>
+	<string name="whatsnew_back">Retour</string>
 	<string name="comptes_empty">\nPas de compte.\nVeuillez définir un nouveau compte.</string>
 	<string name="compte_actif">Compte actif :</string>
 	<string name="compte_choose">Choisissez le compte actif</string>	
