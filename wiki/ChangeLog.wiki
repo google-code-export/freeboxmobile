@@ -10,6 +10,15 @@ SERVICES : tout ce qui tourne en tâche de fond
 
 = Versions publiques de !FreeboxMobile =
 
+== 0.16 ==
+Sortie le 18/10/2009<br>
+Release : 5
+ * CONFIG : Support du multicomptes
+ * HOME : Affichage des nouveautés (cette page)
+ * HOME : Option "Partage l'application" dans le menu
+ * PVR : Beaucoup de debug et d'améliorations
+ * MVV : Bug de vérification périodique corrigé (Issue 81)
+
 == 0.15 ==
 Sortie le 05/10/2009<br>
 Release : 3
