@@ -16,7 +16,6 @@ Release : 5
  * CONFIG : Support du multicomptes
  * HOME : Affichage des nouveautés (cette page)
  * HOME : Option "Partage l'application" dans le menu
- * PVR : Beaucoup de debug et d'améliorations
  * MVV : Bug de vérification périodique corrigé (Issue 81)
 
 == 0.15 ==
