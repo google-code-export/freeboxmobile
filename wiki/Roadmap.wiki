@@ -6,8 +6,7 @@ Prédiction des versions / fonctionnalités. Mais rien n'est figé, ca ne se fer
 Pour les fonctionnalités déjà implémentées, voir le ChangeLog.
 
  * 0.16 : Gérer plusieurs comptes Freebox différents
- * 0.17 : Programmer ses enregistrements FreeboxTV à distance (programmation simple)
- * 0.18 : Consultation des programmations TV en cours
+ * 0.17 : Programmer ses enregistrements FreeboxTV à distance (programmation simple) + Consultation des programmations TV en cours
  * 0.20 : Séparer l'application en modules différents (l'utilisateur ne sera pas obligé d'installer toutes les fonctionnalités)
  * 0.25 : Lire l'actualité Freenautes à partir de son mobile ([http://www.universfreebox.com Univers Freebox], [http://freephonie.org/ Freephonie], ...) via l'application !FreeboxMobile
  * 0.28 : Etre notifié d'un nouveau message sur sa messagerie vocale Freebox par réception d'un email sur son compte gmail
