@@ -1,7 +1,7 @@
 package org.madprod.freeboxmobile.home;
 
 import org.madprod.freeboxmobile.Config;
-import org.madprod.freeboxmobile.HttpConnection;
+import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
 
 import android.app.Activity;
@@ -61,7 +61,7 @@ public class HomeActivity extends Activity implements HomeConstants
         if (Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED) == false)
         	showSdCardError();
 		setContentView(R.layout.home_main);
-		HttpConnection.initVars(this);
+		FBMHttpConnection.initVars(this);
 
         Button phoneButton = (Button) findViewById(R.id.phone);
         Button aboutButton = (Button) findViewById(R.id.about);
@@ -96,7 +96,7 @@ public class HomeActivity extends Activity implements HomeConstants
 					}
 				}
 			);
-		setTitle(getString(R.string.app_name)+" "+HttpConnection.getTitle());
+		setTitle(getString(R.string.app_name)+" "+FBMHttpConnection.getTitle());
     }
 
     @Override
@@ -126,7 +126,7 @@ public class HomeActivity extends Activity implements HomeConstants
     {
 		Log.d(DEBUGTAG,"MainActivity Pause");
     	super.onPause();
-		HttpConnection.closeDisplay();
+		FBMHttpConnection.closeDisplay();
     }
     
     @Override
@@ -241,12 +241,12 @@ public class HomeActivity extends Activity implements HomeConstants
         switch(requestCode)
         {
         	case ACTIVITY_COMPTES:
-            	if (HttpConnection.checkUpdated(
+            	if (FBMHttpConnection.checkUpdated(
             			getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_USER, null),
             			getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_PASSWORD, null)
             			))
             	{
-            		HttpConnection.initVars(homeActivity);
+            		FBMHttpConnection.initVars(homeActivity);
 //            		new ConnectFree().execute();
             	}
         		break;

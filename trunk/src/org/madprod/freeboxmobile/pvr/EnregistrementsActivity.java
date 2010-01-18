@@ -21,7 +21,7 @@ import android.widget.ExpandableListView;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.Toast;
 
-import org.madprod.freeboxmobile.HttpConnection;
+import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
 
 /**
@@ -54,7 +54,7 @@ public class EnregistrementsActivity extends ExpandableListActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pvr);
-        HttpConnection.initVars(this);
+        FBMHttpConnection.initVars(this);
 
 		this.listeEnregistrements = new ListeEnregistrements();
         this.succesChargement = false;
@@ -74,7 +74,7 @@ public class EnregistrementsActivity extends ExpandableListActivity {
     }
     
     private boolean login() {
-    	return HttpConnection.connectFreeUI() == HttpConnection.CONNECT_CONNECTED;
+    	return FBMHttpConnection.connectFreeUI() == FBMHttpConnection.CONNECT_CONNECTED;
     }
     
     private void erreur(String msgErreur) {
@@ -147,10 +147,10 @@ public class EnregistrementsActivity extends ExpandableListActivity {
         // Recup if tv
         String contenu = null;
     	url  = "http://adsl.free.fr/admin/magneto.pl?id=";
-    	url += HttpConnection.getId()+"&idt="+HttpConnection.getIdt();
+    	url += FBMHttpConnection.getId()+"&idt="+FBMHttpConnection.getIdt();
     	url += "&sommaire=television";
 
-    	contenu = HttpConnection.getPage(HttpConnection.getRequest(url, true));
+    	contenu = FBMHttpConnection.getPage(FBMHttpConnection.getRequest(url, true));
     	if (contenu == null) {
     		return false;
     	}

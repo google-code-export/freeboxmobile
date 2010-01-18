@@ -12,6 +12,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List; 
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -37,7 +38,7 @@ import android.util.Log;
 * 
 */
 
-public class HttpConnection implements Constants
+public class FBMHttpConnection implements Constants
 {
 	private static String USER_AGENT = "FreeboxMobile (Linux; U; Android; fr-fr;)";
 
@@ -224,7 +225,7 @@ public class HttpConnection implements Constants
 	
 	public static int connectFree()
 	{
-		return HttpConnection.connectionFree(login, password, false);
+		return FBMHttpConnection.connectionFree(login, password, false);
 	}
 
 	/**
@@ -373,6 +374,7 @@ public class HttpConnection implements Constants
         	return (null);
         }
 	}
+
 	public static InputStream getRequestIS(String url) {
 		Log.d(DEBUGTAG, "GET: " + url);
 
@@ -413,7 +415,13 @@ public class HttpConnection implements Constants
 		HttpClient client = new DefaultHttpClient(new BasicHttpParams());
 		HttpPost postMethod = new HttpPost(url);
 		postMethod.setHeader("User-Agent", USER_AGENT);
-   
+
+		Header locationHeader = postMethod.getFirstHeader("location");
+		if (locationHeader != null)
+		{
+			String redirectLocation = locationHeader.getValue();
+			Log.d(DEBUGTAG, "RESPONSE : "+redirectLocation);
+		}
 		try
 		{
 			postMethod.setEntity(new UrlEncodedFormEntity(nameValuePairs));
@@ -439,23 +447,28 @@ public class HttpConnection implements Constants
 	 * @return	String
 	 * @throws	IOException
 	 */
-	public static String getPage(BufferedReader reader) {
+	public static String getPage(BufferedReader reader)
+	{
 		StringBuilder sb = new StringBuilder();
 		
-		if (reader == null) {
+		if (reader == null)
+		{
 			return null;
 		}
-		
+
 		String line = null;
-		try {
-		     while ((line = reader.readLine()) != null) {
+		try
+		{
+			while ((line = reader.readLine()) != null)
+			{
 		          sb.append(line+"\n");
-		     }
-		} catch (IOException e) {
+		    }
+		}
+		catch (IOException e)
+		{
 			Log.e(DEBUGTAG, "getPage: "+e);
 		     return null;
-		}
-		
+		}		
 		return sb.toString();
 	}
 }
