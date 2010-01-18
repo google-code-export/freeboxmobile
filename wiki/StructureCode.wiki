@@ -8,7 +8,7 @@ Pour chaque module (Mevo, Pvr...) il doit exister un dossier pour ses sources : 
  * dans le dossier : le nom des activity est du type !HomeActivity.java / !MevoActivity.java...
  * si besoin, le nom du fichier de la classe qui gère la bdd est du type : !MevoDbAdapter.java
  * si besoin, le nom du fichier de l'interface qui contient les constantes : !MevoConstants.java (l'interface doit *extends Constants*)
-Un dossier pour les strings existe (toujours définir les strings dans un xml) dans res/values/
+Un dossier pour les strings existe (toujours définir les strings dans un xml) dans res/values/ <br>
 Définir un fichier par module : res/values/strings_mevo.xml par exemple
 ----
 == Dans le code==
@@ -21,8 +21,12 @@ Définir un fichier par module : res/values/strings_mevo.xml par exemple
    * *connectionStatus = !HttpConnection.connectFree();*
  * (les valeurs possibles de connectionStatus sont définies dans Constants.java)
 ===Gérer le multicomptes===
-Les utilisateurs peuvent utiliser !FreeboxMobile sur plusieurs comptes Freebox. Toutefois, un seul compte est actif à un moment donné. Les modules ont besoin de savoir quel est le compte actif (notamment lors du démarrage du module).
-Documentation à compléter...
+ * Les utilisateurs peuvent utiliser !FreeboxMobile sur plusieurs comptes Freebox. Toutefois, un seul compte est actif à un moment donné.
+ * Pour connaître le compte actif (au démarrage d'un module par exemple), utiliser * !HttpConnection.getIdentifiant() *
+ * Si les données d'une base de données sont dépendantes du compte utilisateur (les messages de la messagerie vocale par exemple), utiliser l'identifiant du compte (et non le titre qui lui peut changer facilement) dans le nom de la base. Exemple : * DATABASE_NAME+"__"+!HttpConnection.getIdentifiant() * (exemple dans MevoDbAdapter.java).
+ * Pour obtenir le titre du compte (afin de renseigner l'utilisateur du nom du compte actif, dans la barre de titre par exemple), utiliser : * !HttpConnection.getTitle() * (exemple dans MevoActivity).
+ * Si des préférences sont dépendantes du compte utilisateur, utiliser * getSharedPreferences(KEY_PREFS+"__"+HttpConnection.getIdentifiant(), MODE_PRIVATE) * en lieu et place de * getSharedPreferences(KEY_PREFS, MODE_PRIVATE) *
+
 ----
 == Thèmes ==
 Dans un soucis d'homogénéisation de l'interface, les différentes Activity doivent avoir pour thème *@android:style/Theme.Light.!NoTitleBar* ou *@android:style/Theme.Light* (dans le Manifest, Application Nodes -> Activity en question -> Theme)
