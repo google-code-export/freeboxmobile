@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.Date;
 
 import org.madprod.freeboxmobile.home.HomeActivity;
-import org.madprod.freeboxmobile.HttpConnection;
+import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.ServiceUpdateUIListener;
 import org.madprod.freeboxmobile.WakefullIntentService;
@@ -85,7 +85,7 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 
 		mDbHelper = new MevoDbAdapter(this);
 
-		HttpConnection.setVars(
+		FBMHttpConnection.setVars(
 				getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_USER, null),
 				getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_PASSWORD, null)
 				);
@@ -146,7 +146,7 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 	        if (f.exists())
 	        {
 	        	Log.d(DEBUGTAG, "Ancienne config sans multicompte : migration messages...");
-	        	File nf = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+HttpConnection.getIdentifiant());
+	        	File nf = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+FBMHttpConnection.getIdentifiant());
 	        	nf.mkdirs();
 	        	if (f.renameTo(new File(nf, f.getName())))
 	        	{
@@ -160,8 +160,8 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 	        File old_db = activity.getDatabasePath(MevoDbAdapter.DATABASE_NAME);
 	        if (old_db.exists())
 	        {
-	        	Log.d(DEBUGTAG, "Ancienne config sans multicomptes : migration base de données... "+HttpConnection.getIdentifiant());
-	        	if (old_db.renameTo(activity.getDatabasePath(MevoDbAdapter.DATABASE_NAME+"_"+HttpConnection.getIdentifiant())))
+	        	Log.d(DEBUGTAG, "Ancienne config sans multicomptes : migration base de données... "+FBMHttpConnection.getIdentifiant());
+	        	if (old_db.renameTo(activity.getDatabasePath(MevoDbAdapter.DATABASE_NAME+"_"+FBMHttpConnection.getIdentifiant())))
 	        	{
 	        		Log.d(DEBUGTAG, "ok");
 	        	}
@@ -255,7 +255,7 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 			}
 			else
 				myProgressDialog = null;
-			connectionStatus = HttpConnection.connectFree();
+			connectionStatus = FBMHttpConnection.connectFree();
             if (myProgressDialog != null)
             {
             	myProgressDialog.dismiss();
@@ -290,7 +290,7 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 					{
 						public void run()
 						{
-			            	HttpConnection.showError(CUR_ACTIVITY);
+			            	FBMHttpConnection.showError(CUR_ACTIVITY);
 						}
 					});
 				}
@@ -356,7 +356,7 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 		}
 
 		// On efface le fichier du message
-		file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+HttpConnection.getIdentifiant()+DIR_MEVO,name);
+		file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+FBMHttpConnection.getIdentifiant()+DIR_MEVO,name);
 		if (file.delete())
 		{
 			Log.d(DEBUGTAG, "Delete file ok");
@@ -395,14 +395,14 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 		            public void run()
 		        	{
 */						// (re)connection afin d'avoir un id et idt frais :)
-			   			String url = mevoUrl+"efface_message.pl?id="+HttpConnection.getId()+"&idt="+HttpConnection.getIdt()+partURL;
+			   			String url = mevoUrl+"efface_message.pl?id="+FBMHttpConnection.getId()+"&idt="+FBMHttpConnection.getIdt()+partURL;
 						Log.d(DEBUGTAG,"Deleting message"+url);
 
 						// On reconstitue l'url parceque id & idt ont peut etre changé
-						if (HttpConnection.connectFree() == CONNECT_CONNECTED)
+						if (FBMHttpConnection.connectFree() == CONNECT_CONNECTED)
 						{
 							Log.d(DEBUGTAG, "Deleting on server");
-							HttpConnection.getRequest(url, false);
+							FBMHttpConnection.getRequest(url, false);
 						}
 						else
 							Log.d(DEBUGTAG, "NOT Deleting on server");
@@ -426,13 +426,13 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 	public static int getMessageList()
 	{
 
-		String fullurl = mevoUrl + mevoListPage + "?id=" + HttpConnection.getId() + "&idt=" + HttpConnection.getIdt();
+		String fullurl = mevoUrl + mevoListPage + "?id=" + FBMHttpConnection.getId() + "&idt=" + FBMHttpConnection.getIdt();
 		Log.d(DEBUGTAG, "GET: " + fullurl);
 
 		int newmsg = -1;
 		try
 		{
-	    	BufferedReader br = HttpConnection.getRequest(fullurl, true);
+	    	BufferedReader br = FBMHttpConnection.getRequest(fullurl, true);
 			String s = " ";
 			String status = null;
 			String from = null;
@@ -448,7 +448,7 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 			File file;
 			
 	        newmsg = 0;
-	        file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+HttpConnection.getIdentifiant()+DIR_MEVO);
+	        file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+FBMHttpConnection.getIdentifiant()+DIR_MEVO);
 	        file.mkdirs();
 	        mDbHelper.open();
 	        mDbHelper.initTempValues();
@@ -501,10 +501,10 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 							}
 	
 				    	    // Get the mevo file and store it on sdcard
-					        file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+HttpConnection.getIdentifiant()+DIR_MEVO,name);
+					        file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+FBMHttpConnection.getIdentifiant()+DIR_MEVO,name);
 					        if (file.exists() == false)
 					        {
-								HttpConnection.getFile(file, mevoUrl+link);
+								FBMHttpConnection.getFile(file, mevoUrl+link);
 					        }
 					        presence = 4;
 					        curs = mDbHelper.fetchMessage(name);

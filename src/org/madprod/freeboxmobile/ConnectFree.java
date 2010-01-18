@@ -17,22 +17,22 @@ public class ConnectFree extends AsyncTask<Void, Void, Integer> implements Const
 	@Override
 	protected Integer doInBackground(Void... params)
 	{
-		return HttpConnection.connectFree();
+		return FBMHttpConnection.connectFree();
 	}
 
 	@Override
 	protected void onPreExecute()
 	{
-		HttpConnection.showProgressDialog(curActivity);
+		FBMHttpConnection.showProgressDialog(curActivity);
 	}
 
 	@Override
 	protected void onPostExecute(Integer result)
 	{
-		HttpConnection.dismissPd();
+		FBMHttpConnection.dismissPd();
 		if (result == CONNECT_LOGIN_FAILED)
 		{
-			HttpConnection.showError(curActivity);
+			FBMHttpConnection.showError(curActivity);
 		}
 	}
 	

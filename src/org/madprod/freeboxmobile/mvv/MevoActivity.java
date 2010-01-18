@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.madprod.freeboxmobile.HttpConnection;
+import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.mvv.MevoMessage;
 import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.ServiceUpdateUIListener;
@@ -72,7 +72,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
     {
 		Log.d(DEBUGTAG,"MevoActivity create");
         super.onCreate(savedInstanceState);
-        HttpConnection.initVars(this);
+        FBMHttpConnection.initVars(this);
     	MevoSync.setActivity(this);
         setContentView(R.layout.mevo);
         registerForContextMenu(getListView());
@@ -334,7 +334,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
 		mAdapter.stopPlay();
 		mAdapter.releaseMP();
 		MevoSync.setActivity(null);
-		HttpConnection.closeDisplay();
+		FBMHttpConnection.closeDisplay();
 	}
 
 	private void displayAboutMevo()
@@ -501,7 +501,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
         		break;
 */        		default:
 //        			((Activity) mContext).setTitle(mContext.getString(R.string.app_name)+" ("+nb+") "+mContext.getString(R.string.mevo_title_messages) );
-        			((Activity) mContext).setTitle(mContext.getString(R.string.app_name)+" "+mContext.getString(R.string.mevo_title_mevo)+" ("+nb+") - "+HttpConnection.getTitle());
+        			((Activity) mContext).setTitle(mContext.getString(R.string.app_name)+" "+mContext.getString(R.string.mevo_title_mevo)+" ("+nb+") - "+FBMHttpConnection.getTitle());
         		break;
     		}
     		return nb;
@@ -667,7 +667,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
 			holder.qui.setKeyListener(null);
 			if (!curMsg.isMPInit())
 			{
-					curMsg.setMsgSource(Environment.getExternalStorageDirectory().toString()+DIR_FBM+HttpConnection.getIdentifiant()+DIR_MEVO+curMsg.getStringValue(KEY_NAME));
+					curMsg.setMsgSource(Environment.getExternalStorageDirectory().toString()+DIR_FBM+FBMHttpConnection.getIdentifiant()+DIR_MEVO+curMsg.getStringValue(KEY_NAME));
 			}
 			return convertView;
 		}

@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-import org.madprod.freeboxmobile.HttpConnection;
+import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.guide.Guide;
 import org.madprod.freeboxmobile.guide.Guide.Chaines.Chaines_Chaine;
@@ -166,8 +166,8 @@ public class EnregistrementActivity extends Activity {
 	            		
 	            		// Requete HTTP
 	            		String url = "http://adsl.free.fr/admin/magneto.pl?id=";
-	            		url += HttpConnection.getId()+"&idt="+HttpConnection.getIdt();
-	            		HttpConnection.postRequest(url, postVars, true);
+	            		url += FBMHttpConnection.getId()+"&idt="+FBMHttpConnection.getIdt();
+	            		FBMHttpConnection.postRequest(url, postVars, true);
 		    		}
 		    	});
             }
@@ -188,16 +188,16 @@ public class EnregistrementActivity extends Activity {
     	
         protected Bitmap doInBackground(Integer... arg0) {
     		String url = "http://adsl.free.fr/admin/magneto.pl?id=";
-    		url += "id="+HttpConnection.getId();
-    		url += "&idt="+HttpConnection.getIdt();
+    		url += "id="+FBMHttpConnection.getId();
+    		url += "&idt="+FBMHttpConnection.getIdt();
     		url += "&ajax=get_chaines";
     		url += "&date=2010-01-14+19%3A00%3A00";//3A = :
-    		String json = HttpConnection.getPage(HttpConnection.getRequest(url, true));
+    		String json = FBMHttpConnection.getPage(FBMHttpConnection.getRequest(url, true));
     		Guide guideTv = new Guide(json, false, true, false); 
     		url = "http://adsl.free.fr/im/chaines/";
     		Chaines_Chaine chaine = guideTv.getChaine(arg0[0]);
     		url += chaine.getImage();
-    		InputStream is = HttpConnection.getRequestIS(url);
+    		InputStream is = FBMHttpConnection.getRequestIS(url);
     		return BitmapFactory.decodeStream(is);
         }
         

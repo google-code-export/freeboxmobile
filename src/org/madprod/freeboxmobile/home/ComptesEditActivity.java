@@ -1,7 +1,7 @@
 package org.madprod.freeboxmobile.home;
 
 import org.madprod.freeboxmobile.Constants;
-import org.madprod.freeboxmobile.HttpConnection;
+import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
 
 import android.app.Activity;
@@ -37,7 +37,7 @@ public class ComptesEditActivity extends Activity implements Constants
     	Log.d(DEBUGTAG,"EditActivity Create ");
         super.onCreate(savedInstanceState);
         
-        HttpConnection.initVars(ComptesEditActivity.this);
+        FBMHttpConnection.initVars(ComptesEditActivity.this);
 
         mDbHelper = new ComptesDbAdapter(this);
         mDbHelper.open();
@@ -170,7 +170,7 @@ public class ComptesEditActivity extends Activity implements Constants
     {
     	Log.d(DEBUGTAG,"EditActivity Destroy ");
     	mDbHelper.close();
-    	HttpConnection.closeDisplay();
+    	FBMHttpConnection.closeDisplay();
         super.onDestroy();
     }
 
@@ -217,7 +217,7 @@ public class ComptesEditActivity extends Activity implements Constants
     	@Override
     	protected Payload doInBackground(Payload... payload)
     	{
-    		payload[0].result = HttpConnection.connectionFree(payload[0].login, payload[0].password, true);
+    		payload[0].result = FBMHttpConnection.connectionFree(payload[0].login, payload[0].password, true);
     		return payload[0];
     	}
 
@@ -225,14 +225,14 @@ public class ComptesEditActivity extends Activity implements Constants
     	protected void onPreExecute()
     	{
     		Log.d(DEBUGTAG,"onPreExecute");
-    		HttpConnection.showProgressDialog(ComptesEditActivity.this);
+    		FBMHttpConnection.showProgressDialog(ComptesEditActivity.this);
     	}
 
     	@Override
     	protected void onPostExecute(Payload payload)
     	{
     		Log.d(DEBUGTAG,"onPostExecute");
-    		HttpConnection.dismissPd();
+    		FBMHttpConnection.dismissPd();
     		switch (payload.result)
     		{
     			case CONNECT_CONNECTED:
@@ -240,7 +240,7 @@ public class ComptesEditActivity extends Activity implements Constants
     				finish();
     			break;
     			default:
-    				HttpConnection.showError(ComptesEditActivity.this);
+    				FBMHttpConnection.showError(ComptesEditActivity.this);
     				ComptesEditActivity.exit = RESULT_CANCELED;
     			break;
     		}

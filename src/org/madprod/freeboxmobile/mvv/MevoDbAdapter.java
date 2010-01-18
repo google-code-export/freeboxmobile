@@ -2,7 +2,7 @@ package org.madprod.freeboxmobile.mvv;
 
 import java.lang.String;
 
-import org.madprod.freeboxmobile.HttpConnection;
+import org.madprod.freeboxmobile.FBMHttpConnection;
 
 /**
 *
@@ -43,7 +43,7 @@ public class MevoDbAdapter implements MevoConstants
 	{
 		DatabaseHelper(Context context)
 		{
-			super(context, DATABASE_NAME+"_"+HttpConnection.getIdentifiant(), null, DATABASE_VERSION);
+			super(context, DATABASE_NAME+"_"+FBMHttpConnection.getIdentifiant(), null, DATABASE_VERSION);
 		}
 
 		@Override

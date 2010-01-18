@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
-import org.madprod.freeboxmobile.HttpConnection;
+import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
 
 import android.app.Activity;
@@ -108,10 +108,10 @@ public class ProgrammationActivity extends Activity {
     private boolean telechargerEtParser() {        
         // Récupérer chaines et disques durs        
         String url = "http://adsl.free.fr/admin/magneto.pl?id=";
-    	url += HttpConnection.getId()+"&idt="+HttpConnection.getIdt();
+    	url += FBMHttpConnection.getId()+"&idt="+FBMHttpConnection.getIdt();
     	url += "&detail=1";
     	
-        String resultat = HttpConnection.getPage(HttpConnection.getRequest(url, true));
+        String resultat = FBMHttpConnection.getPage(FBMHttpConnection.getRequest(url, true));
         int posChaines = resultat.indexOf("var serv_a = [{");
         int posDisques = resultat.indexOf("var disk_a = [{");
         
@@ -266,8 +266,8 @@ public class ProgrammationActivity extends Activity {
 
         		// Requete HTTP
         		String url = "http://adsl.free.fr/admin/magneto.pl?id=";
-        		url += HttpConnection.getId()+"&idt="+HttpConnection.getIdt();
-        		String resultat = HttpConnection.getPage(HttpConnection.postRequest(url, postVars, true));
+        		url += FBMHttpConnection.getId()+"&idt="+FBMHttpConnection.getIdt();
+        		String resultat = FBMHttpConnection.getPage(FBMHttpConnection.postRequest(url, postVars, true));
         		
         		int erreurPos = resultat.indexOf("Des erreurs sont survenues :");
         		if (erreurPos > 0) {
