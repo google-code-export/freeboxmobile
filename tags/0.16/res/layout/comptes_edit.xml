@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/ScrollView01" android:layout_height="wrap_content" android:layout_width="fill_parent">
+<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent" android:padding="10dip">
+<TextView android:id="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/comptes_edit_nom" android:textSize="14dip"></TextView>
+<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/comptes_edit_nom_desc" android:id="@+id/TextView01d" android:textSize="10dip"></TextView>
+<EditText android:layout_height="wrap_content" android:layout_width="fill_parent" android:layout_marginBottom="15dip" android:id="@+id/comptes_edit_nom" android:inputType="text"></EditText>
+
+<TextView android:id="@+id/TextView02" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/comptes_edit_login" android:textSize="14dip"></TextView>
+<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/TextView02d" android:text="@string/comptes_edit_login_desc" android:textSize="10dip"></TextView>
+<EditText android:layout_height="wrap_content" android:layout_width="fill_parent" android:layout_marginBottom="15dip" android:inputType="phone" android:id="@+id/comptes_edit_user"></EditText>
+
+<TextView android:id="@+id/TextView03" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/comptes_edit_password" android:textSize="14dip"></TextView>
+<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/comptes_edit_password_desc" android:id="@+id/TextView03d" android:textSize="10dip"></TextView>
+<EditText android:layout_height="wrap_content" android:layout_width="fill_parent" android:layout_marginBottom="15dip" android:id="@+id/comptes_edit_password" android:inputType="textPassword"></EditText>
+
+<LinearLayout android:id="@+id/LinearLayout01" android:layout_height="wrap_content" android:layout_width="fill_parent" android:gravity="right"><Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/comptes_button_cancel" android:id="@+id/comptes_button_cancel"></Button>
+<Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/comptes_button_ok" android:id="@+id/comptes_button_ok"></Button>
+</LinearLayout>
+
+</LinearLayout>
+</ScrollView>
