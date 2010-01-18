@@ -96,7 +96,7 @@ public class HomeActivity extends Activity implements HomeConstants
 					}
 				}
 			);
-
+		setTitle(getString(R.string.app_name)+" "+HttpConnection.getTitle());
     }
 
     @Override
@@ -197,14 +197,21 @@ public class HomeActivity extends Activity implements HomeConstants
 			"http://code.google.com/p/freeboxmobile/\n\n"+
 			" Version : "+getString(R.string.app_version)
 		);
-		d.setButton("Ok", new DialogInterface.OnClickListener()
+		d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
 			{
 				public void onClick(DialogInterface dialog, int which)
 				{
 					dialog.dismiss();
 				}
+			});
+    	d.setButton(DialogInterface.BUTTON_NEUTRAL, "Nouveautés", new DialogInterface.OnClickListener()
+		{
+			public void onClick(DialogInterface dialog, int which)
+			{
+				Intent i = new Intent(homeActivity, org.madprod.freeboxmobile.home.WhatsNewActivity.class);
+		    	startActivity(i);
 			}
-		);
+		});
 		d.show();
     }
 

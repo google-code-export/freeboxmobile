@@ -27,6 +27,7 @@
 	<string name="mevo_title_message"> - 1 message non écouté</string>
 	<string name="mevo_title_nomsg"> - Pas de message non écouté</string>
 	<string name="mevo_title_messages"> messages non écoutés</string>
+	<string name="mevo_title_mevo">MVV</string>
 	<string-array name="entries_list_pref_pollinterval">
 		<item>Jamais</item>
 		<item>30 minutes</item>
