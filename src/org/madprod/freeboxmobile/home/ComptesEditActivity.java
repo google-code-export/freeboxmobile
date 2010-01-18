@@ -85,12 +85,14 @@ public class ComptesEditActivity extends Activity implements Constants
 
                 if (!title.equals("") && !user.equals("") && !password.equals(""))
                 {
-                	if (mDbHelper.isValuePresent(ComptesDbAdapter.KEY_TITLE, title))
+                	if (mDbHelper.isValuePresent(ComptesDbAdapter.KEY_TITLE, title) &&
+                		!mDbHelper.isMatch(mRowId, ComptesDbAdapter.KEY_TITLE, title))
                 	{
                     	Toast t = Toast.makeText(ComptesEditActivity.this, "Un compte avec ce nom existe déjà !",Toast.LENGTH_LONG);
                     	t.show();
                 	}
-                	else if (mDbHelper.isValuePresent(ComptesDbAdapter.KEY_USER, user))
+                	else if (mDbHelper.isValuePresent(ComptesDbAdapter.KEY_USER, user) &&
+                			!mDbHelper.isMatch(mRowId, ComptesDbAdapter.KEY_USER, user))
                 	{
                     	Toast t = Toast.makeText(ComptesEditActivity.this, "Un compte avec cet identifiant existe déjà !",Toast.LENGTH_LONG);
                     	t.show();                		

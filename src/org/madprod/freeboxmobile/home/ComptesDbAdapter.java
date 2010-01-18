@@ -189,7 +189,6 @@ public class ComptesDbAdapter implements HomeConstants
 	    }    	
     }
 
-
     public Cursor fetchFromTitle(String title)
     {
     	Cursor mCursor = mDb.query(true, DATABASE_TABLE, new String[] {
@@ -221,7 +220,25 @@ public class ComptesDbAdapter implements HomeConstants
 	    	return null;
 	    }
     }
-    
+
+    /**
+     * Return true if key == value and rowid == id
+     * @param mRowId
+     * @param key
+     * @param value
+     * @return
+     */
+    public boolean isMatch(Long mRowId, String key, String value)
+    {
+    	Cursor mCursor = mDb.query(true, DATABASE_TABLE, new String[] {
+        		}, KEY_ROWID + "='" + mRowId + "' AND "+key+"='"+value+"'", null,
+                null, null, null, null);
+    	if ((mCursor != null) && (mCursor.getCount() > 0))
+    		return true;
+    	else
+    		return false;
+    }
+
     /**
      * getCompteNumber : retourne le nombre de comptes présents dans la bdd
      * @return nombre de comptes présents ds la bdd
