@@ -55,7 +55,6 @@ public class ComptesActivity extends ListActivity implements HomeConstants
         		createCompte();
         	}
         });
-
     }
 
     @Override
@@ -213,5 +212,12 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 			}
         });
         //mComptesCursor.close();
+    }
+    
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent)
+    {
+        super.onActivityResult(requestCode, resultCode, intent);
+        fillData();
     }
 }
