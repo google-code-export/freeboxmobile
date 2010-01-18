@@ -11,7 +11,7 @@ SERVICES : tout ce qui tourne en tâche de fond
 = Versions publiques de !FreeboxMobile =
 
 == 0.16 ==
-Sortie le 18/10/2009<br>
+Sortie le 18/01/2010<br>
 Release : 5
  * CONFIG : Support du multicomptes
  * HOME : Affichage des nouveautés (cette page)
