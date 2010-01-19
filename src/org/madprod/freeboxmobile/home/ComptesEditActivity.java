@@ -34,7 +34,6 @@ public class ComptesEditActivity extends Activity implements Constants
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-    	Log.d(DEBUGTAG,"EditActivity Create ");
         super.onCreate(savedInstanceState);
         
         FBMHttpConnection.initVars(ComptesEditActivity.this);
@@ -54,16 +53,21 @@ public class ComptesEditActivity extends Activity implements Constants
         Button cancelButton = (Button) findViewById(R.id.comptes_button_cancel);
 
         mRowId = savedInstanceState != null ? savedInstanceState.getLong(ComptesDbAdapter.KEY_ROWID) : null;
-        Log.d(DEBUGTAG,"rowid1 "+mRowId);
+
         if (mRowId == null)
         {
 			Bundle extras = getIntent().getExtras();            
 			mRowId = extras != null ? extras.getLong(ComptesDbAdapter.KEY_ROWID) : null;
         }
         if (mRowId != null && mRowId == -1)
+        {
         	mRowId = null;
-        Log.d(DEBUGTAG,"rowid2 "+mRowId);
-        populateFields();
+        	populateFieldsFromSaved(savedInstanceState);
+        }
+        else
+        {
+        	populateFieldsFromDb();
+        }
 
         cancelButton.setOnClickListener(new Button.OnClickListener()
         {
@@ -76,8 +80,6 @@ public class ComptesEditActivity extends Activity implements Constants
         {
             public void onClick(View view)
             {
-                Bundle bundle = new Bundle();
-
                 String title = mTitleText.getText().toString();
                 String user = mUserText.getText().toString();
                 String password = mPasswordText.getText().toString();
@@ -99,18 +101,7 @@ public class ComptesEditActivity extends Activity implements Constants
                 	}
                 	else
                 	{
-		                bundle.putString(ComptesDbAdapter.KEY_TITLE, title);
-		                bundle.putString(ComptesDbAdapter.KEY_USER, user);
-		                bundle.putString(ComptesDbAdapter.KEY_PASSWORD, password);
-		                if (mRowId != null)
-		                {
-		                    bundle.putLong(ComptesDbAdapter.KEY_ROWID, mRowId);
-		                }
-		                // TODO : A QUOI SERT LE INTENT ?
-		                Intent mIntent = new Intent();
-		                mIntent.putExtras(bundle);
-		                setResult(RESULT_OK, mIntent);
-		                new CheckFree().execute(new Payload(user, password, mIntent));
+		                new CheckFree().execute(new Payload(user, password));
                 	}
                 }
                 else
@@ -122,9 +113,18 @@ public class ComptesEditActivity extends Activity implements Constants
         });
     }
     
-    private void populateFields()
+    private void populateFieldsFromSaved(Bundle b)
     {
-    	Log.d(DEBUGTAG,"EditActivity PopulateFields "+mRowId+" "+mDbHelper);
+        if (b != null)
+        {
+            mTitleText.setText(b.getString(ComptesDbAdapter.KEY_TITLE));
+            mUserText.setText(b.getString(ComptesDbAdapter.KEY_USER));
+            mPasswordText.setText(b.getString(ComptesDbAdapter.KEY_PASSWORD));
+        }
+    }
+
+    private void populateFieldsFromDb()
+    {
         if (mRowId != null)
         {
             Cursor compte = mDbHelper.fetchCompte(mRowId);
@@ -139,7 +139,6 @@ public class ComptesEditActivity extends Activity implements Constants
     @Override
     protected void onSaveInstanceState(Bundle outState)
     {
-    	Log.d(DEBUGTAG,"EditActivity SaveInstanceState "+ComptesDbAdapter.KEY_ROWID+" "+mRowId);
         super.onSaveInstanceState(outState);
         if (mRowId != null)
         {
@@ -149,28 +148,27 @@ public class ComptesEditActivity extends Activity implements Constants
         {
         	outState.putLong(ComptesDbAdapter.KEY_ROWID, -1);
         }
+    	outState.putString(ComptesDbAdapter.KEY_TITLE, mTitleText.getText().toString());
+    	outState.putString(ComptesDbAdapter.KEY_USER, mUserText.getText().toString());
+    	outState.putString(ComptesDbAdapter.KEY_PASSWORD, mPasswordText.getText().toString());
     }
-    
+
     @Override
     protected void onPause()
     {
-    	Log.d(DEBUGTAG,"EditActivity Pause ");
         super.onPause();
-        saveState();
+//        saveState();
     }
-    
+
     @Override
     protected void onResume()
     {
-    	Log.d(DEBUGTAG,"EditActivity Resume ");
         super.onResume();
-        populateFields();
     }
-    
+
     @Override
     protected void onDestroy()
     {
-    	Log.d(DEBUGTAG,"EditActivity Destroy ");
     	mDbHelper.close();
     	FBMHttpConnection.closeDisplay();
         super.onDestroy();
@@ -178,9 +176,14 @@ public class ComptesEditActivity extends Activity implements Constants
 
     private void saveState()
     {
-    	if (exit == RESULT_OK)
+        Bundle bundle = new Bundle();
+        Intent mIntent = new Intent();
+
+    	if (ComptesEditActivity.exit == RESULT_OK)
     	{
-	        String title = mTitleText.getText().toString();
+        	Log.d(DEBUGTAG, "ComptesEditActivity RESULT_OK");
+
+        	String title = mTitleText.getText().toString();
 	        String login = mUserText.getText().toString();
 	        String password = mPasswordText.getText().toString();
 	
@@ -196,7 +199,21 @@ public class ComptesEditActivity extends Activity implements Constants
 	        {
 	            mDbHelper.updateCompte(mRowId, title, login, password);
 	        }
+	        bundle.putString(ComptesDbAdapter.KEY_TITLE, title);
+	        bundle.putString(ComptesDbAdapter.KEY_USER, login);
+	        bundle.putString(ComptesDbAdapter.KEY_PASSWORD, password);
+            bundle.putLong(ComptesDbAdapter.KEY_ROWID, mRowId);
     	}
+    	else
+    	{
+        	Log.d(DEBUGTAG, "ComptesEditActivity RESULT_NOK");
+	        bundle.putString(ComptesDbAdapter.KEY_TITLE, null);
+	        bundle.putString(ComptesDbAdapter.KEY_USER, null);
+	        bundle.putString(ComptesDbAdapter.KEY_PASSWORD, null);
+            bundle.putLong(ComptesDbAdapter.KEY_ROWID, 0);
+    	}
+        mIntent.putExtras(bundle);
+        setResult(ComptesEditActivity.exit, mIntent);
     }
 
     public static class Payload
@@ -206,11 +223,10 @@ public class ComptesEditActivity extends Activity implements Constants
         public Intent intent;
         public int result;
         
-        public Payload(String login, String password, Intent intent)
+        public Payload(String login, String password)
         {
         	this.login = login;
         	this.password = password;
-        	this.intent = intent;
         }
     }
 
@@ -226,19 +242,18 @@ public class ComptesEditActivity extends Activity implements Constants
 		@Override
     	protected void onPreExecute()
     	{
-    		Log.d(DEBUGTAG,"onPreExecute");
     		FBMHttpConnection.showProgressDialog(ComptesEditActivity.this);
     	}
 
     	@Override
     	protected void onPostExecute(Payload payload)
     	{
-    		Log.d(DEBUGTAG,"onPostExecute");
     		FBMHttpConnection.dismissPd();
     		switch (payload.result)
     		{
     			case CONNECT_CONNECTED:
     				ComptesEditActivity.exit = RESULT_OK;
+    				saveState();
     				finish();
     			break;
     			default:
