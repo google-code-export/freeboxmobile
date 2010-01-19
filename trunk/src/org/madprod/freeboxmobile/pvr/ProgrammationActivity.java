@@ -8,6 +8,8 @@ import org.apache.http.message.BasicNameValuePair;
 
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
+import org.madprod.freeboxmobile.pvr.Chaine.Service;
+import org.madprod.freeboxmobile.pvr.Chaine.Service.PVR_MODE;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -20,7 +22,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -29,6 +33,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemSelectedListener;
 
 /**
  * 
@@ -64,6 +69,20 @@ public class ProgrammationActivity extends Activity {
             		}
             	}
             }
+        });
+        
+        // Qualité
+        Spinner chaines = (Spinner) findViewById(R.id.pvrPrgChaine);
+        chaines.setOnItemSelectedListener(new OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+				remplirSpinner(R.id.pvrPrgQualite, (Spinner) arg0);
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+				// TODO Auto-generated method stub
+			}
         });
         
         new TelechargerChainesDisquesTask().execute((Void[])null);
@@ -384,6 +403,9 @@ public class ProgrammationActivity extends Activity {
     }
     
     private void remplirSpinner(int id) {
+    	remplirSpinner(id, null);
+    }
+    private void remplirSpinner(int id, Spinner chaineSpinner) {
 		Spinner spinner = (Spinner) findViewById(id);
 		List<String> liste = new ArrayList<String>();
 		int i, size;
@@ -394,12 +416,25 @@ public class ProgrammationActivity extends Activity {
 			for (i = 0; i < size; i++) {
 				liste.add(mChaines.get(i).getName());
 			}
-		} else {
+		} else if (id == R.id.pvrPrgDisque) {
 			size = mDisques.size();
 			for (i = 0; i < size; i++) {
 				liste.add(mDisques.get(i).getLabel());
 			}
+		} else { // R.id.pvrPrgQualite
+			int idChaine = chaineSpinner.getSelectedItemPosition();
+			List<Chaine.Service> services = mChaines.get(idChaine).getServices();
+			size = services.size();
+			String serviceName;
+			for (i = 0; i < size; i++) {
+				serviceName = services.get(i).getDesc();
+				if (services.get(i).getPvrMode() != PVR_MODE.PUBLIC) {
+					serviceName += " *";
+				}
+				liste.add(serviceName);
+			}
 		}
+		
 		ArrayAdapter<String> adapter= new ArrayAdapter<String>(
 				this, android.R.layout.simple_spinner_item, liste);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

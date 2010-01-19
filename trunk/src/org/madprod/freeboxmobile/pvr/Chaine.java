@@ -25,7 +25,7 @@ import org.json.JSONObject;
  */
 
 public class Chaine {
-	private static class Service {
+	static class Service {
 		enum PVR_MODE { DISABLED, PUBLIC, PRIVATE };
 		private PVR_MODE mPvrMode;
 		private String mServiceDesc;
@@ -56,6 +56,12 @@ public class Chaine {
 		
 		public int getServiceId() {
 			return this.mServiceId;
+		}
+		public PVR_MODE getPvrMode() {
+			return this.mPvrMode;
+		}
+		public String getDesc() {
+			return this.mServiceDesc;
 		}
 	}
 	

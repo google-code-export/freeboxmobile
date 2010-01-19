@@ -11,6 +11,9 @@
         
 		<TextView android:text="@string/pvrTxtChaine" android:id="@+id/TxtChaine" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
 		<Spinner android:id="@+id/pvrPrgChaine" android:layout_width="fill_parent" android:layout_height="wrap_content"></Spinner>
+		<TextView android:text="@string/pvrTxtQualite" android:id="@+id/TxtQualite" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+		<Spinner android:id="@+id/pvrPrgQualite" android:layout_width="fill_parent" android:layout_height="wrap_content"></Spinner>
+		<TextView android:text="@string/pvrTxtQualiteDisque" android:id="@+id/TxtQualiteDisque" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="12px" android:paddingBottom="5px"></TextView>
 		<TextView android:text="@string/pvrTxtDate" android:id="@+id/TxtDate" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
 		<DatePicker android:id="@+id/pvrPrgDate" android:layout_width="wrap_content" android:layout_height="wrap_content"></DatePicker>
 		<TextView android:text="@string/pvrTxtHeure" android:id="@+id/TxtHeure" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>

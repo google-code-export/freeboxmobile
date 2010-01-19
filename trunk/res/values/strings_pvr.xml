@@ -3,6 +3,8 @@
 
 
 	<string name="pvrTxtChaine">Channel</string>
+	<string name="pvrTxtQualite">Quality</string>
+	<string name="pvrTxtQualiteDisque">* only recordable in the internal storage</string>
 	<string name="pvrTxtDate">Date</string>
 	<string name="pvrTxtHeure">Time</string>
 	<string name="pvrTxtDuree">Duration</string>
