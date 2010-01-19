@@ -123,7 +123,7 @@ public class ProgrammationActivity extends Activity {
         	
         	// Récupération du javascript correspondant à la liste des disques durs
         	String strDisques = resultat.substring(posDisques+14);
-        	int fin = strDisques.indexOf("}")+1;
+        	int fin = strDisques.lastIndexOf("}];")+1;
         	strDisques = strDisques.substring(0, fin);
         	
         	// Conversion JSON -> objet dans la RAM
@@ -397,7 +397,7 @@ public class ProgrammationActivity extends Activity {
 		} else {
 			size = mDisques.size();
 			for (i = 0; i < size; i++) {
-				liste.add(mDisques.get(i).getMountPt());
+				liste.add(mDisques.get(i).getLabel());
 			}
 		}
 		ArrayAdapter<String> adapter= new ArrayAdapter<String>(
@@ -422,7 +422,7 @@ public class ProgrammationActivity extends Activity {
 		int i, size = mDisques.size();
 		
 		for (i = 0; i < size; i++) {
-			if (mDisques.get(i).getMountPt().equals(disque)) {
+			if (mDisques.get(i).getLabel().equals(disque)) {
 				return i;
 			}
 		}
