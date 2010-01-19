@@ -195,9 +195,9 @@ public class MevoActivity extends ListActivity implements MevoConstants
 			int id = (int)info.id;
 
 		    menu.setHeaderTitle(this.mAdapter.getMessageString(id,KEY_CALLER));
-		    menu.add(0, MEVO_CONTEXT_CALLBACK, 0, R.string.mevo_context_callback);
 		    if (!((MevoMessage)this.mAdapter.getItem(id)).getStringValue(KEY_SOURCE).equals(""))
 		    {
+			    menu.add(0, MEVO_CONTEXT_CALLBACK, 0, R.string.mevo_context_callback);
 		    	menu.add(0, MEVO_CONTEXT_SENDSMS, 0, R.string.mevo_context_sendsms);
 		    }
 		    if (((MevoMessage) this.mAdapter.getItem(id)).getStringValue(KEY_SOURCE).equals(((MevoMessage) this.mAdapter.getItem(id)).getStringValue(KEY_CALLER)))
