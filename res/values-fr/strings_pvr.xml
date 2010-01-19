@@ -3,6 +3,8 @@
 
 
 	<string name="pvrTxtChaine">Chaîne</string>
+	<string name="pvrTxtQualite">Qualité</string>
+	<string name="pvrTxtQualiteDisque">* enregistrable seulement sur le disque interne</string>
 	<string name="pvrTxtDate">Date</string>
 	<string name="pvrTxtHeure">Heure</string>
 	<string name="pvrTxtDuree">Durée</string>
