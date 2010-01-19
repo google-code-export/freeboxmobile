@@ -40,7 +40,6 @@ public class ComptesActivity extends ListActivity implements HomeConstants
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
-    	Log.d(DEBUGTAG,"Compte onCreate");
     	super.onCreate(savedInstanceState);
         setContentView(R.layout.comptes_list);
         mDbHelper = new ComptesDbAdapter(this);
@@ -69,7 +68,6 @@ public class ComptesActivity extends ListActivity implements HomeConstants
     {
 		switch(item.getItemId())
 		{
-			// TODO : Pas de delete s'il s'agit du compte actif
     		case COMPTES_OPTION_DELETE:
     			AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
     			String selected = getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_USER, null);
@@ -115,14 +113,12 @@ public class ComptesActivity extends ListActivity implements HomeConstants
     @Override
     protected void onStop()
 	{
-    	Log.d(DEBUGTAG,"Compte onStop");
     	super.onStop();
 	}
 
     @Override
     protected void onDestroy()
     {
-    	Log.d(DEBUGTAG,"Compte onDestroy");
     	mDbHelper.close();
     	super.onDestroy();
     }
@@ -130,7 +126,6 @@ public class ComptesActivity extends ListActivity implements HomeConstants
     @Override
     protected void onPause()
     {
-    	Log.d(DEBUGTAG,"Compte onPause");
     	super.onPause();
     }
     
@@ -218,6 +213,31 @@ public class ComptesActivity extends ListActivity implements HomeConstants
     protected void onActivityResult(int requestCode, int resultCode, Intent intent)
     {
         super.onActivityResult(requestCode, resultCode, intent);
+        // Si il n'y avait pas de compte définit et qu'un compte vient d'être créé, on le selectionne par défaut
+        if ((getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_USER, null) == null) && (resultCode != 0))
+        {
+       		Long id = intent.getLongExtra(ComptesDbAdapter.KEY_ROWID, 0);
+            Log.d(DEBUGTAG,"Dans  if "+id);
+        	if (id != 0)
+        	{
+                Log.d(DEBUGTAG,"Dans  if id "+id);
+				Cursor c = mDbHelper.fetchCompte(id);
+				startManagingCursor(c);
+				if (c.getCount() > 0)
+				{
+	                Log.d(DEBUGTAG,"Dans if getCount");
+					SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
+					Editor editor = mgr.edit();
+					editor.putString(KEY_USER, c.getString(c.getColumnIndexOrThrow(KEY_USER)));
+					editor.putString(KEY_PASSWORD,  c.getString(c.getColumnIndexOrThrow(KEY_PASSWORD)));
+					editor.putString(KEY_TITLE, c.getString(c.getColumnIndexOrThrow(KEY_TITLE)));
+					editor.commit();
+	            	Toast t = Toast.makeText(ComptesActivity.this, "Compte "+c.getString(c.getColumnIndexOrThrow(KEY_TITLE))+" selectionné",Toast.LENGTH_LONG);
+	            	t.show();
+				}
+				c.close();
+        	}
+        }
         fillData();
     }
 }
