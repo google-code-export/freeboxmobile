@@ -2,20 +2,20 @@
 <resources>
 
 
-	<string name="pvrTxtChaine">Chaîne</string>
+	<string name="pvrTxtChaine">Channel</string>
 	<string name="pvrTxtDate">Date</string>
-	<string name="pvrTxtHeure">Heure</string>
-	<string name="pvrTxtDuree">Durée</string>
-	<string name="pvrTxtNom">Nom</string>
-	<string name="pvrTxtDisque">Disque dur</string>
+	<string name="pvrTxtHeure">Time</string>
+	<string name="pvrTxtDuree">Duration</string>
+	<string name="pvrTxtNom">Name</string>
+	<string name="pvrTxtDisque">Hard disk</string>
 	<string name="pvrTxtPrgBtnOK">OK</string>
-	<string name="pvrNomDefaut">Entrez le titre de l'émission...</string>
+	<string name="pvrNomDefaut">Type program title...</string>
 	
-	<string name="pvrTxtModif">Modifier</string>
-	<string name="pvrTxtSuppr">Supprimer</string>
+	<string name="pvrTxtModif">Modify</string>
+	<string name="pvrTxtSuppr">Delete</string>
 	
-	<string name="pvrTxtBtnProg">Ajouter</string>
-	<string name="pvrTxtBtnGrille">Programme TV</string>
+	<string name="pvrTxtBtnProg">Add</string>
+	<string name="pvrTxtBtnGrille">TV Program</string>
 	
 	
 </resources>
