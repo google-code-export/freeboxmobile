@@ -61,7 +61,7 @@ public class EnregistrementsActivity extends ExpandableListActivity {
         enrAct = this;
 
         setTheme(android.R.style.Theme_Light);
-        setTitle(getString(R.string.app_name) + " - Magnétoscope numérique");
+        setTitle(getString(R.string.app_name) + " - Magnétoscope numérique" + "("+FBMHttpConnection.getTitle()+")");
         
         ((Button) findViewById(R.id.pvrBtnProg)).setOnClickListener(new OnClickListener() {
 			@Override
@@ -73,8 +73,9 @@ public class EnregistrementsActivity extends ExpandableListActivity {
         updaterEnregistrements(true);
     }
     
-    private boolean login() {
-    	return FBMHttpConnection.connectFreeUI() == FBMHttpConnection.CONNECT_CONNECTED;
+    @Override
+	protected void onDestroy() {
+    	FBMHttpConnection.closeDisplay();
     }
     
     private void erreur(String msgErreur) {
@@ -109,7 +110,7 @@ public class EnregistrementsActivity extends ExpandableListActivity {
         	listeEnregistrements.vider();
         	
         	// On se log sur l'if free
-            if (login() == false) {
+            if (FBMHttpConnection.connectFree() != FBMHttpConnection.CONNECT_CONNECTED) {
             	return false;
             }
             

@@ -1,5 +1,7 @@
 package org.madprod.freeboxmobile.pvr;
 
+import org.madprod.freeboxmobile.FBMHttpConnection;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -50,7 +52,7 @@ public class EnregistrementsDbAdapter {
 			        + "where_id integer not null,"
 			        + "repeat_a text);";
 
-    private static final String DATABASE_NAME = "freeboxmobile";
+    private static final String DATABASE_NAME = "freeboxmobile" + FBMHttpConnection.getIdentifiant();
     private static final String DATABASE_TABLE = "enregistrements";
     private static final int DATABASE_VERSION = 4;
 
