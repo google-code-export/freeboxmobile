@@ -21,5 +21,14 @@
 	<string name="pvrTxtBtnProg">Add</string>
 	<string name="pvrTxtBtnGrille">TV Program</string>
 	
+	<string name="pvrLundi">Monday</string>
+	<string name="pvrMardi">Tuesday</string>
+	<string name="pvrMercredi">Wednesday</string>
+	<string name="pvrJeudi">Thursday</string>
+	<string name="pvrVendredi">Friday</string>
+	<string name="pvrSamedi">Saturday</string>
+	<string name="pvrDimanche">Sunday</string>
+	
+	<string name="pvrErreurNomEmission">Please enter a program title</string>
 	
 </resources>

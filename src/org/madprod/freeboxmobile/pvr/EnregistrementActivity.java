@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class EnregistrementActivity extends Activity {
@@ -53,6 +54,9 @@ public class EnregistrementActivity extends Activity {
 		        TextView heure = (TextView) findViewById(R.id.pvrDispHeure);
 		        TextView duree = (TextView) findViewById(R.id.pvrDispDuree);
 		        TextView nom = (TextView) findViewById(R.id.pvrDispNom);
+		        TextView recur = (TextView) findViewById(R.id.pvrDispRecursivite);
+		        LinearLayout recurLayout = (LinearLayout) findViewById(R.id.pvrDispRecursiviteLayout);
+		        String strRecur, strRecurDb;
 		        
 		        // Logo
 		        int canalChaine = c.getInt(c.getColumnIndex(EnregistrementsDbAdapter.KEY_CHAINE_ID));
@@ -65,6 +69,25 @@ public class EnregistrementActivity extends Activity {
 		    	duree.setText(c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_DUREE))
 		    			+ " minutes");
 		    	nom.setText(c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_NOM)));
+		    	
+		    	// Disque
+		    	//TODO: stocker qqpart des infos sur le disque (espace libre, etc) et l'afficher ici
+		    	//disque.setText(c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_WHERE_ID)));
+		    	
+		    	// Récurrence
+		    	strRecurDb = c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_REPEAT_A));
+		    	if (strRecurDb.length() == 8) {
+		    		strRecur = "";
+		    		if (strRecurDb.charAt(0) ==  '1')	strRecur += getString(R.string.pvrLundi)+"\n";
+		    		if (strRecurDb.charAt(1) ==  '1')	strRecur += getString(R.string.pvrMardi)+"\n";
+		    		if (strRecurDb.charAt(2) ==  '1')	strRecur += getString(R.string.pvrMercredi)+"\n";
+		    		if (strRecurDb.charAt(3) ==  '1')	strRecur += getString(R.string.pvrJeudi)+"\n";
+		    		if (strRecurDb.charAt(4) ==  '1')	strRecur += getString(R.string.pvrVendredi)+"\n";
+		    		if (strRecurDb.charAt(5) ==  '1')	strRecur += getString(R.string.pvrSamedi)+"\n";
+		    		if (strRecurDb.charAt(6) ==  '1')	strRecur += getString(R.string.pvrDimanche)+"\n";
+		    		recur.setText(strRecur);
+		    		recurLayout.setVisibility(View.VISIBLE);
+		    	}
 		    	
 		    	// Roles des boutons
 		    	Button modif = (Button) findViewById(R.id.pvrBtnModif);

@@ -84,6 +84,19 @@ public class Disque {
 	public boolean isOk() {
 		return mDirty == false && mBusy == false && mReadOnly == false && mNoMedia == false;
 	}
+
+	public int getGigaFree() {
+		Float f = new Float(mFreeSize);
+		f /= 1024;
+		f /= 1024;
+		return f.intValue();
+	}
+	public int getGigaTotal() {
+		Float f = new Float(mTotalSize);
+		f /= 1024;
+		f /= 1024;
+		return f.intValue();
+	}
 	
 	public int getId() {
 		return this.mId;
