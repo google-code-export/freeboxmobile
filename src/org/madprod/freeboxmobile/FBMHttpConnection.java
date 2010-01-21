@@ -1,16 +1,21 @@
 package org.madprod.freeboxmobile;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List; 
+import java.util.Map;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -228,11 +233,13 @@ public class FBMHttpConnection implements Constants
 		return FBMHttpConnection.connectionFree(login, password, false);
 	}
 
+	// En cas de résussite : http://adsl.free.fr/compte/console.pl?id=467389&idt=10eb38933107f10c
+	// En cas d'erreur de login/pass : /login/login.pl?login=0909&error=1
 	/**
 	 * connectionFree : identifie sur le portail de Free avec le login/pass demandé
 	 * @param l : login (identifiant = numéro de téléphone Freebox)
 	 * @param p : password (mot de passe Freebox)
-	 * @param check : true = juste vérifier les identifiant / false : se connecter (ie stocker id & idt)
+	 * @param check : true = juste vérifier les identifiants / false : se connecter (ie stocker id & idt)
 	 * @return CONNECT_CONNECTED || CONNECT_NOT_CONNECTED || CONNECT_LOGIN_FAILED
 	 */
 	public static int connectionFree(String l, String p, boolean check)
@@ -243,47 +250,47 @@ public class FBMHttpConnection implements Constants
 		Log.d(DEBUGTAG,"Connect Free start ");
         try
         {
-    		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-    		nameValuePairs.add(new BasicNameValuePair("login", l));
-    		nameValuePairs.add(new BasicNameValuePair("pass", p)); 
-    		BufferedReader br = postRequest(serverUrl, nameValuePairs, true);
-    		if (br != null)
-    		{
-	    		String s = null;
-	    		String priv = null;
-	    		while ( (s=br.readLine())!=null )
-	    		{
-	    			if (s.indexOf("idt=")>-1)
-	    			{
-	    				priv = s.substring(s.indexOf("idt=")+4);
-	    				if (priv.indexOf("&")>-1)
-	    				{
-	    					priv = priv.substring(0, priv.indexOf('&'));
-	    				}
-	    				else
-	    				{
-	    					priv = priv.substring(0, priv.indexOf('"'));
-	    				}
-	    				m_idt = priv;
-	    				Log.d(DEBUGTAG,"idt :"+priv);
-	    				priv = s.substring(s.indexOf("?id=")+4);
-	    				priv = priv.substring(0, priv.indexOf('&'));
-	    				m_id = priv;
-	    				Log.d(DEBUGTAG,"id :"+priv);
-	    				break;
-	    			}
-	    		}
-    		}
+    		List<String> listParameter = new ArrayList<String>();
+    		listParameter.add("login="+l);   		
+    		listParameter.add("pass="+p);
+
+    		URL myURL = new URL(serverUrl);
+			URLConnection ucon;
+			ucon = myURL.openConnection();
+			ucon.setDoOutput(true);
+			OutputStreamWriter out = new OutputStreamWriter(ucon.getOutputStream());
+			out.write(makeStringForPost(listParameter));
+			out.flush();
+			out.close();
+			String s = ucon.getHeaderFields().get("location").toString();
+    		String priv;
+			if (s.indexOf("idt=")>-1)
+			{
+				priv = s.substring(s.indexOf("idt=")+4);
+				if (priv.indexOf("]")>-1)
+				{
+					priv = priv.substring(0, priv.indexOf(']'));
+				}
+				m_idt = priv;
+				Log.d(DEBUGTAG,"idt :"+priv);
+				priv = s.substring(s.indexOf("?id=")+4);
+				priv = priv.substring(0, priv.indexOf('&'));
+				m_id = priv;
+				Log.d(DEBUGTAG,"id :"+priv);
+			}
         }
-        catch (Exception e)
-        {
+		catch (Exception e)
+		{
         	Log.e(DEBUGTAG, "connectFree : "+e);
         	e.printStackTrace();
         	connectionStatus = CONNECT_NOT_CONNECTED;
-        	id = null;
-        	idt = null;
+        	if (check == false)
+        	{
+	        	id = null;
+	        	idt = null;
+        	}
         	return connectionStatus;
-        }
+		}
        	if (m_id != null && m_idt != null)
        	{
        		connectionStatus = CONNECT_CONNECTED;
@@ -297,11 +304,14 @@ public class FBMHttpConnection implements Constants
        	{
        		Log.d(DEBUGTAG,"MonCompeFree : AUTHENTIFICATION FAILED !");
        		connectionStatus = CONNECT_LOGIN_FAILED;
-       		id = null;
-       		idt = null;
+       		if (check == false)
+       		{
+	       		id = null;
+	       		idt = null;
+       		}
        	}
        	return connectionStatus;
-	}
+    }
 
 	/**
 	 * Donwload a file
@@ -440,6 +450,21 @@ public class FBMHttpConnection implements Constants
 			return (null);
 		}
 	}
+
+	private static String makeStringForPost(List<String> listParameter)
+    {
+        String listConcat = "";
+        if(listParameter.size() > 0)
+        {
+            listConcat += listParameter.get(0);
+            for(int i = 1 ; i < listParameter.size() ; i++)
+            {
+                listConcat += "&";
+                listConcat += listParameter.get(i);
+            }
+        }
+        return listConcat;
+    }
 	
 	/**
 	 * BufferedReader to String conversion
