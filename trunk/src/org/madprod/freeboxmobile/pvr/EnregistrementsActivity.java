@@ -75,6 +75,7 @@ public class EnregistrementsActivity extends ExpandableListActivity {
     
     @Override
 	protected void onDestroy() {
+    	super.onDestroy();
     	FBMHttpConnection.closeDisplay();
     }
     

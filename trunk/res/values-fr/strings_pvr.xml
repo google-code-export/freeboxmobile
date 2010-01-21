@@ -13,6 +13,8 @@
 	<string name="pvrTxtPrgBtnOK">OK</string>
 	<string name="pvrNomDefaut">Entrez le titre de l\'émission...</string>
 	
+	<string name="pvrTxtQualiteParDefaut">Par défaut</string>
+	
 	<string name="pvrTxtModif">Modifier</string>
 	<string name="pvrTxtSuppr">Supprimer</string>
 	

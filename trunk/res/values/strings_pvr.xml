@@ -13,6 +13,8 @@
 	<string name="pvrTxtPrgBtnOK">OK</string>
 	<string name="pvrNomDefaut">Type program title...</string>
 	
+	<string name="pvrTxtQualiteParDefaut">Default</string>
+	
 	<string name="pvrTxtModif">Modify</string>
 	<string name="pvrTxtSuppr">Delete</string>
 	

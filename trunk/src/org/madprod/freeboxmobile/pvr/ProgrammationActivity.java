@@ -229,8 +229,9 @@ public class ProgrammationActivity extends Activity {
         		}
         		
         		// Service
-        		//TODO!
-        		service = 0;
+        		Spinner spinnerQualite = (Spinner) findViewById(R.id.pvrPrgQualite);
+        		int serviceId = spinnerQualite.getSelectedItemPosition();
+        		service = mChaines.get(chaineId).getServices().get(serviceId).getServiceId();
         		
         		// Date
         		DatePicker datePicker = (DatePicker) findViewById(R.id.pvrPrgDate);
@@ -428,6 +429,9 @@ public class ProgrammationActivity extends Activity {
 			String serviceName;
 			for (i = 0; i < size; i++) {
 				serviceName = services.get(i).getDesc();
+				if (serviceName.length() == 0) {
+					serviceName = getString(R.string.pvrTxtQualiteParDefaut);
+				}
 				if (services.get(i).getPvrMode() != PVR_MODE.PUBLIC) {
 					serviceName += " *";
 				}
