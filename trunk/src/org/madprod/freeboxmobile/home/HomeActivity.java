@@ -102,8 +102,8 @@ public class HomeActivity extends Activity implements HomeConstants
 								}
 							});
 						d.show();
-//				    	Intent i = new Intent(homeActivity, org.madprod.freeboxmobile.pvr.EnregistrementsActivity.class);
-//				    	startActivity(i);
+				    	Intent i = new Intent(homeActivity, org.madprod.freeboxmobile.pvr.EnregistrementsActivity.class);
+				    	startActivity(i);
 					}
 				}
 			);
