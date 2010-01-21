@@ -1,6 +1,5 @@
 package org.madprod.freeboxmobile;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -9,13 +8,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List; 
-import java.util.Map;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -27,7 +24,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
-import org.apache.http.message.BasicNameValuePair; 
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -174,37 +170,6 @@ public class FBMHttpConnection implements Constants
 		errorAlert.show();
 	}
 
-	/*
-	 * Se connecte à Free en affichant une progress Dialog si nécessaire
-	 */
-	// TODO : Remove this function
-	public static int connectFreeUI()
-	{
-		if ((activity != null) && (login != null) && (password != null) && (connectionStatus != CONNECT_LOGIN_FAILED))// && (id == null)
-		{
-			if (connectionStatus != CONNECT_CONNECTED)
-			{
-					activity.runOnUiThread(new Runnable()
-					{
-						public void run()
-						{
-							showProgressDialog(activity);
-//							httpProgressDialog = ProgressDialog.show(activity, "Mon Compte Free", "Connexion en cours ...", true,false);
-						}
-					});
-			}
-			else
-				httpProgressDialog = null;
-		}
-		connectionStatus = connectFree();
-        if (httpProgressDialog != null)
-        {
-           	httpProgressDialog.dismiss();
-           	httpProgressDialog = null;
-        }
-        return connectionStatus;
-	}
-
     /**
      * Vérifie si le login et le pass ont bougé
      * @param l nouveau login
@@ -255,14 +220,17 @@ public class FBMHttpConnection implements Constants
     		listParameter.add("pass="+p);
 
     		URL myURL = new URL(serverUrl);
-			URLConnection ucon;
-			ucon = myURL.openConnection();
-			ucon.setDoOutput(true);
-			OutputStreamWriter out = new OutputStreamWriter(ucon.getOutputStream());
-			out.write(makeStringForPost(listParameter));
-			out.flush();
-			out.close();
-			String s = ucon.getHeaderFields().get("location").toString();
+			URLConnection ucon = myURL.openConnection();
+
+			if (!(ucon instanceof HttpURLConnection)) throw new IOException("Not an HTTPconnection.");
+    		HttpURLConnection h = (HttpURLConnection) ucon;
+    		h.setRequestMethod("POST");
+    		h.setDoOutput(true);
+    		OutputStreamWriter o = new OutputStreamWriter(h.getOutputStream());
+			o.write(makeStringForPost(listParameter));
+			o.flush();
+			o.close();
+			String s = h.getHeaderFields().get("location").toString();
     		String priv;
 			if (s.indexOf("idt=")>-1)
 			{
