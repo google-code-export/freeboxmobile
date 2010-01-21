@@ -42,12 +42,12 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 	static final int MENU_UPDATE = 0;
 	static final int MENU_ADD = 1;
 
-	static final int ACTIVITY_ENREGISTREMENT = 0;
-	static final int ACTIVITY_PROGRAMMATION = 1;
+	static final int ACTIVITY_ENREGISTREMENT = 1;
+	static final int ACTIVITY_PROGRAMMATION = 2;
 	
-	static final int RESULT_SUPPRESSION_OK = 0;
-	static final int RESULT_PROG_OK = 1;
-	static final int RESULT_PROG_NOK = 2;
+	static final int RESULT_SUPPRESSION_OK = 1;
+	static final int RESULT_PROG_OK = 2;
+	static final int RESULT_PROG_NOK = 3;
 
     /** Called when the activity is first created. */
     @Override
@@ -353,8 +353,7 @@ public class EnregistrementsActivity extends ExpandableListActivity {
     		updaterEnregistrements(false);
     		
     		if (resultCode == RESULT_SUPPRESSION_OK) {
-    			// TODO: Pourquoi qu'elle marche pas cette tartine ?!! 
-    			Toast.makeText(this, "Modifications enregistrées!", Toast.LENGTH_LONG);
+    			Toast.makeText(this, "Modifications enregistrées!", Toast.LENGTH_LONG).show();
     		}
     	}
     }

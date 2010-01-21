@@ -8,22 +8,17 @@ import org.apache.http.message.BasicNameValuePair;
 
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
-import org.madprod.freeboxmobile.pvr.Chaine.Service;
 import org.madprod.freeboxmobile.pvr.Chaine.Service.PVR_MODE;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnFocusChangeListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -218,6 +213,14 @@ public class ProgrammationActivity extends Activity {
         		int h, m;
         		String date, emission, heure, minutes, nomChaine;
         		
+        		// Duree, emission, nom
+        		duree = Integer.parseInt((((TextView) findViewById(R.id.pvrPrgDuree)).getText().toString()));
+        		emission = ((TextView) findViewById(R.id.pvrPrgNom)).getText().toString();
+        		
+        		if (emission.length() == 0) {
+        			return getString(R.string.pvrErreurNomEmission);
+        		}
+        		
         		// Chaine
         		Spinner spinnerChaines = (Spinner) findViewById(R.id.pvrPrgChaine);
         		int chaineId = spinnerChaines.getSelectedItemPosition();
@@ -251,10 +254,6 @@ public class ProgrammationActivity extends Activity {
         		else { 			heure = "" + h; }
         		if (m < 10) {	minutes = "0" + m; }
         		else { 			minutes = "" + m; }
-        		
-        		// Duree, emission, nom
-        		duree = Integer.parseInt((((TextView) findViewById(R.id.pvrPrgDuree)).getText().toString()));
-        		emission = ((TextView) findViewById(R.id.pvrPrgNom)).getText().toString();
     
         		// Disque
         		int disqueId = ((Spinner) findViewById(R.id.pvrPrgDisque)).getSelectedItemPosition();
@@ -419,8 +418,13 @@ public class ProgrammationActivity extends Activity {
 			}
 		} else if (id == R.id.pvrPrgDisque) {
 			size = mDisques.size();
+			String disqueName;
+			Disque disque;
 			for (i = 0; i < size; i++) {
-				liste.add(mDisques.get(i).getLabel());
+				disque = mDisques.get(i);
+				disqueName = disque.getLabel();
+				disqueName += " ("+disque.getGigaFree()+"/"+disque.getGigaTotal()+" Gio libres)";
+				liste.add(disqueName);
 			}
 		} else { // R.id.pvrPrgQualite
 			int idChaine = chaineSpinner.getSelectedItemPosition();
@@ -428,14 +432,18 @@ public class ProgrammationActivity extends Activity {
 			size = services.size();
 			String serviceName;
 			for (i = 0; i < size; i++) {
-				serviceName = services.get(i).getDesc();
-				if (serviceName.length() == 0) {
-					serviceName = getString(R.string.pvrTxtQualiteParDefaut);
+				if (i == 0 && idChaine == 0) {
+					liste.add("Non enregistrable");
+				} else {
+					serviceName = services.get(i).getDesc();
+					if (serviceName.length() == 0) {
+						serviceName = getString(R.string.pvrTxtQualiteParDefaut);
+					}
+					if (services.get(i).getPvrMode() != PVR_MODE.PUBLIC) {
+						serviceName += " *";
+					}
+					liste.add(serviceName);
 				}
-				if (services.get(i).getPvrMode() != PVR_MODE.PUBLIC) {
-					serviceName += " *";
-				}
-				liste.add(serviceName);
 			}
 		}
 		

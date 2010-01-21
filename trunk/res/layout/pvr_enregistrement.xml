@@ -70,22 +70,21 @@
 			<ImageView
 				android:id="@+id/ImageView01"
 				android:src="@drawable/pvr_date"
-				android:layout_width="wrap_content"
+				android:layout_width="40px"
 				android:layout_height="wrap_content"></ImageView>
 			<TextView
 				android:text="@+id/pvrDispDate"
 				android:id="@+id/pvrDispDate"
-				android:paddingLeft="5px"
 				android:textSize="16px"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"></TextView>
 		</LinearLayout>
 		
-		<LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content">
+		<LinearLayout android:padding="5px" android:gravity="center_vertical" android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content">
 			<ImageView
 				android:id="@+id/ImageView01"
 				android:src="@drawable/pvr_heure"
-				android:layout_width="wrap_content"
+				android:layout_width="40px"
 				android:layout_height="wrap_content"></ImageView>
 			<TextView
 				android:text="@+id/pvrDispHeure"
@@ -95,17 +94,46 @@
 				android:layout_height="wrap_content"></TextView>
 		</LinearLayout>
 		
-		<LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content">
+		<LinearLayout android:padding="5px" android:gravity="center_vertical" android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content">
 			<ImageView
 				android:id="@+id/ImageView01"
 				android:src="@drawable/pvr_duree"
-				android:layout_width="wrap_content"
+				android:layout_width="40px"
 				android:layout_height="wrap_content"></ImageView>
 			<TextView
 				android:text="@+id/pvrDispDuree"
 				android:id="@+id/pvrDispDuree"
 				android:textSize="16px"
-				android:paddingLeft="5px"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"></TextView>
+		</LinearLayout>
+		
+		<LinearLayout android:visibility="gone" android:padding="5px" android:gravity="center_vertical" android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content">
+			<ImageView
+				android:id="@+id/ImageView01"
+				android:src="@drawable/pvr_harddisk"
+				android:layout_width="40px"
+				android:layout_height="wrap_content"></ImageView>
+			<TextView
+				android:text="@+id/pvrDispDisque"
+				android:id="@+id/pvrDispDisque"
+				android:textSize="16px"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"></TextView>
+		</LinearLayout>
+		
+		<LinearLayout
+			android:id="@+id/pvrDispRecursiviteLayout" android:visibility="gone"
+			android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content">
+			<ImageView
+				android:id="@+id/ImageView01"
+				android:src="@drawable/pvr_recursivite"
+				android:layout_width="40px"
+				android:layout_height="wrap_content"></ImageView>
+			<TextView
+				android:text="@+id/pvrDispRecursivite"
+				android:id="@+id/pvrDispRecursivite"
+				android:textSize="16px"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"></TextView>
 		</LinearLayout>
