@@ -354,7 +354,7 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 				params.add("fichier="+curs.getString(curs.getColumnIndex(KEY_NAME)));
 
 				Log.d(DEBUGTAG, "Deleting on server "+params);
-				FBMHttpConnection.getAuthRequest(mevoUrl+mevoDelPage, params, false);
+				FBMHttpConnection.getAuthRequest(mevoUrl+mevoDelPage, params, true, false);
 			}
 		}
 		// Puis on marque le message comme effacé dans la base
@@ -374,7 +374,7 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 		int newmsg = -1;
 		try
 		{
-	    	BufferedReader br = new BufferedReader(FBMHttpConnection.getAuthRequest(mevoUrl+mevoListPage, null, true));
+	    	BufferedReader br = new BufferedReader(FBMHttpConnection.getAuthRequest(mevoUrl+mevoListPage, null, true, true));
 			String s = " ";
 			String status = null;
 			String from = null;
@@ -446,7 +446,7 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 					        file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+FBMHttpConnection.getIdentifiant()+DIR_MEVO,name);
 					        if (file.exists() == false)
 					        {
-								FBMHttpConnection.getFile(file, mevoUrl+link);
+								FBMHttpConnection.getFile(file, mevoUrl+link, null, false);
 					        }
 					        presence = 4;
 					        curs = mDbHelper.fetchMessage(name);

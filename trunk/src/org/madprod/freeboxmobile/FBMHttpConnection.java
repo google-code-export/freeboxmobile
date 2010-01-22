@@ -10,7 +10,6 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List; 
 
@@ -125,11 +124,13 @@ public class FBMHttpConnection implements Constants
 		return (login);
 	}
 
+	// TODO : Supprimer
 	public static String getId()
 	{
 		return (id);
 	}
 
+	// TODO : Supprimer
 	public static String getIdt()
 	{
 		return (idt);
@@ -193,10 +194,27 @@ public class FBMHttpConnection implements Constants
 		else
 			return false;
 	}
+	
+	private static int checkConnected(int defValue)
+	{
+		if ((id == null) || (idt == null))
+		{
+			Log.d(DEBUGTAG, "GET : ON A JAMAIS ETE AUTHENTIFIE - ON S'AUTHENTIFIE");
+			return (connectionFree(login, password, false));
+		}
+		else
+			return (defValue);
+	}
 
+	// TODO : Passera en private
 	public static int connectFree()
 	{
 		return FBMHttpConnection.connectionFree(login, password, false);
+	}
+
+	public static int connectFreeCheck(String l, String p)
+	{
+		return FBMHttpConnection.connectionFree(l, p, true);		
 	}
 
 	// En cas de résussite : http://adsl.free.fr/compte/console.pl?id=467389&idt=10eb38933107f10c
@@ -208,7 +226,7 @@ public class FBMHttpConnection implements Constants
 	 * @param check : true = juste vérifier les identifiants / false : se connecter (ie stocker id & idt)
 	 * @return CONNECT_CONNECTED || CONNECT_NOT_CONNECTED || CONNECT_LOGIN_FAILED
 	 */
-	public static int connectionFree(String l, String p, boolean check)
+	private static int connectionFree(String l, String p, boolean check)
 	{
 		String m_id = null;
 		String m_idt = null;
@@ -222,10 +240,7 @@ public class FBMHttpConnection implements Constants
     		listParameter.add("pass="+p);
 
     		URL myURL = new URL(serverUrl);
-			URLConnection ucon = myURL.openConnection();
-
-			if (!(ucon instanceof HttpURLConnection)) throw new IOException("Not an HTTPconnection.");
-    		h = (HttpURLConnection) ucon;
+    		h = (HttpURLConnection) myURL.openConnection();
     		h.setRequestMethod("POST");
     		h.setDoOutput(true);
     		OutputStreamWriter o = new OutputStreamWriter(h.getOutputStream());
@@ -290,45 +305,118 @@ public class FBMHttpConnection implements Constants
        	return connectionStatus;
     }
 
+	private static List<String> makeParams(List<String> p, boolean auth)
+	{
+		List<String> params = new ArrayList<String>();
+		if (auth)
+		{
+			params.add("id="+id);
+			params.add("idt="+idt);
+		}
+		if (p != null)
+		{
+			params.addAll(p);
+		}
+		return params;
+	}
+
 	/**
 	 * Donwload a file
 	 * @param file destination file
 	 * @param url source url
+	 * @param p parameters for GET (in p not null, url must not have parameters)
+	 * @param auth true if we must add id & idt paramters for authentification (if true, url must not have parameters)
 	 * @return 1 if success
 	 */
-	public static int getFile(File file, String url)
+	public static boolean getFile(File file, String url, List<String> p, boolean auth)
 	{
-		HttpURLConnection c;
+		HttpURLConnection c = null;
 		URL u;
 		FileOutputStream f;
 		int len;
         byte[] buffer = new byte[1024];
+        int connected;
+        List<String> params;
 
+		params = makeParams(p, auth);
+        connected = checkConnected(CONNECT_CONNECTED);
 		Log.d(DEBUGTAG,"->DOWNLOADING FILE : "+url);
-        try {
-			u = new URL(url);
-	        c = (HttpURLConnection) u.openConnection();
-	        c.setRequestMethod("GET");
-	        c.setDoOutput(true);
-	    	c.connect();
-	        f = new FileOutputStream(file);
-	        InputStream in = c.getInputStream();
-	
-			while ( (len = in.read(buffer)) > 0 )
-	        {
-	            f.write(buffer, 0, len);
-	        }
-	    	f.close();
-	    	in.close();
-	    	Log.d(DEBUGTAG,"->FILE DOWNLOADED");
-	    	return 1;
-		}
+        try
+        {
+			if (connected == CONNECT_CONNECTED)
+			{
+				Log.d(DEBUGTAG, "GETFILE : VERIF SI ON EST AUTHENTIFIE");
+				u = new URL(url+"?"+makeStringForPost(params));
+
+				Log.d(DEBUGTAG, "GETFILE : URL "+u);
+				c = (HttpURLConnection) u.openConnection();
+				c.setRequestMethod("GET");
+				c.setInstanceFollowRedirects(false);
+				c.setAllowUserInteraction(false);
+				c.setRequestProperty("User-Agent", USER_AGENT);
+				c.setDoInput(true);
+				Log.d(DEBUGTAG, "HEADERS : "+c.getHeaderFields());
+				Log.d(DEBUGTAG, "RESPONSE : "+c.getResponseCode()+" "+c.getResponseMessage());
+				if (c.getHeaderFields().get("location") != null)
+				{
+					connected = CONNECT_NOT_CONNECTED;
+				}
+			}
+			if (connected != CONNECT_CONNECTED)
+			{
+				if (c != null)
+				{
+					c.disconnect();
+					c = null;
+				}
+				Log.d(DEBUGTAG, "GETFILE : PAS AUTHENTIFIE SUR LA CONSOLE - SESSION EXPIREE");
+				connected = connectionFree(login, password, false);
+				if (connected == CONNECT_CONNECTED)
+				{
+					Log.d(DEBUGTAG, "GET :  REAUTHENTIFICATION OK");
+					params.clear();
+					params = makeParams(p, auth);
+					u = new URL(url+"?"+makeStringForPost(params));
+					Log.d(DEBUGTAG, "GETFILE : URL "+ u);
+					c = (HttpURLConnection) u.openConnection();
+					c.setRequestMethod("GET");
+					c.setAllowUserInteraction(false);
+					c.setUseCaches(false);
+					c.setInstanceFollowRedirects(false);
+					c.setRequestProperty("User-Agent", USER_AGENT);
+					c.setDoInput(true);
+					Log.d(DEBUGTAG, "HEADERS : "+c.getHeaderFields());
+					Log.d(DEBUGTAG, "RESPONSE : "+c.getResponseCode()+" "+c.getResponseMessage());
+				}
+			}
+			else
+			{
+				Log.d(DEBUGTAG, "GETFILE : AUTHENTIFICATION OK");
+				connected = CONNECT_CONNECTED;
+			}
+			if (connected == CONNECT_CONNECTED)
+			{
+				Log.d(DEBUGTAG, "GETFILE : LECTURE FICHIER");
+		    	c.connect();
+		        f = new FileOutputStream(file);
+		        InputStream in = c.getInputStream();
+		
+				while ( (len = in.read(buffer)) > 0 )
+		        {
+		            f.write(buffer, 0, len);
+		        }
+		    	f.close();
+		    	in.close();
+		    	Log.d(DEBUGTAG,"->FILE DOWNLOADED");
+		    	return true;
+			}
+        }
         catch (Exception e)
         {
         	Log.e(DEBUGTAG, "getFile : "+e);
 			e.printStackTrace();
-			return 0;
 		}
+        return false;
 	}
 
 	/**
@@ -337,6 +425,7 @@ public class FBMHttpConnection implements Constants
 	 * @retour true pour avec une valeur non nulle en retour (si on veut le contenu de la page ou pas)
 	 * @return HttpResponse response from the server
 	 */
+	// TODO : OBSOLETE, to remove
 	public static BufferedReader getRequest(String url, boolean retour)
 	{
 		Log.d(DEBUGTAG, "GET: " + url);
@@ -366,44 +455,29 @@ public class FBMHttpConnection implements Constants
 	 * getAuthRequest : perform a GET on an URL with p parameters
 	 * do not provide id or idt in URL
 	 * @param url : url to get
-	 * @param p : parameters for the GET request (null if none)
+	 * @param p : parameters for the GET request (null if none) (url must not have parameters in not null)
+	 * @param auth : true if you need id & idt added automatically for authentification on Free console (url must not have parameters in this case)
 	 * @param retour : set it to true of you want an InputStream with the page in return
 	 * @return InputStream HTML Page or null
 	 */
-	public static InputStreamReader getAuthRequest(String url, List<String> p, boolean retour)
+	public static InputStreamReader getAuthRequest(String url, List<String> p, boolean auth, boolean retour)
 	{
-		int c = CONNECT_CONNECTED;
+		int c;
 		List<String> params;
 		URL myURL;
-		URLConnection ucon;
 		HttpURLConnection h = null;
 
-		Log.d(DEBUGTAG, "GET: " + url);
-		
-		if ((id == null) || (idt == null))
-		{
-			Log.d(DEBUGTAG, "GET : ON A JAMAIS ETE AUTHENTIFIE - ON S'AUTHENTIFIE");
-			c = connectionFree(login, password, false);
-		}
-		params = new ArrayList<String>();
-		params.add("id="+id);
-		params.add("idt="+idt);		
-		if (p != null)
-		{
-			params.addAll(p);
-		}
+		c = checkConnected(CONNECT_CONNECTED);
 		try
 		{
 			if (c == CONNECT_CONNECTED)
 			{
 				Log.d(DEBUGTAG, "GET : VERIF SI ON EST AUTHENTIFIE");
+				params = makeParams(p, auth);
 				myURL = new URL(url+"?"+makeStringForPost(params));
 
 				Log.d(DEBUGTAG, "GET : URL "+myURL);
-				ucon = myURL.openConnection();
-				
-				if (!(ucon instanceof HttpURLConnection)) throw new IOException("Not an HTTPconnection.");
-				h = (HttpURLConnection) ucon;
+				h = (HttpURLConnection) myURL.openConnection();
 				if (retour)
 					h.setRequestMethod("GET");
 				else
@@ -431,18 +505,10 @@ public class FBMHttpConnection implements Constants
 				if (c == CONNECT_CONNECTED)
 				{
 					Log.d(DEBUGTAG, "GET :  REAUTHENTIFICATION OK");
-					params.clear();
-					params.add("id="+id);
-					params.add("idt="+idt);		
-					if (p != null)
-					{
-						params.addAll(p);
-					}
+					params = makeParams(p, auth);
 					myURL = new URL(url+"?"+makeStringForPost(params));
 					Log.d(DEBUGTAG, "GET : URL "+ myURL);
-					ucon = myURL.openConnection();
-					if (!(ucon instanceof HttpURLConnection)) throw new IOException("Not an HTTPconnection.");
-					h = (HttpURLConnection) ucon;
+					h = (HttpURLConnection) myURL.openConnection();
 					if (retour)
 						h.setRequestMethod("GET");
 					else
@@ -496,6 +562,88 @@ public class FBMHttpConnection implements Constants
         	Log.e(DEBUGTAG,"getRequest : "+e);
         	return (null);
         }
+	}
+
+	/**
+	* Sends a POST request
+	* @param  url : url to post
+	* @param  nameValuePairs : a list of NameValuePair with parameters to post
+	* @param auth : true pour ajouter automatiquement id & idt
+	* @retour true pour avec une valeur non nulle en retour (si on veut le contenu de la page ou pas)
+	* @return HttpResponse response from the server or null
+	* @throws SocketTimeoutException
+	*             , SocketException
+	*/
+	public static InputStreamReader postAuthRequest(String url, List<String> p, boolean auth, boolean retour)
+	{
+		HttpURLConnection h = null;
+		List<String> params;
+		int c;
+
+		Log.d(DEBUGTAG, "POST: " + url);
+		try
+		{
+			c = checkConnected(CONNECT_CONNECTED);
+			if (c == CONNECT_CONNECTED)
+			{
+				URL myURL = new URL(serverUrl);
+				h = (HttpURLConnection) myURL.openConnection();
+				h.setRequestMethod("POST");
+				h.setDoOutput(true);
+				if (retour)
+					h.setDoInput(true);
+				OutputStreamWriter o = new OutputStreamWriter(h.getOutputStream());
+				params = makeParams(p, auth);
+				o.write(makeStringForPost(params));
+				o.flush();
+				o.close();
+				if (h.getHeaderFields().get("location") != null)
+				{
+					c = CONNECT_NOT_CONNECTED;
+				}
+			}
+			if (c != CONNECT_CONNECTED)
+			{
+				if (h != null)
+				{
+					h.disconnect();
+					h = null;
+				}
+				Log.d(DEBUGTAG, "POST : PAS AUTHENTIFIE SUR LA CONSOLE - SESSION EXPIREE");
+				c = connectionFree(login, password, false);
+				if (c == CONNECT_CONNECTED)
+				{
+					Log.d(DEBUGTAG, "POST :  REAUTHENTIFICATION OK");
+					params = makeParams(p, auth);
+					URL myURL = new URL(serverUrl);
+					h = (HttpURLConnection) myURL.openConnection();
+					h.setRequestMethod("POST");
+					h.setDoOutput(true);
+					if (retour)
+						h.setDoInput(true);
+					OutputStreamWriter o = new OutputStreamWriter(h.getOutputStream());
+					params = makeParams(p, auth);
+					o.write(makeStringForPost(params));
+					o.flush();
+					o.close();
+				}
+			}
+			else
+			{
+				Log.d(DEBUGTAG, "POST : AUTHENTIFICATION OK");
+				c = CONNECT_CONNECTED;
+			}
+			if ((c == CONNECT_CONNECTED) && (retour))
+			{
+				Log.d(DEBUGTAG, "POST : LECTURE DONNEES");
+				return (new InputStreamReader(h.getInputStream(), "ISO8859_1"));
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return (null);
 	}
 
 	/**
