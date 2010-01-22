@@ -32,7 +32,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.util.Log;
-import android.widget.Toast;
  
 /**
 *
@@ -58,15 +57,6 @@ public class FBMHttpConnection implements Constants
 	
 	public static ProgressDialog httpProgressDialog = null;
 	public static AlertDialog errorAlert = null;
-		
-    /*
-    private void _getPrefs()
-    {
-    	login = getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_USER, null);
-		password = getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_PASSWORD, null);
-		Log.d(DEBUGTAG,"hc identifiant:"+login);
-    }
-     */
 
 	/**
 	 * Init les variables statiques
@@ -537,9 +527,6 @@ public class FBMHttpConnection implements Constants
 	* @param  nameValuePairs : a list of NameValuePair with parameters to post
 	* @param auth : true pour ajouter automatiquement id & idt
 	* @retour true pour avec une valeur non nulle en retour (si on veut le contenu de la page ou pas)
-	* @return HttpResponse response from the server or null
-	* @throws SocketTimeoutException
-	*             , SocketException
 	*/
 	public static InputStreamReader postAuthRequest(String url, List<NameValuePair> p, boolean auth, boolean retour)
 	{
@@ -552,10 +539,10 @@ public class FBMHttpConnection implements Constants
 			c = checkConnected(CONNECT_CONNECTED);
 			if (c == CONNECT_CONNECTED)
 			{
-				if (auth)
-					h = prepareConnection(serverUrl+"?"+makeStringForPost(null, auth), "POST");
-				else
-					h = prepareConnection(serverUrl, "POST");
+//				if (auth)
+					h = prepareConnection(serverUrl+(auth ? "?"+makeStringForPost(null, auth) : ""), "POST");
+//				else
+//					h = prepareConnection(serverUrl, "POST");
 				h.setDoOutput(true);
 				if (retour)
 					h.setDoInput(true);
@@ -580,7 +567,8 @@ public class FBMHttpConnection implements Constants
 				if (c == CONNECT_CONNECTED)
 				{
 					Log.d(DEBUGTAG, "POST :  REAUTHENTIFICATION OK");
-					h = prepareConnection(serverUrl, "POST");
+					h = prepareConnection(serverUrl+(auth ? "?"+makeStringForPost(null, auth) : ""), "POST");
+//					h = prepareConnection(serverUrl, "POST");
 					h.setDoOutput(true);
 					if (retour)
 						h.setDoInput(true);
