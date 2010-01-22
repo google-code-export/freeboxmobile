@@ -32,6 +32,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.util.Log;
+import android.widget.Toast;
  
 /**
 *
@@ -57,7 +58,6 @@ public class FBMHttpConnection implements Constants
 	
 	public static ProgressDialog httpProgressDialog = null;
 	public static AlertDialog errorAlert = null;
-	//private static Activity activity = null;
 		
     /*
     private void _getPrefs()
@@ -152,7 +152,7 @@ public class FBMHttpConnection implements Constants
 		}
 	}
 
-	public static void showError(Activity a)
+	public static AlertDialog showError(Activity a)
 	{
 		errorAlert = new AlertDialog.Builder(a).create();
 		errorAlert.setTitle("Connexion impossible");
@@ -172,6 +172,7 @@ public class FBMHttpConnection implements Constants
 			}
 		);
 		errorAlert.show();
+		return errorAlert;
 	}
 
     /**
@@ -201,14 +202,14 @@ public class FBMHttpConnection implements Constants
 	{
 		if ((id == null) || (idt == null))
 		{
-			Log.d(DEBUGTAG, "GET : ON A JAMAIS ETE AUTHENTIFIE - ON S'AUTHENTIFIE");
+			Log.d(DEBUGTAG, "checkConnected : ON A JAMAIS ETE AUTHENTIFIE - ON S'AUTHENTIFIE");
 			return (connectionFree(login, password, false));
 		}
 		else
 			return (defValue);
 	}
 
-	// TODO : Passera en private
+	// TODO : Passera en private ou supprimer ?
 	public static int connectFree()
 	{
 		return FBMHttpConnection.connectionFree(login, password, false);
@@ -219,8 +220,8 @@ public class FBMHttpConnection implements Constants
 		return FBMHttpConnection.connectionFree(l, p, true);		
 	}
 
-	// En cas de résussite : http://adsl.free.fr/compte/console.pl?id=467389&idt=10eb38933107f10c
-	// En cas d'erreur de login/pass : /login/login.pl?login=0909&error=1
+	// En cas de résussite : http://adsl.free.fr/compte/console.pl?id=417389&idt=10eb38933107f10c
+	// En cas d'erreur de login/pass : /login/login.pl?login=0909090909&error=1
 	/**
 	 * connectionFree : identifie sur le portail de Free avec le login/pass demandé
 	 * @param l : login (identifiant = numéro de téléphone Freebox)
@@ -241,29 +242,30 @@ public class FBMHttpConnection implements Constants
     		listParameter.add(new BasicNameValuePair("login",l));   		
     		listParameter.add(new BasicNameValuePair("pass",p));
 
-    		URL myURL = new URL(serverUrl);
-    		h = (HttpURLConnection) myURL.openConnection();
-    		h.setRequestMethod("POST");
+    		h = prepareConnection(serverUrl, "POST");
     		h.setDoOutput(true);
     		OutputStreamWriter o = new OutputStreamWriter(h.getOutputStream());
 			o.write(makeStringForPost(listParameter, false));
 			o.flush();
 			o.close();
-			String s = h.getHeaderFields().get("location").toString();
-    		String priv;
-			if (s.indexOf("idt=")>-1)
+			if (h.getHeaderFields().get("location") != null)
 			{
-				priv = s.substring(s.indexOf("idt=")+4);
-				if (priv.indexOf("]")>-1)
+				String s = h.getHeaderFields().get("location").toString();
+	    		String priv;
+				if (s.indexOf("idt=")>-1)
 				{
-					priv = priv.substring(0, priv.indexOf(']'));
+					priv = s.substring(s.indexOf("idt=")+4);
+					if (priv.indexOf("]")>-1)
+					{
+						priv = priv.substring(0, priv.indexOf(']'));
+					}
+					m_idt = priv;
+					Log.d(DEBUGTAG,"idt :"+priv);
+					priv = s.substring(s.indexOf("?id=")+4);
+					priv = priv.substring(0, priv.indexOf('&'));
+					m_id = priv;
+					Log.d(DEBUGTAG,"id :"+priv);
 				}
-				m_idt = priv;
-				Log.d(DEBUGTAG,"idt :"+priv);
-				priv = s.substring(s.indexOf("?id=")+4);
-				priv = priv.substring(0, priv.indexOf('&'));
-				m_id = priv;
-				Log.d(DEBUGTAG,"id :"+priv);
 			}
         }
 		catch (Exception e)
@@ -306,7 +308,6 @@ public class FBMHttpConnection implements Constants
        	}
        	return connectionStatus;
     }
-
 
 	private static HttpURLConnection prepareConnection(String url, String method) throws IOException
 	{
@@ -364,7 +365,7 @@ public class FBMHttpConnection implements Constants
 				connected = connectionFree(login, password, false);
 				if (connected == CONNECT_CONNECTED)
 				{
-					Log.d(DEBUGTAG, "GET :  REAUTHENTIFICATION OK");
+					Log.d(DEBUGTAG, "GETFILE : REAUTHENTIFICATION OK");
 					c = prepareConnection(url+"?"+makeStringForPost(p, auth), "GET");
 					c.setDoInput(true);
 					Log.d(DEBUGTAG, "HEADERS : "+c.getHeaderFields());
@@ -505,6 +506,7 @@ public class FBMHttpConnection implements Constants
 		return (null);
 	}
 
+	// TODO : Obsolete, to remove
 	public static InputStream getRequestIS(String url) {
 		Log.d(DEBUGTAG, "GET: " + url);
 
@@ -550,12 +552,15 @@ public class FBMHttpConnection implements Constants
 			c = checkConnected(CONNECT_CONNECTED);
 			if (c == CONNECT_CONNECTED)
 			{
-				h = prepareConnection(serverUrl, "POST");
+				if (auth)
+					h = prepareConnection(serverUrl+"?"+makeStringForPost(null, auth), "POST");
+				else
+					h = prepareConnection(serverUrl, "POST");
 				h.setDoOutput(true);
 				if (retour)
 					h.setDoInput(true);
 				OutputStreamWriter o = new OutputStreamWriter(h.getOutputStream());
-				o.write(makeStringForPost(p, auth));
+				o.write(makeStringForPost(p, false));
 				o.flush();
 				o.close();
 				if (h.getHeaderFields().get("location") != null)
@@ -580,7 +585,7 @@ public class FBMHttpConnection implements Constants
 					if (retour)
 						h.setDoInput(true);
 					OutputStreamWriter o = new OutputStreamWriter(h.getOutputStream());
-					o.write(makeStringForPost(p, auth));
+					o.write(makeStringForPost(p, false));
 					o.flush();
 					o.close();
 				}
@@ -612,6 +617,7 @@ public class FBMHttpConnection implements Constants
 	* @throws SocketTimeoutException
 	*             , SocketException
 	*/
+	// TODO : Obsolete, to remove
 	public static BufferedReader postRequest(String url, List<NameValuePair> nameValuePairs, boolean retour)
 	{
 		Log.d(DEBUGTAG, "POST: " + url);

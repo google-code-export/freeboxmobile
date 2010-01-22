@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
@@ -258,6 +259,16 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
         	myProgressDialog.dismiss();
         	myProgressDialog = null;
         }
+        if ((newmsg == -1) && (CUR_ACTIVITY != null))
+        {
+			CUR_ACTIVITY.runOnUiThread(new Runnable()
+			{
+				public void run()
+				{
+					myAlertDialog = FBMHttpConnection.showError(CUR_ACTIVITY);
+				}
+			});        	
+        }
         return newmsg;
 	}
 
@@ -374,106 +385,110 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 		int newmsg = -1;
 		try
 		{
-	    	BufferedReader br = new BufferedReader(new InputStreamReader(FBMHttpConnection.getAuthRequest(mevoUrl+mevoListPage, null, true, true), "ISO8859_1"));
-			String s = " ";
-			String status = null;
-			String from = null;
-			String when = null;
-			String length = null;
-			String priv = null;
-			String link = null;
-			String del = null;
-			String name = null;
-			int intstatus = -1;
-			int presence = 0;
-			Cursor curs;
-			File file;
-
-	        newmsg = 0;
-	        file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+FBMHttpConnection.getIdentifiant()+DIR_MEVO);
-	        file.mkdirs();
-	        mDbHelper.open();
-	        mDbHelper.initTempValues();
-			while ( (s=br.readLine())!= null && s.indexOf("Provenance") == -1)
+			InputStream is = FBMHttpConnection.getAuthRequest(mevoUrl+mevoListPage, null, true, true);
+			if (is != null)
 			{
-			}
-			if ((s != null) && (s.indexOf("Provenance")>-1))
-			{
-				while ((s=br.readLine())!= null && s.indexOf("</tbody>") == -1)
+		    	BufferedReader br = new BufferedReader(new InputStreamReader(is, "ISO8859_1"));
+				String s = " ";
+				String status = null;
+				String from = null;
+				String when = null;
+				String length = null;
+				String priv = null;
+				String link = null;
+				String del = null;
+				String name = null;
+				int intstatus = -1;
+				int presence = 0;
+				Cursor curs;
+				File file;
+	
+		        newmsg = 0;
+		        file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+FBMHttpConnection.getIdentifiant()+DIR_MEVO);
+		        file.mkdirs();
+		        mDbHelper.open();
+		        mDbHelper.initTempValues();
+				while ( (s=br.readLine())!= null && s.indexOf("Provenance") == -1)
 				{
-					if (s.indexOf("<td") != -1)
+				}
+				if ((s != null) && (s.indexOf("Provenance")>-1))
+				{
+					while ((s=br.readLine())!= null && s.indexOf("</tbody>") == -1)
 					{
-						if (s.indexOf("Pas de nouveau message") != -1)
-							Log.d(DEBUGTAG,"Pas de nouveau message !");
-						else
+						if (s.indexOf("<td") != -1)
 						{
-							Log.d(DEBUGTAG,"MESSAGE");
-							priv = s.substring(s.indexOf("<td"));
-							priv = priv.substring(priv.indexOf(">")+1);
-							status = priv.substring(0,priv.indexOf("<"));
-							Log.d(DEBUGTAG,"->STATUS:"+status);
-							priv = priv.substring(priv.indexOf("<td"));
-							priv = priv.substring(priv.indexOf(">")+1);
-							from = priv.substring(0,priv.indexOf("<"));
-							Log.d(DEBUGTAG,"->FROM:"+from);
-							priv = priv.substring(priv.indexOf("<td"));
-							priv = priv.substring(priv.indexOf(">")+1);
-							when = priv.substring(0,priv.indexOf("<"));
-							Log.d(DEBUGTAG,"->WHEN:"+when);
-							priv = priv.substring(priv.indexOf("<td"));
-							priv = priv.substring(priv.indexOf(">")+1);
-							length = priv.substring(0,priv.indexOf(" "));
-							Log.d(DEBUGTAG,"->LENGTH:"+length);
-							s = br.readLine();
-							priv = s.substring(s.indexOf("href=")+6);
-							link = priv.substring(0,priv.indexOf("'"));
-							Log.d(DEBUGTAG,"->LINK:"+link);
-							priv = priv.substring(priv.indexOf("href=")+6);
-							del = priv.substring(0,priv.indexOf("'"));
-							Log.d(DEBUGTAG,"->DEL:"+del);
-							name = link.substring(link.indexOf("fichier=")+8);
-							Log.d(DEBUGTAG,"->NAME:"+name);
-							if (status.compareTo(STR_NEWMESSAGE) == 0)
-							{
-								intstatus = 0;
-							}
+							if (s.indexOf("Pas de nouveau message") != -1)
+								Log.d(DEBUGTAG,"Pas de nouveau message !");
 							else
 							{
-								intstatus = 1;
+								Log.d(DEBUGTAG,"MESSAGE");
+								priv = s.substring(s.indexOf("<td"));
+								priv = priv.substring(priv.indexOf(">")+1);
+								status = priv.substring(0,priv.indexOf("<"));
+								Log.d(DEBUGTAG,"->STATUS:"+status);
+								priv = priv.substring(priv.indexOf("<td"));
+								priv = priv.substring(priv.indexOf(">")+1);
+								from = priv.substring(0,priv.indexOf("<"));
+								Log.d(DEBUGTAG,"->FROM:"+from);
+								priv = priv.substring(priv.indexOf("<td"));
+								priv = priv.substring(priv.indexOf(">")+1);
+								when = priv.substring(0,priv.indexOf("<"));
+								Log.d(DEBUGTAG,"->WHEN:"+when);
+								priv = priv.substring(priv.indexOf("<td"));
+								priv = priv.substring(priv.indexOf(">")+1);
+								length = priv.substring(0,priv.indexOf(" "));
+								Log.d(DEBUGTAG,"->LENGTH:"+length);
+								s = br.readLine();
+								priv = s.substring(s.indexOf("href=")+6);
+								link = priv.substring(0,priv.indexOf("'"));
+								Log.d(DEBUGTAG,"->LINK:"+link);
+								priv = priv.substring(priv.indexOf("href=")+6);
+								del = priv.substring(0,priv.indexOf("'"));
+								Log.d(DEBUGTAG,"->DEL:"+del);
+								name = link.substring(link.indexOf("fichier=")+8);
+								Log.d(DEBUGTAG,"->NAME:"+name);
+								if (status.compareTo(STR_NEWMESSAGE) == 0)
+								{
+									intstatus = 0;
+								}
+								else
+								{
+									intstatus = 1;
+								}
+		
+					    	    // Get the mevo file and store it on sdcard
+						        file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+FBMHttpConnection.getIdentifiant()+DIR_MEVO,name);
+						        if (file.exists() == false)
+						        {
+									FBMHttpConnection.getFile(file, mevoUrl+link, null, false);
+						        }
+						        presence = 4;
+						        curs = mDbHelper.fetchMessage(name);
+								if (curs.moveToFirst() == false)
+					        	{
+									// Store data in db if the message is not present in the db
+					        		Log.d(DEBUGTAG,"STORING IN DB");
+						        	mDbHelper.createMessage(intstatus, presence, from, when, link, del, Integer.parseInt(length), name);
+						        	newmsg++;
+					        	}
+					        	else
+					        	{
+									// Update data in db if the message is already present in the db
+					        		Log.d(DEBUGTAG,"UPDATING DB");
+					        		mDbHelper.updateMessage(presence, link, del, name);
+					        	}
+					        	curs.close();
 							}
-	
-				    	    // Get the mevo file and store it on sdcard
-					        file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+FBMHttpConnection.getIdentifiant()+DIR_MEVO,name);
-					        if (file.exists() == false)
-					        {
-								FBMHttpConnection.getFile(file, mevoUrl+link, null, false);
-					        }
-					        presence = 4;
-					        curs = mDbHelper.fetchMessage(name);
-							if (curs.moveToFirst() == false)
-				        	{
-								// Store data in db if the message is not present in the db
-				        		Log.d(DEBUGTAG,"STORING IN DB");
-					        	mDbHelper.createMessage(intstatus, presence, from, when, link, del, Integer.parseInt(length), name);
-					        	newmsg++;
-				        	}
-				        	else
-				        	{
-								// Update data in db if the message is already present in the db
-				        		Log.d(DEBUGTAG,"UPDATING DB");
-				        		mDbHelper.updateMessage(presence, link, del, name);
-				        	}
-				        	curs.close();
 						}
 					}
+					Log.d(DEBUGTAG,"fin extract");
 				}
-				Log.d(DEBUGTAG,"fin extract");
+				else
+				{
+					Log.d(DEBUGTAG,"pb extract");
+				}
+				mDbHelper.close();
 			}
-			else
-			{
-				Log.d(DEBUGTAG,"pb extract");
-			}
-			mDbHelper.close();
 		}
 
 		catch (Exception e)
