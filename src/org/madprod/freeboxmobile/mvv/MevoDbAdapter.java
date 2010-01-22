@@ -221,8 +221,10 @@ public class MevoDbAdapter implements MevoConstants
 	 * Update the message using the details provided. The message to be updated is
 	 * specified using its name
 	 * 
-	 * @param name
-	 *            name of message to update
+	 * @param presence presence value
+	 * @param link link of the message
+	 * @param del link to delete the message on server
+	 * @param name name of message to update
 	 * @return true if the message was successfully updated, false otherwise
 	 */
 	public boolean updateMessage(int presence, String link, String del, String name)

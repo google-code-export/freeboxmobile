@@ -5,7 +5,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.madprod.freeboxmobile.home.HomeActivity;
 import org.madprod.freeboxmobile.FBMHttpConnection;
@@ -38,6 +40,7 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 {
 	private static final String mevoUrl = "http://adsl.free.fr/admin/tel/";
 	private static final String mevoListPage = "notification_tel.pl";
+	private static final String mevoDelPage = "efface_message.pl";
 
 	private static int connectionStatus = CONNECT_NOT_CONNECTED;
 
@@ -234,69 +237,27 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 
 	public int checkUpdate()
 	{
-		int newmsg = -1;
+		int newmsg;
 
-		String login = getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_USER, null);
-		String password = getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_PASSWORD, null);
-		if ((login != null) && (password != null) && (connectionStatus != CONNECT_LOGIN_FAILED))// && (id == null)
+		if (CUR_ACTIVITY != null)
 		{
-			if (connectionStatus != CONNECT_CONNECTED)
-			{
-				if (CUR_ACTIVITY != null)
+			CUR_ACTIVITY.runOnUiThread(new Runnable()
 				{
-					CUR_ACTIVITY.runOnUiThread(new Runnable()
-						{
-							public void run()
-							{
-								myProgressDialog = ProgressDialog.show(CUR_ACTIVITY, "Mon Compte Free", "Connexion en cours ...", true,false);
-							}
-						});
-				}
-			}
-			else
-				myProgressDialog = null;
-			connectionStatus = FBMHttpConnection.connectFree();
-            if (myProgressDialog != null)
-            {
-            	myProgressDialog.dismiss();
-            	myProgressDialog = null;
-            }
-			if (connectionStatus == CONNECT_CONNECTED)
-	        {
-				if (CUR_ACTIVITY != null)
-				{
-					CUR_ACTIVITY.runOnUiThread(new Runnable()
-						{
-							public void run()
-							{
-								myProgressDialog = ProgressDialog.show(CUR_ACTIVITY, "Mon Compte Free", "Vérification des nouveaux messages ...", true,false);
-							}
-						});
-				}
-				else
-					myProgressDialog = null;
-	       		newmsg = getMessageList();
-	            if (myProgressDialog != null)
-	            {
-	            	myProgressDialog.dismiss();
-	            	myProgressDialog = null;
-	            }
-	        }
-			else
-			{
-				if (CUR_ACTIVITY != null)
-				{
-					CUR_ACTIVITY.runOnUiThread(new Runnable()
+					public void run()
 					{
-						public void run()
-						{
-			            	FBMHttpConnection.showError(CUR_ACTIVITY);
-						}
-					});
-				}
-			}
+						myProgressDialog = ProgressDialog.show(CUR_ACTIVITY, "Mon Compte Free", "Vérification des nouveaux messages ...", true,false);
+					}
+				});
 		}
-		return newmsg;
+		else
+			myProgressDialog = null;
+   		newmsg = getMessageList();
+        if (myProgressDialog != null)
+        {
+        	myProgressDialog.dismiss();
+        	myProgressDialog = null;
+        }
+        return newmsg;
 	}
 
 	/**
@@ -387,34 +348,18 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 	   					tel = tel.substring(0, tel.indexOf('&'));
 	   				}
 	    		}
-	   			final String partURL = "&tel="+tel+"&fichier="+curs.getString(curs.getColumnIndex(KEY_NAME));
 
-	   			// On lance la suppression sur le serveur dans un thread séparé car ca peut être long
-/*				Thread t = new Thread(new Runnable() {
-					@Override
-		            public void run()
-		        	{
-*/						// (re)connection afin d'avoir un id et idt frais :)
-			   			String url = mevoUrl+"efface_message.pl?id="+FBMHttpConnection.getId()+"&idt="+FBMHttpConnection.getIdt()+partURL;
-						Log.d(DEBUGTAG,"Deleting message"+url);
+	   			List<String> params = new ArrayList<String>();
+				params.add("tel="+tel);
+				params.add("fichier="+curs.getString(curs.getColumnIndex(KEY_NAME)));
 
-						// On reconstitue l'url parceque id & idt ont peut etre changé
-						if (FBMHttpConnection.connectFree() == CONNECT_CONNECTED)
-						{
-							Log.d(DEBUGTAG, "Deleting on server");
-							FBMHttpConnection.getRequest(url, false);
-						}
-						else
-							Log.d(DEBUGTAG, "NOT Deleting on server");
-//		        	}
-//		        });
-//		        t.setName("FBM Delete Message");
-//		        t.start();
+				Log.d(DEBUGTAG, "Deleting on server "+params);
+				FBMHttpConnection.getAuthRequest(mevoUrl+mevoDelPage, params, false);
 			}
 		}
 		// Puis on marque le message comme effacé dans la base
 		// (on l'efface pas à proprement dit de la base, ca pourrait servir pour un historique)
-		mDbHelper.updateMessage(0, "", "", name);
+		Log.d(DEBUGTAG, "Updating DB : "+mDbHelper.updateMessage(0, "", "", name));
 
 		if (UI_UPDATE_LISTENER != null)
 			UI_UPDATE_LISTENER.updateUI();
@@ -426,13 +371,10 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 	public static int getMessageList()
 	{
 
-		String fullurl = mevoUrl + mevoListPage + "?id=" + FBMHttpConnection.getId() + "&idt=" + FBMHttpConnection.getIdt();
-		Log.d(DEBUGTAG, "GET: " + fullurl);
-
 		int newmsg = -1;
 		try
 		{
-	    	BufferedReader br = FBMHttpConnection.getRequest(fullurl, true);
+	    	BufferedReader br = new BufferedReader(FBMHttpConnection.getAuthRequest(mevoUrl+mevoListPage, null, true));
 			String s = " ";
 			String status = null;
 			String from = null;
@@ -446,7 +388,7 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 			int presence = 0;
 			Cursor curs;
 			File file;
-			
+
 	        newmsg = 0;
 	        file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+FBMHttpConnection.getIdentifiant()+DIR_MEVO);
 	        file.mkdirs();
