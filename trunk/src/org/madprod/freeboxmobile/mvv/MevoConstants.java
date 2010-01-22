@@ -65,5 +65,4 @@ public interface MevoConstants extends Constants
 	public static final int PLAY_STATUS_PAUSE = 2;
 	
 	public final int NOTIF_MEVO = 1;
-	
 }

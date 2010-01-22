@@ -56,7 +56,7 @@ public class FBMHttpConnection implements Constants
 	
 	public static ProgressDialog httpProgressDialog = null;
 	public static AlertDialog errorAlert = null;
-	private static Activity activity = null;
+	//private static Activity activity = null;
 		
     /*
     private void _getPrefs()
@@ -192,7 +192,7 @@ public class FBMHttpConnection implements Constants
 		else
 			return false;
 	}
-	
+
 	public static int connectFree()
 	{
 		return FBMHttpConnection.connectionFree(login, password, false);
@@ -211,7 +211,8 @@ public class FBMHttpConnection implements Constants
 	{
 		String m_id = null;
 		String m_idt = null;
-
+		HttpURLConnection h = null;
+		
 		Log.d(DEBUGTAG,"Connect Free start ");
         try
         {
@@ -223,7 +224,7 @@ public class FBMHttpConnection implements Constants
 			URLConnection ucon = myURL.openConnection();
 
 			if (!(ucon instanceof HttpURLConnection)) throw new IOException("Not an HTTPconnection.");
-    		HttpURLConnection h = (HttpURLConnection) ucon;
+    		h = (HttpURLConnection) ucon;
     		h.setRequestMethod("POST");
     		h.setDoOutput(true);
     		OutputStreamWriter o = new OutputStreamWriter(h.getOutputStream());
@@ -258,6 +259,13 @@ public class FBMHttpConnection implements Constants
 	        	idt = null;
         	}
         	return connectionStatus;
+		}
+		finally
+		{
+			if (h != null)
+			{
+				h.disconnect();
+			}
 		}
        	if (m_id != null && m_idt != null)
        	{
@@ -351,6 +359,118 @@ public class FBMHttpConnection implements Constants
         	Log.e(DEBUGTAG,"getRequest : "+e);
         	return (null);
         }
+	}
+
+	/**
+	 * getAuthRequest : perform a GET on an URL with p parameters
+	 * do not provide id or idt in URL
+	 * @param url : url to get
+	 * @param p : parameters for the GET request (null if none)
+	 * @param retour : set it to true of you want an InputStream with the page in return
+	 * @return InputStream HTML Page or null
+	 */
+	public static InputStreamReader getAuthRequest(String url, List<String> p, boolean retour)
+	{
+		int c = CONNECT_CONNECTED;
+		List<String> params;
+		URL myURL;
+		URLConnection ucon;
+		HttpURLConnection h = null;
+
+		Log.d(DEBUGTAG, "GET: " + url);
+		
+		if ((id == null) || (idt == null))
+		{
+			Log.d(DEBUGTAG, "GET : ON A JAMAIS ETE AUTHENTIFIE - ON S'AUTHENTIFIE");
+			c = connectionFree(login, password, false);
+		}
+		params = new ArrayList<String>();
+		params.add("id="+id);
+		params.add("idt="+idt);		
+		if (p != null)
+		{
+			params.addAll(p);
+		}
+		try
+		{
+			if (c == CONNECT_CONNECTED)
+			{
+				Log.d(DEBUGTAG, "GET : VERIF SI ON EST AUTHENTIFIE");
+				myURL = new URL(url+"?"+makeStringForPost(params));
+
+				Log.d(DEBUGTAG, "GET : URL "+myURL);
+				ucon = myURL.openConnection();
+				
+				if (!(ucon instanceof HttpURLConnection)) throw new IOException("Not an HTTPconnection.");
+				h = (HttpURLConnection) ucon;
+				if (retour)
+					h.setRequestMethod("GET");
+				else
+					h.setRequestMethod("HEAD");
+				h.setInstanceFollowRedirects(false);
+				h.setAllowUserInteraction(false);
+				h.setRequestProperty("User-Agent", USER_AGENT);
+				h.setDoInput(true);
+				Log.d(DEBUGTAG, "HEADERS : "+h.getHeaderFields());
+				Log.d(DEBUGTAG, "RESPONSE : "+h.getResponseCode()+" "+h.getResponseMessage());
+				if (h.getHeaderFields().get("location") != null)
+				{
+					c = CONNECT_NOT_CONNECTED;
+				}
+			}
+			if (c != CONNECT_CONNECTED)
+			{
+				if (h != null)
+				{
+					h.disconnect();
+					h = null;
+				}
+				Log.d(DEBUGTAG, "GET : PAS AUTHENTIFIE SUR LA CONSOLE - SESSION EXPIREE");
+				c = connectionFree(login, password, false);
+				if (c == CONNECT_CONNECTED)
+				{
+					Log.d(DEBUGTAG, "GET :  REAUTHENTIFICATION OK");
+					params.clear();
+					params.add("id="+id);
+					params.add("idt="+idt);		
+					if (p != null)
+					{
+						params.addAll(p);
+					}
+					myURL = new URL(url+"?"+makeStringForPost(params));
+					Log.d(DEBUGTAG, "GET : URL "+ myURL);
+					ucon = myURL.openConnection();
+					if (!(ucon instanceof HttpURLConnection)) throw new IOException("Not an HTTPconnection.");
+					h = (HttpURLConnection) ucon;
+					if (retour)
+						h.setRequestMethod("GET");
+					else
+						h.setRequestMethod("HEAD");
+					h.setAllowUserInteraction(false);
+					h.setUseCaches(false);
+					h.setInstanceFollowRedirects(false);
+					h.setRequestProperty("User-Agent", USER_AGENT);
+					h.setDoInput(true);
+					Log.d(DEBUGTAG, "HEADERS : "+h.getHeaderFields());
+					Log.d(DEBUGTAG, "RESPONSE : "+h.getResponseCode()+" "+h.getResponseMessage());
+				}
+			}
+			else
+			{
+				Log.d(DEBUGTAG, "GET : AUTHENTIFICATION OK");
+				c = CONNECT_CONNECTED;
+			}
+			if ((c == CONNECT_CONNECTED) && (retour == true))
+			{
+				Log.d(DEBUGTAG, "GET : LECTURE DONNEES");
+				return (new InputStreamReader(h.getInputStream(), "ISO8859_1"));
+			}
+		}
+		catch (Exception e)
+		{
+			Log.e(DEBUGTAG, "getAuthRequest "+e);
+		}
+		return (null);
 	}
 
 	public static InputStream getRequestIS(String url) {
