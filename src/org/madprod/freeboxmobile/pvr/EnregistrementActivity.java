@@ -1,7 +1,10 @@
 package org.madprod.freeboxmobile.pvr;
 
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.http.NameValuePair;
@@ -12,7 +15,9 @@ import org.madprod.freeboxmobile.guide.Guide;
 import org.madprod.freeboxmobile.guide.Guide.Chaines.Chaines_Chaine;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -136,12 +141,24 @@ public class EnregistrementActivity extends Activity {
 		    		}
 		    		
 		    		public void onClick(View v) {
-		    			new DeleteEnregistrementTask().execute((Void[])null);
+		    			AlertDialog.Builder builder = new AlertDialog.Builder(enregistrementActivity);
+		    			builder.setMessage(getString(R.string.pvrConfirmationSuppression))
+		    			       .setCancelable(false)
+		    			       .setPositiveButton(R.string.oui, new DialogInterface.OnClickListener() {
+		    			           public void onClick(DialogInterface dialog, int id) {
+		    			    			new DeleteEnregistrementTask().execute((Void[])null);
+		    			           }
+		    			       })
+		    			       .setNegativeButton(R.string.non, new DialogInterface.OnClickListener() {
+		    			           public void onClick(DialogInterface dialog, int id) {
+		    			                dialog.cancel();
+		    			           }
+		    			       });
+		    			AlertDialog alert = builder.create();
+		    			alert.show();
 		    		}
 		    		
 		    		private void doSuppression() {
-		    			// TODO: Demande confirmation
-		    			
 		                // Vars
 	            		List<NameValuePair> postVars = new ArrayList<NameValuePair>();
 	            		String ide, chaine_id, service_id, date, h, min, dur, name, where_id, repeat_a;
@@ -188,9 +205,8 @@ public class EnregistrementActivity extends Activity {
 	            		postVars.add(new BasicNameValuePair("supp", "Supprimer"));
 	            		
 	            		// Requete HTTP
-	            		String url = "http://adsl.free.fr/admin/magneto.pl?id=";
-	            		url += FBMHttpConnection.getId()+"&idt="+FBMHttpConnection.getIdt();
-	            		FBMHttpConnection.postRequest(url, postVars, true);
+	            		String url = "http://adsl.free.fr/admin/magneto.pl";
+	            		FBMHttpConnection.postAuthRequest(url, postVars, true, false);
 		    		}
 		    	});
             }
@@ -210,17 +226,27 @@ public class EnregistrementActivity extends Activity {
         }
     	
         protected Bitmap doInBackground(Integer... arg0) {
-    		String url = "http://adsl.free.fr/admin/magneto.pl?id=";
-    		url += "id="+FBMHttpConnection.getId();
-    		url += "&idt="+FBMHttpConnection.getIdt();
-    		url += "&ajax=get_chaines";
-    		url += "&date=2010-01-14+19%3A00%3A00";//3A = :
-    		String json = FBMHttpConnection.getPage(FBMHttpConnection.getRequest(url, true));
+    		String url = "http://adsl.free.fr/admin/magneto.pl";
+    		List<NameValuePair> param = new ArrayList<NameValuePair>();
+    		
+    		//"date=2010-01-14+19%3A00%3A00"
+    		Date d = new Date();
+    		String date = PvrUtils.make02d(d.getYear())+"-";
+    		date += PvrUtils.make02d(d.getMonth())+"-";
+    		date += PvrUtils.make02d(d.getDay())+"+";
+    		date += PvrUtils.make02d(d.getHours())+"%3A";//3A == urlencode(":")
+    		date += PvrUtils.make02d(d.getMinutes())+"%3A";
+    		date += PvrUtils.make02d(d.getSeconds());
+    		
+    		param.add(new BasicNameValuePair("ajax","get_chaines"));
+    		param.add(new BasicNameValuePair("date", date));
+    		
+    		String json = PvrUtils.getPage(FBMHttpConnection.getAuthRequest(url, param, true, true));
     		Guide guideTv = new Guide(json, false, true, false); 
     		url = "http://adsl.free.fr/im/chaines/";
     		Chaines_Chaine chaine = guideTv.getChaine(arg0[0]);
     		url += chaine.getImage();
-    		InputStream is = FBMHttpConnection.getRequestIS(url);
+    		InputStream is = FBMHttpConnection.getAuthRequest(url, null, false, false);
     		return BitmapFactory.decodeStream(is);
         }
         

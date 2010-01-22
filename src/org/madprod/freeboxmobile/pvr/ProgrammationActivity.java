@@ -19,6 +19,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -41,12 +42,14 @@ public class ProgrammationActivity extends Activity {
 	Activity progAct = null;
 	final String TAG = "FreeboxMobileProg";
 	private boolean nomEmissionSaisi = false;
+	private boolean[] joursChoisis = { false, false, false, false, false, false, false };
 	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pvr_programmation);
+        resetJours();
         
         // Mode 24h
         ((TimePicker) findViewById(R.id.pvrPrgHeure)).setIs24HourView(true);
@@ -80,7 +83,48 @@ public class ProgrammationActivity extends Activity {
 			}
         });
         
+        // Récurrence
+        ((Button) findViewById(R.id.pvrPrgBtnRecur)).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				final CharSequence[] jours = { getString(R.string.pvrLundi), getString(R.string.pvrMardi),
+						getString(R.string.pvrMercredi), getString(R.string.pvrJeudi), getString(R.string.pvrVendredi),
+						getString(R.string.pvrSamedi), getString(R.string.pvrDimanche) };
+
+				AlertDialog.Builder builder = new AlertDialog.Builder(progAct);
+				AlertDialog alert = builder.setTitle(getString(R.string.pvrChoixJours))
+					.setMultiChoiceItems(jours,
+							null,
+							new DialogInterface.OnMultiChoiceClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog, int which, boolean what) {
+									joursChoisis[which] = what;						
+								}
+							})
+					.setPositiveButton(getString(R.string.OK),
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog, int whichButton) {
+								}
+							}) 
+		            .setNegativeButton(getString(R.string.Annuler),
+		            		new DialogInterface.OnClickListener() { 
+		            			public void onClick(DialogInterface dialog, int whichButton) {
+		            				resetJours();
+		            				dialog.cancel();
+		            			} 
+		            		})
+		            .create();
+				alert.show();
+			}
+        });
+        
         new TelechargerChainesDisquesTask().execute((Void[])null);
+    }
+    
+    private void resetJours() {
+    	for (int i = 0; i < 7; i++) {
+    		joursChoisis[i] = false;
+    	}
     }
     
 	/**
@@ -121,11 +165,11 @@ public class ProgrammationActivity extends Activity {
      */
     private boolean telechargerEtParser() {        
         // Récupérer chaines et disques durs        
-        String url = "http://adsl.free.fr/admin/magneto.pl?id=";
-    	url += FBMHttpConnection.getId()+"&idt="+FBMHttpConnection.getIdt();
-    	url += "&detail=1";
+        String url = "http://adsl.free.fr/admin/magneto.pl";
+        List<NameValuePair> param = new ArrayList<NameValuePair>();
+        param.add(new BasicNameValuePair("detail","1"));
     	
-        String resultat = FBMHttpConnection.getPage(FBMHttpConnection.getRequest(url, true));
+        String resultat = PvrUtils.getPage(FBMHttpConnection.getAuthRequest(url, param, true, true));
         int posChaines = resultat.indexOf("var serv_a = [{");
         int posDisques = resultat.indexOf("var disk_a = [{");
         
@@ -190,7 +234,7 @@ public class ProgrammationActivity extends Activity {
 	                }
                     else {
 						setResult(EnregistrementsActivity.RESULT_PROG_OK);
-                    	Toast.makeText(progAct, "Modifications enregistrées!", Toast.LENGTH_SHORT);
+                    	Toast.makeText(progAct, "Modifications enregistrées!", Toast.LENGTH_SHORT).show();
                     	
                     	finish();
                     }
@@ -269,6 +313,14 @@ public class ProgrammationActivity extends Activity {
         		postVars.add(new BasicNameValuePair("emission", emission));
         		postVars.add(new BasicNameValuePair("where_id", where_id.toString()));
         		
+        		// Récurrence
+            	for (int i = 0; i < 7; i++) {
+            		if (joursChoisis[i]) {
+            			postVars.add(new BasicNameValuePair("period", ""+(i+1)));
+            		}
+            	}
+            	Log.d("prout", postVars.toString());
+        		
             	// Post vars pour modification:
             	//chaine=12&service=0&date=10%2F01%2F2010&heure=23&minutes=09
             	//&duree=185&emission=pouet&where_id=0&ide=12&submit=MODIFIER+L%27ENREGISTREMENT
@@ -284,11 +336,10 @@ public class ProgrammationActivity extends Activity {
             	}
 
         		// Requete HTTP
-        		String url = "http://adsl.free.fr/admin/magneto.pl?id=";
-        		url += FBMHttpConnection.getId()+"&idt="+FBMHttpConnection.getIdt();
-        		String resultat = FBMHttpConnection.getPage(FBMHttpConnection.postRequest(url, postVars, true));
-        		
-        		int erreurPos = resultat.indexOf("Des erreurs sont survenues :");
+        		String url = "http://adsl.free.fr/admin/magneto.pl";
+        		String resultat = PvrUtils.getPage(FBMHttpConnection.postAuthRequest(url, postVars, true, true));
+
+        		int erreurPos = resultat.indexOf("erreurs");
         		if (erreurPos > 0) {
         			int debutErr, finErr;
         			String msgErreur;

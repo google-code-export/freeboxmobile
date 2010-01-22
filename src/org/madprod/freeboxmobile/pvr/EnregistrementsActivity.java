@@ -1,5 +1,7 @@
 package org.madprod.freeboxmobile.pvr;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +23,8 @@ import android.widget.ExpandableListView;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.Toast;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
 
@@ -61,7 +65,7 @@ public class EnregistrementsActivity extends ExpandableListActivity {
         enrAct = this;
 
         setTheme(android.R.style.Theme_Light);
-        setTitle(getString(R.string.app_name) + " - Magnétoscope numérique" + "("+FBMHttpConnection.getTitle()+")");
+        setTitle(getString(R.string.app_name) + " - Magnétoscope numérique" + "("+FBMHttpConnection.getIdentifiant()+")");
         
         ((Button) findViewById(R.id.pvrBtnProg)).setOnClickListener(new OnClickListener() {
 			@Override
@@ -92,7 +96,7 @@ public class EnregistrementsActivity extends ExpandableListActivity {
     }
     
     public void updaterEnregistrements(boolean updateFromConsole) {
-    	new UpdateEnregistrementsTask().execute(updateFromConsole == true ? Boolean.TRUE : Boolean.FALSE);
+    	new UpdateEnregistrementsTask(updateFromConsole).execute();
     }
 
 	/**
@@ -100,22 +104,24 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 	 * @author bduffez
 	 *
 	 */
-    class UpdateEnregistrementsTask extends AsyncTask<Boolean, Integer, Boolean> {
+    class UpdateEnregistrementsTask extends AsyncTask<Void, Integer, Boolean> {
     	ProgressDialog progressDialog = null;
+    	Boolean updateFromConsole = false;
+    	
+    	UpdateEnregistrementsTask(boolean ufc) {
+    		updateFromConsole = ufc;
+    	}
 
         protected void onPreExecute() {
-        	progressDialog = ProgressDialog.show(enrAct, "Enregistrements", "Mise à jour...", true, false);
+        	if (updateFromConsole) {
+            	progressDialog = ProgressDialog.show(enrAct, "Enregistrements", "Mise à jour...", true, false);
+        	}
         }
     	
-        protected Boolean doInBackground(Boolean... arg0) {
+        protected Boolean doInBackground(Void... arg0) {        	
         	listeEnregistrements.vider();
-        	
-        	// On se log sur l'if free
-            if (FBMHttpConnection.connectFree() != FBMHttpConnection.CONNECT_CONNECTED) {
-            	return false;
-            }
             
-        	if (arg0[0] == Boolean.TRUE) {
+        	if (updateFromConsole) {
         		return doUpdateEnregistrements();
         	}
         	
@@ -133,7 +139,10 @@ public class EnregistrementsActivity extends ExpandableListActivity {
             			+ "dans la configuration ?");
         	}
         	
-            progressDialog.dismiss();
+        	if (updateFromConsole) {
+        		progressDialog.dismiss();
+        	}
+        	
             progressDialog = null;
         }
     }
@@ -148,11 +157,10 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 		
         // Recup if tv
         String contenu = null;
-    	url  = "http://adsl.free.fr/admin/magneto.pl?id=";
-    	url += FBMHttpConnection.getId()+"&idt="+FBMHttpConnection.getIdt();
-    	url += "&sommaire=television";
-
-    	contenu = FBMHttpConnection.getPage(FBMHttpConnection.getRequest(url, true));
+    	url = "http://adsl.free.fr/admin/magneto.pl";
+    	List<NameValuePair> param = new ArrayList<NameValuePair>();
+    	param.add(new BasicNameValuePair("sommaire","television"));
+    	contenu = PvrUtils.getPage(FBMHttpConnection.getAuthRequest(url, param, true, true));
     	if (contenu == null) {
     		return false;
     	}
