@@ -323,7 +323,7 @@ public class FBMHttpConnection implements Constants
 	private static HttpURLConnection prepareConnection(String url, String method) throws IOException
 	{
 		URL u = new URL(url);
-		Log.d(DEBUGTAG, "GETFILE : URL "+ u);
+		Log.d(DEBUGTAG, "PREPARECONNECTION : URL "+ u);
 		HttpURLConnection c = (HttpURLConnection) u.openConnection();
 		c.setRequestMethod(method);
 		c.setAllowUserInteraction(false);
