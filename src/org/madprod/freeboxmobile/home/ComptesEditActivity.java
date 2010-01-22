@@ -235,7 +235,7 @@ public class ComptesEditActivity extends Activity implements Constants
     	@Override
     	protected Payload doInBackground(Payload... payload)
     	{
-    		payload[0].result = FBMHttpConnection.connectionFree(payload[0].login, payload[0].password, true);
+    		payload[0].result = FBMHttpConnection.connectFreeCheck(payload[0].login, payload[0].password);
     		return payload[0];
     	}
 
