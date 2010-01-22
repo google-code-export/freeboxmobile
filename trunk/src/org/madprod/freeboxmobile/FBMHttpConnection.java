@@ -320,6 +320,19 @@ public class FBMHttpConnection implements Constants
 		return params;
 	}
 
+	private static HttpURLConnection prepareConnection(String url, String method) throws IOException
+	{
+		URL u = new URL(url);
+		Log.d(DEBUGTAG, "GETFILE : URL "+ u);
+		HttpURLConnection c = (HttpURLConnection) u.openConnection();
+		c.setRequestMethod(method);
+		c.setAllowUserInteraction(false);
+		c.setUseCaches(false);
+		c.setInstanceFollowRedirects(false);
+		c.setRequestProperty("User-Agent", USER_AGENT);
+		return (c);
+	}
+	
 	/**
 	 * Donwload a file
 	 * @param file destination file
@@ -331,7 +344,6 @@ public class FBMHttpConnection implements Constants
 	public static boolean getFile(File file, String url, List<String> p, boolean auth)
 	{
 		HttpURLConnection c = null;
-		URL u;
 		FileOutputStream f;
 		int len;
         byte[] buffer = new byte[1024];
@@ -346,14 +358,7 @@ public class FBMHttpConnection implements Constants
 			if (connected == CONNECT_CONNECTED)
 			{
 				Log.d(DEBUGTAG, "GETFILE : VERIF SI ON EST AUTHENTIFIE");
-				u = new URL(url+"?"+makeStringForPost(params));
-
-				Log.d(DEBUGTAG, "GETFILE : URL "+u);
-				c = (HttpURLConnection) u.openConnection();
-				c.setRequestMethod("GET");
-				c.setInstanceFollowRedirects(false);
-				c.setAllowUserInteraction(false);
-				c.setRequestProperty("User-Agent", USER_AGENT);
+				c = prepareConnection(url+"?"+makeStringForPost(params), "GET");
 				c.setDoInput(true);
 				Log.d(DEBUGTAG, "HEADERS : "+c.getHeaderFields());
 				Log.d(DEBUGTAG, "RESPONSE : "+c.getResponseCode()+" "+c.getResponseMessage());
@@ -376,14 +381,7 @@ public class FBMHttpConnection implements Constants
 					Log.d(DEBUGTAG, "GET :  REAUTHENTIFICATION OK");
 					params.clear();
 					params = makeParams(p, auth);
-					u = new URL(url+"?"+makeStringForPost(params));
-					Log.d(DEBUGTAG, "GETFILE : URL "+ u);
-					c = (HttpURLConnection) u.openConnection();
-					c.setRequestMethod("GET");
-					c.setAllowUserInteraction(false);
-					c.setUseCaches(false);
-					c.setInstanceFollowRedirects(false);
-					c.setRequestProperty("User-Agent", USER_AGENT);
+					c = prepareConnection(url+"?"+makeStringForPost(params), "GET");
 					c.setDoInput(true);
 					Log.d(DEBUGTAG, "HEADERS : "+c.getHeaderFields());
 					Log.d(DEBUGTAG, "RESPONSE : "+c.getResponseCode()+" "+c.getResponseMessage());
@@ -400,7 +398,7 @@ public class FBMHttpConnection implements Constants
 		    	c.connect();
 		        f = new FileOutputStream(file);
 		        InputStream in = c.getInputStream();
-		
+
 				while ( (len = in.read(buffer)) > 0 )
 		        {
 		            f.write(buffer, 0, len);
@@ -460,11 +458,10 @@ public class FBMHttpConnection implements Constants
 	 * @param retour : set it to true of you want an InputStream with the page in return
 	 * @return InputStream HTML Page or null
 	 */
-	public static InputStreamReader getAuthRequest(String url, List<String> p, boolean auth, boolean retour)
+	public static InputStream getAuthRequest(String url, List<String> p, boolean auth, boolean retour)
 	{
 		int c;
 		List<String> params;
-		URL myURL;
 		HttpURLConnection h = null;
 
 		c = checkConnected(CONNECT_CONNECTED);
@@ -474,17 +471,11 @@ public class FBMHttpConnection implements Constants
 			{
 				Log.d(DEBUGTAG, "GET : VERIF SI ON EST AUTHENTIFIE");
 				params = makeParams(p, auth);
-				myURL = new URL(url+"?"+makeStringForPost(params));
-
-				Log.d(DEBUGTAG, "GET : URL "+myURL);
-				h = (HttpURLConnection) myURL.openConnection();
 				if (retour)
-					h.setRequestMethod("GET");
+					h = prepareConnection(url+"?"+makeStringForPost(params), "GET");
 				else
-					h.setRequestMethod("HEAD");
-				h.setInstanceFollowRedirects(false);
-				h.setAllowUserInteraction(false);
-				h.setRequestProperty("User-Agent", USER_AGENT);
+					h = prepareConnection(url+"?"+makeStringForPost(params), "HEAD");
+
 				h.setDoInput(true);
 				Log.d(DEBUGTAG, "HEADERS : "+h.getHeaderFields());
 				Log.d(DEBUGTAG, "RESPONSE : "+h.getResponseCode()+" "+h.getResponseMessage());
@@ -506,17 +497,10 @@ public class FBMHttpConnection implements Constants
 				{
 					Log.d(DEBUGTAG, "GET :  REAUTHENTIFICATION OK");
 					params = makeParams(p, auth);
-					myURL = new URL(url+"?"+makeStringForPost(params));
-					Log.d(DEBUGTAG, "GET : URL "+ myURL);
-					h = (HttpURLConnection) myURL.openConnection();
 					if (retour)
-						h.setRequestMethod("GET");
+						h = prepareConnection(url+"?"+makeStringForPost(params), "GET");
 					else
-						h.setRequestMethod("HEAD");
-					h.setAllowUserInteraction(false);
-					h.setUseCaches(false);
-					h.setInstanceFollowRedirects(false);
-					h.setRequestProperty("User-Agent", USER_AGENT);
+						h = prepareConnection(url+"?"+makeStringForPost(params), "HEAD");
 					h.setDoInput(true);
 					Log.d(DEBUGTAG, "HEADERS : "+h.getHeaderFields());
 					Log.d(DEBUGTAG, "RESPONSE : "+h.getResponseCode()+" "+h.getResponseMessage());
@@ -530,7 +514,7 @@ public class FBMHttpConnection implements Constants
 			if ((c == CONNECT_CONNECTED) && (retour == true))
 			{
 				Log.d(DEBUGTAG, "GET : LECTURE DONNEES");
-				return (new InputStreamReader(h.getInputStream(), "ISO8859_1"));
+				return (h.getInputStream());
 			}
 		}
 		catch (Exception e)
@@ -586,9 +570,7 @@ public class FBMHttpConnection implements Constants
 			c = checkConnected(CONNECT_CONNECTED);
 			if (c == CONNECT_CONNECTED)
 			{
-				URL myURL = new URL(serverUrl);
-				h = (HttpURLConnection) myURL.openConnection();
-				h.setRequestMethod("POST");
+				h = prepareConnection(serverUrl, "POST");
 				h.setDoOutput(true);
 				if (retour)
 					h.setDoInput(true);
@@ -615,9 +597,7 @@ public class FBMHttpConnection implements Constants
 				{
 					Log.d(DEBUGTAG, "POST :  REAUTHENTIFICATION OK");
 					params = makeParams(p, auth);
-					URL myURL = new URL(serverUrl);
-					h = (HttpURLConnection) myURL.openConnection();
-					h.setRequestMethod("POST");
+					h = prepareConnection(serverUrl, "POST");
 					h.setDoOutput(true);
 					if (retour)
 						h.setDoInput(true);
