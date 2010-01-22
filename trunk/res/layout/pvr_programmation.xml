@@ -24,6 +24,7 @@
 		<EditText android:text="@string/pvrNomDefaut" android:id="@+id/pvrPrgNom" android:layout_width="fill_parent" android:layout_height="wrap_content"></EditText>
 		<TextView android:text="@string/pvrTxtDisque" android:id="@+id/TxtDisque" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
 		<Spinner android:id="@+id/pvrPrgDisque" android:layout_width="fill_parent" android:layout_height="wrap_content"></Spinner>
+		<Button android:text="@string/pvrTxtPrgBtnRecur" android:id="@+id/pvrPrgBtnRecur" android:layout_width="wrap_content" android:layout_height="wrap_content" android:clickable="true"></Button> 
 		<Button android:text="@string/pvrTxtPrgBtnOK" android:id="@+id/pvrPrgBtnOK" android:layout_width="fill_parent" android:layout_height="wrap_content" android:clickable="true"></Button>
 	
 

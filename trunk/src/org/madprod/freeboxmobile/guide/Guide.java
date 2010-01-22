@@ -7,8 +7,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.util.Log;
-
 /**
  * Conteneur correspondant au JSON du guide TV
  * @author bduffez
@@ -66,15 +64,21 @@ public class Guide {
 			JSONObject o = new JSONObject(json);
 			
 			if (progs) {
-				mProgs = new Progs(o.getString("progs"));
+				if (o.has("progs")) {
+					mProgs = new Progs(o.getString("progs"));
+				}
 			}
 			
 			if (chaines) {
-				mChaines = new Chaines(o.getString("chaines"));
+				if (o.has("chaines")) {
+					mChaines = new Chaines(o.getString("chaines"));
+				}
 			}
 			
 			if (date) {
-				mDate = o.getString("date");
+				if (o.has("date")) { 
+					mDate = o.getString("date");
+				}
 			}
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
@@ -153,7 +157,6 @@ public class Guide {
 			int nbChaines = mChaines.size();
 			
 			for (int i = 0; i < nbChaines; i++) {
-				Log.d("prout", "la chaine "+i+" ou "+mChaines.get(i).getImage()+" ou "+mChaines.get(i).getCanal()+" n'est pas "+canal);
 				if (mChaines.get(i).getCanal() == canal) {
 					return mChaines.get(i);
 				}

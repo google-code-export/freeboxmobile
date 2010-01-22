@@ -11,6 +11,7 @@
 	<string name="pvrTxtNom">Nom</string>
 	<string name="pvrTxtDisque">Disque dur</string>
 	<string name="pvrTxtPrgBtnOK">OK</string>
+	<string name="pvrTxtPrgBtnRecur">Récurrence</string>
 	<string name="pvrNomDefaut">Entrez le titre de l\'émission...</string>
 	
 	<string name="pvrTxtQualiteParDefaut">Par défaut</string>
@@ -29,6 +30,8 @@
 	<string name="pvrSamedi">Samedi</string>
 	<string name="pvrDimanche">Dimanche</string>
 	
-	<string name="pvrErreurNomEmission">Veuillez entrer le nom de l\'émission</string>
+	<string name="pvrChoixJours">Choisissez le(s) jour(s) de répétition</string>
 	
+	<string name="pvrErreurNomEmission">Veuillez entrer le nom de l\'émission</string>
+	<string name="pvrConfirmationSuppression">Êtes-vous sûr(e) de vouloir supprimer cet enregistrement ?</string>
 </resources>
