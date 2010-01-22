@@ -10,6 +10,7 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List; 
 
@@ -22,6 +23,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 
 import android.app.Activity;
@@ -235,16 +237,16 @@ public class FBMHttpConnection implements Constants
 		Log.d(DEBUGTAG,"Connect Free start ");
         try
         {
-    		List<String> listParameter = new ArrayList<String>();
-    		listParameter.add("login="+l);   		
-    		listParameter.add("pass="+p);
+    		List<NameValuePair> listParameter = new ArrayList<NameValuePair>();
+    		listParameter.add(new BasicNameValuePair("login",l));   		
+    		listParameter.add(new BasicNameValuePair("pass",p));
 
     		URL myURL = new URL(serverUrl);
     		h = (HttpURLConnection) myURL.openConnection();
     		h.setRequestMethod("POST");
     		h.setDoOutput(true);
     		OutputStreamWriter o = new OutputStreamWriter(h.getOutputStream());
-			o.write(makeStringForPost(listParameter));
+			o.write(makeStringForPost(listParameter, false));
 			o.flush();
 			o.close();
 			String s = h.getHeaderFields().get("location").toString();
@@ -305,20 +307,6 @@ public class FBMHttpConnection implements Constants
        	return connectionStatus;
     }
 
-	private static List<String> makeParams(List<String> p, boolean auth)
-	{
-		List<String> params = new ArrayList<String>();
-		if (auth)
-		{
-			params.add("id="+id);
-			params.add("idt="+idt);
-		}
-		if (p != null)
-		{
-			params.addAll(p);
-		}
-		return params;
-	}
 
 	private static HttpURLConnection prepareConnection(String url, String method) throws IOException
 	{
@@ -341,16 +329,14 @@ public class FBMHttpConnection implements Constants
 	 * @param auth true if we must add id & idt paramters for authentification (if true, url must not have parameters)
 	 * @return 1 if success
 	 */
-	public static boolean getFile(File file, String url, List<String> p, boolean auth)
+	public static boolean getFile(File file, String url, List<NameValuePair> p, boolean auth)
 	{
 		HttpURLConnection c = null;
 		FileOutputStream f;
 		int len;
         byte[] buffer = new byte[1024];
         int connected;
-        List<String> params;
 
-		params = makeParams(p, auth);
         connected = checkConnected(CONNECT_CONNECTED);
 		Log.d(DEBUGTAG,"->DOWNLOADING FILE : "+url);
         try
@@ -358,7 +344,7 @@ public class FBMHttpConnection implements Constants
 			if (connected == CONNECT_CONNECTED)
 			{
 				Log.d(DEBUGTAG, "GETFILE : VERIF SI ON EST AUTHENTIFIE");
-				c = prepareConnection(url+"?"+makeStringForPost(params), "GET");
+				c = prepareConnection(url+"?"+makeStringForPost(p, auth), "GET");
 				c.setDoInput(true);
 				Log.d(DEBUGTAG, "HEADERS : "+c.getHeaderFields());
 				Log.d(DEBUGTAG, "RESPONSE : "+c.getResponseCode()+" "+c.getResponseMessage());
@@ -379,9 +365,7 @@ public class FBMHttpConnection implements Constants
 				if (connected == CONNECT_CONNECTED)
 				{
 					Log.d(DEBUGTAG, "GET :  REAUTHENTIFICATION OK");
-					params.clear();
-					params = makeParams(p, auth);
-					c = prepareConnection(url+"?"+makeStringForPost(params), "GET");
+					c = prepareConnection(url+"?"+makeStringForPost(p, auth), "GET");
 					c.setDoInput(true);
 					Log.d(DEBUGTAG, "HEADERS : "+c.getHeaderFields());
 					Log.d(DEBUGTAG, "RESPONSE : "+c.getResponseCode()+" "+c.getResponseMessage());
@@ -458,10 +442,9 @@ public class FBMHttpConnection implements Constants
 	 * @param retour : set it to true of you want an InputStream with the page in return
 	 * @return InputStream HTML Page or null
 	 */
-	public static InputStream getAuthRequest(String url, List<String> p, boolean auth, boolean retour)
+	public static InputStream getAuthRequest(String url, List<NameValuePair> p, boolean auth, boolean retour)
 	{
 		int c;
-		List<String> params;
 		HttpURLConnection h = null;
 
 		c = checkConnected(CONNECT_CONNECTED);
@@ -470,11 +453,10 @@ public class FBMHttpConnection implements Constants
 			if (c == CONNECT_CONNECTED)
 			{
 				Log.d(DEBUGTAG, "GET : VERIF SI ON EST AUTHENTIFIE");
-				params = makeParams(p, auth);
 				if (retour)
-					h = prepareConnection(url+"?"+makeStringForPost(params), "GET");
+					h = prepareConnection(url+"?"+makeStringForPost(p, auth), "GET");
 				else
-					h = prepareConnection(url+"?"+makeStringForPost(params), "HEAD");
+					h = prepareConnection(url+"?"+makeStringForPost(p, auth), "HEAD");
 
 				h.setDoInput(true);
 				Log.d(DEBUGTAG, "HEADERS : "+h.getHeaderFields());
@@ -496,11 +478,10 @@ public class FBMHttpConnection implements Constants
 				if (c == CONNECT_CONNECTED)
 				{
 					Log.d(DEBUGTAG, "GET :  REAUTHENTIFICATION OK");
-					params = makeParams(p, auth);
 					if (retour)
-						h = prepareConnection(url+"?"+makeStringForPost(params), "GET");
+						h = prepareConnection(url+"?"+makeStringForPost(p, auth), "GET");
 					else
-						h = prepareConnection(url+"?"+makeStringForPost(params), "HEAD");
+						h = prepareConnection(url+"?"+makeStringForPost(p, auth), "HEAD");
 					h.setDoInput(true);
 					Log.d(DEBUGTAG, "HEADERS : "+h.getHeaderFields());
 					Log.d(DEBUGTAG, "RESPONSE : "+h.getResponseCode()+" "+h.getResponseMessage());
@@ -558,10 +539,9 @@ public class FBMHttpConnection implements Constants
 	* @throws SocketTimeoutException
 	*             , SocketException
 	*/
-	public static InputStreamReader postAuthRequest(String url, List<String> p, boolean auth, boolean retour)
+	public static InputStreamReader postAuthRequest(String url, List<NameValuePair> p, boolean auth, boolean retour)
 	{
 		HttpURLConnection h = null;
-		List<String> params;
 		int c;
 
 		Log.d(DEBUGTAG, "POST: " + url);
@@ -575,8 +555,7 @@ public class FBMHttpConnection implements Constants
 				if (retour)
 					h.setDoInput(true);
 				OutputStreamWriter o = new OutputStreamWriter(h.getOutputStream());
-				params = makeParams(p, auth);
-				o.write(makeStringForPost(params));
+				o.write(makeStringForPost(p, auth));
 				o.flush();
 				o.close();
 				if (h.getHeaderFields().get("location") != null)
@@ -596,14 +575,12 @@ public class FBMHttpConnection implements Constants
 				if (c == CONNECT_CONNECTED)
 				{
 					Log.d(DEBUGTAG, "POST :  REAUTHENTIFICATION OK");
-					params = makeParams(p, auth);
 					h = prepareConnection(serverUrl, "POST");
 					h.setDoOutput(true);
 					if (retour)
 						h.setDoInput(true);
 					OutputStreamWriter o = new OutputStreamWriter(h.getOutputStream());
-					params = makeParams(p, auth);
-					o.write(makeStringForPost(params));
+					o.write(makeStringForPost(p, auth));
 					o.flush();
 					o.close();
 				}
@@ -668,19 +645,33 @@ public class FBMHttpConnection implements Constants
 		}
 	}
 
-	private static String makeStringForPost(List<String> listParameter)
+	private static String makeStringForPost(List<NameValuePair> p, boolean auth)
     {
         String listConcat = "";
-        if(listParameter.size() > 0)
+		if ((p == null) && (auth))
+		{
+			p = new ArrayList<NameValuePair>();
+		}
+		if (auth)
+		{
+			p.add(new BasicNameValuePair("id",id));
+			p.add(new BasicNameValuePair("idt",idt));
+		}
+        if ((p != null) && (p.size() > 0))
         {
-            listConcat += listParameter.get(0);
-            for(int i = 1 ; i < listParameter.size() ; i++)
+            listConcat += URLEncoder.encode(p.get(0).getName());
+            listConcat += '=';
+            listConcat += URLEncoder.encode(p.get(0).getValue());
+            for(int i = 1 ; i < p.size() ; i++)
             {
                 listConcat += "&";
-                listConcat += listParameter.get(i);
+                listConcat += URLEncoder.encode(p.get(i).getName());
+                listConcat += '=';
+                listConcat += URLEncoder.encode(p.get(i).getValue());
             }
         }
-        return listConcat;
+//        Log.d(DEBUGTAG, "makeStringForPost : "+listConcat);
+        return (listConcat);
     }
 	
 	/**

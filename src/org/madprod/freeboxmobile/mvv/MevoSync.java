@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.madprod.freeboxmobile.home.HomeActivity;
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
@@ -42,8 +44,6 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 	private static final String mevoUrl = "http://adsl.free.fr/admin/tel/";
 	private static final String mevoListPage = "notification_tel.pl";
 	private static final String mevoDelPage = "efface_message.pl";
-
-	private static int connectionStatus = CONNECT_NOT_CONNECTED;
 
     private static MevoDbAdapter mDbHelper;
 
@@ -300,7 +300,6 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
      */
     public static void refresh()
     {
-		connectionStatus = CONNECT_NOT_CONNECTED;
 		Intent i = new Intent(CUR_ACTIVITY, MevoSync.class);
 		WakefullIntentService.acquireStaticLock(CUR_ACTIVITY);
 		CUR_ACTIVITY.startService(i);
@@ -350,9 +349,9 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 	   				}
 	    		}
 
-	   			List<String> params = new ArrayList<String>();
-				params.add("tel="+tel);
-				params.add("fichier="+curs.getString(curs.getColumnIndex(KEY_NAME)));
+	   			List<NameValuePair> params = new ArrayList<NameValuePair>();
+				params.add(new BasicNameValuePair("tel",tel));
+				params.add(new BasicNameValuePair("fichier",curs.getString(curs.getColumnIndex(KEY_NAME))));
 
 				Log.d(DEBUGTAG, "Deleting on server "+params);
 				FBMHttpConnection.getAuthRequest(mevoUrl+mevoDelPage, params, true, false);
