@@ -75,6 +75,7 @@ public class FBMHttpConnection implements Constants
 	 */
 	public static void initVars(Activity a)
 	{
+		USER_AGENT = a.getString(R.string.app_name)+"/"+a.getString(R.string.app_version)+" (Linux; U; Android; fr-fr;)";
 		// On teste pour si on entre ici suite
         if (httpProgressDialog != null)
         {
