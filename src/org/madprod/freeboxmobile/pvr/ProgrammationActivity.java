@@ -373,17 +373,15 @@ public class ProgrammationActivity extends Activity {
     				// Modification
         			if (enr != null) {
         				int rowId = enr.getInt(enr.getColumnIndex(EnregistrementsDbAdapter.KEY_ROWID));
-        				long l = db.modifyEnregistrement(rowId, nomChaine, date, heure+"h"+minutes, duree.toString(),
+        				db.modifyEnregistrement(rowId, nomChaine, date, heure+"h"+minutes, duree.toString(),
         			    		emission, ide.toString(), chaine.toString(), service.toString(), heure, minutes,
         			    		duree.toString(), emission, where_id.toString(), repeat_a);
-        				Log.d(TAG, "MODIFIER ENR = "+l);
         			}
         			// Ajout
         			else {
-        				long l = db.createEnregistrement(nomChaine, date, heure+"h"+minutes, duree.toString(),
+        				db.createEnregistrement(nomChaine, date, heure+"h"+minutes, duree.toString(),
         			    		emission, ide.toString(), chaine.toString(), service.toString(), heure, minutes,
         			    		duree.toString(), emission, where_id.toString(), repeat_a);
-        				Log.d(TAG, "AJOUTER ENR = "+l);
         			}
         			
     				db.close();

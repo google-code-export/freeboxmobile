@@ -206,8 +206,11 @@ public class EnregistrementsDbAdapter {
      * @return Cursor over all enregistrements
      */
     public Cursor fetchAllEnregistrements(String[] colonnes) {
+    	return fetchAllEnregistrements(colonnes, null);
+    }
+    public Cursor fetchAllEnregistrements(String[] colonnes, String sort) {
 
-        return mDb.query(DATABASE_TABLE, colonnes, null, null, null, null, null);
+        return mDb.query(DATABASE_TABLE, colonnes, null, null, null, null, sort);
     }
 
     /**
