@@ -5,8 +5,9 @@
 	<string name="buttonMusic">Musique</string>
 	<string name="buttonGuide">Guide TV</string>
 	<string name="buttonRadios">Radios</string>
+	<string name="buttonLigne">Info ADSL</string>
 	<string name="buttonActu">Actu Freenautes</string>
-	<string name="buttonAbout">A propos</string><string name="MonCompteFree">Mon Compte Free</string>
+	<string name="home_option_about">A propos</string><string name="MonCompteFree">Mon Compte Free</string>
 	<string name="home_option_comptes">Comptes</string>
 	<string name="home_option_config">Configuration</string>
 	<string name="home_option_share">Partager FreeboxMobile</string>

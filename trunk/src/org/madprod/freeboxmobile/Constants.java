@@ -19,7 +19,7 @@ public interface Constants
     static final String KEY_DSLAM		= "dslam";
     static final String KEY_IP			= "ip";
     static final String KEY_TEL			= "tel";
-    static final String KEY_LENGTH		= "length";
+    static final String KEY_LINELENGTH	= "length";
     static final String KEY_ATTN		= "attn";
 
     static final String KEY_PREFS		= "freeboxmobile";

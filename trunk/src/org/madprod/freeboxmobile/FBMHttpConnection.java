@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -25,10 +26,12 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
+import org.xmlrpc.android.XMLRPCClient;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.util.Log;
@@ -225,17 +228,36 @@ public class FBMHttpConnection implements Constants
 		return FBMHttpConnection.connectionFree(login, password, false);
 	}
 
-	public static int connectFreeCheck(String l, String p)
+	public static ContentValues connectFreeCheck(String l, String p)
 	{
-		int c = FBMHttpConnection.connectionFree(l, p, true);
-		if (c == CONNECT_CONNECTED)
+		String mLogin;
+		String mPassword;
+		String mId;
+		String mIdt;
+		ContentValues v = null;
+
+		if (FBMHttpConnection.connectionFree(l, p, false) == CONNECT_CONNECTED)
 		{
-			parseConsole(l, p);
+			// backup des données du compte loggué pour les restaurer après
+			mLogin = login;
+			mPassword = password;
+			mId = id;
+			mIdt = idt;
 			// Reset de id & idt afin que ce compte (qui n'est peut etre pas celui sélectionné comme actif)
 			// ne reste pas connecté
-			initCompte(null); 
+			initCompte(null);
+
+			login = l;
+			password = p;
+			v = parseConsole(l, p);
+
+			// restauration des données présentes avant
+			login = mLogin;
+			password = mPassword;
+			id = mId;
+			idt = mIdt;
 		}
-		return (c);		
+		return (v);
 	}
 	
 	/**
@@ -243,25 +265,23 @@ public class FBMHttpConnection implements Constants
 	 * @param l : login du compte à parser
 	 * @param p : mot de passe du compte à parser
 	 */
-	private static void parseConsole(String l, String p)
+	private static ContentValues parseConsole(String l, String p)
 	{
 		String s;
-		final String NRA = "NRAa :";
-		String mNra = null;
-		final String LENGTH = "Longueur :";
-		String mLength = null;
-		final String ATTN = "Affaiblissement :";
-		String mAttn = null;
-		final String IP = "Votre adresse IP";
 		String mIP = null;
+		final String NRA = "NRA :";
+		final String LENGTH = "Longueur :";
+		final String ATTN = "Affaiblissement :";
+		final String IP = "Votre adresse IP";
 		final String TEL = "téléphone Freebox";
-		String mTel = null;
 
 		InputStream is = getAuthRequest(suiviTechUrl, null, true, true);
 		try
 		{
 			if (is != null)
 			{
+				ContentValues consoleValues = new ContentValues();
+				String r;
 		    	BufferedReader br = new BufferedReader(new InputStreamReader(is, "ISO8859_1"));
 		    	br.mark(20000);
 		    	while ( (s=br.readLine())!= null && s.indexOf(NRA) == -1)
@@ -269,12 +289,14 @@ public class FBMHttpConnection implements Constants
 				}
 				if ((s != null) && (s.indexOf(NRA)>-1) && ((s = br.readLine()) != null))
 				{
-					mNra = s.substring(s.indexOf("\">")+2,s.indexOf("</"));
-					Log.d(DEBUGTAG, "NRA : "+mNra);
+					r = s.substring(s.indexOf("\">")+2,s.indexOf("</"));
+					consoleValues.put(KEY_NRA,r);
+					Log.d(DEBUGTAG, "NRA : "+r);
 				}
 				else
 				{
 					Log.d(DEBUGTAG, "NRA pas trouvé");
+					consoleValues.put(KEY_NRA,"");
 					br.reset();
 				}
 		    	while ( (s=br.readLine())!= null && s.indexOf(LENGTH) == -1)
@@ -282,12 +304,14 @@ public class FBMHttpConnection implements Constants
 				}
 				if ((s != null) && (s.indexOf(LENGTH)>-1) && ((s = br.readLine()) != null))
 				{
-					mLength = s.substring(s.indexOf("\">")+2,s.indexOf(" mètres"));
-					Log.d(DEBUGTAG, "LENGTH : "+mLength);
+					r = s.substring(s.indexOf("\">")+2,s.indexOf(" mètres"));
+					consoleValues.put(KEY_LINELENGTH,r);
+					Log.d(DEBUGTAG, "LENGTH : "+r);
 				}
 				else
 				{
-					Log.d(DEBUGTAG, "NRA pas trouvé");
+					Log.d(DEBUGTAG, "LENGTH pas trouvé");
+					consoleValues.put(KEY_LINELENGTH,"");
 					br.reset();
 				}
 		    	while ( (s=br.readLine())!= null && s.indexOf(ATTN) == -1)
@@ -295,12 +319,14 @@ public class FBMHttpConnection implements Constants
 				}
 				if ((s != null) && (s.indexOf(ATTN)>-1) && ((s = br.readLine()) != null))
 				{
-					mAttn = s.substring(s.indexOf("\">")+2,s.indexOf(" dB"));
-					Log.d(DEBUGTAG, "ATTN : "+mAttn);
+					r = s.substring(s.indexOf("\">")+2,s.indexOf(" dB"));
+					consoleValues.put(KEY_ATTN,r);
+					Log.d(DEBUGTAG, "ATTN : "+r);
 				}
 				else
 				{
-					Log.d(DEBUGTAG, "NRA pas trouvé");
+					Log.d(DEBUGTAG, "ATTN pas trouvé");
+					consoleValues.put(KEY_ATTN,"");
 					br.reset();
 				}
 		    	while ( (s=br.readLine())!= null && s.indexOf(IP) == -1)
@@ -308,12 +334,15 @@ public class FBMHttpConnection implements Constants
 				}
 				if ((s != null) && (s.indexOf(IP)>-1))
 				{
-					mIP = s.substring(s.indexOf("<b>")+3,s.indexOf(" / "));
-					Log.d(DEBUGTAG, "IP : "+mIP);
+					r = s.substring(s.indexOf("<b>")+3,s.indexOf(" / "));
+					consoleValues.put(KEY_IP,r);
+					mIP = r;
+					Log.d(DEBUGTAG, "IP : "+r);
 				}				
 				else
 				{
-					Log.d(DEBUGTAG, "NRA pas trouvé");
+					Log.d(DEBUGTAG, "IP pas trouvé");
+					consoleValues.put(KEY_IP,"");
 					br.reset();
 				}
 		    	while ( (s=br.readLine())!= null && s.indexOf(TEL) == -1)
@@ -321,22 +350,49 @@ public class FBMHttpConnection implements Constants
 				}
 				if ((s != null) && (s.indexOf(TEL)>-1))
 				{
-					mTel = s.substring(s.indexOf("<b>")+3,s.indexOf("</b>"));
-					Log.d(DEBUGTAG, "TEL : "+mTel);
+					r = s.substring(s.indexOf("<b>")+3,s.indexOf("</b>"));
+					consoleValues.put(KEY_TEL,r);
+					Log.d(DEBUGTAG, "TEL : "+r);
 				}				
 				else
 				{
-					Log.d(DEBUGTAG, "NRA pas trouvé");
+					consoleValues.put(KEY_TEL,"");
+					Log.d(DEBUGTAG, "TEL pas trouvé");
 					br.reset();
 				}
 				br.close();
+				if (mIP != null)
+				{
+					URI uri = URI.create("http://www.frimousse.org/outils/xmlrpc");
+					XMLRPCClient client = new XMLRPCClient(uri);
+					Object[] response = (Object[]) client.call("getDSLAMListForPool", mIP);
+					if (response.length > 0)
+					{
+						// DSLAM :
+						Log.d(DEBUGTAG, "XMLRPC : "+response[0]);
+						consoleValues.put(KEY_DSLAM,(String) response[0]);
+			    		r = null;
+					}
+					else
+					{
+						consoleValues.put(KEY_DSLAM,"");
+						Log.d(DEBUGTAG, "DSLAM pas trouvé");
+					}
+				}
+				else
+				{
+					consoleValues.put(KEY_DSLAM,"");
+				}
+				return (consoleValues);
 			}
+			return (null);
 		}
 		catch (Exception e)
 		{
 			Log.e(DEBUGTAG, "parseConsole : " + e.getMessage());
 			e.printStackTrace();
 		}
+		return (null);
 	}
 
 	// TODO : parametre check peut être plus utile

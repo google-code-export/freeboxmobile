@@ -64,7 +64,7 @@ public class HomeActivity extends Activity implements HomeConstants
 		FBMHttpConnection.initVars(this, null);
 
         Button phoneButton = (Button) findViewById(R.id.phone);
-        Button aboutButton = (Button) findViewById(R.id.about);
+        Button ligneButton = (Button) findViewById(R.id.ligne);
         Button pvrButton = (Button) findViewById(R.id.magneto);
 		phoneButton.setOnClickListener(
 				new View.OnClickListener()
@@ -76,12 +76,13 @@ public class HomeActivity extends Activity implements HomeConstants
 					}
 				}
 			);
-		aboutButton.setOnClickListener(
+		ligneButton.setOnClickListener(
 				new View.OnClickListener()
 				{
 					public void onClick(View view)
 					{
-						displayAbout();
+						Intent i = new Intent(homeActivity, org.madprod.freeboxmobile.ligne.LigneInfoActivity.class);
+				    	startActivity(i);
 					}
 				}
 			);
@@ -155,7 +156,7 @@ public class HomeActivity extends Activity implements HomeConstants
         menu.add(0, HOME_OPTION_COMPTES, 0, R.string.home_option_comptes).setIcon(android.R.drawable.ic_menu_myplaces);
         menu.add(0, HOME_OPTION_CONFIG, 1, R.string.home_option_config).setIcon(android.R.drawable.ic_menu_preferences);
         menu.add(0, HOME_OPTION_SHARE, 2, R.string.home_option_share).setIcon(android.R.drawable.ic_menu_share);
-        menu.add(0, HOME_OPTION_ABOUT, 3, R.string.buttonAbout).setIcon(android.R.drawable.ic_menu_help);
+        menu.add(0, HOME_OPTION_ABOUT, 3, R.string.home_option_about).setIcon(android.R.drawable.ic_menu_help);
         return true;
     }
 
