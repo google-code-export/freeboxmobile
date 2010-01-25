@@ -39,6 +39,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 public class ProgrammationActivity extends Activity {
 	private List<Chaine> mChaines = null;
 	private List<Disque> mDisques = null;
+	private long mRowId = -1;
 	Activity progAct = null;
 	final String TAG = "FreeboxMobileProg";
 	private boolean nomEmissionSaisi = false;
@@ -51,6 +52,15 @@ public class ProgrammationActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pvr_programmation);
         resetJours();
+        
+    	mRowId = savedInstanceState != null ?
+    			savedInstanceState.getLong(EnregistrementsDbAdapter.KEY_ROWID)
+    			: -1;
+    			
+    	if (mRowId < 0) {
+    		Bundle extras = getIntent().getExtras();
+    		mRowId = extras != null ? extras.getLong(EnregistrementsDbAdapter.KEY_ROWID) : -1;
+    	}
         
         // Mode 24h
         ((TimePicker) findViewById(R.id.pvrPrgHeure)).setIs24HourView(true);
@@ -80,7 +90,6 @@ public class ProgrammationActivity extends Activity {
 
 			@Override
 			public void onNothingSelected(AdapterView<?> arg0) {
-				// TODO Auto-generated method stub
 			}
         });
         
@@ -124,13 +133,21 @@ public class ProgrammationActivity extends Activity {
 	
 	@Override
 	protected void onPause() {
+		super.onPause();
 		if (progressDialog != null) {
 			progressDialog.dismiss();
 		}
-		super.onPause();
+		// TODO: enregistrer l'état du formulaire qqpart pour
+		// le récupérer quand on revient sur l'activité
 	}
     
-    private void resetJours() {
+	@Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putLong(EnregistrementsDbAdapter.KEY_ROWID, mRowId);
+    }
+    
+    void resetJours() {
     	for (int i = 0; i < 7; i++) {
     		joursChoisis[i] = false;
     	}
@@ -420,12 +437,11 @@ public class ProgrammationActivity extends Activity {
         // pour l'instant ça ne remplit la fiche que d'un enregistrement venant
         // de sqlite
         
-        long idEnregistrement = bundle.getLong(EnregistrementsDbAdapter.KEY_ROWID);
-        if (idEnregistrement > 0) {
+        if (mRowId >= 0) {
 	        // Récupération des infos concernant cet enregistrement
 	        EnregistrementsDbAdapter db = new EnregistrementsDbAdapter(this);
 	        db.open();
-	         Cursor c = db.fetchEnregistrement(idEnregistrement);
+	         Cursor c = db.fetchEnregistrement(mRowId);
 	        db.close();
 	        
 	        // Y'a qqn ?
