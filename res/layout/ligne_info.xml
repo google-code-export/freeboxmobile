@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="vertical" android:layout_height="fill_parent" android:layout_width="fill_parent" android:paddingLeft="10dip" android:paddingBottom="10dip" android:paddingRight="10dip"><ImageView
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:id="@+id/LogoFreeboxMobile"
+	android:src="@drawable/freebox_mobile"
+	android:layout_gravity="center"
+	android:layout_marginBottom="10dip" android:layout_marginTop="10dip">
+</ImageView>
+<TextView android:text="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/infoLigne1"></TextView><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/infoLigne2" android:text="Liste des tickets :" android:layout_marginTop="5dip"></TextView><TextView android:text="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/infoLigne2_1"></TextView><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Historique" android:id="@+id/infoLigne3" android:layout_marginTop="5dip"></TextView><TextView android:text="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/infoLigne3_1"></TextView>
+</LinearLayout>

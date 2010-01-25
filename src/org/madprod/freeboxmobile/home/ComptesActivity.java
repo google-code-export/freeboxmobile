@@ -195,7 +195,7 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 					editor.putString(KEY_DSLAM, c.getString(c.getColumnIndexOrThrow(KEY_DSLAM)));
 					editor.putString(KEY_IP, c.getString(c.getColumnIndexOrThrow(KEY_IP)));
 					editor.putString(KEY_TEL, c.getString(c.getColumnIndexOrThrow(KEY_TEL)));
-					editor.putString(KEY_LENGTH, c.getString(c.getColumnIndexOrThrow(KEY_LENGTH)));
+					editor.putString(KEY_LINELENGTH, c.getString(c.getColumnIndexOrThrow(KEY_LINELENGTH)));
 					editor.putString(KEY_ATTN, c.getString(c.getColumnIndexOrThrow(KEY_ATTN)));
 					editor.commit();
 					FBMHttpConnection.initCompte(ComptesActivity.this);
@@ -240,7 +240,7 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 					editor.putString(KEY_DSLAM, c.getString(c.getColumnIndexOrThrow(KEY_DSLAM)));
 					editor.putString(KEY_IP, c.getString(c.getColumnIndexOrThrow(KEY_IP)));
 					editor.putString(KEY_TEL, c.getString(c.getColumnIndexOrThrow(KEY_TEL)));
-					editor.putString(KEY_LENGTH, c.getString(c.getColumnIndexOrThrow(KEY_LENGTH)));
+					editor.putString(KEY_LINELENGTH, c.getString(c.getColumnIndexOrThrow(KEY_LINELENGTH)));
 					editor.putString(KEY_ATTN, c.getString(c.getColumnIndexOrThrow(KEY_ATTN)));
 					editor.commit();
 					FBMHttpConnection.initCompte(this);

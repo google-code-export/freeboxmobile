@@ -5,6 +5,8 @@ import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
 
 import android.app.Activity;
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
@@ -101,7 +103,7 @@ public class ComptesEditActivity extends Activity implements Constants
                 	}
                 	else
                 	{
-		                new CheckFree().execute(new Payload(user, password));
+		                new CheckFree().execute(new Payload(title, user, password));
                 	}
                 }
                 else
@@ -174,37 +176,22 @@ public class ComptesEditActivity extends Activity implements Constants
         super.onDestroy();
     }
 
-    public static void parseInfoTechs()
-    {
-    	
-    }
-    private void saveState()
+    private void saveState(Payload p)
     {
         Bundle bundle = new Bundle();
         Intent mIntent = new Intent();
 
+    	ContentValues v = p.result;
+ 
     	if (ComptesEditActivity.exit == RESULT_OK)
     	{
         	Log.d(DEBUGTAG, "ComptesEditActivity RESULT_OK");
 
-        	String title = mTitleText.getText().toString();
-	        String login = mUserText.getText().toString();
-	        String password = mPasswordText.getText().toString();
-	        String nra = "";
-	        String dslam = "";
-	        String tel = "";
-	        String ip = "";
-	        String length = "";
-	        String attn = "";
-
-			// GET NRA : http://adsl.free.fr/suivi/suivi_techgrrr.pl
-			// GET IP : http://adsl.free.fr/suivi/suivi_techgrrr.pl
-			// GET TELEPHONE NUMBER http://adsl.free.fr/suivi/suivi_techgrrr.pl
-			// GET DSLAM
-
 	        if (mRowId == null)
 	        {
-	            long id = mDbHelper.createCompte(title, login, password, nra, dslam, ip, length, attn, tel);
+	            long id = mDbHelper.createCompte(p.title, p.login, p.password, (String) v.get(KEY_NRA),
+	            		(String) v.get(KEY_DSLAM), (String) v.get(KEY_IP), (String) v.get(KEY_LINELENGTH),
+	            		(String) v.get(KEY_ATTN), (String) v.get(KEY_TEL));
 	            if (id > 0)
 	            {
 	                mRowId = id;
@@ -212,8 +199,11 @@ public class ComptesEditActivity extends Activity implements Constants
 	        }
 	        else
 	        {
-	            mDbHelper.updateCompte(mRowId, title, login, password, nra, dslam, ip, length, attn, tel);
+	            mDbHelper.updateCompte(mRowId, p.title, p.login, p.password, (String) v.get(KEY_NRA),
+	            		(String) v.get(KEY_DSLAM), (String) v.get(KEY_IP), (String) v.get(KEY_LINELENGTH),
+	            		(String) v.get(KEY_ATTN), (String) v.get(KEY_TEL));
 	        }
+
             bundle.putLong(ComptesDbAdapter.KEY_ROWID, mRowId);
 /* NOT USED FOR NOW
  	        bundle.putString(ComptesDbAdapter.KEY_TITLE, title);
@@ -236,13 +226,15 @@ public class ComptesEditActivity extends Activity implements Constants
 
     public static class Payload
     {
+    	public String title;
         public String login;
         public String password;
-        public Intent intent;
-        public int result;
+//        public Intent intent;
+        public ContentValues result;
         
-        public Payload(String login, String password)
+        public Payload(String title, String login, String password)
         {
+        	this.title = title;
         	this.login = login;
         	this.password = password;
         }
@@ -267,17 +259,16 @@ public class ComptesEditActivity extends Activity implements Constants
     	protected void onPostExecute(Payload payload)
     	{
     		FBMHttpConnection.dismissPd();
-    		switch (payload.result)
+    		if (payload.result != null)
     		{
-    			case CONNECT_CONNECTED:
-    				ComptesEditActivity.exit = RESULT_OK;
-    				saveState();
-    				finish();
-    			break;
-    			default:
-    				FBMHttpConnection.showError(ComptesEditActivity.this);
-    				ComptesEditActivity.exit = RESULT_CANCELED;
-    			break;
+   				ComptesEditActivity.exit = RESULT_OK;
+   				saveState(payload);
+   				finish();
+    		}
+    		else
+    		{
+   				FBMHttpConnection.showError(ComptesEditActivity.this);
+   				ComptesEditActivity.exit = RESULT_CANCELED;
     		}
     	}
     }

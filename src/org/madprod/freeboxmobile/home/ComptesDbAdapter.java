@@ -29,7 +29,7 @@ public class ComptesDbAdapter implements HomeConstants
                 + KEY_TITLE +" text not null, " + KEY_USER + " text not null, "
                 + KEY_PASSWORD + " text not null, " + KEY_NRA + " text not null, "
                 + KEY_DSLAM + " text not null, " + KEY_IP + " text not null, "
-                + KEY_TEL + " text not null, "+ KEY_LENGTH + " text not null, "
+                + KEY_TEL + " text not null, "+ KEY_LINELENGTH + " text not null, "
                 + KEY_ATTN + " text not null );";
 
     private final Context mCtx;
@@ -96,7 +96,7 @@ public class ComptesDbAdapter implements HomeConstants
 
     	boolean upgradeToVersion4(SQLiteDatabase db)
     	{
-    		db.execSQL("ALTER TABLE "+DATABASE_TABLE+" ADD "+KEY_LENGTH + " text DEFAULT '' not null");
+    		db.execSQL("ALTER TABLE "+DATABASE_TABLE+" ADD "+KEY_LINELENGTH + " text DEFAULT '' not null");
     		db.execSQL("ALTER TABLE "+DATABASE_TABLE+" ADD "+KEY_ATTN + " text DEFAULT '' not null");
     		return true;
     	}
@@ -153,7 +153,7 @@ public class ComptesDbAdapter implements HomeConstants
         initialValues.put(KEY_NRA, nra);
         initialValues.put(KEY_DSLAM, dslam);
         initialValues.put(KEY_IP, ip);
-        initialValues.put(KEY_LENGTH, length);
+        initialValues.put(KEY_LINELENGTH, length);
         initialValues.put(KEY_ATTN, attn);
         initialValues.put(KEY_TEL, tel);
         return mDb.insert(DATABASE_TABLE, null, initialValues);
@@ -179,7 +179,7 @@ public class ComptesDbAdapter implements HomeConstants
     {
         return mDb.query(DATABASE_TABLE, new String[] {KEY_ROWID, KEY_TITLE,
                 KEY_USER, KEY_PASSWORD, KEY_NRA, KEY_DSLAM, KEY_IP, KEY_TEL,
-                KEY_LENGTH, KEY_ATTN}, null, null, null, null, null);
+                KEY_LINELENGTH, KEY_ATTN}, null, null, null, null, null);
     }
 
     /**
@@ -194,7 +194,7 @@ public class ComptesDbAdapter implements HomeConstants
         Cursor mCursor =
                 mDb.query(true, DATABASE_TABLE, new String[] {KEY_ROWID,
                         KEY_TITLE, KEY_USER, KEY_PASSWORD, KEY_NRA, KEY_DSLAM,
-                        KEY_IP, KEY_TEL, KEY_LENGTH, KEY_ATTN}, KEY_ROWID
+                        KEY_IP, KEY_TEL, KEY_LINELENGTH, KEY_ATTN}, KEY_ROWID
                         + "=" + rowId, null, null, null, null, null);
         if (mCursor != null)
         {
@@ -223,7 +223,7 @@ public class ComptesDbAdapter implements HomeConstants
         args.put(KEY_NRA, nra);
         args.put(KEY_DSLAM, dslam);
         args.put(KEY_IP, ip);
-        args.put(KEY_LENGTH, length);
+        args.put(KEY_LINELENGTH, length);
         args.put(KEY_ATTN, attn);
         args.put(KEY_TEL, tel);
         return mDb.update(DATABASE_TABLE, args, KEY_ROWID + "=" + rowId, null) > 0;
@@ -255,7 +255,7 @@ public class ComptesDbAdapter implements HomeConstants
     	Cursor mCursor = mDb.query(true, DATABASE_TABLE, new String[] {
     			KEY_ROWID,
                 KEY_TITLE, KEY_USER, KEY_PASSWORD, KEY_NRA, KEY_DSLAM,
-                KEY_IP, KEY_TEL, KEY_LENGTH, KEY_ATTN
+                KEY_IP, KEY_TEL, KEY_LINELENGTH, KEY_ATTN
     			}, KEY_TITLE + "='" + title + "'", null,
                 null, null, null, null);
         if (mCursor != null)
@@ -266,7 +266,7 @@ public class ComptesDbAdapter implements HomeConstants
     }
 
     /**
-     * getLoginFromTitle returns login associated with given rowid
+     * getLoginFromId returns login associated with given rowid
      * @param id
      * @return login
      */
@@ -284,6 +284,26 @@ public class ComptesDbAdapter implements HomeConstants
 	    	return null;
 	    }
     }
+
+    /**
+     * getIdFromLogin returns rowid associated with given login
+     * @param login
+     * @return rowid
+     */
+    public Integer getIdFromLogin(String login)
+    {
+    	Cursor mCursor = mDb.query(true, DATABASE_TABLE, new String[] {
+            		KEY_ROWID}, KEY_USER + "='" + login + "'", null,
+                    null, null, null, null);
+	    if ((mCursor != null) && (mCursor.moveToFirst()))
+	    {
+	        return mCursor.getInt(mCursor.getColumnIndexOrThrow(KEY_ROWID));
+	    }
+	    else
+	    {
+	    	return null;
+	    }
+    }   
 
     /**
      * Return true if key == value and rowid == id
