@@ -1,8 +1,7 @@
 package org.madprod.freeboxmobile.pvr;
 
-import java.io.BufferedReader;
 import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -34,6 +33,7 @@ import android.widget.TextView;
 public class EnregistrementActivity extends Activity {
 	private long idEnregistrement;
 	Activity enregistrementActivity = null;
+	ProgressDialog progressDialog = null;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -111,7 +111,6 @@ public class EnregistrementActivity extends Activity {
 		    	// Suppr: on supprime & ferme l'activité
 		    	suppr.setOnClickListener(new OnClickListener() {
 		    		class DeleteEnregistrementTask extends AsyncTask<Void, Integer, Void> {
-		    			ProgressDialog progressDialog = null;
 						
 						protected void onPreExecute() {
 			    	    	progressDialog = ProgressDialog.show(enregistrementActivity, "Veuillez patienter", "Suppression en cours...", true,false);
@@ -215,6 +214,14 @@ public class EnregistrementActivity extends Activity {
         }
     }
 	
+	@Override
+	protected void onPause() {
+		if (progressDialog != null) {
+			progressDialog.dismiss();
+		}
+		super.onPause();
+	}
+	
 
 	/**
 	 * télécharge le logo d'une chaine
@@ -230,23 +237,21 @@ public class EnregistrementActivity extends Activity {
     		List<NameValuePair> param = new ArrayList<NameValuePair>();
     		
     		//"date=2010-01-14+19%3A00%3A00"
-    		Date d = new Date();
-    		String date = PvrUtils.make02d(d.getYear())+"-";
-    		date += PvrUtils.make02d(d.getMonth())+"-";
-    		date += PvrUtils.make02d(d.getDay())+"+";
-    		date += PvrUtils.make02d(d.getHours())+"%3A";//3A == urlencode(":")
-    		date += PvrUtils.make02d(d.getMinutes())+"%3A";
-    		date += PvrUtils.make02d(d.getSeconds());
-    		
+    		SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd HH:00:00");    		
     		param.add(new BasicNameValuePair("ajax","get_chaines"));
-    		param.add(new BasicNameValuePair("date", date));
+    		param.add(new BasicNameValuePair("date", date.format(new Date())));
     		
     		String json = PvrUtils.getPage(FBMHttpConnection.getAuthRequest(url, param, true, true));
-    		Guide guideTv = new Guide(json, false, true, false); 
+    		Guide guideTv = new Guide(json, false, true, false);
+    		
+    		if (guideTv.erreur()) {
+    			return null;
+    		}
+    		
     		url = "http://adsl.free.fr/im/chaines/";
     		Chaines_Chaine chaine = guideTv.getChaine(arg0[0]);
     		url += chaine.getImage();
-    		InputStream is = FBMHttpConnection.getAuthRequest(url, null, false, false);
+    		InputStream is = FBMHttpConnection.getAuthRequest(url, null, false, true);
     		return BitmapFactory.decodeStream(is);
         }
         

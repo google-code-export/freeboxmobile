@@ -31,6 +31,7 @@
 	<string name="pvrDimanche">Sunday</string>
 	
 	<string name="pvrChoixJours">Choose days</string>
+	<string name="pvrErreurInterne1">This error is certainly caused by the fact that you chose a day that does not fit with the date you chose.</string>
 	
 	<string name="pvrErreurNomEmission">Please enter a program title</string>
 	<string name="pvrConfirmationSuppression">Are you sure you want to delete this record?</string>

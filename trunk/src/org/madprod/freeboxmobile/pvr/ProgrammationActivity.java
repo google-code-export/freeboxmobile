@@ -43,6 +43,7 @@ public class ProgrammationActivity extends Activity {
 	final String TAG = "FreeboxMobileProg";
 	private boolean nomEmissionSaisi = false;
 	private boolean[] joursChoisis = { false, false, false, false, false, false, false };
+	ProgressDialog progressDialog = null;
 	
     /** Called when the activity is first created. */
     @Override
@@ -120,6 +121,14 @@ public class ProgrammationActivity extends Activity {
         
         new TelechargerChainesDisquesTask().execute((Void[])null);
     }
+	
+	@Override
+	protected void onPause() {
+		if (progressDialog != null) {
+			progressDialog.dismiss();
+		}
+		super.onPause();
+	}
     
     private void resetJours() {
     	for (int i = 0; i < 7; i++) {
@@ -133,8 +142,6 @@ public class ProgrammationActivity extends Activity {
 	 *
 	 */
     class TelechargerChainesDisquesTask extends AsyncTask<Void, Integer, Boolean> {
-    	ProgressDialog progressDialog = null;
-
         protected void onPreExecute() {
         	progressDialog = ProgressDialog.show(progAct, "Veuillez patienter", "Chargement de la liste des chaînes disponibles...", true, false);
         }
@@ -348,6 +355,10 @@ public class ProgrammationActivity extends Activity {
         			debutErr = msgErreur.indexOf("<span style=\"color: #cc0000\">") + 29;
         			finErr = msgErreur.substring(debutErr).indexOf("<");
         			msgErreur = msgErreur.substring(debutErr, debutErr+finErr);
+        			
+        			if (msgErreur.indexOf("Erreur interne 1") >= 0) {
+        				msgErreur += "\n" + getString(R.string.pvrErreurInterne1);
+        			}
         			
         			return "Message retourné par la console de free:\n"+msgErreur;
         		}

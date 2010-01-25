@@ -7,6 +7,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.util.Log;
+
 /**
  * Conteneur correspondant au JSON du guide TV
  * @author bduffez
@@ -51,6 +53,7 @@ public class Guide {
 	Progs mProgs = null;
 	Chaines mChaines = null;
 	String mDate = null;
+	boolean mErreur = false;
 	
 	/**
 	 * Constructeur complet
@@ -62,6 +65,13 @@ public class Guide {
 	public Guide(String json, boolean progs, boolean chaines, boolean date) {
 		try {
 			JSONObject o = new JSONObject(json);
+			
+			if (o.has("error")) {
+				if (o.getInt("error") == 1) {
+					mErreur = true;
+					Log.d("FreeboxMobile", "Erreur JSON Chaine: "+json);
+				}
+			}
 			
 			if (progs) {
 				if (o.has("progs")) {
@@ -88,6 +98,9 @@ public class Guide {
 	
 	public Chaines.Chaines_Chaine getChaine(int id) {
 		return mChaines.getChaine(id);
+	}
+	public boolean erreur() {
+		return mErreur;
 	}
 	
 	/**

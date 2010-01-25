@@ -1,7 +1,5 @@
 package org.madprod.freeboxmobile.pvr;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,6 +50,8 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 	static final int RESULT_SUPPRESSION_OK = 1;
 	static final int RESULT_PROG_OK = 2;
 	static final int RESULT_PROG_NOK = 3;
+	
+	ProgressDialog progressDialog = null;
 
     /** Called when the activity is first created. */
     @Override
@@ -82,6 +82,14 @@ public class EnregistrementsActivity extends ExpandableListActivity {
     	super.onDestroy();
     	FBMHttpConnection.closeDisplay();
     }
+	
+	@Override
+	protected void onPause() {
+		if (progressDialog != null) {
+			progressDialog.dismiss();
+		}
+		super.onPause();
+	}
     
     private void erreur(String msgErreur) {
     	AlertDialog d = new AlertDialog.Builder(this).create();
@@ -105,7 +113,6 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 	 *
 	 */
     class UpdateEnregistrementsTask extends AsyncTask<Void, Integer, Boolean> {
-    	ProgressDialog progressDialog = null;
     	Boolean updateFromConsole = false;
     	
     	UpdateEnregistrementsTask(boolean ufc) {
