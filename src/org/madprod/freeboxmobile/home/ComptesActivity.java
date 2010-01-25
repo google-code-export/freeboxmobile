@@ -1,5 +1,6 @@
 package org.madprod.freeboxmobile.home;
 
+import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
 
 import android.app.ListActivity;
@@ -190,7 +191,14 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 					editor.putString(KEY_USER, c.getString(c.getColumnIndexOrThrow(KEY_USER)));
 					editor.putString(KEY_PASSWORD, c.getString(c.getColumnIndexOrThrow(KEY_PASSWORD)));
 					editor.putString(KEY_TITLE, c.getString(c.getColumnIndexOrThrow(KEY_TITLE)));
+					editor.putString(KEY_NRA, c.getString(c.getColumnIndexOrThrow(KEY_NRA)));
+					editor.putString(KEY_DSLAM, c.getString(c.getColumnIndexOrThrow(KEY_DSLAM)));
+					editor.putString(KEY_IP, c.getString(c.getColumnIndexOrThrow(KEY_IP)));
+					editor.putString(KEY_TEL, c.getString(c.getColumnIndexOrThrow(KEY_TEL)));
+					editor.putString(KEY_LENGTH, c.getString(c.getColumnIndexOrThrow(KEY_LENGTH)));
+					editor.putString(KEY_ATTN, c.getString(c.getColumnIndexOrThrow(KEY_ATTN)));
 					editor.commit();
+					FBMHttpConnection.initCompte(ComptesActivity.this);
 				}
 				else
 				{
@@ -217,21 +225,25 @@ public class ComptesActivity extends ListActivity implements HomeConstants
         if ((getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_USER, null) == null) && (resultCode != 0))
         {
        		Long id = intent.getLongExtra(ComptesDbAdapter.KEY_ROWID, 0);
-            Log.d(DEBUGTAG,"Dans  if "+id);
         	if (id != 0)
         	{
-                Log.d(DEBUGTAG,"Dans  if id "+id);
 				Cursor c = mDbHelper.fetchCompte(id);
 				startManagingCursor(c);
 				if (c.getCount() > 0)
 				{
-	                Log.d(DEBUGTAG,"Dans if getCount");
 					SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 					Editor editor = mgr.edit();
 					editor.putString(KEY_USER, c.getString(c.getColumnIndexOrThrow(KEY_USER)));
 					editor.putString(KEY_PASSWORD,  c.getString(c.getColumnIndexOrThrow(KEY_PASSWORD)));
 					editor.putString(KEY_TITLE, c.getString(c.getColumnIndexOrThrow(KEY_TITLE)));
+					editor.putString(KEY_NRA, c.getString(c.getColumnIndexOrThrow(KEY_NRA)));
+					editor.putString(KEY_DSLAM, c.getString(c.getColumnIndexOrThrow(KEY_DSLAM)));
+					editor.putString(KEY_IP, c.getString(c.getColumnIndexOrThrow(KEY_IP)));
+					editor.putString(KEY_TEL, c.getString(c.getColumnIndexOrThrow(KEY_TEL)));
+					editor.putString(KEY_LENGTH, c.getString(c.getColumnIndexOrThrow(KEY_LENGTH)));
+					editor.putString(KEY_ATTN, c.getString(c.getColumnIndexOrThrow(KEY_ATTN)));
 					editor.commit();
+					FBMHttpConnection.initCompte(this);
 	            	Toast t = Toast.makeText(ComptesActivity.this, "Compte "+c.getString(c.getColumnIndexOrThrow(KEY_TITLE))+" selectionné",Toast.LENGTH_LONG);
 	            	t.show();
 				}

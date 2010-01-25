@@ -54,6 +54,7 @@ public class FBMHttpConnection implements Constants
 	private static int connectionStatus = CONNECT_NOT_CONNECTED;
 	
 	private static final String serverUrl = "http://subscribe.free.fr/login/login.pl";
+	private static final String suiviTechUrl = "http://adsl.free.fr/suivi/suivi_techgrrr.pl";
 	
 	public static ProgressDialog httpProgressDialog = null;
 	public static AlertDialog errorAlert = null;
@@ -64,9 +65,13 @@ public class FBMHttpConnection implements Constants
 	 * Doit être appelé dans le onCreate de chaque Activity
 	 * @param a activity
 	 */
-	public static void initVars(Activity a)
+	public static void initVars(Activity a, Context c)
 	{
-		USER_AGENT = a.getString(R.string.app_name)+"/"+a.getString(R.string.app_version)+" (Linux; U; Android; fr-fr;)";
+		if (c == null)
+		{
+			c = a.getBaseContext();
+		}
+		USER_AGENT = c.getString(R.string.app_name)+"/"+c.getString(R.string.app_version)+" (Linux; U; Android; fr-fr;)";
 		// On teste pour si on entre ici suite
         if (httpProgressDialog != null)
         {
@@ -76,10 +81,25 @@ public class FBMHttpConnection implements Constants
         {
            	errorAlert.show();
         }
-        title = a.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_TITLE, null);
-		login = a.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_USER, null);
-		password = a.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_PASSWORD, null);
-		ConnectFree.setActivity(a);
+        title = c.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_TITLE, null);
+		login = c.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_USER, null);
+		password = c.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_PASSWORD, null);
+		if (a != null)
+		{
+			ConnectFree.setActivity(a);
+		}
+	}
+
+	/**
+	 * A utiliser lors d'un changement de compte actif
+	 * @param a
+	 */
+	public static void initCompte(Activity a)
+	{
+		id = null;
+		idt = null;
+		if (a != null)
+			initVars(a, null);
 	}
 
 	public static void closeDisplay()
@@ -100,11 +120,11 @@ public class FBMHttpConnection implements Constants
 	 * @param l
 	 * @param p
 	 */
-	public static void setVars(String l, String p)
-	{
-		login = l;
-		password = p;
-	}
+//	public static void setVars(String l, String p, Context c)
+//	{
+//		login = l;
+//		password = p;
+//	}
 	
 	public static String getTitle()
 	{
@@ -207,9 +227,73 @@ public class FBMHttpConnection implements Constants
 
 	public static int connectFreeCheck(String l, String p)
 	{
-		return FBMHttpConnection.connectionFree(l, p, true);		
+		int c = FBMHttpConnection.connectionFree(l, p, true);
+		if (c == CONNECT_CONNECTED)
+		{
+			parseConsole(l, p);
+			// Reset de id & idt afin que ce compte (qui n'est peut etre pas celui sélectionné comme actif)
+			// ne reste pas connecté
+			initCompte(null); 
+		}
+		return (c);		
+	}
+	
+	/**
+	 * Parse suiviTechUrl
+	 * @param l : login du compte à parser
+	 * @param p : mot de passe du compte à parser
+	 */
+	private static void parseConsole(String l, String p)
+	{
+		String s;
+		final String NRA = "NRA :";
+		String mNra = null;
+		final String LENGTH = "Longueur :";
+		String mLength = null;
+		final String ATTN = "Affaiblissement :";
+		String mAttn = null;
+
+		InputStream is = getAuthRequest(suiviTechUrl, null, true, true);
+		try
+		{
+			if (is != null)
+			{
+		    	BufferedReader br = new BufferedReader(new InputStreamReader(is, "ISO8859_1"));
+		    	while ( (s=br.readLine())!= null && s.indexOf(NRA) == -1)
+				{
+				}
+				if ((s != null) && (s.indexOf(NRA)>-1) && ((s = br.readLine()) != null))
+				{
+					mNra = s.substring(s.indexOf("\">")+2,s.indexOf("</"));
+					Log.d(DEBUGTAG, "NRA : "+mNra);
+				}
+		    	while ( (s=br.readLine())!= null && s.indexOf(LENGTH) == -1)
+				{
+		    		Log.d(DEBUGTAG, "DATA : "+s);
+				}
+				if ((s != null) && (s.indexOf(LENGTH)>-1) && ((s = br.readLine()) != null))
+				{
+					mLength = s.substring(s.indexOf("\">")+2,s.indexOf(" mètres"));
+					Log.d(DEBUGTAG, "LENGTH : "+mLength);
+				}
+		    	while ( (s=br.readLine())!= null && s.indexOf(ATTN) == -1)
+				{		    		
+				}
+				if ((s != null) && (s.indexOf(ATTN)>-1) && ((s = br.readLine()) != null))
+				{
+					mAttn = s.substring(s.indexOf("\">")+2,s.indexOf(" dB"));
+					Log.d(DEBUGTAG, "ATTN : "+mAttn);
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			Log.e(DEBUGTAG, "parseConsole : " + e.getMessage());
+			e.printStackTrace();
+		}
 	}
 
+	// TODO : parametre check peut être plus utile
 	// En cas de résussite : http://adsl.free.fr/compte/console.pl?id=417389&idt=10eb38933107f10c
 	// En cas d'erreur de login/pass : /login/login.pl?login=0909090909&error=1
 	/**

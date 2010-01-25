@@ -22,12 +22,15 @@ public class ComptesDbAdapter implements HomeConstants
 
     private static final String DATABASE_NAME = "comptes";
     private static final String DATABASE_TABLE = "comptes";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 4;
 
     private static final String DATABASE_CREATE =
         "create table " + DATABASE_TABLE + " (" + KEY_ROWID + " integer primary key autoincrement, "
                 + KEY_TITLE +" text not null, " + KEY_USER + " text not null, "
-                + KEY_PASSWORD + " text not null);";
+                + KEY_PASSWORD + " text not null, " + KEY_NRA + " text not null, "
+                + KEY_DSLAM + " text not null, " + KEY_IP + " text not null, "
+                + KEY_TEL + " text not null, "+ KEY_LENGTH + " text not null, "
+                + KEY_ATTN + " text not null );";
 
     private final Context mCtx;
 
@@ -48,9 +51,54 @@ public class ComptesDbAdapter implements HomeConstants
     	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
     	{
     		Log.d(DEBUGTAG, "ComptesDbAdapter : Upgrading database from version " + oldVersion + " to "
-                + newVersion + ", which will destroy all old data");
-    		db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE);
-    		onCreate(db);
+                + newVersion);
+    		if (newVersion > oldVersion)
+    		{
+	    		db.beginTransaction();
+	    		boolean success = true;
+	    		int nextVersion;
+	    		for (int i = oldVersion; i < newVersion ; i++)
+	    		{
+	    			nextVersion = i + 1;
+	    			switch (nextVersion)
+	    			{
+	    				case 3:
+	    					success = upgradeToVersion3(db);
+	    				break;
+	    				case 4:
+	    					success = upgradeToVersion4(db);
+	    				break;
+	    			}
+	    			if (!success)
+	    				break;
+	    		}
+	    		if (success)
+	    		{
+	    			db.setTransactionSuccessful();
+	    		}
+	    		db.endTransaction();
+    		}
+    		else
+    		{
+	    		db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE);
+	    		onCreate(db);
+    		}
+    	}
+    	
+    	boolean upgradeToVersion3(SQLiteDatabase db)
+    	{
+    		db.execSQL("ALTER TABLE "+DATABASE_TABLE+" ADD "+KEY_NRA + " text DEFAULT '' not null");
+    		db.execSQL("ALTER TABLE "+DATABASE_TABLE+" ADD "+KEY_DSLAM + " text DEFAULT '' not null");
+    		db.execSQL("ALTER TABLE "+DATABASE_TABLE+" ADD "+KEY_IP + " text DEFAULT '' not null");
+    		db.execSQL("ALTER TABLE "+DATABASE_TABLE+" ADD "+KEY_TEL + " text DEFAULT '' not null");
+    		return true;
+    	}
+
+    	boolean upgradeToVersion4(SQLiteDatabase db)
+    	{
+    		db.execSQL("ALTER TABLE "+DATABASE_TABLE+" ADD "+KEY_LENGTH + " text DEFAULT '' not null");
+    		db.execSQL("ALTER TABLE "+DATABASE_TABLE+" ADD "+KEY_ATTN + " text DEFAULT '' not null");
+    		return true;
     	}
     }
 
@@ -96,12 +144,18 @@ public class ComptesDbAdapter implements HomeConstants
      * @param password the password of the compte
      * @return rowId or -1 if failed
      */
-    public long createCompte(String title, String user, String password)
+    public long createCompte(String title, String user, String password, String nra, String dslam, String ip, String length, String attn, String tel)
     {
         ContentValues initialValues = new ContentValues();
         initialValues.put(KEY_TITLE, title);
         initialValues.put(KEY_USER, user);
         initialValues.put(KEY_PASSWORD, password);
+        initialValues.put(KEY_NRA, nra);
+        initialValues.put(KEY_DSLAM, dslam);
+        initialValues.put(KEY_IP, ip);
+        initialValues.put(KEY_LENGTH, length);
+        initialValues.put(KEY_ATTN, attn);
+        initialValues.put(KEY_TEL, tel);
         return mDb.insert(DATABASE_TABLE, null, initialValues);
     }
 
@@ -124,7 +178,8 @@ public class ComptesDbAdapter implements HomeConstants
     public Cursor fetchAllComptes()
     {
         return mDb.query(DATABASE_TABLE, new String[] {KEY_ROWID, KEY_TITLE,
-                KEY_USER, KEY_PASSWORD}, null, null, null, null, null);
+                KEY_USER, KEY_PASSWORD, KEY_NRA, KEY_DSLAM, KEY_IP, KEY_TEL,
+                KEY_LENGTH, KEY_ATTN}, null, null, null, null, null);
     }
 
     /**
@@ -138,8 +193,9 @@ public class ComptesDbAdapter implements HomeConstants
     {
         Cursor mCursor =
                 mDb.query(true, DATABASE_TABLE, new String[] {KEY_ROWID,
-                        KEY_TITLE, KEY_USER, KEY_PASSWORD}, KEY_ROWID + "=" + rowId, null,
-                        null, null, null, null);
+                        KEY_TITLE, KEY_USER, KEY_PASSWORD, KEY_NRA, KEY_DSLAM,
+                        KEY_IP, KEY_TEL, KEY_LENGTH, KEY_ATTN}, KEY_ROWID
+                        + "=" + rowId, null, null, null, null, null);
         if (mCursor != null)
         {
             mCursor.moveToFirst();
@@ -158,13 +214,18 @@ public class ComptesDbAdapter implements HomeConstants
      * @param password value to set compte password to
      * @return true if the note was successfully updated, false otherwise
      */
-    public boolean updateCompte(long rowId, String title, String user, String password)
+    public boolean updateCompte(long rowId, String title, String user, String password, String nra, String dslam, String ip, String length, String attn, String tel)
     {
         ContentValues args = new ContentValues();
         args.put(KEY_TITLE, title);
         args.put(KEY_USER, user);
         args.put(KEY_PASSWORD, password);
-
+        args.put(KEY_NRA, nra);
+        args.put(KEY_DSLAM, dslam);
+        args.put(KEY_IP, ip);
+        args.put(KEY_LENGTH, length);
+        args.put(KEY_ATTN, attn);
+        args.put(KEY_TEL, tel);
         return mDb.update(DATABASE_TABLE, args, KEY_ROWID + "=" + rowId, null) > 0;
     }
 
@@ -192,8 +253,11 @@ public class ComptesDbAdapter implements HomeConstants
     public Cursor fetchFromTitle(String title)
     {
     	Cursor mCursor = mDb.query(true, DATABASE_TABLE, new String[] {
-            		KEY_TITLE, KEY_USER, KEY_PASSWORD}, KEY_TITLE + "='" + title + "'", null,
-                    null, null, null, null);
+    			KEY_ROWID,
+                KEY_TITLE, KEY_USER, KEY_PASSWORD, KEY_NRA, KEY_DSLAM,
+                KEY_IP, KEY_TEL, KEY_LENGTH, KEY_ATTN
+    			}, KEY_TITLE + "='" + title + "'", null,
+                null, null, null, null);
         if (mCursor != null)
         {
             mCursor.moveToFirst();

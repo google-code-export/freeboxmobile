@@ -36,7 +36,7 @@ public class ComptesEditActivity extends Activity implements Constants
     {
         super.onCreate(savedInstanceState);
         
-        FBMHttpConnection.initVars(ComptesEditActivity.this);
+        FBMHttpConnection.initVars(ComptesEditActivity.this, null);
 
         mDbHelper = new ComptesDbAdapter(this);
         mDbHelper.open();
@@ -174,6 +174,10 @@ public class ComptesEditActivity extends Activity implements Constants
         super.onDestroy();
     }
 
+    public static void parseInfoTechs()
+    {
+    	
+    }
     private void saveState()
     {
         Bundle bundle = new Bundle();
@@ -186,10 +190,21 @@ public class ComptesEditActivity extends Activity implements Constants
         	String title = mTitleText.getText().toString();
 	        String login = mUserText.getText().toString();
 	        String password = mPasswordText.getText().toString();
-	
+	        String nra = "";
+	        String dslam = "";
+	        String tel = "";
+	        String ip = "";
+	        String length = "";
+	        String attn = "";
+
+			// GET NRA : http://adsl.free.fr/suivi/suivi_techgrrr.pl
+			// GET IP : http://adsl.free.fr/suivi/suivi_techgrrr.pl
+			// GET TELEPHONE NUMBER http://adsl.free.fr/suivi/suivi_techgrrr.pl
+			// GET DSLAM
+
 	        if (mRowId == null)
 	        {
-	            long id = mDbHelper.createCompte(title, login, password);
+	            long id = mDbHelper.createCompte(title, login, password, nra, dslam, ip, length, attn, tel);
 	            if (id > 0)
 	            {
 	                mRowId = id;
@@ -197,19 +212,22 @@ public class ComptesEditActivity extends Activity implements Constants
 	        }
 	        else
 	        {
-	            mDbHelper.updateCompte(mRowId, title, login, password);
+	            mDbHelper.updateCompte(mRowId, title, login, password, nra, dslam, ip, length, attn, tel);
 	        }
-	        bundle.putString(ComptesDbAdapter.KEY_TITLE, title);
+            bundle.putLong(ComptesDbAdapter.KEY_ROWID, mRowId);
+/* NOT USED FOR NOW
+ 	        bundle.putString(ComptesDbAdapter.KEY_TITLE, title);
 	        bundle.putString(ComptesDbAdapter.KEY_USER, login);
 	        bundle.putString(ComptesDbAdapter.KEY_PASSWORD, password);
-            bundle.putLong(ComptesDbAdapter.KEY_ROWID, mRowId);
+*/
     	}
     	else
     	{
-        	Log.d(DEBUGTAG, "ComptesEditActivity RESULT_NOK");
+/* NOT USED FOR NOW
 	        bundle.putString(ComptesDbAdapter.KEY_TITLE, null);
 	        bundle.putString(ComptesDbAdapter.KEY_USER, null);
 	        bundle.putString(ComptesDbAdapter.KEY_PASSWORD, null);
+*/
             bundle.putLong(ComptesDbAdapter.KEY_ROWID, 0);
     	}
         mIntent.putExtras(bundle);
