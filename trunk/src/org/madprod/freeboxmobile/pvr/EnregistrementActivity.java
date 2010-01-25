@@ -31,7 +31,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class EnregistrementActivity extends Activity {
-	private static long idEnregistrement;
+	private long idEnregistrement;
 	Activity enregistrementActivity = null;
 	static ProgressDialog progressDialog = null;
 	
