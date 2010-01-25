@@ -246,12 +246,16 @@ public class FBMHttpConnection implements Constants
 	private static void parseConsole(String l, String p)
 	{
 		String s;
-		final String NRA = "NRA :";
+		final String NRA = "NRAa :";
 		String mNra = null;
 		final String LENGTH = "Longueur :";
 		String mLength = null;
 		final String ATTN = "Affaiblissement :";
 		String mAttn = null;
+		final String IP = "Votre adresse IP";
+		String mIP = null;
+		final String TEL = "téléphone Freebox";
+		String mTel = null;
 
 		InputStream is = getAuthRequest(suiviTechUrl, null, true, true);
 		try
@@ -259,6 +263,7 @@ public class FBMHttpConnection implements Constants
 			if (is != null)
 			{
 		    	BufferedReader br = new BufferedReader(new InputStreamReader(is, "ISO8859_1"));
+		    	br.mark(20000);
 		    	while ( (s=br.readLine())!= null && s.indexOf(NRA) == -1)
 				{
 				}
@@ -267,23 +272,64 @@ public class FBMHttpConnection implements Constants
 					mNra = s.substring(s.indexOf("\">")+2,s.indexOf("</"));
 					Log.d(DEBUGTAG, "NRA : "+mNra);
 				}
+				else
+				{
+					Log.d(DEBUGTAG, "NRA pas trouvé");
+					br.reset();
+				}
 		    	while ( (s=br.readLine())!= null && s.indexOf(LENGTH) == -1)
 				{
-		    		Log.d(DEBUGTAG, "DATA : "+s);
 				}
 				if ((s != null) && (s.indexOf(LENGTH)>-1) && ((s = br.readLine()) != null))
 				{
 					mLength = s.substring(s.indexOf("\">")+2,s.indexOf(" mètres"));
 					Log.d(DEBUGTAG, "LENGTH : "+mLength);
 				}
+				else
+				{
+					Log.d(DEBUGTAG, "NRA pas trouvé");
+					br.reset();
+				}
 		    	while ( (s=br.readLine())!= null && s.indexOf(ATTN) == -1)
-				{		    		
+				{
 				}
 				if ((s != null) && (s.indexOf(ATTN)>-1) && ((s = br.readLine()) != null))
 				{
 					mAttn = s.substring(s.indexOf("\">")+2,s.indexOf(" dB"));
 					Log.d(DEBUGTAG, "ATTN : "+mAttn);
 				}
+				else
+				{
+					Log.d(DEBUGTAG, "NRA pas trouvé");
+					br.reset();
+				}
+		    	while ( (s=br.readLine())!= null && s.indexOf(IP) == -1)
+				{
+				}
+				if ((s != null) && (s.indexOf(IP)>-1))
+				{
+					mIP = s.substring(s.indexOf("<b>")+3,s.indexOf(" / "));
+					Log.d(DEBUGTAG, "IP : "+mIP);
+				}				
+				else
+				{
+					Log.d(DEBUGTAG, "NRA pas trouvé");
+					br.reset();
+				}
+		    	while ( (s=br.readLine())!= null && s.indexOf(TEL) == -1)
+				{
+				}
+				if ((s != null) && (s.indexOf(TEL)>-1))
+				{
+					mTel = s.substring(s.indexOf("<b>")+3,s.indexOf("</b>"));
+					Log.d(DEBUGTAG, "TEL : "+mTel);
+				}				
+				else
+				{
+					Log.d(DEBUGTAG, "NRA pas trouvé");
+					br.reset();
+				}
+				br.close();
 			}
 		}
 		catch (Exception e)
@@ -623,10 +669,7 @@ public class FBMHttpConnection implements Constants
 			c = checkConnected(CONNECT_CONNECTED);
 			if (c == CONNECT_CONNECTED)
 			{
-//				if (auth)
-					h = prepareConnection(serverUrl+(auth ? "?"+makeStringForPost(null, auth) : ""), "POST");
-//				else
-//					h = prepareConnection(serverUrl, "POST");
+				h = prepareConnection(url+(auth ? "?"+makeStringForPost(null, auth) : ""), "POST");
 				h.setDoOutput(true);
 				if (retour)
 					h.setDoInput(true);
@@ -651,8 +694,7 @@ public class FBMHttpConnection implements Constants
 				if (c == CONNECT_CONNECTED)
 				{
 					Log.d(DEBUGTAG, "POST :  REAUTHENTIFICATION OK");
-					h = prepareConnection(serverUrl+(auth ? "?"+makeStringForPost(null, auth) : ""), "POST");
-//					h = prepareConnection(serverUrl, "POST");
+					h = prepareConnection(url+(auth ? "?"+makeStringForPost(null, auth) : ""), "POST");
 					h.setDoOutput(true);
 					if (retour)
 						h.setDoInput(true);
