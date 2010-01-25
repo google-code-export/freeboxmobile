@@ -61,7 +61,7 @@ public class HomeActivity extends Activity implements HomeConstants
         if (Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED) == false)
         	showSdCardError();
 		setContentView(R.layout.home_main);
-		FBMHttpConnection.initVars(this);
+		FBMHttpConnection.initVars(this, null);
 
         Button phoneButton = (Button) findViewById(R.id.phone);
         Button aboutButton = (Button) findViewById(R.id.about);
@@ -257,7 +257,7 @@ public class HomeActivity extends Activity implements HomeConstants
             			getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_PASSWORD, null)
             			))
             	{
-            		FBMHttpConnection.initVars(homeActivity);
+            		FBMHttpConnection.initVars(homeActivity, null);
 //            		new ConnectFree().execute();
             	}
         		break;

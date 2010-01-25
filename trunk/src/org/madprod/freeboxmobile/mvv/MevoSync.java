@@ -90,10 +90,12 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 
 		mDbHelper = new MevoDbAdapter(this);
 
-		FBMHttpConnection.setVars(
-				getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_USER, null),
-				getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_PASSWORD, null)
-				);
+		FBMHttpConnection.initVars(null, getBaseContext());
+//		FBMHttpConnection.setVars(
+//				getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_USER, null),
+//				getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_PASSWORD, null),
+//				getBaseContext()
+//				);
 		newmsg = checkUpdate();
 		if (newmsg > 0)
 		{

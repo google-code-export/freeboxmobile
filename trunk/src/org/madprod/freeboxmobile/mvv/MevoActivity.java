@@ -72,7 +72,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
     {
 		Log.d(DEBUGTAG,"MevoActivity create");
         super.onCreate(savedInstanceState);
-        FBMHttpConnection.initVars(this);
+        FBMHttpConnection.initVars(this, null);
     	MevoSync.setActivity(this);
         setContentView(R.layout.mevo);
         registerForContextMenu(getListView());

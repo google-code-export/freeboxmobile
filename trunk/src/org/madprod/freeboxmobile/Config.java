@@ -30,7 +30,7 @@ public class Config extends PreferenceActivity implements OnSharedPreferenceChan
         getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
         addPreferencesFromResource(R.xml.config_prefs);
 
-        FBMHttpConnection.initVars(this);
+        FBMHttpConnection.initVars(this, null);
         // Pas beau sur les prefs suite bug : http://code.google.com/p/android/issues/detail?id=922
         // TODO : try workaround évoqué dans le rapport de bug
         //setTheme(android.R.style.Theme_Light);
