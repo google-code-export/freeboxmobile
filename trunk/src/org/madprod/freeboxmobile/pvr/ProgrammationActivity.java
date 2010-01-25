@@ -321,12 +321,15 @@ public class ProgrammationActivity extends Activity {
         		postVars.add(new BasicNameValuePair("where_id", where_id.toString()));
         		
         		// Récurrence
+        		String repeat_a = "";
             	for (int i = 0; i < 7; i++) {
             		if (joursChoisis[i]) {
             			postVars.add(new BasicNameValuePair("period", ""+(i+1)));
+            			repeat_a += "1";
+            		} else {
+            			repeat_a += "0";
             		}
             	}
-            	Log.d("prout", postVars.toString());
         		
             	// Post vars pour modification:
             	//chaine=12&service=0&date=10%2F01%2F2010&heure=23&minutes=09
@@ -372,14 +375,14 @@ public class ProgrammationActivity extends Activity {
         				int rowId = enr.getInt(enr.getColumnIndex(EnregistrementsDbAdapter.KEY_ROWID));
         				long l = db.modifyEnregistrement(rowId, nomChaine, date, heure+"h"+minutes, duree.toString(),
         			    		emission, ide.toString(), chaine.toString(), service.toString(), heure, minutes,
-        			    		duree.toString(), emission, where_id.toString(), "");
+        			    		duree.toString(), emission, where_id.toString(), repeat_a);
         				Log.d(TAG, "MODIFIER ENR = "+l);
         			}
         			// Ajout
         			else {
         				long l = db.createEnregistrement(nomChaine, date, heure+"h"+minutes, duree.toString(),
         			    		emission, ide.toString(), chaine.toString(), service.toString(), heure, minutes,
-        			    		duree.toString(), emission, where_id.toString(), "");
+        			    		duree.toString(), emission, where_id.toString(), repeat_a);
         				Log.d(TAG, "AJOUTER ENR = "+l);
         			}
         			
