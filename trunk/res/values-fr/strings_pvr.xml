@@ -30,6 +30,10 @@
 	<string name="pvrSamedi">Samedi</string>
 	<string name="pvrDimanche">Dimanche</string>
 	
+	<string name="pvrCMenuVoir">Voir les détails</string>
+	<string name="pvrCMenuModif">Éditer</string>
+	<string name="pvrCMenuSuppr">Supprimer</string>
+	
 	<string name="pvrChoixJours">Choisissez le(s) jour(s) de répétition</string>
 	<string name="pvrErreurInterne1">Cette erreur est provoquée lorsque vous choisissez des jours de récurrence qui ne correspondent pas à la date choisie.</string>
 	

@@ -30,6 +30,10 @@
 	<string name="pvrSamedi">Saturday</string>
 	<string name="pvrDimanche">Sunday</string>
 	
+	<string name="pvrCMenuVoir">See details</string>
+	<string name="pvrCMenuModif">Edit</string>
+	<string name="pvrCMenuSuppr">Delete</string>
+	
 	<string name="pvrChoixJours">Choose days</string>
 	<string name="pvrErreurInterne1">This error is certainly caused by the fact that you chose a day that does not fit with the date you chose.</string>
 	

@@ -12,6 +12,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,6 +22,8 @@ import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.Toast;
+import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -43,6 +47,10 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 
 	static final int MENU_UPDATE = 0;
 	static final int MENU_ADD = 1;
+	
+	static final int CMENU_VOIR = 0;
+	static final int CMENU_MODIF = 1;
+	static final int CMENU_SUPPR = 2;
 
 	static final int ACTIVITY_ENREGISTREMENT = 1;
 	static final int ACTIVITY_PROGRAMMATION = 2;
@@ -63,6 +71,8 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 		this.listeEnregistrements = new ListeEnregistrements();
         this.succesChargement = false;
         enrAct = this;
+        
+        registerForContextMenu(getExpandableListView());
 
         setTheme(android.R.style.Theme_Light);
         setTitle(getString(R.string.app_name) + " - Magnétoscope numérique" + "("+FBMHttpConnection.getIdentifiant()+")");
@@ -345,22 +355,50 @@ public class EnregistrementsActivity extends ExpandableListActivity {
     	if (succesChargement == false) {
     		return false;
     	}
-
+    	
+    	afficherEnregistrementActivity(new Intent(this, EnregistrementActivity.class), groupPosition);
+    	
+		return true;
+    }
+    
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+    	super.onCreateContextMenu(menu, v, menuInfo);
+    	menu.add(0, CMENU_VOIR, 0, getString(R.string.pvrCMenuVoir));
+    	menu.add(0, CMENU_MODIF, 0, getString(R.string.pvrCMenuModif));
+    	menu.add(0, CMENU_SUPPR, 0, getString(R.string.pvrCMenuSuppr));
+    }
+    public boolean onContextItemSelected(MenuItem item) {
+    	final ExpandableListContextMenuInfo info = (ExpandableListContextMenuInfo) item.getMenuInfo();
+		switch (item.getItemId()) {
+			case CMENU_VOIR:
+				afficherEnregistrementActivity(new Intent(this, EnregistrementActivity.class), (int) info.id);
+				return true;
+			case CMENU_MODIF:
+				afficherEnregistrementActivity(new Intent(this, ProgrammationActivity.class), (int) info.id);
+				return true;
+			case CMENU_SUPPR:
+    			EnregistrementActivity.SupprimerEnregistrement(enrAct, false, getRowIdFromItemId((int) info.id));
+				return true;
+			default:
+				return super.onContextItemSelected(item);
+		}
+    }
+    private long getRowIdFromItemId(int itemId) {
     	// Récupération de l'id
         EnregistrementsDbAdapter db = new EnregistrementsDbAdapter(this);
         db.open();
         Cursor c = db.fetchAllEnregistrements(new String[] { EnregistrementsDbAdapter.KEY_ROWID });
-        c.moveToPosition(groupPosition);
+        c.moveToPosition(itemId);
         long rowId = c.getLong(c.getColumnIndex(EnregistrementsDbAdapter.KEY_ROWID));
         c.close();
         db.close();
-        
+        return rowId;
+    }
+    private void afficherEnregistrementActivity(Intent i, int itemId) {        
         // Lancement de l'activité
-        Intent i = new Intent(this, EnregistrementActivity.class);
-        i.putExtra(EnregistrementsDbAdapter.KEY_ROWID, rowId);
+        i.putExtra(EnregistrementsDbAdapter.KEY_ROWID, getRowIdFromItemId(itemId));
         startActivityForResult(i, ACTIVITY_ENREGISTREMENT);
-    	
-		return true;
     }
     
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
