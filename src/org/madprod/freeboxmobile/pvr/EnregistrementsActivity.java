@@ -356,7 +356,7 @@ public class EnregistrementsActivity extends ExpandableListActivity {
     		return false;
     	}
     	
-    	afficherEnregistrementActivity(new Intent(this, EnregistrementActivity.class), groupPosition);
+    	afficherEnregistrementActivity(new Intent(this, EnregistrementActivity.class), groupPosition, ACTIVITY_ENREGISTREMENT);
     	
 		return true;
     }
@@ -370,15 +370,16 @@ public class EnregistrementsActivity extends ExpandableListActivity {
     }
     public boolean onContextItemSelected(MenuItem item) {
     	final ExpandableListContextMenuInfo info = (ExpandableListContextMenuInfo) item.getMenuInfo();
+    	int itemId = ExpandableListView.getPackedPositionGroup(info.packedPosition);
 		switch (item.getItemId()) {
 			case CMENU_VOIR:
-				afficherEnregistrementActivity(new Intent(this, EnregistrementActivity.class), (int) info.id);
+				afficherEnregistrementActivity(new Intent(this, EnregistrementActivity.class), itemId, ACTIVITY_ENREGISTREMENT);
 				return true;
 			case CMENU_MODIF:
-				afficherEnregistrementActivity(new Intent(this, ProgrammationActivity.class), (int) info.id);
+				afficherEnregistrementActivity(new Intent(this, ProgrammationActivity.class), itemId, ACTIVITY_PROGRAMMATION);
 				return true;
 			case CMENU_SUPPR:
-    			EnregistrementActivity.SupprimerEnregistrement(enrAct, false, getRowIdFromItemId((int) info.id));
+    			EnregistrementActivity.SupprimerEnregistrement(enrAct, false, getRowIdFromItemId(itemId));
 				return true;
 			default:
 				return super.onContextItemSelected(item);
@@ -395,10 +396,10 @@ public class EnregistrementsActivity extends ExpandableListActivity {
         db.close();
         return rowId;
     }
-    private void afficherEnregistrementActivity(Intent i, int itemId) {        
+    private void afficherEnregistrementActivity(Intent i, int itemId, int action) {        
         // Lancement de l'activité
         i.putExtra(EnregistrementsDbAdapter.KEY_ROWID, getRowIdFromItemId(itemId));
-        startActivityForResult(i, ACTIVITY_ENREGISTREMENT);
+        startActivityForResult(i, action);
     }
     
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
