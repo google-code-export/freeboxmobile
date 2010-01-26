@@ -61,16 +61,23 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo)
     {
 		super.onCreateContextMenu(menu, v, menuInfo);
-        menu.add(0, COMPTES_OPTION_DELETE, 0, R.string.comptes_option_delete);
+        menu.add(0, COMPTES_OPTION_MODIFY, 0, R.string.comptes_option_modify);
+        menu.add(0, COMPTES_OPTION_DELETE, 1, R.string.comptes_option_delete);
 	}
 
     @Override
 	public boolean onContextItemSelected(MenuItem item)
     {
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
 		switch(item.getItemId())
 		{
+			case COMPTES_OPTION_MODIFY:
+		        Intent i = new Intent(this, ComptesEditActivity.class);
+		        i.putExtra(ComptesDbAdapter.KEY_ROWID, info.id);
+		        startActivityForResult(i, COMPTE_EDIT);
+				break;
+
     		case COMPTES_OPTION_DELETE:
-    			AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
     			String selected = getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_USER, null);
     			if (mDbHelper.getComptesNumber() < 2)
     			{
