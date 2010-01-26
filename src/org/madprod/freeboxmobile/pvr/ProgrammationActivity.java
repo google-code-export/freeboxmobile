@@ -287,7 +287,7 @@ public class ProgrammationActivity extends Activity {
 	                }
                     else {
 						setResult(EnregistrementsActivity.RESULT_PROG_OK);
-                    	Toast.makeText(progAct, getString(R.string.pvrModificationEnregistrees),
+                    	Toast.makeText(progAct, getString(R.string.pvrModificationsEnregistrees),
                     			Toast.LENGTH_SHORT).show();
                     	
                     	finish();

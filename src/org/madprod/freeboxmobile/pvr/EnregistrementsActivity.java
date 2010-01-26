@@ -408,7 +408,7 @@ public class EnregistrementsActivity extends ExpandableListActivity {
     		updaterEnregistrements(false);
     		
     		if (resultCode == RESULT_SUPPRESSION_OK) {
-    			Toast.makeText(this, getString(R.string.pvrModificationEnregistrees),
+    			Toast.makeText(this, getString(R.string.pvrModificationsEnregistrees),
     					Toast.LENGTH_LONG).show();
     		}
     	}

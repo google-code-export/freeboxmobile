@@ -39,7 +39,7 @@
 	
 	<string name="pvrProgrammationEnCours">Programmation de l\'enregistrement en cours...</string>
 	<string name="pvrModificationEnCours">Modification de l\'enregistrement en cours...</string>
-	<string name="pvrModificationEnregistrees">Modifications enregistrées !</string>
+	<string name="pvrModificationsEnregistrees">Modifications enregistrées !</string>
 	<string name="pvrErreurConsole">Message retourné par la console de free :</string>
 	
 	<string name="pvrNonEnregistrable">Non enregistrable</string>

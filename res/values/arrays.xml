@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string-array name="pvrListeDurees">
-		<item>5</item>
-		<item>10</item>
-		<item>15</item>
-		<item>20</item>
-		<item>25</item>
-		<item>30</item>
-		<item>60</item>
+		<item>5mn</item>
+		<item>10mn</item>
+		<item>15mn</item>
+		<item>20mn</item>
+		<item>25mn</item>
+		<item>30mn</item>
+		<item>60mn</item>
 		<item>1h30</item>
 		<item>2h</item>
 		<item>2h30</item>
