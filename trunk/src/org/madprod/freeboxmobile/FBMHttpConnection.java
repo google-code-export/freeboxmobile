@@ -58,6 +58,7 @@ public class FBMHttpConnection implements Constants
 	
 	private static final String serverUrl = "http://subscribe.free.fr/login/login.pl";
 	private static final String suiviTechUrl = "http://adsl.free.fr/suivi/suivi_techgrrr.pl";
+	public static final String frimousseUrl = "http://www.frimousse.org/outils/xmlrpc";
 	
 	public static ProgressDialog httpProgressDialog = null;
 	public static AlertDialog errorAlert = null;
@@ -155,7 +156,12 @@ public class FBMHttpConnection implements Constants
 	{
 		httpProgressDialog = ProgressDialog.show(a, "Mon Compte Free", "Connexion en cours ...", true,false);
 	}
-	
+
+	public static void showProgressDialog2(Activity a)
+	{
+		httpProgressDialog = ProgressDialog.show(a, "Mise à jour des données", "Connexion en cours ...", true,false);
+	}
+
 	public static void dismissPd()
 	{
 		if (httpProgressDialog != null)
@@ -363,7 +369,7 @@ public class FBMHttpConnection implements Constants
 				br.close();
 				if (mIP != null)
 				{
-					URI uri = URI.create("http://www.frimousse.org/outils/xmlrpc");
+					URI uri = URI.create(frimousseUrl);
 					XMLRPCClient client = new XMLRPCClient(uri);
 					Object[] response = (Object[]) client.call("getDSLAMListForPool", mIP);
 					if (response.length > 0)

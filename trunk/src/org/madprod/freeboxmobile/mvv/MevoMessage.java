@@ -123,7 +123,7 @@ public class MevoMessage implements MevoConstants
 		}
 	}
 
-	private String convertDateTimeHR(String org)
+	public static String convertDateTimeHR(String org)
 	{
 		String ret = "";
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
