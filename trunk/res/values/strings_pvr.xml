@@ -39,7 +39,7 @@
 	
 	<string name="pvrProgrammationEnCours">Saving the programming...</string>
 	<string name="pvrModificationEnCours">Saving your modifications...</string>
-	<string name="pvrModificationEnregistrees">Changes saved!</string>
+	<string name="pvrModificationsEnregistrees">Changes saved!</string>
 	<string name="pvrErreurConsole">Error message returned by the console:</string>
 	
 	<string name="pvrNonEnregistrable">Not recordable</string>
