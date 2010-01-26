@@ -18,6 +18,7 @@
 	<string name="compte_choose">Choisissez le compte actif</string>	
 	<string name="comptes_liste">Liste des comptes :</string>
 	<string name="comptes_button_new">Nouveau compte</string>
+	<string name="comptes_option_modify">Modifier</string>
 	<string name="comptes_option_delete">Supprimer</string>
 	<string name="comptes_edit_nom">Nom du compte :</string>
 	<string name="comptes_edit_login">Identifiant :</string>
