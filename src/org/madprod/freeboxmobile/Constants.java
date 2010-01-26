@@ -12,6 +12,7 @@ public interface Constants
     static final int ACTIVITY_COMPTES = 0;
 
     // For database & prefs
+    static final String KEY_ROWID = "_id";
     static final String KEY_USER		= "user";
     static final String KEY_PASSWORD	= "password";
     static final String KEY_TITLE		= "title";

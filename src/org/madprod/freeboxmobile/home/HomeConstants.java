@@ -20,10 +20,6 @@ public interface HomeConstants extends Constants
     static final int HOME_OPTION_SHARE = Menu.FIRST + 2;
     static final int HOME_OPTION_ABOUT = Menu.FIRST + 3;
 
-    // Pour la gestion des comptes
-    // DB
-    public static final String KEY_ROWID = "_id";
-    
     // MENUS
     static final int COMPTES_OPTION_NEW = Menu.FIRST;
     static final int COMPTES_OPTION_DELETE = Menu.FIRST + 1;

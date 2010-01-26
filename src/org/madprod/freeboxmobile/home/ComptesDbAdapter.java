@@ -1,5 +1,7 @@
 package org.madprod.freeboxmobile.home;
 
+import org.madprod.freeboxmobile.Constants;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -15,7 +17,7 @@ import android.util.Log;
 * 
 */
 
-public class ComptesDbAdapter implements HomeConstants
+public class ComptesDbAdapter implements Constants
 {
     private DatabaseHelper mDbHelper;
     private SQLiteDatabase mDb;
@@ -80,7 +82,7 @@ public class ComptesDbAdapter implements HomeConstants
     		}
     		else
     		{
-	    		db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE);
+//	    		db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE);
 	    		onCreate(db);
     		}
     	}
@@ -288,7 +290,7 @@ public class ComptesDbAdapter implements HomeConstants
     /**
      * getIdFromLogin returns rowid associated with given login
      * @param login
-     * @return rowid
+     * @return rowid or null (if not found)
      */
     public Integer getIdFromLogin(String login)
     {

@@ -62,52 +62,48 @@ public class HomeActivity extends Activity implements HomeConstants
         	showSdCardError();
 		setContentView(R.layout.home_main);
 		FBMHttpConnection.initVars(this, null);
-
+		
         Button phoneButton = (Button) findViewById(R.id.phone);
         Button ligneButton = (Button) findViewById(R.id.ligne);
         Button pvrButton = (Button) findViewById(R.id.magneto);
-		phoneButton.setOnClickListener(
-				new View.OnClickListener()
-				{
-					public void onClick(View view)
-					{
-				    	Intent i = new Intent(homeActivity, org.madprod.freeboxmobile.mvv.MevoActivity.class);
-				    	startActivity(i);
-					}
-				}
-			);
-		ligneButton.setOnClickListener(
-				new View.OnClickListener()
-				{
-					public void onClick(View view)
-					{
-						Intent i = new Intent(homeActivity, org.madprod.freeboxmobile.ligne.LigneInfoActivity.class);
-				    	startActivity(i);
-					}
-				}
-			);
 
-		pvrButton.setOnClickListener(
-				new View.OnClickListener()
-				{
-					public void onClick(View view)
+        if (mgr.getString(KEY_TITLE, "").equals(""))
+		{
+		}
+		else
+		{
+			phoneButton.setOnClickListener(
+					new View.OnClickListener()
 					{
-				    	AlertDialog d = new AlertDialog.Builder(homeActivity).create();
-						d.setTitle(getString(R.string.app_name));
-				    	d.setMessage("Bientot ! :)");
-						d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
-							{
-								public void onClick(DialogInterface dialog, int which)
-								{
-									dialog.dismiss();
-								}
-							});
-						d.show();
-				    	Intent i = new Intent(homeActivity, org.madprod.freeboxmobile.pvr.EnregistrementsActivity.class);
-				    	startActivity(i);
+						public void onClick(View view)
+						{
+					    	Intent i = new Intent(homeActivity, org.madprod.freeboxmobile.mvv.MevoActivity.class);
+					    	startActivity(i);
+						}
 					}
-				}
-			);
+				);
+			ligneButton.setOnClickListener(
+					new View.OnClickListener()
+					{
+						public void onClick(View view)
+						{
+							Intent i = new Intent(homeActivity, org.madprod.freeboxmobile.ligne.LigneInfoActivity.class);
+					    	startActivity(i);
+						}
+					}
+				);
+	
+			pvrButton.setOnClickListener(
+					new View.OnClickListener()
+					{
+						public void onClick(View view)
+						{
+					    	Intent i = new Intent(homeActivity, org.madprod.freeboxmobile.pvr.EnregistrementsActivity.class);
+					    	startActivity(i);
+						}
+					}
+				);
+		}
 		setTitle(getString(R.string.app_name)+" "+FBMHttpConnection.getTitle());
     }
 
@@ -116,6 +112,11 @@ public class HomeActivity extends Activity implements HomeConstants
     {
     	Log.d(DEBUGTAG,"MainActivity Start");
     	super.onStart();
+    	SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
+        if (mgr.getString(KEY_TITLE, "").equals(""))
+		{
+			showNoCompte();
+		}
     }
     
     @Override
@@ -173,7 +174,6 @@ public class HomeActivity extends Activity implements HomeConstants
     			return true;
     		case HOME_OPTION_CONFIG:
 		    	i = new Intent(this, Config.class);
-//		    	i.setClassName("org.madprod.freeboxmobile", "org.madprod.freeboxmobile.Config");
 		    	startActivity(i);
 		    	return true;
     		case HOME_OPTION_ABOUT:
@@ -227,6 +227,33 @@ public class HomeActivity extends Activity implements HomeConstants
 		d.show();
     }
 
+    private void showNoCompte()
+    {
+		AlertDialog d = new AlertDialog.Builder(this).create();
+		d.setTitle("Pas de compte configuré");
+		d.setMessage(
+			"Veuillez configurer au moins un compte pour pouvoir utiliser cette application.\n\n"+
+			"Vous pouvez configurer des comptes en utilisant la touche MENU sur la page d'accueil "+
+			"ou en utilisant le bouton ci-dessous."
+		);
+/*		d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
+		{
+			public void onClick(DialogInterface dialog, int which)
+			{
+				dialog.dismiss();
+			}
+		});
+*/
+		d.setButton(DialogInterface.BUTTON_NEUTRAL, "Ok", new DialogInterface.OnClickListener()
+		{
+			public void onClick(DialogInterface dialog, int which)
+			{
+		    	startActivityForResult(new Intent(homeActivity, org.madprod.freeboxmobile.home.ComptesActivity.class), ACTIVITY_COMPTES);
+			}
+		});
+		d.show();      
+    }
+    
     private void showSdCardError()
     {
 		AlertDialog d = new AlertDialog.Builder(this).create();
