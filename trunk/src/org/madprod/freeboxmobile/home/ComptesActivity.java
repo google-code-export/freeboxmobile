@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -20,6 +21,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
@@ -47,6 +49,10 @@ public class ComptesActivity extends ListActivity implements HomeConstants
         mDbHelper.open();
         registerForContextMenu(getListView());
         setTitle(getString(R.string.app_name)+" - Comptes Freebox");
+        TextView t = (TextView) findViewById(R.id.Compte_Actif);
+        t.setTypeface(Typeface.DEFAULT_BOLD);
+        t = (TextView) findViewById(R.id.Compte_Liste);
+        t.setTypeface(Typeface.DEFAULT_BOLD);
         Button newButton = (Button) findViewById(R.id.comptes_button_new);
         newButton.setOnClickListener(new Button.OnClickListener()
         {
