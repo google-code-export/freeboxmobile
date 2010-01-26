@@ -230,7 +230,8 @@ public class EnregistrementActivity extends Activity {
 			isProgrammationActivity = p;
 		}
 		protected void onPreExecute() {
-	    	progressDialog = ProgressDialog.show(activity, "Veuillez patienter", "Suppression en cours...", true,false);
+	    	progressDialog = ProgressDialog.show(activity, activity.getString(R.string.pvrPatientez),
+	    			activity.getString(R.string.pvrSuppressionEnCours), true, false);
 		}
 
 		@Override

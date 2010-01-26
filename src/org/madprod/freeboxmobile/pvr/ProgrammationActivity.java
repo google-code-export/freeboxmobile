@@ -15,11 +15,13 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -29,6 +31,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 
 /**
@@ -97,34 +100,7 @@ public class ProgrammationActivity extends Activity {
         ((Button) findViewById(R.id.pvrPrgBtnRecur)).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				final CharSequence[] jours = { getString(R.string.pvrLundi), getString(R.string.pvrMardi),
-						getString(R.string.pvrMercredi), getString(R.string.pvrJeudi), getString(R.string.pvrVendredi),
-						getString(R.string.pvrSamedi), getString(R.string.pvrDimanche) };
-
-				AlertDialog.Builder builder = new AlertDialog.Builder(progAct);
-				AlertDialog alert = builder.setTitle(getString(R.string.pvrChoixJours))
-					.setMultiChoiceItems(jours,
-							null,
-							new DialogInterface.OnMultiChoiceClickListener() {
-								@Override
-								public void onClick(DialogInterface dialog, int which, boolean what) {
-									joursChoisis[which] = what;						
-								}
-							})
-					.setPositiveButton(getString(R.string.OK),
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog, int whichButton) {
-								}
-							}) 
-		            .setNegativeButton(getString(R.string.Annuler),
-		            		new DialogInterface.OnClickListener() { 
-		            			public void onClick(DialogInterface dialog, int whichButton) {
-		            				resetJours();
-		            				dialog.cancel();
-		            			} 
-		            		})
-		            .create();
-				alert.show();
+				proposerRecurrence();
 			}
         });
         
@@ -153,6 +129,41 @@ public class ProgrammationActivity extends Activity {
     	}
     }
     
+    private void proposerRecurrence() {
+		final CharSequence[] jours = { getString(R.string.pvrLundi), getString(R.string.pvrMardi),
+				getString(R.string.pvrMercredi), getString(R.string.pvrJeudi), getString(R.string.pvrVendredi),
+				getString(R.string.pvrSamedi), getString(R.string.pvrDimanche) };
+
+		setTheme(android.R.style.Theme_Black);
+		AlertDialog alert = new AlertDialog.Builder(this)
+			.setMultiChoiceItems(jours,
+					null,
+					new DialogInterface.OnMultiChoiceClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which, boolean what) {
+							joursChoisis[which] = what;						
+						}
+					})
+			.setPositiveButton(getString(R.string.OK),
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int whichButton) {
+							progAct.setTheme(android.R.style.Theme_Light);
+						}
+					}) 
+            .setNegativeButton(getString(R.string.Annuler),
+            		new DialogInterface.OnClickListener() { 
+            			public void onClick(DialogInterface dialog, int whichButton) {
+							progAct.setTheme(android.R.style.Theme_Light);
+            				resetJours();
+            				dialog.cancel();
+            			} 
+            		})
+        	.setTitle(getString(R.string.pvrChoixJours))
+            .setIcon(R.drawable.pvr_date)
+            .create();
+		alert.show();
+    }
+    
 	/**
 	 * télécharge la liste des chaines et disques
 	 * @author bduffez
@@ -160,7 +171,8 @@ public class ProgrammationActivity extends Activity {
 	 */
     class TelechargerChainesDisquesTask extends AsyncTask<Void, Integer, Boolean> {
         protected void onPreExecute() {
-        	progressDialog = ProgressDialog.show(progAct, "Veuillez patienter", "Chargement de la liste des chaînes disponibles...", true, false);
+        	progressDialog = ProgressDialog.show(progAct, getString(R.string.pvrPatientez),
+        			getString(R.string.pvrTelechargementChaines), true, false);
         }
     	
         protected Boolean doInBackground(Void... arg0) {
@@ -172,8 +184,7 @@ public class ProgrammationActivity extends Activity {
         		preparerActivite();
         	}
         	else {
-        		afficherMsgErreur("Impossible de charger la liste des chaînes !\n"
-        				+ "Avez-vous renseigné votre identifiant et mot de passe ?");
+        		afficherMsgErreur(getString(R.string.pvrErreurTelechargementChaines));
         		Button btnOk = (Button) findViewById(R.id.pvrPrgBtnOK);
         		btnOk.setEnabled(false);
         	}
@@ -226,6 +237,24 @@ public class ProgrammationActivity extends Activity {
 		
     	// S'il s'agit d'une modification, remplir le formulaire
     	final Cursor enr = remplirFiche();
+    	
+    	// Durées avec le spinner
+    	final Spinner s = (Spinner) findViewById(R.id.pvrPrgDurees);
+    	s.setOnItemSelectedListener(new OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				String duree = (String) getResources().getTextArray(R.array.pvrValeursDurees)[position];
+				((TextView) findViewById(R.id.pvrPrgDuree)).setText(duree);
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+			}
+    	});
+        ArrayAdapter adapter = ArrayAdapter.createFromResource(this, R.array.pvrListeDurees,
+        		android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        s.setAdapter(adapter);
 
         // Activation d'un listener sur le bouton OK
         final Button button = (Button) findViewById(R.id.pvrPrgBtnOK);
@@ -238,10 +267,10 @@ public class ProgrammationActivity extends Activity {
             class TraiterFormulaireTask extends AsyncTask<Void, Integer, String> {
             	ProgressDialog progressDialog = null;
 
-                protected void onPreExecute() {
-                	String texte = enr == null ? "Programmation" : "Modification";
-                	texte += " de l'enregistrement en cours...";      
-                	progressDialog = ProgressDialog.show(progAct, "Veuillez patienter", texte, true, false);
+                protected void onPreExecute() {    
+                	progressDialog = ProgressDialog.show(progAct, getString(R.string.pvrPatientez),
+                			getString(enr == null ? R.string.pvrProgrammationEnCours : R.string.pvrModificationEnCours),
+                			true, false);
                 }
             	
                 protected String doInBackground(Void... arg0) {
@@ -258,7 +287,8 @@ public class ProgrammationActivity extends Activity {
 	                }
                     else {
 						setResult(EnregistrementsActivity.RESULT_PROG_OK);
-                    	Toast.makeText(progAct, "Modifications enregistrées!", Toast.LENGTH_SHORT).show();
+                    	Toast.makeText(progAct, getString(R.string.pvrModificationEnregistrees),
+                    			Toast.LENGTH_SHORT).show();
                     	
                     	finish();
                     }
@@ -380,7 +410,7 @@ public class ProgrammationActivity extends Activity {
         				msgErreur += "\n" + getString(R.string.pvrErreurInterne1);
         			}
         			
-        			return "Message retourné par la console de free:\n"+msgErreur;
+        			return getString(R.string.pvrErreurConsole) + "\n" + msgErreur;
         		}
         		// Pas d'erreur, on MAJ la db
         		else {
@@ -502,7 +532,8 @@ public class ProgrammationActivity extends Activity {
 			for (i = 0; i < size; i++) {
 				disque = mDisques.get(i);
 				disqueName = disque.getLabel();
-				disqueName += " ("+disque.getGigaFree()+"/"+disque.getGigaTotal()+" Gio libres)";
+				disqueName += " (" + disque.getGigaFree() + "/" + disque.getGigaTotal();
+				disqueName += " " + getString(R.string.pvrGioLibres) + ")";
 				liste.add(disqueName);
 			}
 		} else { // R.id.pvrPrgQualite
@@ -512,7 +543,7 @@ public class ProgrammationActivity extends Activity {
 			String serviceName;
 			for (i = 0; i < size; i++) {
 				if (i == 0 && idChaine == 0) {
-					liste.add("Non enregistrable");
+					liste.add(getString(R.string.pvrNonEnregistrable));
 				} else {
 					serviceName = services.get(i).getDesc();
 					if (serviceName.length() == 0) {

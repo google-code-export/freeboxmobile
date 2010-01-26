@@ -75,7 +75,8 @@ public class EnregistrementsActivity extends ExpandableListActivity {
         registerForContextMenu(getExpandableListView());
 
         setTheme(android.R.style.Theme_Light);
-        setTitle(getString(R.string.app_name) + " - Magnétoscope numérique" + "("+FBMHttpConnection.getIdentifiant()+")");
+        setTitle(getString(R.string.app_name) + " - " + getString(R.string.pvrPVR)
+        		+ "("+FBMHttpConnection.getIdentifiant()+")");
         
         ((Button) findViewById(R.id.pvrBtnProg)).setOnClickListener(new OnClickListener() {
 			@Override
@@ -103,7 +104,7 @@ public class EnregistrementsActivity extends ExpandableListActivity {
     
     private void erreur(String msgErreur) {
     	AlertDialog d = new AlertDialog.Builder(this).create();
-		d.setTitle("Erreur!");
+		d.setTitle(getString(R.string.pvrErreur));
 		d.setMessage(msgErreur);
 		d.setButton("Ok", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
@@ -407,7 +408,8 @@ public class EnregistrementsActivity extends ExpandableListActivity {
     		updaterEnregistrements(false);
     		
     		if (resultCode == RESULT_SUPPRESSION_OK) {
-    			Toast.makeText(this, "Modifications enregistrées!", Toast.LENGTH_LONG).show();
+    			Toast.makeText(this, getString(R.string.pvrModificationEnregistrees),
+    					Toast.LENGTH_LONG).show();
     		}
     	}
     }
