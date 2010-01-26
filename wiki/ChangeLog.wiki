@@ -51,3 +51,10 @@ Release : 4
  * HOME : Option "Partage l'application" dans le menu
  * PVR : Beaucoup de debug et d'améliorations
  * MVV : Bug de vérification périodique corrigé (Issue 81)
+
+== 0.18rc1 ==
+Sortie le 26/01/2010<br>
+Release : 5
+ * HOME : Grosses optimisations réseau (moins de données, + de batterie)
+ * PVR : Première version release candidate :)
+ * INFOLIGNE : Première version release candidate
