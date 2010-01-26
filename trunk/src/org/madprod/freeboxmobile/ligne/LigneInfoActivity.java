@@ -109,18 +109,27 @@ public class LigneInfoActivity extends Activity implements Constants
     	mDbHelper = new ComptesDbAdapter(this);
     	mDbHelper.open();
     	SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
-    	int rowid = mDbHelper.getIdFromLogin(mgr.getString(KEY_USER, ""));
-    	mDbHelper.updateCompte(rowid, p.title, p.login, p.password, (String) v.get(KEY_NRA),
-    			(String) v.get(KEY_DSLAM), (String) v.get(KEY_IP), (String) v.get(KEY_LINELENGTH),
-    			(String) v.get(KEY_ATTN), (String) v.get(KEY_TEL));
-		Editor editor = mgr.edit();
-		editor.putString(KEY_NRA, (String) v.get(KEY_NRA));
-		editor.putString(KEY_DSLAM, (String) v.get(KEY_DSLAM));
-		editor.putString(KEY_IP, (String) v.get(KEY_IP));
-		editor.putString(KEY_TEL, (String) v.get(KEY_TEL));
-		editor.putString(KEY_LINELENGTH, (String) v.get(KEY_LINELENGTH));
-		editor.putString(KEY_ATTN, (String) v.get(KEY_ATTN));
-		editor.commit();
+    	String user = mgr.getString(KEY_USER, "");
+    	Log.d(DEBUGTAG, "User:"+user);
+    	Integer rowid = mDbHelper.getIdFromLogin(user);
+    	if (rowid != null)
+    	{
+	    	mDbHelper.updateCompte(rowid, p.title, p.login, p.password, (String) v.get(KEY_NRA),
+	    			(String) v.get(KEY_DSLAM), (String) v.get(KEY_IP), (String) v.get(KEY_LINELENGTH),
+	    			(String) v.get(KEY_ATTN), (String) v.get(KEY_TEL));
+			Editor editor = mgr.edit();
+			editor.putString(KEY_NRA, (String) v.get(KEY_NRA));
+			editor.putString(KEY_DSLAM, (String) v.get(KEY_DSLAM));
+			editor.putString(KEY_IP, (String) v.get(KEY_IP));
+			editor.putString(KEY_TEL, (String) v.get(KEY_TEL));
+			editor.putString(KEY_LINELENGTH, (String) v.get(KEY_LINELENGTH));
+			editor.putString(KEY_ATTN, (String) v.get(KEY_ATTN));
+			editor.commit();
+    	}
+    	else
+    	{
+    		Log.d(DEBUGTAG, "saveState : pb : user not found !");
+    	}
     }
 
     private static class Payload
