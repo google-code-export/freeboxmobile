@@ -125,31 +125,31 @@ class XMLRPCSerializer implements IXMLRPCSerializer {
 		}
 		if (hasType) {
 			if (typeNodeName.equals(TYPE_INT) || typeNodeName.equals(TYPE_I4)) {
-//				Log.d(Tag.LOG, "type:int");
+				Log.d(Tag.LOG, "type:int");
 				String value = parser.nextText();
 				obj = Integer.parseInt(value);
 			} else
 			if (typeNodeName.equals(TYPE_I8)) {
-//				Log.d(Tag.LOG, "type:i8");
+				Log.d(Tag.LOG, "type:i8");
 				String value = parser.nextText();
 				obj = Long.parseLong(value);
 			} else
 			if (typeNodeName.equals(TYPE_DOUBLE)) {
-//				Log.d(Tag.LOG, "type:double");
+				Log.d(Tag.LOG, "type:double");
 				String value = parser.nextText();
 				obj = Double.parseDouble(value);
 			} else
 			if (typeNodeName.equals(TYPE_BOOLEAN)) {
-//				Log.d(Tag.LOG, "type:boolean");
+				Log.d(Tag.LOG, "type:boolean");
 				String value = parser.nextText();
 				obj = value.equals("1") ? Boolean.TRUE : Boolean.FALSE;
 			} else
 			if (typeNodeName.equals(TYPE_STRING)) {
-//				Log.d(Tag.LOG, "type:string");
+				Log.d(Tag.LOG, "type:string");
 				obj = parser.nextText();
 			} else
 			if (typeNodeName.equals(TYPE_DATE_TIME_ISO8601)) {
-//				Log.d(Tag.LOG, "type:date time iso8601");
+				Log.d(Tag.LOG, "type:date time iso8601");
 				String value = parser.nextText();
 				try {
 					obj = dateFormat.parseObject(value);
@@ -158,7 +158,7 @@ class XMLRPCSerializer implements IXMLRPCSerializer {
 				}
 			} else
 			if (typeNodeName.equals(TYPE_BASE64)) {
-//				Log.d(Tag.LOG, "type:base64");
+				Log.d(Tag.LOG, "type:base64");
 				String value = parser.nextText();
 				BufferedReader reader = new BufferedReader(new StringReader(value));
 				String line;
@@ -169,7 +169,7 @@ class XMLRPCSerializer implements IXMLRPCSerializer {
 				obj = Base64Coder.decode(sb.toString());
 			} else
 			if (typeNodeName.equals(TYPE_ARRAY)) {
-//				Log.d(Tag.LOG, "type:array");
+				Log.d(Tag.LOG, "type:array");
 				parser.nextTag(); // TAG_DATA (<data>)
 				parser.require(XmlPullParser.START_TAG, null, TAG_DATA);
 	
@@ -185,7 +185,7 @@ class XMLRPCSerializer implements IXMLRPCSerializer {
 				obj = list.toArray();
 			} else
 			if (typeNodeName.equals(TYPE_STRUCT)) {
-//				Log.d(Tag.LOG, "type:struct");
+				Log.d(Tag.LOG, "type:struct");
 				parser.nextTag();
 				Map<String, Object> map = new HashMap<String, Object>();
 				while (parser.getName().equals(TAG_MEMBER)) {
