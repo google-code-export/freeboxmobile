@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+	<string name="pvrPVR">Magnétoscope numérique</string>
 
 	<string name="pvrTxtChaine">Chaîne</string>
 	<string name="pvrTxtQualite">Qualité</string>
@@ -36,6 +36,21 @@
 	
 	<string name="pvrChoixJours">Choisissez le(s) jour(s) de répétition</string>
 	<string name="pvrErreurInterne1">Cette erreur est provoquée lorsque vous choisissez des jours de récurrence qui ne correspondent pas à la date choisie.</string>
+	
+	<string name="pvrProgrammationEnCours">Programmation de l\'enregistrement en cours...</string>
+	<string name="pvrModificationEnCours">Modification de l\'enregistrement en cours...</string>
+	<string name="pvrModificationEnregistrees">Modifications enregistrées !</string>
+	<string name="pvrErreurConsole">Message retourné par la console de free :</string>
+	
+	<string name="pvrNonEnregistrable">Non enregistrable</string>
+	<string name="pvrGioLibres">Gio libres</string>
+	
+	<string name="pvrPatientez">Veuillez patienter</string>
+	<string name="pvrSuppressionEnCours">Suppression en cours...</string>
+	<string name="pvrTelechargementChaines">Chargement de la liste des chaînes disponibles...</string>
+	<string name="pvrErreurTelechargementChaines">Impossible de charger la liste des chaînes ! Avez-vous renseigné votre identifiant et mot de passe ?</string>
+	
+	<string name="pvrErreur">Erreur !</string>
 	
 	<string name="pvrErreurNomEmission">Veuillez entrer le nom de l\'émission</string>
 	<string name="pvrConfirmationSuppression">Êtes-vous sûr(e) de vouloir supprimer cet enregistrement ?</string>

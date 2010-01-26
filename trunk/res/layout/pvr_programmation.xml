@@ -19,7 +19,15 @@
 		<TextView android:text="@string/pvrTxtHeure" android:id="@+id/TxtHeure" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
 		<TimePicker android:id="@+id/pvrPrgHeure" android:layout_width="wrap_content" android:layout_height="wrap_content"></TimePicker>
 		<TextView android:text="@string/pvrTxtDuree" android:id="@+id/TxtDuree" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
-		<EditText android:text="120" android:id="@+id/pvrPrgDuree" android:layout_width="wrap_content" android:layout_height="wrap_content" android:inputType="phone" android:maxLength="3"></EditText>
+					
+	    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:orientation="horizontal"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content">
+			<EditText android:text="120" android:id="@+id/pvrPrgDuree" android:layout_width="90px" android:layout_height="wrap_content" android:inputType="phone" android:maxLength="3"></EditText>
+			<Spinner android:id="@+id/pvrPrgDurees" android:layout_width="fill_parent" android:layout_height="wrap_content"></Spinner>
+		</LinearLayout>
+		
 		<TextView android:text="@string/pvrTxtNom" android:id="@+id/TxtNom" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
 		<EditText android:text="@string/pvrNomDefaut" android:id="@+id/pvrPrgNom" android:layout_width="fill_parent" android:layout_height="wrap_content"></EditText>
 		<TextView android:text="@string/pvrTxtDisque" android:id="@+id/TxtDisque" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>

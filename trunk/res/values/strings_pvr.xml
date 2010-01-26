@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+	<string name="pvrPVR">Digital Video Recorder</string>
 
 	<string name="pvrTxtChaine">Channel</string>
 	<string name="pvrTxtQualite">Quality</string>
@@ -36,6 +36,21 @@
 	
 	<string name="pvrChoixJours">Choose days</string>
 	<string name="pvrErreurInterne1">This error is certainly caused by the fact that you chose a day that does not fit with the date you chose.</string>
+	
+	<string name="pvrProgrammationEnCours">Saving the programming...</string>
+	<string name="pvrModificationEnCours">Saving your modifications...</string>
+	<string name="pvrModificationEnregistrees">Changes saved!</string>
+	<string name="pvrErreurConsole">Error message returned by the console:</string>
+	
+	<string name="pvrNonEnregistrable">Not recordable</string>
+	<string name="pvrGioLibres">GiB free</string>
+	
+	<string name="pvrPatientez">Please wait</string>
+	<string name="pvrSuppressionEnCours">Deleting...</string>
+	<string name="pvrTelechargementChaines">Downloading the channels list...</string>
+	<string name="pvrErreurTelechargementChaines">Unable to download the channels list! Did you set up your login and password correctly?</string>
+	
+	<string name="pvrErreur">Error!</string>
 	
 	<string name="pvrErreurNomEmission">Please enter a program title</string>
 	<string name="pvrConfirmationSuppression">Are you sure you want to delete this record?</string>
