@@ -5,13 +5,14 @@ Prédiction des versions / fonctionnalités. Mais rien n'est figé, ca ne se fer
 
 Pour les fonctionnalités déjà implémentées, voir le ChangeLog.
 
- * 0.17 : Programmer ses enregistrements FreeboxTV à distance (programmation simple) + Consultation des programmations TV en cours
- * 0.20 : Séparer l'application en modules différents (l'utilisateur ne sera pas obligé d'installer toutes les fonctionnalités)
- * 0.25 : Lire l'actualité Freenautes à partir de son mobile ([http://www.universfreebox.com Univers Freebox], [http://freephonie.org/ Freephonie], ...) via l'application !FreeboxMobile
- * 0.28 : Etre notifié d'un nouveau message sur sa messagerie vocale Freebox par réception d'un email sur son compte gmail
- * 0.29 : Consulter et archiver l'historique des appels de sa Freebox à partir de son mobile (avec un lien numéro de téléphone - contact)
- * 0.30 : Programmer ses enregistrements FreeboxTV à distance à partir du guide des programmes
- * 0.35 : Etre notifié d'un problème réseau sur sa connexion fixe (ADSL / FTTH) et suivre le problème
+ * 0.18 : Programmer ses enregistrements FreeboxTV à distance (programmation simple) + Consultation des enregistrements programmés
+ * 0.18 : Suivre l'état de sa connexion ADSL
+ * 0.20 : Etre notifié d'un problème réseau sur sa connexion fixe (ADSL / FTTH) et suivre le problème
+ * 0.23 : Programmer ses enregistrements FreeboxTV à distance à partir du guide des programmes
+ * 0.25 : Séparer l'application en modules différents (l'utilisateur ne sera pas obligé d'installer toutes les fonctionnalités)
+ * 0.30 : Lire l'actualité Freenautes à partir de son mobile ([http://www.universfreebox.com Univers Freebox], [http://freephonie.org/ Freephonie], ...) via l'application !FreeboxMobile
+ * 0.34 : Etre notifié d'un nouveau message sur sa messagerie vocale Freebox par réception d'un email sur son compte gmail
+ * 0.35 : Consulter et archiver l'historique des appels de sa Freebox à partir de son mobile (avec un lien numéro de téléphone - contact)
  * 0.40 : Lire l'actualité Freenautes à partir d'un widget de bureau Android !FreeboxMobile
  * 0.45 : Envoyer un fax à partir de son mobile (à travers le service fax de l'offre Freebox)
  * 0.47 : Etre notifié d'un nouveau message sur sa messagerie vocale Freebox par réception d'un SMS
