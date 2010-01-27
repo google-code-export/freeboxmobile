@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="pvrPVR">Digital Video Recorder</string>
+	<string name="pvrPVR">VideoRec</string>
 
-	<string name="pvrTxtChaine">Channel</string>
-	<string name="pvrTxtQualite">Quality</string>
+	<string name="pvrTxtChaine">Channel:</string>
+	<string name="pvrTxtQualite">Quality:</string>
 	<string name="pvrTxtQualiteDisque">* only recordable in the internal storage</string>
-	<string name="pvrTxtDate">Date</string>
-	<string name="pvrTxtHeure">Time</string>
-	<string name="pvrTxtDuree">Duration</string>
-	<string name="pvrTxtNom">Name</string>
-	<string name="pvrTxtDisque">Hard disk</string>
+	<string name="pvrTxtDate">Date:</string>
+	<string name="pvrTxtHeure">Time:</string>
+	<string name="pvrTxtDuree">Duration:</string>
+	<string name="pvrTxtNom">Name:</string>
+	<string name="pvrTxtDisque">Hard disk:</string>
 	<string name="pvrTxtPrgBtnOK">OK</string>
 	<string name="pvrTxtPrgBtnRecur">Recurrence</string>
 	<string name="pvrNomDefaut">Type program title...</string>
@@ -54,4 +54,5 @@
 	
 	<string name="pvrErreurNomEmission">Please enter a program title</string>
 	<string name="pvrConfirmationSuppression">Are you sure you want to delete this record?</string>
+
 </resources>

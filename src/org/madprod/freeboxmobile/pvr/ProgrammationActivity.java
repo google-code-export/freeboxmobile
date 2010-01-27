@@ -55,7 +55,10 @@ public class ProgrammationActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pvr_programmation);
         resetJours();
-        
+
+        setTitle(getString(R.string.app_name) + " " + getString(R.string.pvrPVR)
+        		+ " - "+FBMHttpConnection.getTitle());
+
     	mRowId = savedInstanceState != null ?
     			savedInstanceState.getLong(EnregistrementsDbAdapter.KEY_ROWID)
     			: -1;

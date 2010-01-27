@@ -2,7 +2,7 @@
 <LinearLayout
     android:orientation="vertical"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android">
+    android:layout_height="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android" android:padding="10dip">
     
         
 	<LinearLayout
@@ -16,9 +16,8 @@
 		
 	</LinearLayout>
 
-	<TextView android:text="Liste des enregistrements programmés" android:textSize="24px" 
-	android:id="@+id/TextView01"
-	android:layout_width="fill_parent" android:layout_height="wrap_content">
+	<TextView android:id="@+id/TextView01"
+	android:layout_width="fill_parent" android:layout_height="wrap_content" android:textStyle="bold" android:text="Enregistrements programmés :" android:textSize="19dip" android:layout_marginTop="5dip">
 	</TextView>
 
 	
@@ -31,8 +30,6 @@
      <TextView android:id="@id/android:empty"
                android:layout_width="fill_parent" 
                android:layout_height="fill_parent"
-               android:paddingTop="10px"
-               android:textSize="16px" 
-               android:text="Aucun enregistrement n'est programmé."/>
+               android:text="Aucun enregistrement n'est programmé." android:paddingTop="10dip" android:textSize="16dip"/>
                
 </LinearLayout>
