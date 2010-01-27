@@ -841,15 +841,35 @@ public class FBMHttpConnection implements Constants
 		}
         if ((p != null) && (p.size() > 0))
         {
-            listConcat += URLEncoder.encode(p.get(0).getName());
-            listConcat += '=';
-            listConcat += URLEncoder.encode(p.get(0).getValue());
+        	try
+        	{
+                listConcat += URLEncoder.encode(p.get(0).getName(), "iso-8859-1");
+                listConcat += '=';
+                listConcat += URLEncoder.encode(p.get(0).getValue(), "iso-8859-1");
+        	}
+        	catch (Exception e)
+        	{
+            	Log.d(DEBUGTAG, "makeStringForPost PB ENCODE : "+e);
+                listConcat += URLEncoder.encode(p.get(0).getName());
+                listConcat += '=';
+                listConcat += URLEncoder.encode(p.get(0).getValue());        		
+        	}
             for(int i = 1 ; i < p.size() ; i++)
             {
                 listConcat += "&";
-                listConcat += URLEncoder.encode(p.get(i).getName());
-                listConcat += '=';
-                listConcat += URLEncoder.encode(p.get(i).getValue());
+                try
+                {
+	                listConcat += URLEncoder.encode(p.get(i).getName(), "iso-8859-1");
+	                listConcat += '=';
+	                listConcat += URLEncoder.encode(p.get(i).getValue(), "iso-8859-1");
+                }
+                catch (Exception e)
+                {
+                	Log.d(DEBUGTAG, "makeStringForPost PB ENCODE : "+e);
+	                listConcat += URLEncoder.encode(p.get(i).getName());
+	                listConcat += '=';
+	                listConcat += URLEncoder.encode(p.get(i).getValue());
+                }
             }
         }
 //        Log.d(DEBUGTAG, "makeStringForPost : "+listConcat);
