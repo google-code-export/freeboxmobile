@@ -28,6 +28,10 @@ Définir un fichier par module : res/values/strings_mevo.xml par exemple
 == Thèmes ==
 Dans un soucis d'homogénéisation de l'interface, les différentes Activity doivent avoir pour thème *@android:style/Theme.Light.!NoTitleBar* ou *@android:style/Theme.Light* (dans le Manifest, Application Nodes -> Activity en question -> Theme)
 ----
+== Widgets / Layouts ==
+Pour une meilleure visualisation de l'application sur les différentes tailles d'écran, il faut toujours indiquer les dimensions en dip et non en px.<br />
+Sur un HTC Dream ou Magic 1dip = 1px mais sur d'autres tailles d'écran, Android redimensionne correctement si les tailles sont indiquées en dip.
+----
 ==Bugs==
 Lors de la publication de bugs (ou Issues), choisir le label *Module-nommodule* correspondant à au module sur lequel le bug est reporté.
 ----
