@@ -37,8 +37,10 @@ import org.madprod.freeboxmobile.R;
  * Sous-classe: ListeEnregistrements
  * 
  * @author bduffez
- *
+ * *$Id: $
+ * 
  */
+
 public class EnregistrementsActivity extends ExpandableListActivity {
 	private String tableEnregistrements;
 	private boolean succesChargement;
@@ -75,8 +77,8 @@ public class EnregistrementsActivity extends ExpandableListActivity {
         registerForContextMenu(getExpandableListView());
 
         setTheme(android.R.style.Theme_Light);
-        setTitle(getString(R.string.app_name) + " - " + getString(R.string.pvrPVR)
-        		+ "("+FBMHttpConnection.getIdentifiant()+")");
+        setTitle(getString(R.string.app_name) + " " + getString(R.string.pvrPVR)
+        		+ " - "+FBMHttpConnection.getTitle());
         
         ((Button) findViewById(R.id.pvrBtnProg)).setOnClickListener(new OnClickListener() {
 			@Override
