@@ -21,4 +21,4 @@ Pour les fonctionnalités déjà implémentées, voir le ChangeLog.
  * 1.00 : Accéder aux flux radio de sa Freebox (et aux autres) à partir de son mobile (y compris lorsqu'on se trouve hors de chez soi)
 Plus tard :
  * Préconfigurer une application SIP ([https://code.google.com/p/sipdroid/ SIP Droid] ?) afin qu'elle utilise le service SIP Freebox
- * Intégrer la gestion de FreeWifi
+ * Intégrer la gestion de !FreeWifi
