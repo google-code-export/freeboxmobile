@@ -5,7 +5,6 @@ Prédiction des versions / fonctionnalités. Mais rien n'est figé, ca ne se fer
 
 Pour les fonctionnalités déjà implémentées, voir le ChangeLog.
 
- * 0.20 : Programmer ses enregistrements FreeboxTV à distance (programmation simple) + Consultation des enregistrements programmés
  * 0.20 : Suivre l'état de sa connexion ADSL
  * 0.22 : Etre notifié d'un problème réseau sur sa connexion fixe (ADSL / FTTH) et suivre le problème
  * 0.30 : Programmer ses enregistrements FreeboxTV à distance à partir du guide des programmes
