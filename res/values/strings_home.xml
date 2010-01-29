@@ -10,6 +10,7 @@
 	<string name="home_option_about">A propos</string><string name="MonCompteFree">Mon Compte Free</string>
 	<string name="home_option_comptes">Comptes</string>
 	<string name="home_option_config">Configuration</string>
+	<string name="home_option_vote">Voter</string>
 	<string name="home_option_share">Partager FreeboxMobile</string>
 	<string name="whatsnew_title">Nouveautés</string>
 	<string name="whatsnew_back">Retour</string>

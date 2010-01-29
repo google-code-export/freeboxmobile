@@ -249,6 +249,7 @@ public class FBMHttpConnection implements Constants
 		final String IP = "Votre adresse IP";
 		final String TEL = "téléphone Freebox";
 
+		// TODO : Checker et stocker si la ligne est dégroupée ou pas
 		InputStream is = getAuthRequest(suiviTechUrl, null, true, true);
 		try
 		{
