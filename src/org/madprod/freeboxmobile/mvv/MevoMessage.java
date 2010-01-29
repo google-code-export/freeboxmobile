@@ -1,5 +1,7 @@
 package org.madprod.freeboxmobile.mvv;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -219,7 +221,12 @@ public class MevoMessage implements MevoConstants
 		this.mp = new MediaPlayer();
 		try
 		{
-			mp.setDataSource(src);
+			// According to http://www.remwebdevelopment.com/dev/a63/Playing-Audio-error-PVMFErrNotSupported-Prepare-failed-status0x1-.html
+			// Try workaround for Issue 91
+			File file = new File(src);
+		    FileInputStream fis = new FileInputStream(file);
+		    mp.setDataSource(fis.getFD());
+//			mp.setDataSource(src);
 			mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
 			mp.prepare();
 			mp.setScreenOnWhilePlaying(true);
