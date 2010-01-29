@@ -10,6 +10,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.SpannableString;
@@ -99,8 +100,8 @@ public class HomeActivity extends Activity implements HomeConstants
 								});
 							d.show();
 
-//							Intent i = new Intent(homeActivity, org.madprod.freeboxmobile.ligne.LigneInfoActivity.class);
-//					    	startActivity(i);
+							Intent i = new Intent(homeActivity, org.madprod.freeboxmobile.ligne.LigneInfoActivity.class);
+					    	startActivity(i);
 						}
 					}
 				);
@@ -169,7 +170,8 @@ public class HomeActivity extends Activity implements HomeConstants
         menu.add(0, HOME_OPTION_COMPTES, 0, R.string.home_option_comptes).setIcon(android.R.drawable.ic_menu_myplaces);
         menu.add(0, HOME_OPTION_CONFIG, 1, R.string.home_option_config).setIcon(android.R.drawable.ic_menu_preferences);
         menu.add(0, HOME_OPTION_SHARE, 2, R.string.home_option_share).setIcon(android.R.drawable.ic_menu_share);
-        menu.add(0, HOME_OPTION_ABOUT, 3, R.string.home_option_about).setIcon(android.R.drawable.ic_menu_help);
+        menu.add(0, HOME_OPTION_VOTE, 3, R.string.home_option_vote).setIcon(android.R.drawable.ic_menu_add);
+        menu.add(0, HOME_OPTION_ABOUT, 4, R.string.home_option_about).setIcon(android.R.drawable.ic_menu_help);
         return true;
     }
 
@@ -188,6 +190,9 @@ public class HomeActivity extends Activity implements HomeConstants
 		    	i = new Intent(this, Config.class);
 		    	startActivity(i);
 		    	return true;
+    		case HOME_OPTION_VOTE:
+    			displayVote();
+    			return true;
     		case HOME_OPTION_ABOUT:
     			displayAbout();
     			return true;
@@ -210,6 +215,36 @@ public class HomeActivity extends Activity implements HomeConstants
     				.setType("message/rfc822");
     	startActivity(Intent.createChooser(i,  "Choisissez votre logiciel de mail")); 
     }
+    
+    private void displayVote()
+    {
+    	AlertDialog d = new AlertDialog.Builder(this).create();
+		d.setTitle(getString(R.string.app_name));
+    	d.setMessage(
+			"Votez pour soutenir Freebox Mobile !\n\n"+
+			"Afin d'améliorer la visibilité sur l'Android Market "+
+			"il est important de noter (bien :) ) Freebox Mobile.\n\n"+
+			"Après avoir cliqué sur Ok, vous pourrez voter pour Freebox Mobile (les étoiles !) "+
+			"et éventuellement mettre un commentaire."
+		);
+		d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
+			{
+				public void onClick(DialogInterface dialog, int which)
+				{
+					dialog.dismiss();
+					Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("http://market.android.com/details?id=org.madprod.freeboxmobile"));
+					startActivity(i);
+				}
+			});
+		d.setButton(DialogInterface.BUTTON_NEGATIVE, "Plus tard", new DialogInterface.OnClickListener()
+		{
+			public void onClick(DialogInterface dialog, int which)
+			{
+				dialog.dismiss();
+			}
+		});
+		d.show();
+    }
 
     private void displayAbout()
     {	
@@ -220,6 +255,7 @@ public class HomeActivity extends Activity implements HomeConstants
 			"Site web : http://freeboxmobile.googlecode.com\n\n"+
 			"Contact :\nfreeboxmobile@free.fr\n\n"+
 			"Version : "+getString(R.string.app_version)+"\n\n"+
+			"Facebook :\nhttp://www.facebook.com/search/?q=freeboxmobile\n\n"+
 			"Auteurs :\n"+
 			"- Olivier Rosello : Architecture / Réseau / Home / Info ADSL / Téléphone\n"+
 			"- Benoit Duffez : Magnétosocope\n"
