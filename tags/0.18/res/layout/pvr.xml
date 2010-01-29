@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android" android:padding="10dip">
+    
+        
+	<LinearLayout
+	    android:orientation="horizontal"
+	    android:layout_width="fill_parent" android:gravity="center_horizontal"
+	    android:layout_height="wrap_content" xmlns:android="http://schemas.android.com/apk/res/android">
+	    
+		<Button android:text="@string/pvrTxtBtnProg" android:id="@+id/pvrBtnProg"
+		android:drawableLeft="@drawable/pvr_ajouter"
+		android:layout_width="160px" android:layout_height="wrap_content"></Button>
+		
+	</LinearLayout>
+
+	<TextView android:id="@+id/TextView01"
+	android:layout_width="fill_parent" android:layout_height="wrap_content" android:textStyle="bold" android:text="Enregistrements programmés :" android:textSize="19dip" android:layout_marginTop="5dip">
+	</TextView>
+
+	
+     <ExpandableListView android:id="@id/android:list"
+               android:layout_width="fill_parent" 
+               android:layout_height="fill_parent"
+               android:layout_weight="1"
+               android:drawSelectorOnTop="false"/>
+ 
+     <TextView android:id="@id/android:empty"
+               android:layout_width="fill_parent" 
+               android:layout_height="fill_parent"
+               android:text="Aucun enregistrement n'est programmé." android:paddingTop="10dip" android:textSize="16dip"/>
+               
+</LinearLayout>

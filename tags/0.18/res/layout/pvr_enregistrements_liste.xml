@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="horizontal" android:layout_width="fill_parent"
+        android:layout_height="75sp"
+        android:gravity="center_vertical">
+
+    <TextView android:id="@+id/pvr_enr_list_item"
+		 android:paddingLeft="50px"
+		 android:paddingTop="25px"
+         android:textSize="14px"
+         android:textStyle="bold"
+         android:layout_width="wrap_content"
+         android:layout_height="60px"/>
+         
+</LinearLayout>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/ScrollViewLigneInfo" android:layout_height="fill_parent" android:layout_width="fill_parent">
+	<LinearLayout android:orientation="vertical" android:layout_height="fill_parent" android:layout_width="fill_parent" android:paddingLeft="10dip" android:paddingBottom="10dip" android:paddingRight="10dip">
+		<ImageView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:id="@+id/LogoFreeboxMobile"
+			android:src="@drawable/freebox_mobile"
+			android:layout_gravity="center"
+			android:layout_marginBottom="10dip" android:layout_marginTop="10dip">
+		</ImageView>
+		<LinearLayout android:id="@+id/LinearLayout01" android:layout_width="wrap_content" android:layout_height="wrap_content"><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="16dip" android:id="@+id/infoLigne0_0" android:textStyle="bold" android:text="Compte actif : "></TextView><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="16dip" android:id="@+id/infoLigne_compte"></TextView></LinearLayout><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/infoLigne0_1" android:textSize="16dip" android:text="Infos :" android:layout_marginTop="5dip" android:textStyle="bold"></TextView><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/infoLigne1_1" android:textSize="16dip"></TextView><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/infoLigne0_2" android:text="Etat :" android:layout_marginTop="5dip" android:textSize="16dip" android:textStyle="bold"></TextView>
+		<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/infoLigne1_2" android:textSize="16dip"></TextView>
+		<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Historique" android:id="@+id/infoLigne3" android:layout_marginTop="5dip" android:textSize="16dip" android:textStyle="bold"></TextView><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/infoLigne3_1" android:textSize="16dip" android:text="Pas encore implémenté."></TextView><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/infoLigne2" android:layout_marginTop="5dip" android:textSize="16dip" android:text="Liste des tickets :" android:textStyle="bold"></TextView>
+		<LinearLayout android:layout_height="wrap_content" android:id="@+id/LinearLayoutTickets" android:orientation="vertical" android:layout_width="fill_parent" android:paddingLeft="10dip" android:paddingRight="10dip">
+</LinearLayout>
+		
+	
+
+</LinearLayout>
+</ScrollView>

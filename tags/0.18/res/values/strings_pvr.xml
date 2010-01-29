@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="pvrPVR">VideoRec</string>
+
+	<string name="pvrTxtChaine">Channel:</string>
+	<string name="pvrTxtQualite">Quality:</string>
+	<string name="pvrTxtQualiteDisque">* only recordable in the internal storage</string>
+	<string name="pvrTxtDate">Date:</string>
+	<string name="pvrTxtHeure">Time:</string>
+	<string name="pvrTxtDuree">Duration:</string>
+	<string name="pvrTxtNom">Name:</string>
+	<string name="pvrTxtDisque">Hard disk:</string>
+	<string name="pvrTxtPrgBtnOK">Record</string>
+	<string name="pvrTxtPrgBtnRecur">Recurrence</string>
+	<string name="pvrTxtRecurrence">Récurrence:</string>
+	<string name="pvrTxtRecurrenceInfo">Please be sure that the selected day(s) are coherent with the recording date.
+If the first selected day is not the same as the chosen date, the recording will not be validated.
+
+For example, if you want to record a show every Tuesday and Wednesday, be sure that the chosen date is a Tuesday.</string>
+	<string name="pvrNomDefaut">Type program title...</string>
+	
+	<string name="pvrTxtQualiteParDefaut">Default</string>
+	
+	<string name="pvrTxtModif">Modify</string>
+	<string name="pvrTxtSuppr">Delete</string>
+	
+	<string name="pvrTxtBtnProg">Add</string>
+	<string name="pvrTxtBtnGrille">TV Program</string>
+	
+	<string name="pvrLundi">Monday</string>
+	<string name="pvrMardi">Tuesday</string>
+	<string name="pvrMercredi">Wednesday</string>
+	<string name="pvrJeudi">Thursday</string>
+	<string name="pvrVendredi">Friday</string>
+	<string name="pvrSamedi">Saturday</string>
+	<string name="pvrDimanche">Sunday</string>
+	
+	<string name="pvrCMenuVoir">See details</string>
+	<string name="pvrCMenuModif">Edit</string>
+	<string name="pvrCMenuSuppr">Delete</string>
+	
+	<string name="pvrChoixJours">Choose days</string>
+	<string name="pvrErreurInterne1">This error is certainly caused by the fact that you chose a day that does not fit with the date you chose.</string>
+	
+	<string name="pvrProgrammationEnCours">Saving the programming...</string>
+	<string name="pvrModificationEnCours">Saving your modifications...</string>
+	<string name="pvrModificationsEnregistrees">Changes saved!</string>
+	<string name="pvrErreurConsole">Error message returned by the console:</string>
+	
+	<string name="pvrNonEnregistrable">Not recordable</string>
+	<string name="pvrGioLibres">GiB free</string>
+	
+	<string name="pvrPatientez">Please wait</string>
+	<string name="pvrSuppressionEnCours">Deleting...</string>
+	<string name="pvrTelechargementChaines">Downloading the channels list...</string>
+	<string name="pvrErreurTelechargementChaines">Unable to download the channels list! Did you set up your login and password correctly?</string>
+	
+	<string name="pvrErreur">Error!</string>
+	
+	<string name="pvrErreurNomEmission">Please enter a program title</string>
+	<string name="pvrConfirmationSuppression">Are you sure you want to delete this record?</string>
+
+</resources>

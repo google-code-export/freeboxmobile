@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="buttonPvr">Magnétoscope</string>
+	<string name="buttonMevo">Téléphone</string>
+	<string name="buttonMusic">Musique</string>
+	<string name="buttonGuide">Guide TV</string>
+	<string name="buttonRadios">Radios</string>
+	<string name="buttonLigne">Info ADSL</string>
+	<string name="buttonActu">Actu Freenautes</string>
+	<string name="home_option_about">A propos</string><string name="MonCompteFree">Mon Compte Free</string>
+	<string name="home_option_comptes">Comptes</string>
+	<string name="home_option_config">Configuration</string>
+	<string name="home_option_share">Partager FreeboxMobile</string>
+	<string name="whatsnew_title">Nouveautés</string>
+	<string name="whatsnew_back">Retour</string>
+	<string name="comptes_empty">\nPas de compte.\nVeuillez définir un nouveau compte.</string>
+	<string name="compte_actif">Compte actif :</string>
+	<string name="compte_choose">Choisissez le compte actif</string>	
+	<string name="comptes_liste">Liste des comptes :</string>
+	<string name="comptes_button_new">Nouveau compte</string>
+	<string name="comptes_option_modify">Modifier</string>
+	<string name="comptes_option_delete">Supprimer</string>
+	<string name="comptes_edit_nom">Nom du compte :</string>
+	<string name="comptes_edit_login">Identifiant :</string>
+	<string name="comptes_edit_password">Mot de passe :</string>
+	<string name="comptes_edit_nom_desc">Ce nom sera affiché par FreeboxMobile pour identifier ce compte.</string>
+	<string name="comptes_edit_login_desc">L identifiant Freebox.</string>
+	<string name="comptes_edit_password_desc">Le mot de passe Freebox.</string>
+	<string name="comptes_button_cancel">Annuler</string>
+	<string name="comptes_button_ok">Valider</string>
+	<string name="mail_subject">Application FreeboxMobile</string>
+	<string name="mail_text1">Salut,\n\nFreeboxMobile est une application Open Source (gratuite) qui te permet d\'accéder aux services de ta Freebox à partir de ton smartphone Android.\n\nTu peux la télécharger (à partir de ton smartphone) en cliquant sur le lien ci-dessous.\n\nA plus tard !\n\n-</string>
+	<string name="mail_link">Télécharger Freebox Mobile</string>
+	<string name="app_url">http://market.android.com/details?id=org.madprod.freeboxmobile</string>
+</resources>

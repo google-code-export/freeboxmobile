@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content" >
+    
+    <ViewFlipper android:id="@+id/pvrFlipper"
+        android:layout_width="fill_parent"
+        android:layout_height="370dp"> 
+    
+	    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		    android:orientation="vertical"
+		    android:layout_width="fill_parent"
+		    android:layout_height="fill_parent" >
+	        
+			<TextView
+				android:text="@string/pvrTxtChaine"
+				android:id="@+id/TxtChaine"
+				android:textSize="26sp"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"></TextView>
+			<Spinner android:id="@+id/pvrPrgChaine" android:layout_width="fill_parent" android:layout_height="wrap_content"></Spinner>
+			
+			<TextView
+				android:text="@string/pvrTxtQualite"
+				android:id="@+id/TxtQualite"
+				android:textSize="26sp"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"></TextView>
+			<Spinner android:id="@+id/pvrPrgQualite" android:layout_width="fill_parent" android:layout_height="wrap_content"></Spinner>
+			<TextView android:text="@string/pvrTxtQualiteDisque" android:id="@+id/TxtQualiteDisque" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="12px" android:paddingBottom="5px"></TextView>
+		
+		</LinearLayout>
+		
+	    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		    android:orientation="vertical"
+		    android:layout_width="fill_parent"
+		    android:layout_height="fill_parent" >
+		    
+		    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+		    	android:layout_width="fill_parent"
+		    	android:layout_height="fill_parent">
+			    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				    android:orientation="vertical"
+				    android:layout_width="fill_parent"
+				    android:layout_height="fill_parent" >
+					<TextView
+						android:text="@string/pvrTxtDate"
+						android:id="@+id/TxtDate"
+						android:textSize="26sp"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"></TextView>
+					<DatePicker
+						android:id="@+id/pvrPrgDate"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"></DatePicker>
+						
+					<TextView
+						android:text="@string/pvrTxtHeure"
+						android:id="@+id/TxtHeure"
+						android:textSize="26sp"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"></TextView>
+					<TimePicker
+						android:id="@+id/pvrPrgHeure"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"></TimePicker>
+					</LinearLayout>
+			</ScrollView>
+		</LinearLayout>
+		
+	    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		    android:orientation="vertical"
+		    android:layout_width="fill_parent"
+		    android:layout_height="fill_parent" >			
+			
+			<TextView
+				android:text="@string/pvrTxtDuree"
+				android:id="@+id/TxtDuree"
+				android:textSize="26sp"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"></TextView>
+						
+		    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		    android:orientation="horizontal"
+		    android:layout_width="fill_parent"
+		    android:layout_height="wrap_content">
+				<EditText android:text="120" android:id="@+id/pvrPrgDuree" android:layout_width="90px" android:layout_height="wrap_content" android:inputType="phone" android:maxLength="3"></EditText>
+				<Spinner android:id="@+id/pvrPrgDurees" android:layout_width="fill_parent" android:layout_height="wrap_content"></Spinner>
+			</LinearLayout>
+			
+			<TextView
+				android:text="@string/pvrTxtNom"
+				android:id="@+id/TxtNom"
+				android:textSize="26sp"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"></TextView>
+			<EditText
+				android:text="@string/pvrNomDefaut"
+				android:id="@+id/pvrPrgNom"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"></EditText>
+				
+			<TextView
+				android:text="@string/pvrTxtDisque"
+				android:id="@+id/TxtDisque"
+				android:textSize="26sp"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"></TextView>
+			<Spinner
+				android:id="@+id/pvrPrgDisque"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"></Spinner>
+		
+		</LinearLayout>
+			
+	    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+	    	android:layout_width="fill_parent"
+	    	android:layout_height="wrap_content">
+		    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			    android:orientation="vertical"
+				android:padding="10dp"
+			    android:layout_width="fill_parent"
+			    android:layout_height="wrap_content">
+				<TextView
+					android:text="@string/pvrTxtRecurrence"
+					android:id="@+id/TxtDisque"
+					android:textSize="26sp"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"></TextView>
+				<CheckBox android:id="@+id/pvrPrgJour0"
+					 android:text="@string/pvrLundi"
+					 android:layout_width="wrap_content"
+					 android:layout_height="wrap_content"/>
+				<CheckBox android:id="@+id/pvrPrgJour1"
+					 android:text="@string/pvrMardi"
+					 android:layout_width="wrap_content"
+					 android:layout_height="wrap_content"/>
+				<CheckBox android:id="@+id/pvrPrgJour2"
+					 android:text="@string/pvrMercredi"
+					 android:layout_width="wrap_content"
+					 android:layout_height="wrap_content"/>
+				<CheckBox android:id="@+id/pvrPrgJour3"
+					 android:text="@string/pvrJeudi"
+					 android:layout_width="wrap_content"
+					 android:layout_height="wrap_content"/>
+				<CheckBox android:id="@+id/pvrPrgJour4"
+					 android:text="@string/pvrVendredi"
+					 android:layout_width="wrap_content"
+					 android:layout_height="wrap_content"/>
+				<CheckBox android:id="@+id/pvrPrgJour5"
+					 android:text="@string/pvrSamedi"
+					 android:layout_width="wrap_content"
+					 android:layout_height="wrap_content"/>
+				<CheckBox android:id="@+id/pvrPrgJour6"
+					 android:text="@string/pvrDimanche"
+					 android:layout_width="wrap_content"
+					 android:layout_height="wrap_content"/>
+				<TextView
+					android:text="@string/pvrTxtRecurrenceInfo"
+					android:id="@+id/TxtRecurrenceInfo"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"></TextView>
+					
+			</LinearLayout>
+		</ScrollView>
+		
+	</ViewFlipper>
+	
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:orientation="vertical"
+	    android:gravity="bottom|center_horizontal"
+	    android:layout_width="fill_parent"
+	    android:layout_height="60dp" >
+		    
+	    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		    android:layout_width="fill_parent"
+		    android:layout_height="fill_parent"
+		    android:gravity="center_horizontal|bottom">
+	
+				<Button
+					android:background="@drawable/previous"
+					android:id="@+id/pvrPrgBtnPrecedent"
+					android:layout_width="60dp"
+					android:layout_height="60dp"
+					android:visibility="invisible"
+					android:layout_alignParentLeft="true"
+					android:layout_alignParentBottom="true"></Button>
+					
+				<Button
+					android:drawableLeft="@drawable/pvr_btn_record"
+					android:text="@string/pvrTxtPrgBtnOK"
+					android:id="@+id/pvrPrgBtnOK"
+					android:textSize="26sp"
+					android:layout_width="wrap_content"
+					android:layout_height="60dp"
+					android:visibility="invisible"
+					android:layout_alignParentBottom="true"
+					android:layout_toRightOf="@id/pvrPrgBtnPrecedent"></Button>
+					
+			    <Button
+			    	android:background="@drawable/next"
+			    	android:id="@+id/pvrPrgBtnSuivant"
+					android:layout_alignParentBottom="true"
+			    	android:clickable="true"
+			    	android:layout_width="60dp"
+			    	android:layout_height="60dp"
+					android:layout_toRightOf="@id/pvrPrgBtnOK"></Button>
+	
+		</RelativeLayout>
+	
+	</LinearLayout>
+
+</LinearLayout>
