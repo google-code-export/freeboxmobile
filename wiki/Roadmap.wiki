@@ -5,20 +5,19 @@ Prédiction des versions / fonctionnalités. Mais rien n'est figé, ca ne se fer
 
 Pour les fonctionnalités déjà implémentées, voir le ChangeLog.
 
- * 0.18 : Programmer ses enregistrements FreeboxTV à distance (programmation simple) + Consultation des enregistrements programmés
- * 0.18 : Suivre l'état de sa connexion ADSL
- * 0.20 : Etre notifié d'un problème réseau sur sa connexion fixe (ADSL / FTTH) et suivre le problème
- * 0.23 : Programmer ses enregistrements FreeboxTV à distance à partir du guide des programmes
- * 0.25 : Séparer l'application en modules différents (l'utilisateur ne sera pas obligé d'installer toutes les fonctionnalités)
- * 0.30 : Lire l'actualité Freenautes à partir de son mobile ([http://www.universfreebox.com Univers Freebox], [http://freephonie.org/ Freephonie], ...) via l'application !FreeboxMobile
- * 0.34 : Etre notifié d'un nouveau message sur sa messagerie vocale Freebox par réception d'un email sur son compte gmail
- * 0.35 : Consulter et archiver l'historique des appels de sa Freebox à partir de son mobile (avec un lien numéro de téléphone - contact)
- * 0.40 : Lire l'actualité Freenautes à partir d'un widget de bureau Android !FreeboxMobile
- * 0.45 : Envoyer un fax à partir de son mobile (à travers le service fax de l'offre Freebox)
- * 0.47 : Etre notifié d'un nouveau message sur sa messagerie vocale Freebox par réception d'un SMS
- * 0.50 : Accéder aux contenus vidéo de son réseau local à partir de son mobile (y compris lorsqu'on se trouve hors de chez soi)
- * 0.60 : Accéder aux enregistrements vidéo de sa FreeboxHD à partir de son mobile (y compris lorsqu'on se trouve hors de chez soi)
- * 0.70 : Accéder aux contenus audio de son réseau local à partir de son mobile (y compris lorsqu'on se trouve hors de chez soi)
- * 0.80 : Accéder aux flux TV de sa Freebox (les chaînes du multiposte) à partir de son mobile (y compris lorsqu'on se trouve hors de chez soi)
- * 0.90 : Accéder aux flux radio de sa Freebox (et aux autres) à partir de son mobile (y compris lorsqu'on se trouve hors de chez soi)
- * 1.00 : Préconfigurer une application SIP ([https://code.google.com/p/sipdroid/ SIP Droid] ?) afin qu'elle utilise le service SIP Freebox
+ * 0.20 : Programmer ses enregistrements FreeboxTV à distance (programmation simple) + Consultation des enregistrements programmés
+ * 0.20 : Suivre l'état de sa connexion ADSL
+ * 0.22 : Etre notifié d'un problème réseau sur sa connexion fixe (ADSL / FTTH) et suivre le problème
+ * 0.30 : Programmer ses enregistrements FreeboxTV à distance à partir du guide des programmes
+ * 0.35 : Séparer l'application en modules différents (l'utilisateur ne sera pas obligé d'installer toutes les fonctionnalités)
+ * 0.40 : Lire l'actualité Freenautes à partir de son mobile ([http://www.universfreebox.com Univers Freebox], [http://freephonie.org/ Freephonie], ...) via l'application !FreeboxMobile
+ * 0.45 : Lire l'actualité Freenautes à partir d'un widget de bureau Android 
+ * 0.48 : Consulter et archiver l'historique des appels de sa Freebox à partir de son mobile (avec un lien numéro de téléphone - contact)
+!FreeboxMobile
+ * 0.50 : Envoyer un fax à partir de son mobile (à travers le service fax de l'offre Freebox)
+ * 0.60 : Accéder aux contenus vidéo de son réseau local à partir de son mobile (y compris lorsqu'on se trouve hors de chez soi)
+ * 0.70 : Accéder aux enregistrements vidéo de sa FreeboxHD à partir de son mobile (y compris lorsqu'on se trouve hors de chez soi)
+ * 0.80 : Accéder aux contenus audio de son réseau local à partir de son mobile (y compris lorsqu'on se trouve hors de chez soi)
+ * 0.90 : Accéder aux flux TV de sa Freebox (les chaînes du multiposte) à partir de son mobile (y compris lorsqu'on se trouve hors de chez soi)
+ * 1.00 : Accéder aux flux radio de sa Freebox (et aux autres) à partir de son mobile (y compris lorsqu'on se trouve hors de chez soi)
+Plus tard : Préconfigurer une application SIP ([https://code.google.com/p/sipdroid/ SIP Droid] ?) afin qu'elle utilise le service SIP Freebox
