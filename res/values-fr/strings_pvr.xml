@@ -10,7 +10,12 @@
 	<string name="pvrTxtDuree">Durée :</string>
 	<string name="pvrTxtNom">Nom :</string>
 	<string name="pvrTxtDisque">Disque dur:</string>
-	<string name="pvrTxtPrgBtnOK">OK</string>
+	<string name="pvrTxtRecurrence">Récurrence:</string>
+	<string name="pvrTxtRecurrenceInfo">Veillez à ce que le(s) jour(s) choisi(s) correspondent bien à la date choisie.
+Si le premier jour de récurrence n\'est pas celui de la date choisie, l\'enregistrement ne sera pas validé
+
+Par exemple, si vous voulez enregistrer une émission tous les mardi et mercredi, veillez à ce que la date choisie soit un mardi.</string>
+	<string name="pvrTxtPrgBtnOK">Enregistrer</string>
 	<string name="pvrTxtPrgBtnRecur">Récurrence</string>
 	<string name="pvrNomDefaut">Entrez le titre de l\'émission...</string>
 	

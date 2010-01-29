@@ -9,31 +9,40 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" android:padding="10dip">
         
-		<TextView android:text="@string/pvrTxtChaine" android:id="@+id/TxtChaine" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textStyle="bold" android:textSize="16dip"></TextView>
+		<TextView android:text="@string/pvrTxtChaine" android:id="@+id/TxtChaine" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="26sp"></TextView>
 		<Spinner android:id="@+id/pvrPrgChaine" android:layout_width="fill_parent" android:layout_height="wrap_content"></Spinner>
-		<TextView android:text="@string/pvrTxtQualite" android:id="@+id/TxtQualite" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="16dip" android:textStyle="bold"></TextView>
+		<TextView android:text="@string/pvrTxtQualite" android:id="@+id/TxtQualite" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="26sp"></TextView>
 		<Spinner android:id="@+id/pvrPrgQualite" android:layout_width="fill_parent" android:layout_height="wrap_content"></Spinner>
-		<TextView android:text="@string/pvrTxtQualiteDisque" android:id="@+id/TxtQualiteDisque" android:layout_width="wrap_content" android:layout_height="wrap_content" android:paddingBottom="5px" android:textSize="12dip"></TextView>
-		<TextView android:text="@string/pvrTxtDate" android:id="@+id/TxtDate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="16dip" android:textStyle="bold"></TextView>
+		<TextView android:text="@string/pvrTxtQualiteDisque" android:id="@+id/TxtQualiteDisque" android:layout_width="wrap_content" android:layout_height="wrap_content" android:paddingBottom="5dp" android:textSize="12dip"></TextView>
+		<TextView android:text="@string/pvrTxtDate" android:id="@+id/TxtDate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="26sp"></TextView>
 		<DatePicker android:id="@+id/pvrPrgDate" android:layout_width="wrap_content" android:layout_height="wrap_content"></DatePicker>
-		<TextView android:text="@string/pvrTxtHeure" android:id="@+id/TxtHeure" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="16dip" android:textStyle="bold"></TextView>
+		<TextView android:text="@string/pvrTxtHeure" android:id="@+id/TxtHeure" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="26sp"></TextView>
 		<TimePicker android:id="@+id/pvrPrgHeure" android:layout_width="wrap_content" android:layout_height="wrap_content"></TimePicker>
-		<TextView android:text="@string/pvrTxtDuree" android:id="@+id/TxtDuree" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="16dip" android:textStyle="bold"></TextView>
+		<TextView android:text="@string/pvrTxtDuree" android:id="@+id/TxtDuree" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="26sp"></TextView>
 					
 	    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	    android:orientation="horizontal"
 	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content">
-			<EditText android:text="120" android:id="@+id/pvrPrgDuree" android:layout_width="90px" android:layout_height="wrap_content" android:inputType="phone" android:maxLength="3"></EditText>
+			<EditText android:text="120" android:id="@+id/pvrPrgDuree" android:layout_width="90dp" android:layout_height="wrap_content" android:inputType="phone" android:maxLength="3"></EditText>
 			<Spinner android:id="@+id/pvrPrgDurees" android:layout_width="fill_parent" android:layout_height="wrap_content"></Spinner>
 		</LinearLayout>
 		
-		<TextView android:text="@string/pvrTxtNom" android:id="@+id/TxtNom" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="16dip" android:textStyle="bold"></TextView>
+		<TextView android:text="@string/pvrTxtNom" android:id="@+id/TxtNom" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="26sp"></TextView>
 		<EditText android:text="@string/pvrNomDefaut" android:id="@+id/pvrPrgNom" android:layout_width="fill_parent" android:layout_height="wrap_content"></EditText>
-		<TextView android:text="@string/pvrTxtDisque" android:id="@+id/TxtDisque" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="16dip" android:textStyle="bold"></TextView>
+		<TextView android:text="@string/pvrTxtDisque" android:id="@+id/TxtDisque" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="26sp"></TextView>
 		<Spinner android:id="@+id/pvrPrgDisque" android:layout_width="fill_parent" android:layout_height="wrap_content"></Spinner>
-		<Button android:text="@string/pvrTxtPrgBtnRecur" android:id="@+id/pvrPrgBtnRecur" android:layout_width="wrap_content" android:layout_height="wrap_content" android:clickable="true"></Button> 
-		<Button android:text="@string/pvrTxtPrgBtnOK" android:id="@+id/pvrPrgBtnOK" android:layout_width="fill_parent" android:layout_height="wrap_content" android:clickable="true"></Button>
+		<TextView android:text="@string/pvrTxtRecurrence" android:id="@+id/TxtDisque" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="26sp"></TextView>
+		<Button android:text="@string/pvrTxtPrgBtnRecur" android:id="@+id/pvrPrgBtnRecur" android:layout_width="wrap_content" android:layout_height="wrap_content" android:clickable="true"></Button>
+		<TextView android:text="@string/pvrTxtRecurrenceInfo" android:id="@+id/TxtDisque" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+		 
+		<Button
+			android:drawableLeft="@drawable/pvr_btn_record"
+			android:text="@string/pvrTxtPrgBtnOK"
+			android:id="@+id/pvrPrgBtnOK"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:clickable="true"></Button>
 	
 
 </LinearLayout>

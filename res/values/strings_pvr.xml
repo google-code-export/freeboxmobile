@@ -10,8 +10,13 @@
 	<string name="pvrTxtDuree">Duration:</string>
 	<string name="pvrTxtNom">Name:</string>
 	<string name="pvrTxtDisque">Hard disk:</string>
-	<string name="pvrTxtPrgBtnOK">OK</string>
+	<string name="pvrTxtPrgBtnOK">Record</string>
 	<string name="pvrTxtPrgBtnRecur">Recurrence</string>
+	<string name="pvrTxtRecurrence">Récurrence:</string>
+	<string name="pvrTxtRecurrenceInfo">Please be sure that the selected day(s) are coherent with the recording date.
+If the first selected day is not the same as the chosen date, the recording will not be validated.
+
+For example, if you want to record a show every Tuesday and Wednesday, be sure that the chosen date is a Tuesday.</string>
 	<string name="pvrNomDefaut">Type program title...</string>
 	
 	<string name="pvrTxtQualiteParDefaut">Default</string>

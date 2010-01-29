@@ -159,7 +159,7 @@ public class EnregistrementsActivity extends ExpandableListActivity {
             			+ "dans la configuration ?");
         	}
         	
-        	if (updateFromConsole) {
+        	if (updateFromConsole && progressDialog != null) {
         		progressDialog.dismiss();
         	}
         	

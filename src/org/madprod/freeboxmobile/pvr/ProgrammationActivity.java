@@ -14,25 +14,32 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.res.Configuration;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.View.OnClickListener;
-import android.view.View.OnFocusChangeListener;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ViewFlipper;
 import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 
 /**
  * 
@@ -48,6 +55,21 @@ public class ProgrammationActivity extends Activity {
 	private boolean nomEmissionSaisi = false;
 	private boolean[] joursChoisis = { false, false, false, false, false, false, false };
 	ProgressDialog progressDialog = null;
+	TextView nomEmission = null;
+	Spinner chainesSpinner = null;
+	Spinner dureeSpinner = null;
+	
+	boolean orentationPortrait = false;
+	int positionEcran = 0;
+	int nbEcrans = 3;
+    private Button suivant, precedent, boutonOK, buttonRecur;
+	private GestureDetector gestureDetector;
+	private Animation slideLeftIn;
+	private Animation slideLeftOut;
+	private Animation slideRightIn;
+    private Animation slideRightOut;
+    CheckBox lendi, mordi, credi, joudi, dredi, sadi, gromanche;
+    ViewFlipper viewFlipper;
 	
     /** Called when the activity is first created. */
     @Override
@@ -73,8 +95,32 @@ public class ProgrammationActivity extends Activity {
         
         progAct = this;
         
+        // Chargement des ressources
+        boutonOK = (Button) findViewById(R.id.pvrPrgBtnOK);
+        suivant = (Button) findViewById(R.id.pvrPrgBtnSuivant);
+        precedent = (Button) findViewById(R.id.pvrPrgBtnPrecedent);
+        buttonRecur = (Button) findViewById(R.id.pvrPrgBtnRecur);
+        nomEmission = (TextView) findViewById(R.id.pvrPrgNom);
+        chainesSpinner = (Spinner) findViewById(R.id.pvrPrgChaine);
+        dureeSpinner = (Spinner) findViewById(R.id.pvrPrgDurees);
+        slideLeftIn = AnimationUtils.loadAnimation(this, R.anim.slide_left_in);
+        slideLeftOut = AnimationUtils.loadAnimation(this, R.anim.slide_left_out);
+        slideRightIn = AnimationUtils.loadAnimation(this, R.anim.slide_right_in);
+        slideRightOut = AnimationUtils.loadAnimation(this, R.anim.slide_right_out);
+        lendi = ((CheckBox) findViewById(R.id.pvrPrgJour0));
+        mordi = ((CheckBox) findViewById(R.id.pvrPrgJour1));
+        credi = ((CheckBox) findViewById(R.id.pvrPrgJour2));
+        joudi = ((CheckBox) findViewById(R.id.pvrPrgJour3));
+        dredi = ((CheckBox) findViewById(R.id.pvrPrgJour4));
+        sadi = ((CheckBox) findViewById(R.id.pvrPrgJour5));
+        gromanche = ((CheckBox) findViewById(R.id.pvrPrgJour6));
+        viewFlipper = (ViewFlipper) findViewById(R.id.pvrFlipper);
+        
+        dureeSpinner.setSelection(8);// 8 == 2H
+        
+        orentationPortrait = getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
+        
         // Vider le champ quand on le clique
-        final TextView nomEmission = ((TextView) findViewById(R.id.pvrPrgNom));
         nomEmission.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             public void onFocusChange(View v, boolean b) {
             	if (b == true) {
@@ -87,8 +133,7 @@ public class ProgrammationActivity extends Activity {
         });
         
         // Qualité
-        Spinner chaines = (Spinner) findViewById(R.id.pvrPrgChaine);
-        chaines.setOnItemSelectedListener(new OnItemSelectedListener() {
+        chainesSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 				remplirSpinner(R.id.pvrPrgQualite, (Spinner) arg0);
@@ -100,14 +145,113 @@ public class ProgrammationActivity extends Activity {
         });
         
         // Récurrence
-        ((Button) findViewById(R.id.pvrPrgBtnRecur)).setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				proposerRecurrence();
-			}
-        });
+        if (buttonRecur != null) {
+	        buttonRecur.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View arg0) {
+					proposerRecurrence();
+				}
+	        });
+        }
+        
+        // Flipper
+        if (orentationPortrait) {
+	        suivant.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View arg0) {
+					swipeRight();
+				}
+	        });
+	        precedent.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View arg0) {
+					swipeLeft();
+				}
+	        });
+	        gestureDetector = new GestureDetector(new MyGestureDetector());
+
+	        // Callbacks pour gérer la récurrence en mode portrait
+	        lendi.setOnCheckedChangeListener(new SelectionRecurrenceListener(0));
+	        mordi.setOnCheckedChangeListener(new SelectionRecurrenceListener(1));
+	        credi.setOnCheckedChangeListener(new SelectionRecurrenceListener(2));
+	        joudi.setOnCheckedChangeListener(new SelectionRecurrenceListener(3));
+	        dredi.setOnCheckedChangeListener(new SelectionRecurrenceListener(4));
+	        sadi.setOnCheckedChangeListener(new SelectionRecurrenceListener(5));
+	        gromanche.setOnCheckedChangeListener(new SelectionRecurrenceListener(6));
+        }
         
         new TelechargerChainesDisquesTask().execute((Void[])null);
+    }
+    
+    class SelectionRecurrenceListener implements OnCheckedChangeListener {
+    	int jourId;
+    	SelectionRecurrenceListener(int id) {
+    		jourId = id;
+    	}
+		@Override
+		public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+			joursChoisis[jourId] = isChecked;
+		}
+    }
+    
+    private void swipeLeft() {
+		positionEcran--;
+		suivant.setVisibility(View.VISIBLE);
+		if (positionEcran == -1) {
+			positionEcran = 0;
+		} else {
+			if (positionEcran == 0) {
+				precedent.setVisibility(View.INVISIBLE);
+			}
+			viewFlipper.setInAnimation(slideRightIn);
+			viewFlipper.setOutAnimation(slideRightOut);
+			viewFlipper.showPrevious();
+		}
+    }
+    private void swipeRight() {
+		positionEcran++;
+		precedent.setVisibility(View.VISIBLE);
+		if (positionEcran > nbEcrans) {
+			positionEcran = nbEcrans;
+		} else {
+			if (positionEcran == nbEcrans) {
+				suivant.setVisibility(View.INVISIBLE);
+				boutonOK.setVisibility(View.VISIBLE);
+			}
+			viewFlipper.setInAnimation(slideLeftIn);
+			viewFlipper.setOutAnimation(slideLeftOut);
+			viewFlipper.showNext();
+		}
+    }
+    
+    class MyGestureDetector extends SimpleOnGestureListener {
+        private static final int SWIPE_MIN_DISTANCE = 120;
+        private static final int SWIPE_MAX_OFF_PATH = 250;
+    	private static final int SWIPE_THRESHOLD_VELOCITY = 200;
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            try {
+                if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
+                    return false;
+                // right to left swipe
+                if(e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+                	swipeRight();
+                }  else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+                	swipeLeft();
+                }
+            } catch (Exception e) {
+                // nothing
+            }
+            return false;
+        }
+    }
+    
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (orentationPortrait) {
+        	return gestureDetector.onTouchEvent(event);
+        }
+	    return false;
     }
 	
 	@Override
@@ -188,8 +332,7 @@ public class ProgrammationActivity extends Activity {
         	}
         	else {
         		afficherMsgErreur(getString(R.string.pvrErreurTelechargementChaines));
-        		Button btnOk = (Button) findViewById(R.id.pvrPrgBtnOK);
-        		btnOk.setEnabled(false);
+        		boutonOK.setEnabled(false);
         	}
             
             progressDialog.dismiss();
@@ -208,28 +351,31 @@ public class ProgrammationActivity extends Activity {
         param.add(new BasicNameValuePair("detail","1"));
     	
         String resultat = PvrUtils.getPage(FBMHttpConnection.getAuthRequest(url, param, true, true));
-        int posChaines = resultat.indexOf("var serv_a = [{");
-        int posDisques = resultat.indexOf("var disk_a = [{");
         
-        if (posChaines > 0 && posDisques > 0) {
-        	// Récupération du javascript correspondant à la liste des chaines
-        	String strChaines = resultat.substring(posChaines+14, posDisques);
-        	int finChaines = strChaines.lastIndexOf("}");
-        	strChaines = strChaines.substring(0, finChaines+1);
-        	
-        	// Récupération du javascript correspondant à la liste des disques durs
-        	String strDisques = resultat.substring(posDisques+14);
-        	int fin = strDisques.lastIndexOf("}];")+1;
-        	strDisques = strDisques.substring(0, fin);
-        	
-        	// Conversion JSON -> objet dans la RAM
-        	getListeChaines(strChaines);
-        	getListeDisques(strDisques);
-        	
-        	return true;
+        if (resultat != null) {
+	        int posChaines = resultat.indexOf("var serv_a = [{");
+	        int posDisques = resultat.indexOf("var disk_a = [{");
+	        
+	        if (posChaines > 0 && posDisques > 0) {
+	        	// Récupération du javascript correspondant à la liste des chaines
+	        	String strChaines = resultat.substring(posChaines+14, posDisques);
+	        	int finChaines = strChaines.lastIndexOf("}");
+	        	strChaines = strChaines.substring(0, finChaines+1);
+	        	
+	        	// Récupération du javascript correspondant à la liste des disques durs
+	        	String strDisques = resultat.substring(posDisques+14);
+	        	int fin = strDisques.lastIndexOf("}];")+1;
+	        	strDisques = strDisques.substring(0, fin);
+	        	
+	        	// Conversion JSON -> objet dans la RAM
+	        	getListeChaines(strChaines);
+	        	getListeDisques(strDisques);
+	        	
+	        	return true;
+	        }
         }
         
-    	Log.d(TAG, "Impossible de télécharger le json");
+    	Log.d(TAG, "Impossible de télécharger le json des chaines/disques");
     	return false;
     }
     
