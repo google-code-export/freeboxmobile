@@ -43,10 +43,10 @@ public class HomeActivity extends Activity implements HomeConstants
 		SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 
 		// Simulate first launch (for test only, these lines have to be commented for release)
-/*		editor.remove(KEY_MEVO_PREFS_FREQ);
-		editor.remove(KEY_SPLASH);
-		editor.commit();
-		editor = mgr.edit();
+/*		Editor e = mgr.edit();
+		e.remove(KEY_NRA);
+		e.commit();
+		e = mgr.edit();
 */
 		if (!mgr.getString(KEY_SPLASH, "0").equals(getString(R.string.app_version)))
 		{
@@ -87,8 +87,20 @@ public class HomeActivity extends Activity implements HomeConstants
 					{
 						public void onClick(View view)
 						{
-							Intent i = new Intent(homeActivity, org.madprod.freeboxmobile.ligne.LigneInfoActivity.class);
-					    	startActivity(i);
+					    	AlertDialog d = new AlertDialog.Builder(homeActivity).create();
+							d.setTitle(getString(R.string.app_name));
+					    	d.setMessage("Bientôt !");
+							d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
+								{
+									public void onClick(DialogInterface dialog, int which)
+									{
+										dialog.dismiss();
+									}
+								});
+							d.show();
+
+//							Intent i = new Intent(homeActivity, org.madprod.freeboxmobile.ligne.LigneInfoActivity.class);
+//					    	startActivity(i);
 						}
 					}
 				);
@@ -204,10 +216,13 @@ public class HomeActivity extends Activity implements HomeConstants
     	AlertDialog d = new AlertDialog.Builder(this).create();
 		d.setTitle(getString(R.string.app_name));
     	d.setMessage(
-			"Freebox Mobile est une application "+
-			"indépendante de Free.\n\nPlus de renseignements sur "+
-			"http://code.google.com/p/freeboxmobile/\n\n"+
-			" Version : "+getString(R.string.app_version)
+			"Freebox Mobile est une application indépendante de Free.\n\n"+
+			"Site web : http://freeboxmobile.googlecode.com\n\n"+
+			"Contact :\nfreeboxmobile@free.fr\n\n"+
+			"Version : "+getString(R.string.app_version)+"\n\n"+
+			"Auteurs :\n"+
+			"- Olivier Rosello : Architecture / Réseau / Home / Info ADSL / Téléphone\n"+
+			"- Benoit Duffez : Magnétosocope\n"
 		);
 		d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
 			{

@@ -8,24 +8,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List; 
 
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.BasicHttpParams;
 import org.xmlrpc.android.XMLRPCClient;
 
 import android.app.Activity;
@@ -88,10 +78,6 @@ public class FBMHttpConnection implements Constants
         title = c.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_TITLE, null);
 		login = c.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_USER, null);
 		password = c.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_PASSWORD, null);
-		if (a != null)
-		{
-			ConnectFree.setActivity(a);
-		}
 	}
 
 	/**
@@ -138,18 +124,6 @@ public class FBMHttpConnection implements Constants
 	public static String getIdentifiant()
 	{
 		return (login);
-	}
-
-	// TODO : Supprimer
-	public static String getId()
-	{
-		return (id);
-	}
-
-	// TODO : Supprimer
-	public static String getIdt()
-	{
-		return (idt);
 	}
 
 	public static void showProgressDialog(Activity a)
@@ -222,16 +196,10 @@ public class FBMHttpConnection implements Constants
 		if ((id == null) || (idt == null))
 		{
 			Log.d(DEBUGTAG, "checkConnected : ON A JAMAIS ETE AUTHENTIFIE - ON S'AUTHENTIFIE");
-			return (connectionFree(login, password, false));
+			return (connectionFree(login, password));
 		}
 		else
 			return (defValue);
-	}
-
-	// TODO : Passera en private ou supprimer ?
-	public static int connectFree()
-	{
-		return FBMHttpConnection.connectionFree(login, password, false);
 	}
 
 	public static ContentValues connectFreeCheck(String l, String p)
@@ -242,7 +210,7 @@ public class FBMHttpConnection implements Constants
 		String mIdt;
 		ContentValues v = null;
 
-		if (FBMHttpConnection.connectionFree(l, p, false) == CONNECT_CONNECTED)
+		if (FBMHttpConnection.connectionFree(l, p) == CONNECT_CONNECTED)
 		{
 			// backup des données du compte loggué pour les restaurer après
 			mLogin = login;
@@ -286,16 +254,27 @@ public class FBMHttpConnection implements Constants
 		{
 			if (is != null)
 			{
+				int start;
+				int end;
 				ContentValues consoleValues = new ContentValues();
 				String r;
 		    	BufferedReader br = new BufferedReader(new InputStreamReader(is, "ISO8859_1"));
 		    	br.mark(20000);
+				// TODO : factoriser code ci-dessous
 		    	while ( (s=br.readLine())!= null && s.indexOf(NRA) == -1)
 				{
 				}
 				if ((s != null) && (s.indexOf(NRA)>-1) && ((s = br.readLine()) != null))
 				{
-					r = s.substring(s.indexOf("\">")+2,s.indexOf("</"));
+					start = s.indexOf("\">");
+					end = s.indexOf("</");
+					if ((start != -1) && (end != -1))
+						r = s.substring(start+2,end);
+					else
+					{
+						r = "";
+						br.reset();
+					}
 					consoleValues.put(KEY_NRA,r);
 					Log.d(DEBUGTAG, "NRA : "+r);
 				}
@@ -310,7 +289,15 @@ public class FBMHttpConnection implements Constants
 				}
 				if ((s != null) && (s.indexOf(LENGTH)>-1) && ((s = br.readLine()) != null))
 				{
-					r = s.substring(s.indexOf("\">")+2,s.indexOf(" mètres"));
+					start = s.indexOf("\">");
+					end = s.indexOf(" mètres");
+					if ((start != -1) && (end != -1))
+						r = s.substring(start+2,end);
+					else
+					{
+						r = "";
+						br.reset();
+					}
 					consoleValues.put(KEY_LINELENGTH,r);
 					Log.d(DEBUGTAG, "LENGTH : "+r);
 				}
@@ -325,7 +312,15 @@ public class FBMHttpConnection implements Constants
 				}
 				if ((s != null) && (s.indexOf(ATTN)>-1) && ((s = br.readLine()) != null))
 				{
-					r = s.substring(s.indexOf("\">")+2,s.indexOf(" dB"));
+					start = s.indexOf("\">");
+					end = s.indexOf(" dB");
+					if ((start != -1) && (end != -1))
+						r = s.substring(start+2,end);
+					else
+					{
+						r = "";
+						br.reset();
+					}
 					consoleValues.put(KEY_ATTN,r);
 					Log.d(DEBUGTAG, "ATTN : "+r);
 				}
@@ -340,7 +335,15 @@ public class FBMHttpConnection implements Constants
 				}
 				if ((s != null) && (s.indexOf(IP)>-1))
 				{
-					r = s.substring(s.indexOf("<b>")+3,s.indexOf(" / "));
+					start = s.indexOf("<b>");
+					end = s.indexOf(" / ");
+					if ((start != -1) && (end != -1))
+						r = s.substring(start+3,end);
+					else
+					{
+						r = "";
+						br.reset();
+					}
 					consoleValues.put(KEY_IP,r);
 					mIP = r;
 					Log.d(DEBUGTAG, "IP : "+r);
@@ -356,7 +359,12 @@ public class FBMHttpConnection implements Constants
 				}
 				if ((s != null) && (s.indexOf(TEL)>-1))
 				{
-					r = s.substring(s.indexOf("<b>")+3,s.indexOf("</b>"));
+					start = s.indexOf("<b>");
+					end = s.indexOf("</b>");
+					if ((start != -1) && (end != -1))
+						r = s.substring(start+3,end);
+					else
+						r = "";
 					consoleValues.put(KEY_TEL,r);
 					Log.d(DEBUGTAG, "TEL : "+r);
 				}				
@@ -374,7 +382,6 @@ public class FBMHttpConnection implements Constants
 					Object[] response = (Object[]) client.call("getDSLAMListForPool", mIP);
 					if (response.length > 0)
 					{
-						// DSLAM :
 						Log.d(DEBUGTAG, "XMLRPC : "+response[0]);
 						consoleValues.put(KEY_DSLAM,(String) response[0]);
 			    		r = null;
@@ -408,10 +415,9 @@ public class FBMHttpConnection implements Constants
 	 * connectionFree : identifie sur le portail de Free avec le login/pass demandé
 	 * @param l : login (identifiant = numéro de téléphone Freebox)
 	 * @param p : password (mot de passe Freebox)
-	 * @param check : true = juste vérifier les identifiants / false : se connecter (ie stocker id & idt)
 	 * @return CONNECT_CONNECTED || CONNECT_NOT_CONNECTED || CONNECT_LOGIN_FAILED
 	 */
-	private static int connectionFree(String l, String p, boolean check)
+	private static int connectionFree(String l, String p)
 	{
 		String m_id = null;
 		String m_idt = null;
@@ -455,11 +461,8 @@ public class FBMHttpConnection implements Constants
         	Log.e(DEBUGTAG, "connectFree : "+e);
         	e.printStackTrace();
         	connectionStatus = CONNECT_NOT_CONNECTED;
-        	if (check == false)
-        	{
-	        	id = null;
-	        	idt = null;
-        	}
+        	id = null;
+        	idt = null;
         	return connectionStatus;
 		}
 		finally
@@ -472,21 +475,15 @@ public class FBMHttpConnection implements Constants
        	if (m_id != null && m_idt != null)
        	{
        		connectionStatus = CONNECT_CONNECTED;
-       		if (check == false)
-       		{
-       			id = m_id;
-       			idt = m_idt;
-       		}
+   			id = m_id;
+   			idt = m_idt;
        	}
        	else
        	{
        		Log.d(DEBUGTAG,"MonCompeFree : AUTHENTIFICATION FAILED !");
        		connectionStatus = CONNECT_LOGIN_FAILED;
-       		if (check == false)
-       		{
-	       		id = null;
-	       		idt = null;
-       		}
+       		id = null;
+       		idt = null;
        	}
        	return connectionStatus;
     }
@@ -544,7 +541,7 @@ public class FBMHttpConnection implements Constants
 					c = null;
 				}
 				Log.d(DEBUGTAG, "GETFILE : PAS AUTHENTIFIE SUR LA CONSOLE - SESSION EXPIREE");
-				connected = connectionFree(login, password, false);
+				connected = connectionFree(login, password);
 				if (connected == CONNECT_CONNECTED)
 				{
 					Log.d(DEBUGTAG, "GETFILE : REAUTHENTIFICATION OK");
@@ -582,38 +579,6 @@ public class FBMHttpConnection implements Constants
 			e.printStackTrace();
 		}
         return false;
-	}
-
-	/**
-	 * Sends a GET request
-	 * @param url : url to get
-	 * @retour true pour avec une valeur non nulle en retour (si on veut le contenu de la page ou pas)
-	 * @return HttpResponse response from the server
-	 */
-	// TODO : OBSOLETE, to remove
-	public static BufferedReader getRequest(String url, boolean retour)
-	{
-		Log.d(DEBUGTAG, "GET: " + url);
-
-		HttpClient client = new DefaultHttpClient(new BasicHttpParams());
-		HttpGet getMethod = new HttpGet(url);
-		getMethod.setHeader("User-Agent", USER_AGENT);
-		try
-		{
-			HttpResponse httpResponse = client.execute(getMethod);
-			if ((httpResponse != null) && (retour))
-			{
-				HttpEntity responseEntity = httpResponse.getEntity();
-				return (new BufferedReader(new InputStreamReader(responseEntity.getContent(), "ISO8859_1")));
-			}
-			else
-				return (null);
-		}
-       	catch (IOException e)
-       	{
-        	Log.e(DEBUGTAG,"getRequest : "+e);
-        	return (null);
-        }
 	}
 
 	/**
@@ -657,7 +622,7 @@ public class FBMHttpConnection implements Constants
 					h = null;
 				}
 				Log.d(DEBUGTAG, "GET : PAS AUTHENTIFIE SUR LA CONSOLE - SESSION EXPIREE");
-				c = connectionFree(login, password, false);
+				c = connectionFree(login, password);
 				if (c == CONNECT_CONNECTED)
 				{
 					Log.d(DEBUGTAG, "GET :  REAUTHENTIFICATION OK");
@@ -686,31 +651,6 @@ public class FBMHttpConnection implements Constants
 			Log.e(DEBUGTAG, "getAuthRequest "+e);
 		}
 		return (null);
-	}
-
-	// TODO : Obsolete, to remove
-	public static InputStream getRequestIS(String url) {
-		Log.d(DEBUGTAG, "GET: " + url);
-
-		HttpClient client = new DefaultHttpClient(new BasicHttpParams());
-		HttpGet getMethod = new HttpGet(url);
-		getMethod.setHeader("User-Agent", USER_AGENT);
-		try
-		{
-			HttpResponse httpResponse = client.execute(getMethod);
-			if ((httpResponse != null))
-			{
-				HttpEntity responseEntity = httpResponse.getEntity();
-				return responseEntity.getContent();
-			}
-			else
-				return (null);
-		}
-       	catch (IOException e)
-       	{
-        	Log.e(DEBUGTAG,"getRequest : "+e);
-        	return (null);
-        }
 	}
 
 	/**
@@ -752,7 +692,7 @@ public class FBMHttpConnection implements Constants
 					h = null;
 				}
 				Log.d(DEBUGTAG, "POST : PAS AUTHENTIFIE SUR LA CONSOLE - SESSION EXPIREE");
-				c = connectionFree(login, password, false);
+				c = connectionFree(login, password);
 				if (c == CONNECT_CONNECTED)
 				{
 					Log.d(DEBUGTAG, "POST :  REAUTHENTIFICATION OK");
@@ -782,49 +722,6 @@ public class FBMHttpConnection implements Constants
 			e.printStackTrace();
 		}
 		return (null);
-	}
-
-	/**
-	* Sends a POST request
-	* @param  url : url to post
-	* @param  nameValuePairs : a list of NameValuePair with parameters to post
-	* @retour true pour avec une valeur non nulle en retour (si on veut le contenu de la page ou pas)
-	* @return HttpResponse response from the server or null
-	* @throws SocketTimeoutException
-	*             , SocketException
-	*/
-	// TODO : Obsolete, to remove
-	public static BufferedReader postRequest(String url, List<NameValuePair> nameValuePairs, boolean retour)
-	{
-		Log.d(DEBUGTAG, "POST: " + url);
-
-		HttpClient client = new DefaultHttpClient(new BasicHttpParams());
-		HttpPost postMethod = new HttpPost(url);
-		postMethod.setHeader("User-Agent", USER_AGENT);
-
-		Header locationHeader = postMethod.getFirstHeader("location");
-		if (locationHeader != null)
-		{
-			String redirectLocation = locationHeader.getValue();
-			Log.d(DEBUGTAG, "RESPONSE : "+redirectLocation);
-		}
-		try
-		{
-			postMethod.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-			HttpResponse httpResponse = client.execute(postMethod);
-        	if ((httpResponse != null) && (retour))
-        	{
-	        	HttpEntity responseEntity = httpResponse.getEntity();
-	        	return (new BufferedReader(new InputStreamReader(responseEntity.getContent(), "ISO8859_1")));
-        	}
-        	else
-        		return (null);
-		}
-		catch (Exception e)
-		{
-			Log.e(DEBUGTAG, "postRequest : "+e);
-			return (null);
-		}
 	}
 
 	private static String makeStringForPost(List<NameValuePair> p, boolean auth)

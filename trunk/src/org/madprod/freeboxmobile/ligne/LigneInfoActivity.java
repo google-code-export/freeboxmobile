@@ -10,8 +10,8 @@ import org.madprod.freeboxmobile.home.ComptesDbAdapter;
 import org.madprod.freeboxmobile.mvv.MevoMessage;
 import org.xmlrpc.android.XMLRPCClient;
 
+import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ListActivity;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -21,9 +21,9 @@ import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.SimpleCursorAdapter;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.ListView;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,7 +35,7 @@ import android.view.MenuItem;
 * 
 */
 
-public class LigneInfoActivity extends ListActivity implements LigneInfoConstants
+public class LigneInfoActivity extends Activity implements LigneInfoConstants
 {
 	String DSLAM_Info = "";
 	String DSLAM_Date = "";
@@ -82,17 +82,14 @@ public class LigneInfoActivity extends ListActivity implements LigneInfoConstant
         }
         return super.onOptionsItemSelected(item);
     }
-	
-    @Override
-    protected void onListItemClick(ListView l, View v, int position, long id)
-    {
-        super.onListItemClick(l, v, position, id);
-        Cursor c = mTicketCursor;
-        displayTicket(c);
-    }
 
-    private void displayTicket(Cursor c)
-    {	
+    private void displayTicket(long l)
+    {
+    	Log.d(DEBUGTAG, "Fetchticket : "+l);
+    	LigneInfoDbAdapter mDb = new LigneInfoDbAdapter(LigneInfoActivity.this);
+		mDb.open();
+    	Cursor c = mDb.fetchTicket(l);
+    	startManagingCursor(c);
     	AlertDialog d = new AlertDialog.Builder(this).create();
 		d.setTitle(c.getString(c.getColumnIndexOrThrow(KEY_TITLE)));
     	d.setMessage("Début : "+MevoMessage.convertDateTimeHR(c.getString(c.getColumnIndexOrThrow(KEY_START)))+"\n"+
@@ -106,6 +103,7 @@ public class LigneInfoActivity extends ListActivity implements LigneInfoConstant
 				}
 			});
 		d.show();
+		mDb.close();
     }
 
     private void refreshView()
@@ -139,25 +137,46 @@ public class LigneInfoActivity extends ListActivity implements LigneInfoConstant
         }
         text2 = "Liste des tickets de "+mgr.getString(KEY_DSLAM, "")+" :";
         text3 = "Historique de l'état de "+mgr.getString(KEY_DSLAM, "")+" :";
-        t0_0.setTypeface(Typeface.DEFAULT_BOLD);
         t_compte.setText(FBMHttpConnection.getTitle());
-        t0_1.setTypeface(Typeface.DEFAULT_BOLD);
-        t0_2.setTypeface(Typeface.DEFAULT_BOLD);
         t1_1.setText(text1_1);
         t1_2.setText(text1_2);
         t2.setText(text2);
-        t2.setTypeface(Typeface.DEFAULT_BOLD);
         t3.setText(text3);  
-        t3.setTypeface(Typeface.DEFAULT_BOLD);
         
+        LinearLayout lt = (LinearLayout) findViewById(R.id.LinearLayoutTickets);
         LigneInfoDbAdapter mDb = new LigneInfoDbAdapter(LigneInfoActivity.this);
 		mDb.open();
         mTicketCursor = mDb.fetchAllTickets();
         startManagingCursor(mTicketCursor);
-        String[] from = new String[]{KEY_TITLE};
-        int[] to = new int[]{R.id.tickets_liste_row};
-        SimpleCursorAdapter tickets = new SimpleCursorAdapter(this, R.layout.ligneinfo_ticket_row, mTicketCursor, from, to);
-        setListAdapter(tickets);
+        if (mTicketCursor.moveToFirst())
+        {
+        	do
+        	{
+        		Button t = new Button(this);
+        		t.setText(mTicketCursor.getString(mTicketCursor.getColumnIndexOrThrow(KEY_TITLE)));
+        		t.setTextSize(14);
+        		final Long id = mTicketCursor.getLong(mTicketCursor.getColumnIndexOrThrow(KEY_ROWID));
+        		t.setOnClickListener(
+    					new View.OnClickListener()
+    					{
+    						public void onClick(View view)
+    						{
+    							displayTicket(id);
+    						}
+    					}
+    				);
+        		lt.addView(t);
+        	}
+       		while (mTicketCursor.moveToNext());
+        }
+        else
+        {
+        	TextView t = new TextView(this);
+    		t.setText("Pas de ticket pour cet équipement.");
+    		t.setTextSize(16);
+    		t.setPadding(10, 0, 0, 0);
+    		lt.addView(t);        	
+        }
         mDb.close();
     }
 
