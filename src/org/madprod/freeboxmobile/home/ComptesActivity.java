@@ -210,6 +210,7 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 					editor.putString(KEY_TEL, c.getString(c.getColumnIndexOrThrow(KEY_TEL)));
 					editor.putString(KEY_LINELENGTH, c.getString(c.getColumnIndexOrThrow(KEY_LINELENGTH)));
 					editor.putString(KEY_ATTN, c.getString(c.getColumnIndexOrThrow(KEY_ATTN)));
+					editor.putString(KEY_LINETYPE, c.getString(c.getColumnIndexOrThrow(KEY_LINETYPE)));
 					editor.commit();
 					FBMHttpConnection.initCompte(ComptesActivity.this);
 				}
@@ -255,6 +256,7 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 					editor.putString(KEY_TEL, c.getString(c.getColumnIndexOrThrow(KEY_TEL)));
 					editor.putString(KEY_LINELENGTH, c.getString(c.getColumnIndexOrThrow(KEY_LINELENGTH)));
 					editor.putString(KEY_ATTN, c.getString(c.getColumnIndexOrThrow(KEY_ATTN)));
+					editor.putString(KEY_LINETYPE, c.getString(c.getColumnIndexOrThrow(KEY_LINETYPE)));
 					editor.commit();
 					FBMHttpConnection.initCompte(this);
 	            	Toast t = Toast.makeText(ComptesActivity.this, "Compte "+c.getString(c.getColumnIndexOrThrow(KEY_TITLE))+" selectionné",Toast.LENGTH_LONG);

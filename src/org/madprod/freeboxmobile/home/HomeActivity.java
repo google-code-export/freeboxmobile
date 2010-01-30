@@ -62,8 +62,8 @@ public class HomeActivity extends Activity implements HomeConstants
         if (Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED) == false)
         	showSdCardError();
 		setContentView(R.layout.home_main);
+		/*
 		FBMHttpConnection.initVars(this, null);
-		
         Button phoneButton = (Button) findViewById(R.id.phone);
         Button ligneButton = (Button) findViewById(R.id.ligne);
         Button pvrButton = (Button) findViewById(R.id.magneto);
@@ -117,6 +117,7 @@ public class HomeActivity extends Activity implements HomeConstants
 					}
 				);
 		}
+		*/
 		setTitle(getString(R.string.app_name)+" "+FBMHttpConnection.getTitle());
     }
 
@@ -130,6 +131,80 @@ public class HomeActivity extends Activity implements HomeConstants
 		{
 			showNoCompte();
 		}
+        
+		FBMHttpConnection.initVars(this, null);
+
+        Button phoneButton = (Button) findViewById(R.id.phone);
+        Button ligneButton = (Button) findViewById(R.id.ligne);
+        Button pvrButton = (Button) findViewById(R.id.magneto);
+
+        if (mgr.getString(KEY_TITLE, "").equals(""))
+		{
+		}
+		else
+		{
+			phoneButton.setOnClickListener(
+					new View.OnClickListener()
+					{
+						public void onClick(View view)
+						{
+					    	Intent i = new Intent(homeActivity, org.madprod.freeboxmobile.mvv.MevoActivity.class);
+					    	startActivity(i);
+						}
+					}
+				);
+			if (!mgr.getString(KEY_LINETYPE, "").equals("0"))
+			{
+				ligneButton.setOnClickListener(
+						new View.OnClickListener()
+						{
+								public void onClick(View view)
+								{
+									Intent i = new Intent(homeActivity, org.madprod.freeboxmobile.ligne.LigneInfoActivity.class);
+							    	startActivity(i);
+								}
+						}
+					);
+			}
+			else
+			{
+				ligneButton.setOnClickListener(
+						new View.OnClickListener()
+						{
+								public void onClick(View view)
+								{
+									showNonDegroupe();
+								}
+						}
+					);				
+			}
+
+			if (!mgr.getString(KEY_LINETYPE, "").equals("0"))
+			{
+				pvrButton.setOnClickListener(
+						new View.OnClickListener()
+						{
+							public void onClick(View view)
+							{
+						    	Intent i = new Intent(homeActivity, org.madprod.freeboxmobile.pvr.EnregistrementsActivity.class);
+						    	startActivity(i);
+							}
+						}
+					);
+			}
+			{
+				pvrButton.setOnClickListener(
+						new View.OnClickListener()
+						{
+								public void onClick(View view)
+								{
+									showNonDegroupe();
+								}
+						}
+					);				
+			}
+		}
+		setTitle(getString(R.string.app_name)+" "+FBMHttpConnection.getTitle());
     }
     
     @Override
@@ -278,6 +353,24 @@ public class HomeActivity extends Activity implements HomeConstants
 		d.show();
     }
 
+    private void showNonDegroupe()
+    {
+		AlertDialog d = new AlertDialog.Builder(this).create();
+		d.setTitle(getString(R.string.app_name));
+		d.setMessage(
+			"Cette fonctionnalité n'est accessible qu'aux abonnés dégroupés."
+		);
+
+		d.setButton(DialogInterface.BUTTON_NEUTRAL, "Ok", new DialogInterface.OnClickListener()
+		{
+			public void onClick(DialogInterface dialog, int which)
+			{
+				dialog.dismiss();
+			}
+		});
+		d.show();      
+    }
+
     private void showNoCompte()
     {
 		AlertDialog d = new AlertDialog.Builder(this).create();
@@ -287,14 +380,7 @@ public class HomeActivity extends Activity implements HomeConstants
 			"Vous pouvez configurer des comptes en utilisant la touche MENU sur la page d'accueil "+
 			"ou en utilisant le bouton ci-dessous."
 		);
-/*		d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
-		{
-			public void onClick(DialogInterface dialog, int which)
-			{
-				dialog.dismiss();
-			}
-		});
-*/
+
 		d.setButton(DialogInterface.BUTTON_NEUTRAL, "Ok", new DialogInterface.OnClickListener()
 		{
 			public void onClick(DialogInterface dialog, int which)

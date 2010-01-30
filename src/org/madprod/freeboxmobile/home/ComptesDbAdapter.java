@@ -24,7 +24,7 @@ public class ComptesDbAdapter implements Constants
 
     private static final String DATABASE_NAME = "comptes";
     private static final String DATABASE_TABLE = "comptes";
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 5;
 
     private static final String DATABASE_CREATE =
         "create table " + DATABASE_TABLE + " (" + KEY_ROWID + " integer primary key autoincrement, "
@@ -32,7 +32,7 @@ public class ComptesDbAdapter implements Constants
                 + KEY_PASSWORD + " text not null, " + KEY_NRA + " text not null, "
                 + KEY_DSLAM + " text not null, " + KEY_IP + " text not null, "
                 + KEY_TEL + " text not null, "+ KEY_LINELENGTH + " text not null, "
-                + KEY_ATTN + " text not null );";
+                + KEY_ATTN + " text not null, "+ KEY_LINETYPE + " text not null );";
 
     private final Context mCtx;
 
@@ -70,6 +70,9 @@ public class ComptesDbAdapter implements Constants
 	    				case 4:
 	    					success = upgradeToVersion4(db);
 	    				break;
+	    				case 5:
+	    					success = upgradeToVersion5(db);
+	    				break;
 	    			}
 	    			if (!success)
 	    				break;
@@ -100,6 +103,12 @@ public class ComptesDbAdapter implements Constants
     	{
     		db.execSQL("ALTER TABLE "+DATABASE_TABLE+" ADD "+KEY_LINELENGTH + " text DEFAULT '' not null");
     		db.execSQL("ALTER TABLE "+DATABASE_TABLE+" ADD "+KEY_ATTN + " text DEFAULT '' not null");
+    		return true;
+    	}
+
+    	boolean upgradeToVersion5(SQLiteDatabase db)
+    	{
+    		db.execSQL("ALTER TABLE "+DATABASE_TABLE+" ADD "+KEY_LINETYPE + " text DEFAULT '' not null");
     		return true;
     	}
     }
@@ -146,7 +155,7 @@ public class ComptesDbAdapter implements Constants
      * @param password the password of the compte
      * @return rowId or -1 if failed
      */
-    public long createCompte(String title, String user, String password, String nra, String dslam, String ip, String length, String attn, String tel)
+    public long createCompte(String title, String user, String password, String nra, String dslam, String ip, String length, String attn, String tel, String linetype)
     {
         ContentValues initialValues = new ContentValues();
         initialValues.put(KEY_TITLE, title);
@@ -158,6 +167,7 @@ public class ComptesDbAdapter implements Constants
         initialValues.put(KEY_LINELENGTH, length);
         initialValues.put(KEY_ATTN, attn);
         initialValues.put(KEY_TEL, tel);
+        initialValues.put(KEY_LINETYPE, linetype);
         return mDb.insert(DATABASE_TABLE, null, initialValues);
     }
 
@@ -181,7 +191,7 @@ public class ComptesDbAdapter implements Constants
     {
         return mDb.query(DATABASE_TABLE, new String[] {KEY_ROWID, KEY_TITLE,
                 KEY_USER, KEY_PASSWORD, KEY_NRA, KEY_DSLAM, KEY_IP, KEY_TEL,
-                KEY_LINELENGTH, KEY_ATTN}, null, null, null, null, null);
+                KEY_LINELENGTH, KEY_ATTN, KEY_LINETYPE}, null, null, null, null, null);
     }
 
     /**
@@ -196,7 +206,7 @@ public class ComptesDbAdapter implements Constants
         Cursor mCursor =
                 mDb.query(true, DATABASE_TABLE, new String[] {KEY_ROWID,
                         KEY_TITLE, KEY_USER, KEY_PASSWORD, KEY_NRA, KEY_DSLAM,
-                        KEY_IP, KEY_TEL, KEY_LINELENGTH, KEY_ATTN}, KEY_ROWID
+                        KEY_IP, KEY_TEL, KEY_LINELENGTH, KEY_ATTN, KEY_LINETYPE}, KEY_ROWID
                         + "=" + rowId, null, null, null, null, null);
         if (mCursor != null)
         {
@@ -216,7 +226,7 @@ public class ComptesDbAdapter implements Constants
      * @param password value to set compte password to
      * @return true if the note was successfully updated, false otherwise
      */
-    public boolean updateCompte(long rowId, String title, String user, String password, String nra, String dslam, String ip, String length, String attn, String tel)
+    public boolean updateCompte(long rowId, String title, String user, String password, String nra, String dslam, String ip, String length, String attn, String tel, String linetype)
     {
         ContentValues args = new ContentValues();
         args.put(KEY_TITLE, title);
@@ -228,6 +238,7 @@ public class ComptesDbAdapter implements Constants
         args.put(KEY_LINELENGTH, length);
         args.put(KEY_ATTN, attn);
         args.put(KEY_TEL, tel);
+        args.put(KEY_LINETYPE, linetype);
         return mDb.update(DATABASE_TABLE, args, KEY_ROWID + "=" + rowId, null) > 0;
     }
 
@@ -257,7 +268,7 @@ public class ComptesDbAdapter implements Constants
     	Cursor mCursor = mDb.query(true, DATABASE_TABLE, new String[] {
     			KEY_ROWID,
                 KEY_TITLE, KEY_USER, KEY_PASSWORD, KEY_NRA, KEY_DSLAM,
-                KEY_IP, KEY_TEL, KEY_LINELENGTH, KEY_ATTN
+                KEY_IP, KEY_TEL, KEY_LINELENGTH, KEY_ATTN, KEY_LINETYPE
     			}, KEY_TITLE + "='" + title + "'", null,
                 null, null, null, null);
         if (mCursor != null)

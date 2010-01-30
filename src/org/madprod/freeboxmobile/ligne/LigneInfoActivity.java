@@ -246,7 +246,7 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
     	{
 	    	mDbHelper.updateCompte(rowid, p.title, p.login, p.password, (String) v.get(KEY_NRA),
 	    			(String) v.get(KEY_DSLAM), (String) v.get(KEY_IP), (String) v.get(KEY_LINELENGTH),
-	    			(String) v.get(KEY_ATTN), (String) v.get(KEY_TEL));
+	    			(String) v.get(KEY_ATTN), (String) v.get(KEY_TEL), (String) v.get(KEY_LINETYPE));
 			Editor editor = mgr.edit();
 			editor.putString(KEY_NRA, (String) v.get(KEY_NRA));
 			editor.putString(KEY_DSLAM, (String) v.get(KEY_DSLAM));
