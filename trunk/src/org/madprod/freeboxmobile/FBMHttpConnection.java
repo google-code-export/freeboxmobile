@@ -224,6 +224,7 @@ public class FBMHttpConnection implements Constants
 			login = l;
 			password = p;
 			v = parseConsole(l, p);
+			Log.d(DEBUGTAG, "connectFreeCheck : "+v);
 
 			// restauration des données présentes avant
 			login = mLogin;
@@ -231,7 +232,53 @@ public class FBMHttpConnection implements Constants
 			id = mId;
 			idt = mIdt;
 		}
+		else
+		{
+			Log.d(DEBUGTAG, "connectFreeCheck failed");
+		}
 		return (v);
+	}
+
+	private static String parsePage(BufferedReader br, String tag, String first, String last)
+	{
+		String s;
+		String r = "";
+		int start;
+		int end;
+
+		try
+		{
+			while ( (s=br.readLine())!= null && s.indexOf(tag) == -1)
+			{
+			}
+			if ((s != null) && (s.indexOf(tag) != -1))
+			{
+				if (s.indexOf(first) == -1)
+				{
+					while ( (s=br.readLine())!= null && s.indexOf(first) == -1)
+					{
+					}
+				}
+				if (s != null && s.indexOf(first) != -1)
+				{
+					start = s.indexOf(first) + first.length();
+					end = s.indexOf(last);
+					if ((start != -1) && (end != -1))
+						r = s.substring(start,end);
+					else
+						br.reset();
+				}
+			}
+			else
+				br.reset();
+		}
+		catch (Exception e)
+		{
+			Log.e(DEBUGTAG, "parsePage - "+tag+" : " + e.getMessage());
+			e.printStackTrace();
+		}
+		Log.d(DEBUGTAG, "["+tag+"] "+r);
+		return r;
 	}
 	
 	/**
@@ -241,151 +288,33 @@ public class FBMHttpConnection implements Constants
 	 */
 	private static ContentValues parseConsole(String l, String p)
 	{
-		String s;
-		String mIP = null;
-		final String NRA = "NRA :";
-		final String LENGTH = "Longueur :";
-		final String ATTN = "Affaiblissement :";
-		final String IP = "Votre adresse IP";
-		final String TEL = "téléphone Freebox";
-
 		// TODO : Checker et stocker si la ligne est dégroupée ou pas
 		InputStream is = getAuthRequest(suiviTechUrl, null, true, true);
 		try
 		{
 			if (is != null)
 			{
-				int start;
-				int end;
 				ContentValues consoleValues = new ContentValues();
-				String r;
 		    	BufferedReader br = new BufferedReader(new InputStreamReader(is, "ISO8859_1"));
 		    	br.mark(20000);
-				// TODO : factoriser code ci-dessous
-		    	while ( (s=br.readLine())!= null && s.indexOf(NRA) == -1)
-				{
-				}
-				if ((s != null) && (s.indexOf(NRA)>-1) && ((s = br.readLine()) != null))
-				{
-					start = s.indexOf("\">");
-					end = s.indexOf("</");
-					if ((start != -1) && (end != -1))
-						r = s.substring(start+2,end);
-					else
-					{
-						r = "";
-						br.reset();
-					}
-					consoleValues.put(KEY_NRA,r);
-					Log.d(DEBUGTAG, "NRA : "+r);
-				}
-				else
-				{
-					Log.d(DEBUGTAG, "NRA pas trouvé");
-					consoleValues.put(KEY_NRA,"");
-					br.reset();
-				}
-		    	while ( (s=br.readLine())!= null && s.indexOf(LENGTH) == -1)
-				{
-				}
-				if ((s != null) && (s.indexOf(LENGTH)>-1) && ((s = br.readLine()) != null))
-				{
-					start = s.indexOf("\">");
-					end = s.indexOf(" mètres");
-					if ((start != -1) && (end != -1))
-						r = s.substring(start+2,end);
-					else
-					{
-						r = "";
-						br.reset();
-					}
-					consoleValues.put(KEY_LINELENGTH,r);
-					Log.d(DEBUGTAG, "LENGTH : "+r);
-				}
-				else
-				{
-					Log.d(DEBUGTAG, "LENGTH pas trouvé");
-					consoleValues.put(KEY_LINELENGTH,"");
-					br.reset();
-				}
-		    	while ( (s=br.readLine())!= null && s.indexOf(ATTN) == -1)
-				{
-				}
-				if ((s != null) && (s.indexOf(ATTN)>-1) && ((s = br.readLine()) != null))
-				{
-					start = s.indexOf("\">");
-					end = s.indexOf(" dB");
-					if ((start != -1) && (end != -1))
-						r = s.substring(start+2,end);
-					else
-					{
-						r = "";
-						br.reset();
-					}
-					consoleValues.put(KEY_ATTN,r);
-					Log.d(DEBUGTAG, "ATTN : "+r);
-				}
-				else
-				{
-					Log.d(DEBUGTAG, "ATTN pas trouvé");
-					consoleValues.put(KEY_ATTN,"");
-					br.reset();
-				}
-		    	while ( (s=br.readLine())!= null && s.indexOf(IP) == -1)
-				{
-				}
-				if ((s != null) && (s.indexOf(IP)>-1))
-				{
-					start = s.indexOf("<b>");
-					end = s.indexOf(" / ");
-					if ((start != -1) && (end != -1))
-						r = s.substring(start+3,end);
-					else
-					{
-						r = "";
-						br.reset();
-					}
-					consoleValues.put(KEY_IP,r);
-					mIP = r;
-					Log.d(DEBUGTAG, "IP : "+r);
-				}				
-				else
-				{
-					Log.d(DEBUGTAG, "IP pas trouvé");
-					consoleValues.put(KEY_IP,"");
-					br.reset();
-				}
-		    	while ( (s=br.readLine())!= null && s.indexOf(TEL) == -1)
-				{
-				}
-				if ((s != null) && (s.indexOf(TEL)>-1))
-				{
-					start = s.indexOf("<b>");
-					end = s.indexOf("</b>");
-					if ((start != -1) && (end != -1))
-						r = s.substring(start+3,end);
-					else
-						r = "";
-					consoleValues.put(KEY_TEL,r);
-					Log.d(DEBUGTAG, "TEL : "+r);
-				}				
-				else
-				{
-					consoleValues.put(KEY_TEL,"");
-					Log.d(DEBUGTAG, "TEL pas trouvé");
-					br.reset();
-				}
+		    	consoleValues.put(KEY_LINETYPE,
+		    			parsePage(br, "Raccordée actuellement en offre", "0000\">", "</font>")
+		    			.contains("Freebox dégroupé")?"1":"0");
+		    	consoleValues.put(KEY_NRA, parsePage(br, "NRA :", "red\">", "</"));
+		    	consoleValues.put(KEY_LINELENGTH, parsePage(br, "Longueur :", "red\">", " mètres"));
+		    	consoleValues.put(KEY_ATTN, parsePage(br, "Affaiblissement :", "red\">", " dB"));
+		    	consoleValues.put(KEY_IP, parsePage(br, "Votre adresse IP", "<b>", " / "));
+		    	consoleValues.put(KEY_TEL, parsePage(br, "téléphone Freebox", "<b>", "</b>"));
 				br.close();
-				if (mIP != null)
+				if (consoleValues.get(KEY_IP)!= "")
 				{
 					URI uri = URI.create(frimousseUrl);
 					XMLRPCClient client = new XMLRPCClient(uri);
-					Object[] response = (Object[]) client.call("getDSLAMListForPool", mIP);
+					Object[] response = (Object[]) client.call("getDSLAMListForPool", consoleValues.get(KEY_IP));
 					if (response.length > 0)
 					{
 						Log.d(DEBUGTAG, "XMLRPC : "+response[0]);
 						consoleValues.put(KEY_DSLAM,(String) response[0]);
-			    		r = null;
 					}
 					else
 					{
@@ -440,6 +369,7 @@ public class FBMHttpConnection implements Constants
 			if (h.getHeaderFields().get("location") != null)
 			{
 				String s = h.getHeaderFields().get("location").toString();
+				Log.d(DEBUGTAG, "connectFree : "+s);
 	    		String priv;
 				if (s.indexOf("idt=")>-1)
 				{
@@ -770,7 +700,7 @@ public class FBMHttpConnection implements Constants
                 }
             }
         }
-//        Log.d(DEBUGTAG, "makeStringForPost : "+listConcat);
+        Log.d(DEBUGTAG, "makeStringForPost : "+listConcat);
         return (listConcat);
     }
 	

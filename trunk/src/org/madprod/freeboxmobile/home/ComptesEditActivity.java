@@ -190,7 +190,7 @@ public class ComptesEditActivity extends Activity implements Constants
 	        {
 	            long id = mDbHelper.createCompte(p.title, p.login, p.password, (String) v.get(KEY_NRA),
 	            		(String) v.get(KEY_DSLAM), (String) v.get(KEY_IP), (String) v.get(KEY_LINELENGTH),
-	            		(String) v.get(KEY_ATTN), (String) v.get(KEY_TEL));
+	            		(String) v.get(KEY_ATTN), (String) v.get(KEY_TEL), (String) v.get(KEY_LINETYPE));
 	            if (id > 0)
 	            {
 	                mRowId = id;
@@ -200,7 +200,7 @@ public class ComptesEditActivity extends Activity implements Constants
 	        {
 	            mDbHelper.updateCompte(mRowId, p.title, p.login, p.password, (String) v.get(KEY_NRA),
 	            		(String) v.get(KEY_DSLAM), (String) v.get(KEY_IP), (String) v.get(KEY_LINELENGTH),
-	            		(String) v.get(KEY_ATTN), (String) v.get(KEY_TEL));
+	            		(String) v.get(KEY_ATTN), (String) v.get(KEY_TEL), (String) v.get(KEY_LINETYPE));
 	        }
 
             bundle.putLong(ComptesDbAdapter.KEY_ROWID, mRowId);
