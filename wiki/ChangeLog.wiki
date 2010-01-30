@@ -14,7 +14,7 @@ SERVICES : tout ce qui tourne en tâche de fond
 Sortie le 29/01/2010<br>
 Release : 7
  * HOME : Grosses optimisations réseau (moins de données, + de batterie)
- * PVR : Première version :)
+ * *PVR : Première version*
 
 == 0.16 ==
 Sortie le 18/01/2010<br>
