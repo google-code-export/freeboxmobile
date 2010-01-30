@@ -1,5 +1,6 @@
 package org.madprod.freeboxmobile.pvr;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -351,12 +352,14 @@ public class ProgrammationActivity extends Activity {
         param.add(new BasicNameValuePair("detail","1"));
     	
         String resultat = PvrUtils.getPage(FBMHttpConnection.getAuthRequest(url, param, true, true));
-        
+//        FBMHttpConnection.FBMLog("telechargerEtParser : "+resultat);
         if (resultat != null) {
+			FBMHttpConnection.FBMLog("telechargerEtParser not null");
 	        int posChaines = resultat.indexOf("var serv_a = [{");
 	        int posDisques = resultat.indexOf("var disk_a = [{");
 	        
 	        if (posChaines > 0 && posDisques > 0) {
+	    		FBMHttpConnection.FBMLog("telechargerEtParser posChaines > 0 && posDisques > 0");
 	        	// Récupération du javascript correspondant à la liste des chaines
 	        	String strChaines = resultat.substring(posChaines+14, posDisques);
 	        	int finChaines = strChaines.lastIndexOf("}");
@@ -374,7 +377,8 @@ public class ProgrammationActivity extends Activity {
 	        	return true;
 	        }
         }
-        
+		FBMHttpConnection.FBMLog("telechargerEtParser null");
+        FBMHttpConnection.FBMLog("Impossible de télécharger le json des chaines/disques");
     	Log.d(TAG, "Impossible de télécharger le json des chaines/disques");
     	return false;
     }

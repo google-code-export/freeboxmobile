@@ -105,18 +105,6 @@ public class FBMHttpConnection implements Constants
            	errorAlert.dismiss();
         }
 	}
-
-	/**
-	 * Init les variables statiques
-	 * Cette fonction doit être utilisée par des classes n'ayant pas d'activity (à la place de initVars)
-	 * @param l
-	 * @param p
-	 */
-//	public static void setVars(String l, String p, Context c)
-//	{
-//		login = l;
-//		password = p;
-//	}
 	
 	public static String getTitle()
 	{
@@ -551,6 +539,7 @@ public class FBMHttpConnection implements Constants
 		c = checkConnected(CONNECT_CONNECTED);
 		try
 		{
+			FBMLog("-- GET : "+url);
 			if (c == CONNECT_CONNECTED)
 			{
 				FBMLog("GET : VERIF SI ON EST AUTHENTIFIE");
@@ -741,36 +730,4 @@ public class FBMHttpConnection implements Constants
 //        Log.d(DEBUGTAG, "makeStringForPost : "+listConcat);
         return (listConcat);
     }
-
-	/**
-	 * BufferedReader to String conversion
-	 * @param	BufferedReader
-	 * @return	String
-	 * @throws	IOException
-	 */
-	public static String getPage(BufferedReader reader)
-	{
-		StringBuilder sb = new StringBuilder();
-		
-		if (reader == null)
-		{
-			return null;
-		}
-
-		String line = null;
-		try
-		{
-			while ((line = reader.readLine()) != null)
-			{
-		          sb.append(line+"\n");
-		    }
-		}
-		catch (IOException e)
-		{
-			FBMLog("getPage: "+e);
-			Log.e(DEBUGTAG, "getPage: "+e);
-			return null;
-		}		
-		return sb.toString();
-	}
 }
