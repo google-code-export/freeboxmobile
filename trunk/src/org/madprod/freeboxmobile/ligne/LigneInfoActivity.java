@@ -292,7 +292,7 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
     	protected Payload doInBackground(Payload... payload)
     	{
     		// refresh est demandé si NRA n'existe pas dans les prefs, donc si on est dans le cas d'un compte
-    		// configuré avec Freeboxmobile <= 0.16
+    		// configuré avec Freeboxmobile <= 0.16 
     		if (payload[0].refresh)
     		{
     			payload[0].result = FBMHttpConnection.connectFreeCheck(payload[0].login, payload[0].password);
