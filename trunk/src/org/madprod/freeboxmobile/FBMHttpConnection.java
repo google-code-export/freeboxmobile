@@ -300,6 +300,7 @@ public class FBMHttpConnection implements Constants
 		    	consoleValues.put(KEY_LINETYPE,
 		    			parsePage(br, "Raccordée actuellement en offre", "0000\">", "</font>")
 		    			.contains("Freebox dégroupé")?"1":"0");
+		    	Log.d(DEBUGTAG,"type:"+consoleValues.get(KEY_LINETYPE));
 		    	consoleValues.put(KEY_NRA, parsePage(br, "NRA :", "red\">", "</"));
 		    	consoleValues.put(KEY_LINELENGTH, parsePage(br, "Longueur :", "red\">", " mètres"));
 		    	consoleValues.put(KEY_ATTN, parsePage(br, "Affaiblissement :", "red\">", " dB"));

@@ -97,6 +97,7 @@ public class HomeActivity extends Activity implements HomeConstants
 						}
 					}
 				);
+			Log.d(DEBUGTAG, "type:"+mgr.getString(KEY_LINETYPE, ""));
 			if (mgr.getString(KEY_LINETYPE, "1").equals("1"))
 			{
 				ligneButton.setOnClickListener(
@@ -136,6 +137,7 @@ public class HomeActivity extends Activity implements HomeConstants
 						}
 					);
 			}
+			else
 			{
 				pvrButton.setOnClickListener(
 						new View.OnClickListener()
