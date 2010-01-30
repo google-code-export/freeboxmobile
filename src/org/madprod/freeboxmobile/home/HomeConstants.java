@@ -20,6 +20,7 @@ public interface HomeConstants extends Constants
     static final int HOME_OPTION_SHARE = Menu.FIRST + 2;
     static final int HOME_OPTION_VOTE  = Menu.FIRST + 3;
     static final int HOME_OPTION_ABOUT = Menu.FIRST + 4;
+    static final int HOME_OPTION_LOG = Menu.FIRST + 5;
 
     // MENUS
     static final int COMPTES_OPTION_NEW = Menu.FIRST;
