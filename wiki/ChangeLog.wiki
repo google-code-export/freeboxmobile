@@ -49,6 +49,11 @@ Release : 1
  * SERVICES : Notification de nouveaux messages
 
 = Versions beta de !FreeboxMobile =
+== 0.20rc1 ==
+Release : 8
+ * HOME : Correction de bug
+ * INFOLIGNE : Correction de bug
+
 == 0.18rc1 ==
 Sortie le 26/01/2010<br>
 Release : 6
