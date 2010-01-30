@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 
+import org.madprod.freeboxmobile.FBMHttpConnection;
+
 import android.util.Log;
 
 class PvrUtils {
@@ -26,15 +28,19 @@ class PvrUtils {
 	 * @throws	IOException
 	 */
 	public static String getPage(InputStream is) {
+		FBMHttpConnection.FBMLog("getPage start");
 		if (is == null) {
+			FBMHttpConnection.FBMLog("getPage is null");
 			return null;
 		}
 		try {
+			FBMHttpConnection.FBMLog("getPage try");
 			return getPage(new InputStreamReader(is, "ISO8859_1"));
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		FBMHttpConnection.FBMLog("getPage is end null");
 		return null;
 	}
 	public static String getPage(InputStreamReader isr) {
