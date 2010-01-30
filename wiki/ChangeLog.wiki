@@ -49,6 +49,11 @@ Release : 1
  * SERVICES : Notification de nouveaux messages
 
 = Versions beta de !FreeboxMobile =
+== 0.20rc3 ==
+Sortie le 30/01/2010<br>
+Release : 10
+ * HOME : Nouveau panneau "A propos" / Possibilité d'envoyer les logs par email
+
 == 0.20rc2 ==
 Sortie le 30/01/2010<br>
 Release : 9
