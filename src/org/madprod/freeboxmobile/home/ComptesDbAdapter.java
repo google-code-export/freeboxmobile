@@ -281,16 +281,17 @@ public class ComptesDbAdapter implements Constants
     /**
      * getLoginFromId returns login associated with given rowid
      * @param id
+     * @param key key to retreive
      * @return login
      */
-    public String getLoginFromId(Integer id)
+    public String getValueFromId(Integer id, String key)
     {
     	Cursor mCursor = mDb.query(true, DATABASE_TABLE, new String[] {
-            		KEY_USER}, KEY_ROWID + "='" + id + "'", null,
+            		key}, KEY_ROWID + "='" + id + "'", null,
                     null, null, null, null);
 	    if ((mCursor != null) && (mCursor.moveToFirst()))
 	    {
-	        return mCursor.getString(mCursor.getColumnIndexOrThrow(KEY_USER));
+	        return mCursor.getString(mCursor.getColumnIndexOrThrow(key));
 	    }
 	    else
 	    {

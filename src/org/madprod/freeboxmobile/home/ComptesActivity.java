@@ -66,7 +66,11 @@ public class ComptesActivity extends ListActivity implements HomeConstants
     @Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo)
     {
+    	AdapterContextMenuInfo info;
+
 		super.onCreateContextMenu(menu, v, menuInfo);
+		info = (AdapterContextMenuInfo) menuInfo;
+		menu.setHeaderTitle("Compte : "+mDbHelper.getValueFromId((int) info.id, KEY_TITLE));
         menu.add(0, COMPTES_OPTION_MODIFY, 0, R.string.comptes_option_modify);
         menu.add(0, COMPTES_OPTION_DELETE, 1, R.string.comptes_option_delete);
 	}
@@ -92,7 +96,7 @@ public class ComptesActivity extends ListActivity implements HomeConstants
     			}
     			else
     			{
-    				if (mDbHelper.getLoginFromId((int) info.id).equals(selected))
+    				if (mDbHelper.getValueFromId((int) info.id, KEY_USER).equals(selected))
 	    			{
 	                	Toast t = Toast.makeText(ComptesActivity.this, "Impossible de supprimer le compte actif !",Toast.LENGTH_LONG);
 	                	t.show();
