@@ -16,12 +16,16 @@ import android.os.Environment;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
 import android.text.style.URLSpan;
+import android.text.util.Linkify;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ScrollView;
+import android.widget.TextView;
 
 /**
 *
@@ -269,7 +273,28 @@ public class HomeActivity extends Activity implements HomeConstants
 
     private void displayAbout()
     {	
-    	AlertDialog d = new AlertDialog.Builder(this).create();
+//    	AlertDialog d = new AlertDialog.Builder(this).create();
+    	ScrollView s = new ScrollView(this);
+    	TextView t = new TextView(this);
+    	t.setLinksClickable(true);
+    	t.setAutoLinkMask(Linkify.ALL);
+    	t.setText(			"Freebox Mobile est une application indépendante de Free.\n\n"+
+			"Site web :\n\nhttp://freeboxmobile.googlecode.com\n\n"+
+			"Contact :\nfreeboxmobile@free.fr\n\n"+
+			"Version : "+getString(R.string.app_version)+"\n\n"+
+			"Facebook :\nhttp://www.facebook.com/search/?q=freeboxmobile\n\n"+
+			"Auteurs :\n"+
+			"- Olivier Rosello : Architecture / Réseau / Home / Info ADSL / Téléphone\n"+
+			"- Benoit Duffez : Magnétosocope\n"
+			);
+    	s.setPadding(10,10,10,10);
+    	t.setMovementMethod(LinkMovementMethod.getInstance());
+    	t.setTextColor(0xffffffff);
+    	t.setLinkTextColor(0xffffffff);
+    	t.setTextSize(16);
+    	s.addView(t);
+    	new AlertDialog.Builder(this).setView(s).show();
+    	/*
 		d.setTitle(getString(R.string.app_name));
     	d.setMessage(
 			"Freebox Mobile est une application indépendante de Free.\n\n"+
@@ -297,6 +322,7 @@ public class HomeActivity extends Activity implements HomeConstants
 			}
 		});
 		d.show();
+		*/
     }
 
     private void showNonDegroupe()

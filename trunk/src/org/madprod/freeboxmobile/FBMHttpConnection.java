@@ -339,7 +339,6 @@ public class FBMHttpConnection implements Constants
 		return (null);
 	}
 
-	// TODO : parametre check peut être plus utile
 	// En cas de résussite : http://adsl.free.fr/compte/console.pl?id=417389&idt=10eb38933107f10c
 	// En cas d'erreur de login/pass : /login/login.pl?login=0909090909&error=1
 	/**
