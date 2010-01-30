@@ -85,6 +85,7 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
 
     private void displayTicket(long l)
     {
+    	FBMHttpConnection.FBMLog("Fetchticket : "+l);
     	Log.d(DEBUGTAG, "Fetchticket : "+l);
     	LigneInfoDbAdapter mDb = new LigneInfoDbAdapter(LigneInfoActivity.this);
 		mDb.open();
@@ -193,13 +194,16 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
 				XMLRPCClient client = new XMLRPCClient(uri);
 				Map<String, Object> map = (Map<String, Object>) client.call("getExchangeInfo", nra);
 				loc = (String) map.get("localisation");
+				FBMHttpConnection.FBMLog("XMLRPC : "+map.get("commune")+" "+map.get("localisation"));
 				Log.d(DEBUGTAG, "XMLRPC : "+map.get("commune")+" "+map.get("localisation"));
 				DSLAM_Info = map.get("commune") + (loc.equals("") ? "" : " - "+(String) map.get("localisation"));
 				DSLAM_Date = MevoMessage.convertDateTimeHR((String) client.call("getLastDSLAMResultSetDate"));
 				DSLAM_ok = (Boolean) client.call("getDSLAMStatus", mgr.getString(KEY_DSLAM, ""));
+				FBMHttpConnection.FBMLog("Liste tickets:");
 				Log.d(DEBUGTAG, "Liste tickets:");
 				Object[] response = (Object[]) client.call("getTicketListForDSLAM", mgr.getString(KEY_DSLAM, ""));
 //				Object[] response = (Object[]) client.call("getTicketListForDSLAM", "bas33-1");
+				FBMHttpConnection.FBMLog("Liste tickets:"+response.length);
 				Log.d(DEBUGTAG, "Liste tickets:"+response.length);
 				int i = response.length;
 				LigneInfoDbAdapter mDb = new LigneInfoDbAdapter(LigneInfoActivity.this);

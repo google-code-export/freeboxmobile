@@ -6,6 +6,7 @@ import org.madprod.freeboxmobile.R;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -24,6 +25,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -196,7 +198,8 @@ public class HomeActivity extends Activity implements HomeConstants
         menu.add(0, HOME_OPTION_CONFIG, 1, R.string.home_option_config).setIcon(android.R.drawable.ic_menu_preferences);
         menu.add(0, HOME_OPTION_SHARE, 2, R.string.home_option_share).setIcon(android.R.drawable.ic_menu_share);
         menu.add(0, HOME_OPTION_VOTE, 3, R.string.home_option_vote).setIcon(android.R.drawable.ic_menu_add);
-        menu.add(0, HOME_OPTION_ABOUT, 4, R.string.home_option_about).setIcon(android.R.drawable.ic_menu_help);
+        menu.add(0, HOME_OPTION_ABOUT, 4, R.string.home_option_about).setIcon(android.R.drawable.ic_menu_info_details);
+        menu.add(0, HOME_OPTION_LOG, 4, R.string.home_option_log).setIcon(android.R.drawable.ic_menu_send);
         return true;
     }
 
@@ -223,6 +226,9 @@ public class HomeActivity extends Activity implements HomeConstants
     			return true;
     		case HOME_OPTION_SHARE:
     			shareApp();
+    			return true;
+    		case HOME_OPTION_LOG:
+    			displayLog();
     			return true;
         }
         return super.onOptionsItemSelected(item);
@@ -271,15 +277,71 @@ public class HomeActivity extends Activity implements HomeConstants
 		d.show();
     }
 
+    private void displayLog()
+    {
+    	ScrollView s = new ScrollView(this);
+    	s.setPadding(10,10,10,10);
+    	LinearLayout l = new LinearLayout(this);
+    	l.setOrientation(LinearLayout.VERTICAL);
+    	s.addView(l);
+    	TextView tlog = new TextView(this);
+    	TextView t = new TextView(this);
+    	t.setText("Envoi d'un rapport d'erreur : afin d'aider les développeurs, à leur demande "+
+    			"vous pouvez leur envoyer le rapport d'erreur ci-dessous par email.\n"+
+    			"Confidentialité : vos mots de passe ne sont pas transmis. "+
+    			"Les données transmises sont affichées ci-dessous. Vous pourrez les modifier avant envoi.\n");
+    	if (FBMHttpConnection.fbmlog.equals(""))
+    	{
+        	tlog.setText("Log vide !");    		
+    	}
+    	else
+    	{
+    		tlog.setText(FBMHttpConnection.fbmlog);
+    	}
+    	tlog.setTextColor(0xffffffff);
+    	t.setTextColor(0xffffffff);
+    	l.addView(t);
+    	l.addView(tlog);
+    	AlertDialog d = new AlertDialog.Builder(this).create();
+		d.setTitle(getString(R.string.app_name) + " : Rapport d'erreur");
+    	d.setView(s);
+    	d.setButton(DialogInterface.BUTTON_POSITIVE, "Envoyer", new DialogInterface.OnClickListener()
+		{
+			public void onClick(DialogInterface dialog, int which)
+			{
+		    	SpannableStringBuilder ssb = new SpannableStringBuilder(
+		    			getString(R.string.app_name)+" "+
+		    			getString(R.string.app_version)+"\n\n"+
+		    			FBMHttpConnection.fbmlog);
+		    	Intent i = new Intent(Intent.ACTION_SEND)
+		    		.putExtra(Intent.EXTRA_EMAIL, new String[]{"freeboxmobile@free.fr"})
+		    		.putExtra(Intent.EXTRA_TEXT, ssb)
+		    		.putExtra(Intent.EXTRA_SUBJECT, 
+		    				getString(R.string.mail_subject)) 
+		    				.setType("message/rfc822");
+		    	startActivity(Intent.createChooser(i,  "Choisissez votre logiciel de mail")); 
+				dialog.dismiss();
+			}
+		});
+    	d.setButton(DialogInterface.BUTTON_NEGATIVE, "Ne pas envoyer", new DialogInterface.OnClickListener()
+		{
+			public void onClick(DialogInterface dialog, int which)
+			{
+				dialog.dismiss();
+			}
+		});
+    	d.show();   	
+    }
+
     private void displayAbout()
     {	
-//    	AlertDialog d = new AlertDialog.Builder(this).create();
+    	AlertDialog d = new AlertDialog.Builder(this).create();
     	ScrollView s = new ScrollView(this);
     	TextView t = new TextView(this);
     	t.setLinksClickable(true);
     	t.setAutoLinkMask(Linkify.ALL);
     	t.setText(			"Freebox Mobile est une application indépendante de Free.\n\n"+
-			"Site web :\n\nhttp://freeboxmobile.googlecode.com\n\n"+
+			"Site web :\nhttp://freeboxmobile.googlecode.com\n\n"+
 			"Contact :\nfreeboxmobile@free.fr\n\n"+
 			"Version : "+getString(R.string.app_version)+"\n\n"+
 			"Facebook :\nhttp://www.facebook.com/search/?q=freeboxmobile\n\n"+
@@ -293,19 +355,8 @@ public class HomeActivity extends Activity implements HomeConstants
     	t.setLinkTextColor(0xffffffff);
     	t.setTextSize(16);
     	s.addView(t);
-    	new AlertDialog.Builder(this).setView(s).show();
-    	/*
+    	d.setView(s);
 		d.setTitle(getString(R.string.app_name));
-    	d.setMessage(
-			"Freebox Mobile est une application indépendante de Free.\n\n"+
-			"Site web : http://freeboxmobile.googlecode.com\n\n"+
-			"Contact :\nfreeboxmobile@free.fr\n\n"+
-			"Version : "+getString(R.string.app_version)+"\n\n"+
-			"Facebook :\nhttp://www.facebook.com/search/?q=freeboxmobile\n\n"+
-			"Auteurs :\n"+
-			"- Olivier Rosello : Architecture / Réseau / Home / Info ADSL / Téléphone\n"+
-			"- Benoit Duffez : Magnétosocope\n"
-		);
 		d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
 			{
 				public void onClick(DialogInterface dialog, int which)
@@ -322,7 +373,6 @@ public class HomeActivity extends Activity implements HomeConstants
 			}
 		});
 		d.show();
-		*/
     }
 
     private void showNonDegroupe()
