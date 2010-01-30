@@ -50,12 +50,12 @@ Release : 1
 
 = Versions beta de !FreeboxMobile =
 == 0.20rc2 ==
-Sortie le 30/01/2010
+Sortie le 30/01/2010<br>
 Release : 9
  * HOME : Correction de bug
 
 == 0.20rc1 ==
-Sortie le 30/01/2010
+Sortie le 30/01/2010<br>
 Release : 8
  * HOME : Correction de bug
  * INFOLIGNE : Correction de bug
