@@ -148,6 +148,9 @@ public class EnregistrementActivity extends Activity {
     		param.add(new BasicNameValuePair("date", date.format(new Date())));
     		
     		String json = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(url, param, true, true));
+    		if (json == null || json.length() == 0) {
+    			return null;
+    		}
     		Guide guideTv = new Guide(json, false, true, false);
     		
     		if (guideTv.erreur()) {
