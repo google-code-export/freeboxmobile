@@ -46,6 +46,7 @@ public class FBMHttpConnection implements Constants
 	private static String idt = null;
 
 	public static String fbmlog = "";
+	private static String pagesCharset = "ISO8859_1";
 
 	private static int connectionStatus = CONNECT_NOT_CONNECTED;
 	
@@ -258,13 +259,13 @@ public class FBMHttpConnection implements Constants
 					r = s.substring(start,end);
 				}
 				else
-					FBMLog("parsePage end pb");
+					FBMLog("parsePage end pb : "+tag);
 			}
 			else
-				FBMLog("parsePage start pb");
+				FBMLog("parsePage start pb : "+tag);
 		}
 		else
-			FBMLog("parsePage itag pb");
+			FBMLog("parsePage itag pb : "+tag);
 		FBMLog("["+tag+"] "+r);
 		return r;
 	}
@@ -521,6 +522,7 @@ public class FBMHttpConnection implements Constants
 	 */
 	public static InputStream getAuthRequest(String url, List<NameValuePair> p, boolean auth, boolean retour)
 	{
+		// TODO : Renvoyer un InputStreamReader et non un InputStream
 		int c;
 		HttpURLConnection h = null;
 
@@ -575,13 +577,19 @@ public class FBMHttpConnection implements Constants
 			else
 			{
 				FBMLog("GET : AUTHENTIFICATION OK");
-				Log.d(DEBUGTAG, "GET : AUTHENTIFICATION OK");
 				c = CONNECT_CONNECTED;
 			}
 			if ((c == CONNECT_CONNECTED) && (retour == true))
 			{
 				FBMLog("GET : LECTURE DONNEES");
-				Log.d(DEBUGTAG, "GET : LECTURE DONNEES");
+				FBMLog("GET : TYPE : "+h.getContentType());
+				if (h.getContentType() != null)
+				{
+					String temp = h.getContentType();
+					int pos = temp.indexOf("charset=");
+					pagesCharset = temp.substring(pos+8);
+					FBMLog("GET : CHARSET : "+pagesCharset);
+				}
 				return (h.getInputStream());
 			}
 		}
@@ -659,7 +667,14 @@ public class FBMHttpConnection implements Constants
 			{
 				FBMLog("POST : LECTURE DONNEES");
 				Log.d(DEBUGTAG, "POST : LECTURE DONNEES");
-				return (new InputStreamReader(h.getInputStream(), "ISO8859_1"));
+				if (h.getContentType() != null)
+				{
+					String temp = h.getContentType();
+					int pos = temp.indexOf("charset=");
+					pagesCharset = temp.substring(pos+8);
+					FBMLog("GET : CHARSET : "+pagesCharset);
+				}
+				return (new InputStreamReader(h.getInputStream(), pagesCharset));
 			}
 		}
 		catch (Exception e)
@@ -685,9 +700,10 @@ public class FBMHttpConnection implements Constants
         {
         	try
         	{
-                listConcat += URLEncoder.encode(p.get(0).getName(), "iso-8859-1");
+//                listConcat += URLEncoder.encode(p.get(0).getName(), "iso-8859-1");
+                listConcat += URLEncoder.encode(p.get(0).getName(), pagesCharset);
                 listConcat += '=';
-                listConcat += URLEncoder.encode(p.get(0).getValue(), "iso-8859-1");
+                listConcat += URLEncoder.encode(p.get(0).getValue(), pagesCharset);
         	}
         	catch (Exception e)
         	{
@@ -702,9 +718,9 @@ public class FBMHttpConnection implements Constants
                 listConcat += "&";
                 try
                 {
-	                listConcat += URLEncoder.encode(p.get(i).getName(), "iso-8859-1");
+	                listConcat += URLEncoder.encode(p.get(i).getName(), pagesCharset);
 	                listConcat += '=';
-	                listConcat += URLEncoder.encode(p.get(i).getValue(), "iso-8859-1");
+	                listConcat += URLEncoder.encode(p.get(i).getValue(), pagesCharset);
                 }
                 catch (Exception e)
                 {
@@ -736,7 +752,8 @@ public class FBMHttpConnection implements Constants
 		try
 		{
 			FBMHttpConnection.FBMLog("getPage try");
-			return getPage(new InputStreamReader(is, "ISO8859_1"));
+			return getPage(new InputStreamReader(is, pagesCharset));
+//			return getPage(new InputStreamReader(is, "ISO8859_1"));
 		}
 		catch (UnsupportedEncodingException e)
 		{
