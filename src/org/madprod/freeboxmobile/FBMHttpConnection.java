@@ -752,7 +752,12 @@ public class FBMHttpConnection implements Constants
 		try
 		{
 			FBMHttpConnection.FBMLog("getPage try");
-			return getPage(new InputStreamReader(is, pagesCharset));
+			InputStreamReader isr = new InputStreamReader(is, pagesCharset);
+			if (isr == null) {
+				FBMHttpConnection.FBMLog("isr == null!");
+				return null;
+			}
+			return getPage(isr);
 //			return getPage(new InputStreamReader(is, "ISO8859_1"));
 		}
 		catch (UnsupportedEncodingException e)
