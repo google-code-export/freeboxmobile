@@ -49,6 +49,11 @@ Release : 1
  * SERVICES : Notification de nouveaux messages
 
 = Versions beta de !FreeboxMobile =
+== 0.20rc5 ==
+Sortie le 01/02/2010<br>
+Release : 12
+ * CONFIG : Optimisations lors de la création d'un nouveau compte
+
 == 0.20rc4 ==
 Sortie le 30/01/2010<br>
 Release : 11
