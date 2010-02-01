@@ -53,7 +53,7 @@ Par exemple, si vous voulez enregistrer une émission tous les mardi et mercredi
 	<string name="pvrPatientez">Veuillez patienter</string>
 	<string name="pvrSuppressionEnCours">Suppression en cours...</string>
 	<string name="pvrTelechargementChaines">Chargement de la liste des chaînes disponibles...</string>
-	<string name="pvrErreurTelechargementChaines">Impossible de charger la liste des chaînes ! Avez-vous renseigné votre identifiant et mot de passe ?</string>
+	<string name="pvrErreurTelechargementChaines">Impossible de charger la liste des chaînes !</string>
 	
 	<string name="pvrErreur">Erreur !</string>
 	

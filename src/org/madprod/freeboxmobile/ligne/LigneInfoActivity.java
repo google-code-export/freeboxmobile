@@ -1,6 +1,10 @@
 package org.madprod.freeboxmobile.ligne;
 
 import java.net.URI;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Map;
 
 import org.madprod.freeboxmobile.Constants;
@@ -17,16 +21,18 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
-import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup.LayoutParams;
 
 /**
 *
@@ -40,7 +46,8 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
 	String DSLAM_Info = "";
 	String DSLAM_Date = "";
 	boolean DSLAM_ok = false;
-	Cursor mTicketCursor; 
+	Cursor mTicketCursor;
+	Object[] DSLAM_Histo = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -115,15 +122,14 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
     	String text3;
 
     	SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
-        TextView t0_0 = (TextView) findViewById(R.id.infoLigne0_0);
+//        TextView t0_0 = (TextView) findViewById(R.id.infoLigne0_0);
         TextView t_compte = (TextView) findViewById(R.id.infoLigne_compte);
-        TextView t0_1 = (TextView) findViewById(R.id.infoLigne0_1);
-        TextView t0_2 = (TextView) findViewById(R.id.infoLigne0_2);
+//        TextView t0_1 = (TextView) findViewById(R.id.infoLigne0_1);
+//        TextView t0_2 = (TextView) findViewById(R.id.infoLigne0_2);
         TextView t1_1 = (TextView) findViewById(R.id.infoLigne1_1);
         TextView t1_2 = (TextView) findViewById(R.id.infoLigne1_2);
         TextView t2 = (TextView) findViewById(R.id.infoLigne2);
         TextView t3 = (TextView) findViewById(R.id.infoLigne3);
-        TextView t3_1 = (TextView) findViewById(R.id.infoLigne3_1);
         text1_1 = "\tVotre ligne "+mgr.getString(KEY_USER, "")+" est connectée au central ADSL \"NRA\" "+mgr.getString(KEY_NRA, "")+" ("+DSLAM_Info+") ";
         text1_1 += "situé à "+mgr.getString(KEY_LINELENGTH, "0")+" mètres de votre Freebox.";
         text1_2 = "\tActuellement ("+DSLAM_Date+") les équipements dont vous dépendez ("+mgr.getString(KEY_DSLAM, "")+") ";
@@ -178,6 +184,81 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
     		t.setPadding(10, 0, 0, 0);
     		lt.addView(t);        	
         }
+        
+        if (DSLAM_Histo != null)
+        {
+	    	LinearLayout.LayoutParams imgParam = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
+	    	imgParam.setMargins(1,5,1,1);
+	    	imgParam.weight = 1;
+
+	    	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+	    	SimpleDateFormat formatCourt = new SimpleDateFormat("dd/MM");
+	    	GregorianCalendar calendar = new java.util.GregorianCalendar();
+	    	calendar.setTime(new Date());
+	    	int j = 0;
+	    	while (j++ < 7)
+	    	{
+	    		String f = format.format(calendar.getTime());
+	    		int l = DSLAM_Histo.length - 1;
+	    		boolean trouve = false;
+	    		while (l >=0 && !trouve)
+	    		{
+	    			Map<String, Object> map = (Map<String, Object>) DSLAM_Histo[l];
+		        	String h = (String) map.get("date");
+		        	if (h.equals(f))
+		        	{
+		        		trouve = true;
+		        	}
+		        	else
+		        		l = l-1;
+	    		}
+		        if (l >= 0)
+				{
+			        LinearLayout layoutH = (LinearLayout) findViewById(R.id.LinearLayoutHistory);
+		        	LinearLayout layoutHistory = new LinearLayout(this);
+		        	LinearLayout cellDate = new LinearLayout(this);
+		        	cellDate.setOrientation(LinearLayout.VERTICAL);
+			    	LinearLayout.LayoutParams cellDateParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		        	cellDate.setLayoutParams(cellDateParams);
+		        	
+			    	TextView tdate = new TextView(this);
+			    	tdate.setText(formatCourt.format(calendar.getTime()));
+			    	tdate.setPadding(0,0,5,0);
+			    	tdate.setInputType(InputType.TYPE_CLASS_TEXT);
+
+		        	LinearLayout ligneImages = new LinearLayout(this);
+		        	ligneImages.setOrientation(LinearLayout.HORIZONTAL);
+			    	LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
+			    	ligneImages.setLayoutParams(llp);
+
+		        	Map<String, Object> map = (Map<String, Object>) DSLAM_Histo[l];
+		        	String h = (String) map.get("summary");
+			        for (int i = 0; i <48; i++)
+			        {	
+			        	ImageView img = new ImageView(LigneInfoActivity.this);
+			        	img.setLayoutParams(imgParam);
+			        	try
+			        	{
+				        	if (h.charAt(i) == '1')
+				        		img.setBackgroundColor(0xff00ff00);
+				        	else
+				        		img.setBackgroundColor(0xffff0000);
+			        	}
+			        	catch (Exception e)
+			        	{
+			        		// on laisse l'image transparente
+			        	}
+			        	img.setMinimumHeight(10);
+			        	ligneImages.addView(img);
+			        }
+			    	cellDate.addView(tdate);
+		        	layoutHistory.addView(cellDate);
+		        	layoutHistory.addView(ligneImages);
+		        	layoutH.addView(layoutHistory);
+				}
+	    		calendar.add(Calendar.DATE, -1);
+	    	}
+        }
         mDb.close();
     }
 
@@ -195,16 +276,12 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
 				Map<String, Object> map = (Map<String, Object>) client.call("getExchangeInfo", nra);
 				loc = (String) map.get("localisation");
 				FBMHttpConnection.FBMLog("XMLRPC : "+map.get("commune")+" "+map.get("localisation"));
-				Log.d(DEBUGTAG, "XMLRPC : "+map.get("commune")+" "+map.get("localisation"));
 				DSLAM_Info = map.get("commune") + (loc.equals("") ? "" : " - "+(String) map.get("localisation"));
 				DSLAM_Date = MevoMessage.convertDateTimeHR((String) client.call("getLastDSLAMResultSetDate"));
 				DSLAM_ok = (Boolean) client.call("getDSLAMStatus", mgr.getString(KEY_DSLAM, ""));
-				FBMHttpConnection.FBMLog("Liste tickets:");
-				Log.d(DEBUGTAG, "Liste tickets:");
 				Object[] response = (Object[]) client.call("getTicketListForDSLAM", mgr.getString(KEY_DSLAM, ""));
 //				Object[] response = (Object[]) client.call("getTicketListForDSLAM", "bas33-1");
-				FBMHttpConnection.FBMLog("Liste tickets:"+response.length);
-				Log.d(DEBUGTAG, "Liste tickets:"+response.length);
+//				FBMHttpConnection.FBMLog("Liste tickets:"+response.length);
 				int i = response.length;
 				LigneInfoDbAdapter mDb = new LigneInfoDbAdapter(LigneInfoActivity.this);
 				mDb.open();
@@ -214,19 +291,18 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
 					if (!mDb.isTicketPresent((Integer)response[i]))
 					{
 						Map<String, Object> ticket = (Map<String, Object>) client.call("getTicketInfo", response[i]);
-						Log.d(DEBUGTAG, "Liste tickets boucle : "+ticket.get("title"));
-						Log.d(DEBUGTAG, "Liste tickets boucle : "+ticket.get("description"));
-						Log.d(DEBUGTAG, "Liste tickets boucle : "+ticket.get("start"));
-						Log.d(DEBUGTAG, "Liste tickets boucle : "+ticket.get("end"));
 						long result = mDb.createTicket((Integer)response[i], (String)ticket.get("title"), (String)ticket.get("description"), (String)ticket.get("start"), (String)ticket.get("end"));
 						Log.d(DEBUGTAG, "Liste tickets db : "+result);
 					}
 				}
 				mDb.close();
+				
+				DSLAM_Histo = (Object[]) client.call("getDSLAMStatusHistory", mgr.getString(KEY_DSLAM, ""));
+				FBMHttpConnection.FBMLog("Liste histo:"+DSLAM_Histo.length);
 			}
 			else
 			{
-				Log.d(DEBUGTAG, "Pas de NRA");
+				FBMHttpConnection.FBMLog("Pas de NRA");
 			}
     	}
 		catch (Exception e)
