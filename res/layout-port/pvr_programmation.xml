@@ -2,11 +2,20 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="vertical"
 	android:layout_width="fill_parent"
-	android:layout_height="wrap_content" android:padding="10dip">
+	android:layout_height="wrap_content">
+	
+	<ImageView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:id="@+id/LogoFreeboxMobile"
+		android:src="@drawable/freebox_mobile_pvr"
+		android:layout_gravity="center" android:layout_marginTop="10dp">
+	</ImageView>
     
     <ViewFlipper android:id="@+id/pvrFlipper"
         android:layout_width="fill_parent"
-        android:layout_height="370dp"> 
+        android:layout_height="308dp"
+        android:padding="10dp"> 
     
 	    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		    android:orientation="vertical"
@@ -15,7 +24,7 @@
 			<TextView
 				android:text="@string/pvrTxtChaine"
 				android:id="@+id/TxtChaine"
-				android:textSize="26sp"
+				android:textSize="18sp"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"></TextView>
 			<Spinner android:id="@+id/pvrPrgChaine" android:layout_width="fill_parent" android:layout_height="wrap_content"></Spinner>
@@ -23,7 +32,7 @@
 			<TextView
 				android:text="@string/pvrTxtQualite"
 				android:id="@+id/TxtQualite"
-				android:textSize="26sp"
+				android:textSize="18sp"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"></TextView>
 			<Spinner android:id="@+id/pvrPrgQualite" android:layout_width="fill_parent" android:layout_height="wrap_content"></Spinner>
@@ -46,7 +55,7 @@
 					<TextView
 						android:text="@string/pvrTxtDate"
 						android:id="@+id/TxtDate"
-						android:textSize="26sp"
+						android:textSize="18sp"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"></TextView>
 					<DatePicker
@@ -57,7 +66,7 @@
 					<TextView
 						android:text="@string/pvrTxtHeure"
 						android:id="@+id/TxtHeure"
-						android:textSize="26sp"
+						android:textSize="18sp"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"></TextView>
 					<TimePicker
@@ -76,7 +85,7 @@
 			<TextView
 				android:text="@string/pvrTxtDuree"
 				android:id="@+id/TxtDuree"
-				android:textSize="26sp"
+				android:textSize="18sp"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"></TextView>
 						
@@ -91,7 +100,7 @@
 			<TextView
 				android:text="@string/pvrTxtNom"
 				android:id="@+id/TxtNom"
-				android:textSize="26sp"
+				android:textSize="18sp"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"></TextView>
 			<EditText
@@ -103,7 +112,7 @@
 			<TextView
 				android:text="@string/pvrTxtDisque"
 				android:id="@+id/TxtDisque"
-				android:textSize="26sp"
+				android:textSize="18sp"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"></TextView>
 			<Spinner
@@ -124,7 +133,7 @@
 				<TextView
 					android:text="@string/pvrTxtRecurrence"
 					android:id="@+id/TxtDisque"
-					android:textSize="26sp"
+					android:textSize="18sp"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"></TextView>
 				<CheckBox android:id="@+id/pvrPrgJour0"
@@ -190,7 +199,7 @@
 					android:drawableLeft="@drawable/pvr_btn_record"
 					android:text="@string/pvrTxtPrgBtnOK"
 					android:id="@+id/pvrPrgBtnOK"
-					android:textSize="26sp"
+					android:textSize="18sp"
 					android:layout_width="wrap_content"
 					android:layout_height="60dp"
 					android:visibility="invisible"
