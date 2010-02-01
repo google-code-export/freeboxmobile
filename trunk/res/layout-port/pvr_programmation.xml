@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="vertical"
 	android:layout_width="fill_parent"
-	android:layout_height="wrap_content" >
+	android:layout_height="wrap_content" android:padding="10dip">
     
     <ViewFlipper android:id="@+id/pvrFlipper"
         android:layout_width="fill_parent"
@@ -10,8 +10,7 @@
     
 	    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		    android:orientation="vertical"
-		    android:layout_width="fill_parent"
-		    android:layout_height="fill_parent" >
+		    android:layout_width="fill_parent" android:layout_height="fill_parent">
 	        
 			<TextView
 				android:text="@string/pvrTxtChaine"

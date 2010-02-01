@@ -53,7 +53,7 @@ For example, if you want to record a show every Tuesday and Wednesday, be sure t
 	<string name="pvrPatientez">Please wait</string>
 	<string name="pvrSuppressionEnCours">Deleting...</string>
 	<string name="pvrTelechargementChaines">Downloading the channels list...</string>
-	<string name="pvrErreurTelechargementChaines">Unable to download the channels list! Did you set up your login and password correctly?</string>
+	<string name="pvrErreurTelechargementChaines">Unable to download the channels list!</string>
 	
 	<string name="pvrErreur">Error!</string>
 	
