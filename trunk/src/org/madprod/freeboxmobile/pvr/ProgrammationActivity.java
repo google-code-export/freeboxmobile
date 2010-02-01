@@ -352,7 +352,7 @@ public class ProgrammationActivity extends Activity {
         param.add(new BasicNameValuePair("detail","1"));
     	
         String resultat = PvrUtils.getPage(FBMHttpConnection.getAuthRequest(url, param, true, true));
-//        FBMHttpConnection.FBMLog("telechargerEtParser : "+resultat);
+        FBMHttpConnection.FBMLog("telechargerEtParser : "+resultat);
         if (resultat != null) {
 			FBMHttpConnection.FBMLog("telechargerEtParser not null");
 	        int posChaines = resultat.indexOf("var serv_a = [{");
