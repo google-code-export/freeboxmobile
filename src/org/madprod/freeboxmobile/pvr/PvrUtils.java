@@ -27,7 +27,7 @@ class PvrUtils {
 	 * @return	String
 	 * @throws	IOException
 	 */
-	public static String getPage(InputStream is) {
+	public static String getPage2(InputStream is) {
 		FBMHttpConnection.FBMLog("getPage start");
 		if (is == null) {
 			FBMHttpConnection.FBMLog("getPage is null");
@@ -35,7 +35,7 @@ class PvrUtils {
 		}
 		try {
 			FBMHttpConnection.FBMLog("getPage try");
-			return getPage(new InputStreamReader(is, "ISO8859_1"));
+			return getPage2(new InputStreamReader(is, "ISO8859_1"));
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -43,7 +43,7 @@ class PvrUtils {
 		FBMHttpConnection.FBMLog("getPage is end null");
 		return null;
 	}
-	public static String getPage(InputStreamReader isr) {
+	public static String getPage2(InputStreamReader isr) {
 		if (isr == null) {
 			return null;
 		}
