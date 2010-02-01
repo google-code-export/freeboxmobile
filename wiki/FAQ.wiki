@@ -3,32 +3,32 @@
 
 = Réponses aux questions que vous pouvez vous poser =
 
-<wiki:toc max_depth="1" />
+<wiki:toc max_depth="2" />
 
-= Est-ce que Freebox Mobile communique mes identifiants Free ? =
+== Est-ce que Freebox Mobile communique mes identifiants Free ? ==
 Vos identifiants Free sont stockés de façon sécurisée dans votre téléphone et ne sont utilisés que pour communiquer avec Free. Ils ne sont pas utilisés à d'autres fins.
 
-= Pourquoi Freebox Mobile a besoin du droit "Communications réseau" =
+== Pourquoi Freebox Mobile a besoin du droit "Communications réseau" ==
 Freebox Mobile a besoin d'un accès à Internet afin de communiquer avec les serveurs de Free.
 
-= Pourquoi Freebox Mobile a besoin du droit "Vos informations personnelles" =
+== Pourquoi Freebox Mobile a besoin du droit "Vos informations personnelles" ==
 La Messagerie Vocale Visuelle Freebox de Freebox Mobile affiche les messages reçus et permet des les écouter. Lors de l'affichage, si le numéro du correspondant qui vous a laissé un message est connu de votre téléphone, son nom s'affichera à la place du numéro.
 C'est pour faire ce lien entre le numéro du correspondant du message Freebox et son nom (présent dans le carnet d'adresses du téléphone) que ce droit est nécessaire.
 
-= Pourquoi Freebox Mobile a besoin du droit "Stockage" =
+== Pourquoi Freebox Mobile a besoin du droit "Stockage" ==
 Freebox Mobile stocke les messages téléphoniques reçus, les logos des chaînes de télévisions et d'autres données sur la carte mémoire "SDCard" du téléphone afin de ne pas trop occuper la mémoire centrale.
 
-= Pourquoi Freebox Mobile a besoin du droit "Commandes du matériel" =
+== Pourquoi Freebox Mobile a besoin du droit "Commandes du matériel" ==
 Freebox Mobile ce sert des commandes du matériel afin de pouvoir modifier le volume sonore, et activer ou non le haut parleur durant l'écoute des messages.
 
-= Pourquoi Freebox Mobile a besoin du droit "Services payants" =
+== Pourquoi Freebox Mobile a besoin du droit "Services payants" ==
 Freebox Mobile a besoin de ce droit pour vous permettre de rappeler votre correspondant (après l'écoute d'un message par exemple).
 
-= Pourquoi Freebox Mobile a besoin du droit "Outils système" =
+== Pourquoi Freebox Mobile a besoin du droit "Outils système" ==
 Pour des raisons techniques, lors de certaines opérations en arrière plan (téléchargement de nouveaux messages...) Freebox Mobile coupe le mode vieille quelques fractions de secondes.
 
+== Puis-je avoir accès au code source de l'application ==
+Freeox Mobile est un projet opensource. A ce titre, il est disponible sur ce site web et vous pouvez le lire / le télécharger.
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+== Puis-je vous aider / contribuer à Freebox Mobile ? ==
+Bien sur ! Il suffit de nous envoyer un email (notre adresse email est disponible dans le menu "A propos" de l'application).
