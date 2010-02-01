@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
@@ -237,47 +238,34 @@ public class FBMHttpConnection implements Constants
 		return (v);
 	}
 
-	private static String parsePage(BufferedReader br, String tag, String first, String last)
+	private static String parsePage(String s, String tag, String first, String last)
 	{
-		String s;
 		String r = "";
 		int start;
 		int end;
+		int itag;
 
-		try
+		itag = s.indexOf(tag);
+		if (itag != -1)
 		{
-			while ( (s=br.readLine())!= null && s.indexOf(tag) == -1)
+			start = s.indexOf(first, itag);
+			if (start != -1)
 			{
-			}
-			if ((s != null) && (s.indexOf(tag) != -1))
-			{
-				if (s.indexOf(first) == -1)
+				end = s.indexOf(last, start);
+				if (end != -1)
 				{
-					while ( (s=br.readLine())!= null && s.indexOf(first) == -1)
-					{
-					}
+					start += first.length();
+					r = s.substring(start,end);
 				}
-				if (s != null && s.indexOf(first) != -1)
-				{
-					start = s.indexOf(first) + first.length();
-					end = s.indexOf(last);
-					if ((start != -1) && (end != -1))
-						r = s.substring(start,end);
-					else
-						br.reset();
-				}
+				else
+					FBMLog("parsePage end pb");
 			}
 			else
-				br.reset();
+				FBMLog("parsePage start pb");
 		}
-		catch (Exception e)
-		{
-			FBMLog("parsePage - "+tag+" : " + e.getMessage());
-			Log.e(DEBUGTAG, "parsePage - "+tag+" : " + e.getMessage());
-			e.printStackTrace();
-		}
+		else
+			FBMLog("parsePage itag pb");
 		FBMLog("["+tag+"] "+r);
-		Log.d(DEBUGTAG, "["+tag+"] "+r);
 		return r;
 	}
 	
@@ -288,18 +276,19 @@ public class FBMHttpConnection implements Constants
 	 */
 	private static ContentValues parseConsole(String l, String p)
 	{
-		// TODO : Checker et stocker si la ligne est dégroupée ou pas
 		InputStream is = getAuthRequest(suiviTechUrl, null, true, true);
 		try
 		{
 			if (is != null)
 			{
 				ContentValues consoleValues = new ContentValues();
-		    	BufferedReader br = new BufferedReader(new InputStreamReader(is, "ISO8859_1"));
-		    	br.mark(20000);
+				String br = getPage(is);
 		    	consoleValues.put(KEY_LINETYPE,
-		    			parsePage(br, "Raccordée actuellement en offre", "0000\">", "</font>")
+		    			parsePage(br, "Raccordée actuellement en offre", "<font", "</font>")
 		    			.contains("Freebox dégroupé")?"1":"0");
+		    	// TODO : enlever la ligne suivante après debug
+		    	if (!consoleValues.get(KEY_LINETYPE).equals("1"))
+					FBMLog("DEBUG INFO TECHNIQUES : "+br);		    		
 		    	FBMLog("type:"+consoleValues.get(KEY_LINETYPE));
 		    	Log.d(DEBUGTAG,"type:"+consoleValues.get(KEY_LINETYPE));
 		    	consoleValues.put(KEY_NRA, parsePage(br, "NRA :", "red\">", "</"));
@@ -307,8 +296,7 @@ public class FBMHttpConnection implements Constants
 		    	consoleValues.put(KEY_ATTN, parsePage(br, "Affaiblissement :", "red\">", " dB"));
 		    	consoleValues.put(KEY_IP, parsePage(br, "Votre adresse IP", "<b>", " / "));
 		    	consoleValues.put(KEY_TEL, parsePage(br, "téléphone Freebox", "<b>", "</b>"));
-				br.close();
-				if (consoleValues.get(KEY_IP)!= "")
+				if (consoleValues.get(KEY_IP) != "")
 				{
 					URI uri = URI.create(frimousseUrl);
 					XMLRPCClient client = new XMLRPCClient(uri);
@@ -730,4 +718,62 @@ public class FBMHttpConnection implements Constants
 //        Log.d(DEBUGTAG, "makeStringForPost : "+listConcat);
         return (listConcat);
     }
+	
+	/**
+	 * BufferedReader to String conversion
+	 * @param	BufferedReader
+	 * @return	String
+	 * @throws	IOException
+	 */
+	public static String getPage(InputStream is)
+	{
+		FBMHttpConnection.FBMLog("getPage start");
+		if (is == null)
+		{
+			FBMHttpConnection.FBMLog("getPage is null");
+			return null;
+		}
+		try
+		{
+			FBMHttpConnection.FBMLog("getPage try");
+			return getPage(new InputStreamReader(is, "ISO8859_1"));
+		}
+		catch (UnsupportedEncodingException e)
+		{
+			e.printStackTrace();
+		}
+		FBMHttpConnection.FBMLog("getPage is end null");
+		return null;
+	}
+	
+	public static String getPage(InputStreamReader isr)
+	{
+		if (isr == null)
+		{
+			return null;
+		}
+		
+		BufferedReader reader = new BufferedReader(isr); 
+		StringBuilder sb = new StringBuilder();
+		
+		if (reader == null)
+		{
+			return null;
+		}
+
+		String line = null;
+		try 
+		{
+			while ((line = reader.readLine()) != null)
+			{
+		          sb.append(line+"\n");
+		    }
+		}
+		catch (IOException e)
+		{
+			Log.e(DEBUGTAG, "getPage: "+e);
+			return null;
+		}		
+		return sb.toString();
+	}
 }
