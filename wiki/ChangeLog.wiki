@@ -49,6 +49,11 @@ Release : 1
  * SERVICES : Notification de nouveaux messages
 
 = Versions beta de !FreeboxMobile =
+== 0.20rc6 ==
+Sortie le 01/02/2010<br>
+Release : 13
+ * SERVICES : Debug réseau, devrait résoudre certains pbs
+
 == 0.20rc5 ==
 Sortie le 01/02/2010<br>
 Release : 12
