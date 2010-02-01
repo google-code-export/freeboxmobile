@@ -351,7 +351,7 @@ public class ProgrammationActivity extends Activity {
         List<NameValuePair> param = new ArrayList<NameValuePair>();
         param.add(new BasicNameValuePair("detail","1"));
     	
-        String resultat = PvrUtils.getPage(FBMHttpConnection.getAuthRequest(url, param, true, true));
+        String resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(url, param, true, true));
         FBMHttpConnection.FBMLog("telechargerEtParser : "+resultat);
         if (resultat != null) {
 			FBMHttpConnection.FBMLog("telechargerEtParser not null");
@@ -547,7 +547,7 @@ public class ProgrammationActivity extends Activity {
 
         		// Requete HTTP
         		String url = "http://adsl.free.fr/admin/magneto.pl";
-        		String resultat = PvrUtils.getPage(FBMHttpConnection.postAuthRequest(url, postVars, true, true));
+        		String resultat = FBMHttpConnection.getPage(FBMHttpConnection.postAuthRequest(url, postVars, true, true));
 
         		int erreurPos = resultat.indexOf("erreurs");
         		if (erreurPos > 0) {

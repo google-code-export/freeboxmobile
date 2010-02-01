@@ -147,7 +147,7 @@ public class EnregistrementActivity extends Activity {
     		param.add(new BasicNameValuePair("ajax","get_chaines"));
     		param.add(new BasicNameValuePair("date", date.format(new Date())));
     		
-    		String json = PvrUtils.getPage(FBMHttpConnection.getAuthRequest(url, param, true, true));
+    		String json = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(url, param, true, true));
     		Guide guideTv = new Guide(json, false, true, false);
     		
     		if (guideTv.erreur()) {

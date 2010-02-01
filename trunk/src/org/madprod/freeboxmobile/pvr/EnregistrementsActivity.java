@@ -180,7 +180,7 @@ public class EnregistrementsActivity extends ExpandableListActivity {
     	url = "http://adsl.free.fr/admin/magneto.pl";
     	List<NameValuePair> param = new ArrayList<NameValuePair>();
     	param.add(new BasicNameValuePair("sommaire","television"));
-    	contenu = PvrUtils.getPage(FBMHttpConnection.getAuthRequest(url, param, true, true));
+    	contenu = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(url, param, true, true));
     	if (contenu == null) {
     		return false;
     	}
