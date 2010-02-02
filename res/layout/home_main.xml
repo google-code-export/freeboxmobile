@@ -49,7 +49,6 @@
 </LinearLayout>
 
 
-
 <TextView android:text="@string/app_version" android:textSize="8px" android:id="@+id/TextViewVersion" android:layout_width="fill_parent" android:layout_height="fill_parent" android:gravity="right|bottom" android:paddingRight="3px"></TextView>
 
 </LinearLayout>
