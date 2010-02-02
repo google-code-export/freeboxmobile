@@ -4,17 +4,26 @@
 = Lexique =
 HOME : La page d'accueil<br>
 MEVO : Messagerie Vocale Visuelle = Module "Téléphone"<br>
-CONFIG : Les différents panneaux de configuration<br>
 PVR : La programmation d'enregistrements à distance = Module "Magnétoscope"<br>
+INFOLIGNE : Le module "Info Adsl"
+CONFIG : Les différents panneaux de configuration<br>
 SERVICES : tout ce qui tourne en tâche de fond
+RESEAU : les connexions réseau / authentifications sur la console Free...
 
 = Versions publiques de !FreeboxMobile =
+
+== 0.20 ==
+Sortie le 02/02/2010<br>
+Release : 15
+ * RESEAU : beaucoup de debug
+ * PVR : du debug et améliorations graphiques
+ * *INFOLIGNE : Première version*
 
 == 0.18 ==
 Sortie le 29/01/2010<br>
 Release : 7
- * HOME : Grosses optimisations réseau (moins de données, + de batterie)
- * *PVR : Première version*
+ * RESEAU : Grosses optimisations réseau (moins de données, + de batterie)
+ * *PVR : Première version (pour tests de grande échelle)*
 
 == 0.16 ==
 Sortie le 18/01/2010<br>
@@ -22,7 +31,7 @@ Release : 5
  * CONFIG : Support du multicomptes
  * HOME : Affichage des nouveautés (cette page)
  * HOME : Option "Partage l'application" dans le menu
- * MVV : Bug de vérification périodique corrigé (Issue 81)
+ * MEVO : Bug de vérification périodique corrigé (Issue 81)
 
 == 0.15 ==
 Sortie le 05/10/2009<br>
@@ -49,10 +58,15 @@ Release : 1
  * SERVICES : Notification de nouveaux messages
 
 = Versions beta de !FreeboxMobile =
+== 0.20rc7 ==
+Sortie le 01/02/2010<br>
+Release : 14
+ * RESEAU : Debug réseau
+
 == 0.20rc6 ==
 Sortie le 01/02/2010<br>
 Release : 13
- * SERVICES : Debug réseau, devrait résoudre certains pbs
+ * RESEAU : Debug réseau, devrait résoudre certains pbs
 
 == 0.20rc5 ==
 Sortie le 01/02/2010<br>
