@@ -12,6 +12,11 @@ RESEAU : les connexions réseau / authentifications sur la console Free...
 
 = Versions publiques de !FreeboxMobile =
 
+== 0.20.1 ==
+Sortie le 02/02/2010<br>
+Release : 16
+ * Meilleur support du HTC Tatoo
+
 == 0.20 ==
 Sortie le 02/02/2010<br>
 Release : 15
