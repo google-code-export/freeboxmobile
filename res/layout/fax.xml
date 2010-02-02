@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" android:layout_height="fill_parent" android:orientation="vertical">
+	
+	<LinearLayout
+	    android:orientation="horizontal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center">
+			<ImageView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:id="@+id/LogoFreeboxMobile"
+				android:src="@drawable/freebox_mobile"
+				android:layout_marginTop="10dp">
+			</ImageView>
+			<TextView 
+				android:layout_width="wrap_content" 
+				android:layout_height="wrap_content"
+				android:layout_marginTop="17dp"
+				android:layout_marginLeft="-5dp"
+				android:text="Fax"/>
+	
+	</LinearLayout>
+	
+	<TableLayout android:id="@+id/sendFaxTable"
+		android:layout_width="fill_parent" android:layout_height="wrap_content">
+		<TableRow>
+			<TextView android:id="@+id/faxNumberLabel"
+				android:layout_width="fill_parent" android:layout_height="wrap_content"
+				android:text="@string/faxNumberLabel">
+			</TextView>
+			<EditText android:id="@+id/faxNumber" android:layout_width="125dip"
+				android:layout_height="wrap_content" android:inputType="phone"
+				android:hint="Ex:09XXXXXX">
+			</EditText>
+		</TableRow>
+		<TableRow>
+			<CheckBox android:id="@+id/faxSendMailBox"
+				android:layout_width="fill_parent" android:layout_height="wrap_content"
+				android:checked="true" android:text="@string/faxMailConfirmation" />
+		</TableRow>
+		<TableRow>
+			<CheckBox android:id="@+id/faxMaskMyNumberBox"
+				android:layout_width="fill_parent" android:layout_height="wrap_content"
+				android:checked="true" android:text="@string/faxAnonymousNumber" />
+		</TableRow>
+		<TableRow>
+			<EditText android:id="@+id/faxFilePath"
+				android:layout_width="fill_parent" 
+				android:layout_height="wrap_content"
+				android:hint="">
+			</EditText>
+			<Button android:id="@+id/chooseFileButton" android:text="@string/faxChooseAFile"
+				android:layout_width="125dip"
+				android:layout_height="wrap_content"/>
+		</TableRow>
+	</TableLayout>
+	<Button android:id="@+id/sendFaxButton" 
+		android:text="@string/faxSend"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"/>
+</LinearLayout>
+

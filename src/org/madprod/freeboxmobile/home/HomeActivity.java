@@ -3,6 +3,7 @@ package org.madprod.freeboxmobile.home;
 import org.madprod.freeboxmobile.Config;
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
+import org.madprod.freeboxmobile.fax.FaxActivity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -23,6 +24,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -84,6 +86,7 @@ public class HomeActivity extends Activity implements HomeConstants
 		FBMHttpConnection.initVars(this, null);
 
         Button phoneButton = (Button) findViewById(R.id.phone);
+        Button faxButton = (Button) findViewById(R.id.fax);
         Button ligneButton = (Button) findViewById(R.id.ligne);
         Button pvrButton = (Button) findViewById(R.id.magneto);
 
@@ -102,6 +105,18 @@ public class HomeActivity extends Activity implements HomeConstants
 						}
 					}
 				);
+			
+			faxButton.setOnClickListener(
+					new View.OnClickListener()
+					{
+						@Override
+						public void onClick(View arg0) {
+							Intent i = new Intent(homeActivity, FaxActivity.class);
+							startActivity(i);
+						}
+					}
+				);
+			
 			Log.d(DEBUGTAG, "type:"+mgr.getString(KEY_LINETYPE, ""));
 			if (mgr.getString(KEY_LINETYPE, "1").equals("1"))
 			{
