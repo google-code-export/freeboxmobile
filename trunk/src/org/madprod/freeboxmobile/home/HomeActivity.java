@@ -6,7 +6,6 @@ import org.madprod.freeboxmobile.R;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -347,7 +346,11 @@ public class HomeActivity extends Activity implements HomeConstants
 			"Facebook :\nhttp://www.facebook.com/search/?q=freeboxmobile\n\n"+
 			"Auteurs :\n"+
 			"- Olivier Rosello : Architecture / Réseau / Home / Info ADSL / Téléphone\n"+
-			"- Benoit Duffez : Magnétosocope\n"
+			"- Benoit Duffez : Magnétosocope\n\n"+
+			"Cette application opensource utilise :\n"+
+			"- Android-XMLRPC : http://code.google.com/p/android-xmlrpc/\n"+
+			"- Icônes Tango : http://tango.freedesktop.org/\n" +
+			"- Frimousse : http://www.frimousse.org\n"
 			);
     	s.setPadding(10,10,10,10);
     	t.setMovementMethod(LinkMovementMethod.getInstance());
