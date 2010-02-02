@@ -3,7 +3,7 @@
 
 = Comment faire partie des béta-testeurs ? =
 
-C'est très simple : il faut vous inscrire à la mailing liste !FreeboxMobile
+C'est très simple : il faut vous inscrire à la mailing liste !FreeboxMobile<br />
 Une fois inscrit, vous recevrez un email lors de la publication de versions de test de !FreeboxMobile. Suivez les instructions, et remontez les éventuels problems dans la rubrique [http://code.google.com/p/freeboxmobile/issues/list Issues] du projet.
 
 = Comment s'inscrire à la mailing liste !FreeboxMobile ? =
