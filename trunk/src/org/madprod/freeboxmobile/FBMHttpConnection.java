@@ -1,19 +1,20 @@
 package org.madprod.freeboxmobile;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.List; 
+import java.util.List;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -867,5 +868,95 @@ public class FBMHttpConnection implements Constants
 			return null;
 		}		
 		return sb.toString();
+	}
+	
+
+	
+	
+	/**
+	 * Post d'un fichier en multipart
+	 * 
+	 * @throws IOException
+	 * @return Le contenu de la réponse si le post a fonctionné, null sinon
+	 */
+	public static String postFileAuthRequest(String uploadFaxUrl, List<NameValuePair> params, File fileToPost, int expectedHttpStatus, boolean auth) throws IOException{
+		final String END 		= "\r\n";
+		final String TWO_HYPHENS = "--";
+		final String BOUNDARY 	= "*****++++++************++++++++++++";
+		final String END_CONTENT_DISPOSITION = TWO_HYPHENS + BOUNDARY + END;
+		
+		int connected = checkConnected(CONNECT_CONNECTED);
+		Log.d(DEBUGTAG,"->POSTING FILE TO "+uploadFaxUrl);
+		if (connected == CONNECT_CONNECTED){
+		
+			if(params == null){
+				params = new ArrayList<NameValuePair>();
+			}
+			
+			if (auth)
+			{
+				params.add(new BasicNameValuePair("id",id));
+				params.add(new BasicNameValuePair("idt",idt));
+			}
+			
+			final URL url = new URL(uploadFaxUrl);
+			final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			
+			//Connexion avec le serveur
+			conn.setDoInput(true);
+			conn.setDoOutput(true);
+			conn.setUseCaches(false);
+			conn.setRequestMethod("POST");
+	
+			/* Properties spécifique au multipart */
+			conn.setRequestProperty("Connection", "Keep-Alive");
+			conn.setRequestProperty("Charset", "UTF-8");
+			conn.setRequestProperty("Content-Type", "multipart/form-data;boundary="+ BOUNDARY);
+	
+			final DataOutputStream ds = new DataOutputStream(conn.getOutputStream());
+			final FileInputStream fStream = new FileInputStream(fileToPost);
+			final int bufferSize = 1024;
+			final byte[] buffer = new byte[bufferSize];
+			
+			ds.writeBytes(END_CONTENT_DISPOSITION);
+			
+			for (NameValuePair pair : params) {
+	           	ds.writeBytes("Content-Disposition: form-data; name=\""+pair.getName()+"\""+END+END+pair.getValue()+END);
+	   			ds.writeBytes(END_CONTENT_DISPOSITION);
+			}
+	
+			ds.writeBytes("Content-Disposition: form-data; name=\"document\"; filename=\""+ fileToPost.getAbsolutePath() + "\"" + END);
+			ds.writeBytes("Content-Type : application/pdf"+END+END);
+			
+			int length = -1;
+			while ((length = fStream.read(buffer)) != -1) {
+				ds.write(buffer, 0, length);
+			}
+			
+			ds.writeBytes(END);
+			ds.writeBytes(TWO_HYPHENS + BOUNDARY + TWO_HYPHENS + END);
+			
+			/* close streams */
+			fStream.close();
+			ds.flush();
+			ds.close();
+	
+			//Test du code de retour
+			if (conn.getResponseCode() != expectedHttpStatus){
+				Log.d(DEBUGTAG, "Mauvais code Http retourné lors du post multipart : "+conn.getResponseCode()+" au lieu de "+expectedHttpStatus);
+				return null;
+			}
+			
+			//Le code de retour est correct on retourne le contenu de la réponse Http
+			final StringBuffer b = new StringBuffer();
+			final InputStream is = conn.getInputStream();
+			final byte[] data = new byte[bufferSize];
+			int leng = -1;
+			while ((leng = is.read(data)) != -1) {
+				b.append(new String(data, 0, leng));
+			}
+			return b.toString();
+		}
+		return null;
 	}
 }

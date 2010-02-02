@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<!-- Valeur affichées dans l'écrans de fax -->
+	<string name="faxNumberLabel">Fax number</string>
+	<string name="faxMailConfirmation">E-mail Acknowledgement</string>
+	<string name="faxAnonymousNumber">Anonymou fax</string>
+	<string name="faxChooseAFile">Pick</string>
+	<string name="faxSend">Send</string>
+	<string name="faxNoFile">No file</string>
+	<string name="faxFileNamePrefix">File:</string>
+	<string name="faxFileNameSuffix">...</string>
+	
+	<!-- Valeurs affichée dans l'écran de selection d'un fichier -->
+	<string name="faxParentDirectory">Parent</string>
+	
+	<!-- Messages utilisés dans la gestion des alertes (erreurs, succès etc...) -->
+	<string name="faxSendingFile">Sending file ...</string>
+	<string name="faxSuccess">Fax send</string>
+	<string name="faxError">Error during file fax</string>
+</resources>
