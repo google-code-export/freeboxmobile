@@ -339,7 +339,7 @@ public class HomeActivity extends Activity implements HomeConstants
     	TextView t = new TextView(this);
     	t.setLinksClickable(true);
     	t.setAutoLinkMask(Linkify.ALL);
-    	t.setText(			"Freebox Mobile est une application indépendante de Free.\n\n"+
+    	t.setText("Freebox Mobile est une application indépendante de Free.\n\n"+
 			"Site web :\nhttp://freeboxmobile.googlecode.com\n\n"+
 			"Contact :\nfreeboxmobile@free.fr\n\n"+
 			"Version : "+getString(R.string.app_version)+"\n\n"+
