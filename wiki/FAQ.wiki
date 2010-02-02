@@ -5,6 +5,11 @@
 
 <wiki:toc max_depth="2" />
 
+= Utilisation =
+== Puis-je mettre en pause une émission de télévision qui démarre en attendant de rentrer chez moi ? ==
+Non, ce n'est pas possible. Par contre une autre solution est possible pour arriver au même résultat : enregistrez l'émission qui vous interresse. Dès que vous rentrez chez vous, vous pouvez commencer à la regarder en différé, même si elle n'est pas terminée !
+
+= Sécurité et confidentialité =
 == Est-ce que Freebox Mobile communique mes identifiants Free ? ==
 Vos identifiants Free sont stockés de façon sécurisée dans votre téléphone et ne sont utilisés que pour communiquer avec Free. Ils ne sont pas utilisés à d'autres fins.
 
@@ -27,6 +32,7 @@ Freebox Mobile a besoin de ce droit pour vous permettre de rappeler votre corres
 == Pourquoi Freebox Mobile a besoin du droit "Outils système" ==
 Pour des raisons techniques, lors de certaines opérations en arrière plan (téléchargement de nouveaux messages...) Freebox Mobile coupe le mode vieille quelques fractions de secondes.
 
+= Développement =
 == Puis-je avoir accès au code source de l'application ==
 Freeox Mobile est un projet opensource. A ce titre, il est disponible sur ce site web et vous pouvez le lire / le télécharger.
 
