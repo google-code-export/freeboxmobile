@@ -23,7 +23,9 @@ Définir un fichier par module : res/values/strings_mevo.xml par exemple
  * Si les données d'une base de données sont dépendantes du compte utilisateur (les messages de la messagerie vocale par exemple), utiliser l'identifiant du compte (et non le titre qui lui peut changer facilement) dans le nom de la base. Exemple : * DATABASE_NAME+"__"+!HttpConnection.getIdentifiant() * (exemple dans !MevoDbAdapter.java).
  * Pour obtenir le titre du compte (afin de renseigner l'utilisateur du nom du compte actif, dans la barre de titre par exemple), utiliser : * !HttpConnection.getTitle() * (exemple dans MevoActivity).
  * Si des préférences sont dépendantes du compte utilisateur, utiliser * getSharedPreferences(KEY_PREFS+"__"+HttpConnection.getIdentifiant(), MODE_PRIVATE) * en lieu et place de * getSharedPreferences(KEY_PREFS, MODE_PRIVATE) *
-
+===Les Logs===
+Vous connaissez surement Log.d, Log.e, etc...<br/>
+Vous pouvez utiliser *FBMHttpConnection.FBMLog(String)* pour générer automatiquement à la fois un log sur la sortie debug (équivalent au *Log.d*) + un log qui est stocké et que l'utilisateur peut envoyer par email en cas de pb (touche menu sur la home).
 ----
 == Thèmes ==
 Dans un soucis d'homogénéisation de l'interface, les différentes Activity doivent avoir pour thème *@android:style/Theme.Light.!NoTitleBar* ou *@android:style/Theme.Light* (dans le Manifest, Application Nodes -> Activity en question -> Theme)
