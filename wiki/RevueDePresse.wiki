@@ -6,6 +6,12 @@
 Ici se trouvent des liens vers les articles qui parlent de !FreeboxMobile
 
 
+== Février 2010 ==
+ * [http://www.freenews.fr/spip.php?article7615 Freenews]
+
+== Janvier 2010 ==
+ * [http://www.pcworld.fr/2010/01/04/high-tech/telephonie-voip/freebox-mobile-gerer-son-compte-depuis-mobile-android-est-possible/467241/ PCWorld]
+
 == Décembre 2009 ==
 
  * [http://www.universfreebox.com/article9992.html Univers Freebox]
@@ -22,6 +28,3 @@ Ici se trouvent des liens vers les articles qui parlent de !FreeboxMobile
  * [http://www.lexpansion.com/economie/actualite-high-tech/les-services-de-free-accessibles-depuis-un-smartphone-android_221217.html L'Expansion]
  * [http://hightech.nouvelobs.com/actualites/depeche/20100101.ZDN1151/les_services_de_free_accessibles_depuis_un_smartphone_a.html NouvelObs]
  * [http://www.odebi.org/content/freebox-mobile-accéder-à-sa-freebox-avec-un-smartphone Ligue ODEBI]
-
-== Janvier 2010 ==
- * [http://www.pcworld.fr/2010/01/04/high-tech/telephonie-voip/freebox-mobile-gerer-son-compte-depuis-mobile-android-est-possible/467241/ PCWorld]
