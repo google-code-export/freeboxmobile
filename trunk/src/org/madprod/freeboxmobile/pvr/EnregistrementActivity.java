@@ -147,7 +147,7 @@ public class EnregistrementActivity extends Activity {
     		param.add(new BasicNameValuePair("ajax","get_chaines"));
     		param.add(new BasicNameValuePair("date", date.format(new Date())));
     		
-    		String json = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(url, param, true, true));
+    		String json = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequestISR(url, param, true, true));
     		if (json == null || json.length() == 0) {
     			return null;
     		}
@@ -160,7 +160,7 @@ public class EnregistrementActivity extends Activity {
     		url = "http://adsl.free.fr/im/chaines/";
     		Chaines_Chaine chaine = guideTv.getChaine(arg0[0]);
     		url += chaine.getImage();
-    		InputStream is = FBMHttpConnection.getAuthRequest(url, null, false, true);
+    		InputStream is = FBMHttpConnection.getAuthRequestIS(url, null, false, true);
     		return BitmapFactory.decodeStream(is);
         }
         

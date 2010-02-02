@@ -351,7 +351,7 @@ public class ProgrammationActivity extends Activity {
         List<NameValuePair> param = new ArrayList<NameValuePair>();
         param.add(new BasicNameValuePair("detail","1"));
     	
-        String resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(url, param, true, true));
+        String resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequestISR(url, param, true, true));
         if (resultat != null) {
 			FBMHttpConnection.FBMLog("telechargerEtParser not null");
 	        int posChaines = resultat.indexOf("var serv_a = [{");

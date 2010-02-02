@@ -281,7 +281,6 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
 				DSLAM_ok = (Boolean) client.call("getDSLAMStatus", mgr.getString(KEY_DSLAM, ""));
 				Object[] response = (Object[]) client.call("getTicketListForDSLAM", mgr.getString(KEY_DSLAM, ""));
 //				Object[] response = (Object[]) client.call("getTicketListForDSLAM", "bas33-1");
-//				FBMHttpConnection.FBMLog("Liste tickets:"+response.length);
 				int i = response.length;
 				LigneInfoDbAdapter mDb = new LigneInfoDbAdapter(LigneInfoActivity.this);
 				mDb.open();
