@@ -29,7 +29,6 @@
 		android:layout_height="fill_parent" android:width="1.0dp"
 		android:text="@string/buttonPvr" android:id="@+id/magneto" android:textSize="19dip"></Button>
 
-
 </LinearLayout>
 
 <LinearLayout android:id="@+id/LinearLayout02" android:orientation="horizontal"

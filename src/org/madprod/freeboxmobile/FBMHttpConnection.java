@@ -529,7 +529,7 @@ public class FBMHttpConnection implements Constants
 		c = checkConnected(CONNECT_CONNECTED);
 		try
 		{
-			FBMLog("-- GET : "+url);
+			FBMLog("-- GET IS : "+url);
 			if (c == CONNECT_CONNECTED)
 			{
 				FBMLog("GET : VERIF SI ON EST AUTHENTIFIE");
@@ -597,6 +597,87 @@ public class FBMHttpConnection implements Constants
 		{
 			FBMLog("getAuthRequest "+e);
 			Log.e(DEBUGTAG, "getAuthRequest "+e);
+		}
+		return (null);
+	}
+
+	/**
+	 * getAuthRequest : perform a GET on an URL with p parameters
+	 * do not provide id or idt in URL
+	 * @param url : url to get
+	 * @param p : parameters for the GET request (null if none) (url must not have parameters in not null)
+	 * @param auth : true if you need id & idt added automatically for authentification on Free console (url must not have parameters in this case)
+	 * @param retour : set it to true of you want an InputStream with the page in return
+	 * @return InputStreamReader HTML Page or null
+	 */
+	public static InputStreamReader getAuthRequestISR(String url, List<NameValuePair> p, boolean auth, boolean retour)
+	{
+		int c;
+		HttpURLConnection h = null;
+		String FBMCharset = null;
+
+		c = checkConnected(CONNECT_CONNECTED);
+		try
+		{
+			FBMLog("-- GET ISR : "+url);
+			if (c == CONNECT_CONNECTED)
+			{
+				FBMLog("GET : VERIF SI ON EST AUTHENTIFIE");
+				if (retour)
+					h = prepareConnection(url+"?"+makeStringForPost(p, auth), "GET");
+				else
+					h = prepareConnection(url+"?"+makeStringForPost(p, auth), "HEAD");
+
+				h.setDoInput(true);
+				FBMLog("HEADERS : "+h.getHeaderFields());
+				FBMLog("RESPONSE : "+h.getResponseCode()+" "+h.getResponseMessage());
+				if (h.getHeaderFields().get("location") != null)
+				{
+					c = CONNECT_NOT_CONNECTED;
+				}
+			}
+			if (c != CONNECT_CONNECTED)
+			{
+				if (h != null)
+				{
+					h.disconnect();
+					h = null;
+				}
+				FBMLog("GET : PAS AUTHENTIFIE SUR LA CONSOLE - SESSION EXPIREE");
+				c = connectionFree(login, password);
+				if (c == CONNECT_CONNECTED)
+				{
+					FBMLog("GET :  REAUTHENTIFICATION OK");
+					if (retour)
+						h = prepareConnection(url+"?"+makeStringForPost(p, auth), "GET");
+					else
+						h = prepareConnection(url+"?"+makeStringForPost(p, auth), "HEAD");
+					h.setDoInput(true);
+					FBMLog("HEADERS : "+h.getHeaderFields());
+					FBMLog("RESPONSE : "+h.getResponseCode()+" "+h.getResponseMessage());
+				}
+			}
+			else
+			{
+				FBMLog("GET : AUTHENTIFICATION OK");
+				c = CONNECT_CONNECTED;
+			}
+			if ((c == CONNECT_CONNECTED) && (retour == true))
+			{
+				FBMLog("GET : LECTURE DONNEES");
+				FBMLog("GET : TYPE : "+h.getContentType());
+				if (h.getContentType() != null)
+				{
+					String temp = h.getContentType();
+					FBMCharset = temp.substring(temp.indexOf("charset=")+8);
+					FBMLog("GET : CHARSET : "+FBMCharset);
+				}
+				return (new InputStreamReader(h.getInputStream(), FBMCharset));
+			}
+		}
+		catch (Exception e)
+		{
+			FBMLog("getAuthRequest "+e);
 		}
 		return (null);
 	}
