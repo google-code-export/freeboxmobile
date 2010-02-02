@@ -46,7 +46,7 @@ public class FBMHttpConnection implements Constants
 	private static String idt = null;
 
 	public static String fbmlog = "";
-	private static String pagesCharset = "ISO8859_1";
+//	private static String pagesCharset = "ISO8859_1";
 
 	private static int connectionStatus = CONNECT_NOT_CONNECTED;
 	
@@ -194,7 +194,6 @@ public class FBMHttpConnection implements Constants
 		if ((id == null) || (idt == null))
 		{
 			FBMLog("checkConnected : ON A JAMAIS ETE AUTHENTIFIE - ON S'AUTHENTIFIE");
-			Log.d(DEBUGTAG, "checkConnected : ON A JAMAIS ETE AUTHENTIFIE - ON S'AUTHENTIFIE");
 			return (connectionFree(login, password));
 		}
 		else
@@ -277,51 +276,45 @@ public class FBMHttpConnection implements Constants
 	 */
 	private static ContentValues parseConsole(String l, String p)
 	{
-		InputStream is = getAuthRequest(suiviTechUrl, null, true, true);
 		try
 		{
-			if (is != null)
+			ContentValues consoleValues = new ContentValues();
+			String br = getPage(getAuthRequestISR(suiviTechUrl, null, true, true));
+	    	consoleValues.put(KEY_LINETYPE,
+	    			parsePage(br, "Raccordée actuellement en offre", "<font", "</font>")
+	    			.contains("Freebox dégroupé")?"1":"0");
+	    	// TODO : enlever la ligne suivante après debug
+	    	if (!consoleValues.get(KEY_LINETYPE).equals("1"))
+				FBMLog("DEBUG INFO TECHNIQUES : "+br);		    		
+	    	FBMLog("type:"+consoleValues.get(KEY_LINETYPE));
+	    	consoleValues.put(KEY_NRA, parsePage(br, "NRA :", "red\">", "</"));
+	    	consoleValues.put(KEY_LINELENGTH, parsePage(br, "Longueur :", "red\">", " mètres"));
+	    	consoleValues.put(KEY_ATTN, parsePage(br, "Affaiblissement :", "red\">", " dB"));
+	    	consoleValues.put(KEY_IP, parsePage(br, "Votre adresse IP", "<b>", " / "));
+	    	consoleValues.put(KEY_TEL, parsePage(br, "téléphone Freebox", "<b>", "</b>"));
+			if (consoleValues.get(KEY_IP) != "")
 			{
-				ContentValues consoleValues = new ContentValues();
-				String br = getPage(is);
-		    	consoleValues.put(KEY_LINETYPE,
-		    			parsePage(br, "Raccordée actuellement en offre", "<font", "</font>")
-		    			.contains("Freebox dégroupé")?"1":"0");
-		    	// TODO : enlever la ligne suivante après debug
-		    	if (!consoleValues.get(KEY_LINETYPE).equals("1"))
-					FBMLog("DEBUG INFO TECHNIQUES : "+br);		    		
-		    	FBMLog("type:"+consoleValues.get(KEY_LINETYPE));
-		    	Log.d(DEBUGTAG,"type:"+consoleValues.get(KEY_LINETYPE));
-		    	consoleValues.put(KEY_NRA, parsePage(br, "NRA :", "red\">", "</"));
-		    	consoleValues.put(KEY_LINELENGTH, parsePage(br, "Longueur :", "red\">", " mètres"));
-		    	consoleValues.put(KEY_ATTN, parsePage(br, "Affaiblissement :", "red\">", " dB"));
-		    	consoleValues.put(KEY_IP, parsePage(br, "Votre adresse IP", "<b>", " / "));
-		    	consoleValues.put(KEY_TEL, parsePage(br, "téléphone Freebox", "<b>", "</b>"));
-				if (consoleValues.get(KEY_IP) != "")
+				URI uri = URI.create(frimousseUrl);
+				XMLRPCClient client = new XMLRPCClient(uri);
+				Object[] response = (Object[]) client.call("getDSLAMListForPool", consoleValues.get(KEY_IP));
+				if (response.length > 0)
 				{
-					URI uri = URI.create(frimousseUrl);
-					XMLRPCClient client = new XMLRPCClient(uri);
-					Object[] response = (Object[]) client.call("getDSLAMListForPool", consoleValues.get(KEY_IP));
-					if (response.length > 0)
-					{
-						FBMLog("XMLRPC : "+response[0]);
-						Log.d(DEBUGTAG, "XMLRPC : "+response[0]);
-						consoleValues.put(KEY_DSLAM,(String) response[0]);
-					}
-					else
-					{
-						consoleValues.put(KEY_DSLAM,"");
-						Log.d(DEBUGTAG, "DSLAM pas trouvé");
-						FBMLog("DSLAM pas trouvé");
-					}
+					FBMLog("XMLRPC : "+response[0]);
+					Log.d(DEBUGTAG, "XMLRPC : "+response[0]);
+					consoleValues.put(KEY_DSLAM,(String) response[0]);
 				}
 				else
 				{
 					consoleValues.put(KEY_DSLAM,"");
+					Log.d(DEBUGTAG, "DSLAM pas trouvé");
+					FBMLog("DSLAM pas trouvé");
 				}
-				return (consoleValues);
 			}
-			return (null);
+			else
+			{
+				consoleValues.put(KEY_DSLAM,"");
+			}
+			return (consoleValues);
 		}
 		catch (Exception e)
 		{
@@ -421,7 +414,6 @@ public class FBMHttpConnection implements Constants
 	{
 		URL u = new URL(url);
 		FBMLog("PREPARECONNECTION : URL "+ u);
-		Log.d(DEBUGTAG, "PREPARECONNECTION : URL "+ u);
 		HttpURLConnection c = (HttpURLConnection) u.openConnection();
 		c.setRequestMethod(method);
 		c.setAllowUserInteraction(false);
@@ -520,7 +512,7 @@ public class FBMHttpConnection implements Constants
 	 * @param retour : set it to true of you want an InputStream with the page in return
 	 * @return InputStream HTML Page or null
 	 */
-	public static InputStream getAuthRequest(String url, List<NameValuePair> p, boolean auth, boolean retour)
+	public static InputStream getAuthRequestIS(String url, List<NameValuePair> p, boolean auth, boolean retour)
 	{
 		// TODO : Renvoyer un InputStreamReader et non un InputStream
 		int c;
@@ -532,8 +524,7 @@ public class FBMHttpConnection implements Constants
 			FBMLog("-- GET IS : "+url);
 			if (c == CONNECT_CONNECTED)
 			{
-				FBMLog("GET : VERIF SI ON EST AUTHENTIFIE");
-				Log.d(DEBUGTAG, "GET : VERIF SI ON EST AUTHENTIFIE");
+				FBMLog("GETIS : VERIF SI ON EST AUTHENTIFIE");
 				if (retour)
 					h = prepareConnection(url+"?"+makeStringForPost(p, auth), "GET");
 				else
@@ -541,9 +532,7 @@ public class FBMHttpConnection implements Constants
 
 				h.setDoInput(true);
 				FBMLog("HEADERS : "+h.getHeaderFields());
-				Log.d(DEBUGTAG, "HEADERS : "+h.getHeaderFields());
 				FBMLog("RESPONSE : "+h.getResponseCode()+" "+h.getResponseMessage());
-				Log.d(DEBUGTAG, "RESPONSE : "+h.getResponseCode()+" "+h.getResponseMessage());
 				if (h.getHeaderFields().get("location") != null)
 				{
 					c = CONNECT_NOT_CONNECTED;
@@ -556,33 +545,29 @@ public class FBMHttpConnection implements Constants
 					h.disconnect();
 					h = null;
 				}
-				FBMLog("GET : PAS AUTHENTIFIE SUR LA CONSOLE - SESSION EXPIREE");
-				Log.d(DEBUGTAG, "GET : PAS AUTHENTIFIE SUR LA CONSOLE - SESSION EXPIREE");
+				FBMLog("GETIS : PAS AUTHENTIFIE SUR LA CONSOLE - SESSION EXPIREE");
 				c = connectionFree(login, password);
 				if (c == CONNECT_CONNECTED)
 				{
-					FBMLog("GET :  REAUTHENTIFICATION OK");
-					Log.d(DEBUGTAG, "GET :  REAUTHENTIFICATION OK");
+					FBMLog("GETIS :  REAUTHENTIFICATION OK");
 					if (retour)
 						h = prepareConnection(url+"?"+makeStringForPost(p, auth), "GET");
 					else
 						h = prepareConnection(url+"?"+makeStringForPost(p, auth), "HEAD");
 					h.setDoInput(true);
 					FBMLog("HEADERS : "+h.getHeaderFields());
-					Log.d(DEBUGTAG, "HEADERS : "+h.getHeaderFields());
 					FBMLog("RESPONSE : "+h.getResponseCode()+" "+h.getResponseMessage());
-					Log.d(DEBUGTAG, "RESPONSE : "+h.getResponseCode()+" "+h.getResponseMessage());
 				}
 			}
 			else
 			{
-				FBMLog("GET : AUTHENTIFICATION OK");
+				FBMLog("GETIS : AUTHENTIFICATION OK");
 				c = CONNECT_CONNECTED;
 			}
 			if ((c == CONNECT_CONNECTED) && (retour == true))
 			{
-				FBMLog("GET : LECTURE DONNEES");
-				FBMLog("GET : TYPE : "+h.getContentType());
+				FBMLog("GETIS : LECTURE DONNEES");
+/*				FBMLog("GETIS : TYPE : "+h.getContentType());
 				if (h.getContentType() != null)
 				{
 					String temp = h.getContentType();
@@ -590,6 +575,7 @@ public class FBMHttpConnection implements Constants
 					pagesCharset = temp.substring(pos+8);
 					FBMLog("GET : CHARSET : "+pagesCharset);
 				}
+				*/
 				return (h.getInputStream());
 			}
 		}
@@ -614,7 +600,7 @@ public class FBMHttpConnection implements Constants
 	{
 		int c;
 		HttpURLConnection h = null;
-		String FBMCharset = null;
+		String Charset = null;
 
 		c = checkConnected(CONNECT_CONNECTED);
 		try
@@ -622,7 +608,7 @@ public class FBMHttpConnection implements Constants
 			FBMLog("-- GET ISR : "+url);
 			if (c == CONNECT_CONNECTED)
 			{
-				FBMLog("GET : VERIF SI ON EST AUTHENTIFIE");
+				FBMLog("GETISR : VERIF SI ON EST AUTHENTIFIE");
 				if (retour)
 					h = prepareConnection(url+"?"+makeStringForPost(p, auth), "GET");
 				else
@@ -643,11 +629,11 @@ public class FBMHttpConnection implements Constants
 					h.disconnect();
 					h = null;
 				}
-				FBMLog("GET : PAS AUTHENTIFIE SUR LA CONSOLE - SESSION EXPIREE");
+				FBMLog("GETISR : PAS AUTHENTIFIE SUR LA CONSOLE - SESSION EXPIREE");
 				c = connectionFree(login, password);
 				if (c == CONNECT_CONNECTED)
 				{
-					FBMLog("GET :  REAUTHENTIFICATION OK");
+					FBMLog("GETISR :  REAUTHENTIFICATION OK");
 					if (retour)
 						h = prepareConnection(url+"?"+makeStringForPost(p, auth), "GET");
 					else
@@ -659,20 +645,20 @@ public class FBMHttpConnection implements Constants
 			}
 			else
 			{
-				FBMLog("GET : AUTHENTIFICATION OK");
+				FBMLog("GETISR : AUTHENTIFICATION OK");
 				c = CONNECT_CONNECTED;
 			}
 			if ((c == CONNECT_CONNECTED) && (retour == true))
 			{
-				FBMLog("GET : LECTURE DONNEES");
-				FBMLog("GET : TYPE : "+h.getContentType());
+				FBMLog("GETISR : LECTURE DONNEES");
+				FBMLog("GETISR : TYPE : "+h.getContentType());
 				if (h.getContentType() != null)
 				{
 					String temp = h.getContentType();
-					FBMCharset = temp.substring(temp.indexOf("charset=")+8);
-					FBMLog("GET : CHARSET : "+FBMCharset);
+					Charset = temp.substring(temp.indexOf("charset=")+8);
+					FBMLog("GETISR : CHARSET : "+Charset);
 				}
-				return (new InputStreamReader(h.getInputStream(), FBMCharset));
+				return (new InputStreamReader(h.getInputStream(), Charset));
 			}
 		}
 		catch (Exception e)
@@ -693,7 +679,8 @@ public class FBMHttpConnection implements Constants
 	{
 		HttpURLConnection h = null;
 		int c;
-
+		String pagesCharset = "ISO8859_1";
+		
 		FBMLog("POST: " + url);
 		Log.d(DEBUGTAG, "POST: " + url);
 		try
@@ -781,10 +768,10 @@ public class FBMHttpConnection implements Constants
         {
         	try
         	{
-//                listConcat += URLEncoder.encode(p.get(0).getName(), "iso-8859-1");
-                listConcat += URLEncoder.encode(p.get(0).getName(), pagesCharset);
+                listConcat += URLEncoder.encode(p.get(0).getName(), "iso-8859-1");
+//                listConcat += URLEncoder.encode(p.get(0).getName(), pagesCharset);
                 listConcat += '=';
-                listConcat += URLEncoder.encode(p.get(0).getValue(), pagesCharset);
+                listConcat += URLEncoder.encode(p.get(0).getValue(), "iso-8859-1");
         	}
         	catch (Exception e)
         	{
@@ -799,9 +786,9 @@ public class FBMHttpConnection implements Constants
                 listConcat += "&";
                 try
                 {
-	                listConcat += URLEncoder.encode(p.get(i).getName(), pagesCharset);
+	                listConcat += URLEncoder.encode(p.get(i).getName(), "iso-8859-1");
 	                listConcat += '=';
-	                listConcat += URLEncoder.encode(p.get(i).getValue(), pagesCharset);
+	                listConcat += URLEncoder.encode(p.get(i).getValue(), "iso-8859-1");
                 }
                 catch (Exception e)
                 {
@@ -822,7 +809,9 @@ public class FBMHttpConnection implements Constants
 	 * @return	String
 	 * @throws	IOException
 	 */
-	public static String getPage(InputStream is)
+/*  NOT USED ANYMORE
+  	public static String getPage(InputStream is)
+ 
 	{
 		FBMHttpConnection.FBMLog("getPage start");
 		if (is == null)
@@ -839,7 +828,6 @@ public class FBMHttpConnection implements Constants
 				return null;
 			}
 			return getPage(isr);
-//			return getPage(new InputStreamReader(is, "ISO8859_1"));
 		}
 		catch (UnsupportedEncodingException e)
 		{
@@ -848,6 +836,7 @@ public class FBMHttpConnection implements Constants
 		FBMHttpConnection.FBMLog("getPage is end null");
 		return null;
 	}
+*/
 	
 	public static String getPage(InputStreamReader isr)
 	{
