@@ -63,6 +63,13 @@ Release : 1
  * SERVICES : Notification de nouveaux messages
 
 = Versions beta de !FreeboxMobile =
+== 0.20.2rc1 ==
+Sortie le <pas encore><br>
+Release : 17
+ * RESEAU : Optimisations
+ * HOME : Infolog amélioré
+ * FAX : Première version
+
 == 0.20rc7 ==
 Sortie le 01/02/2010<br>
 Release : 14
