@@ -45,6 +45,13 @@
 			<EditText android:text="@string/pvrNomDefaut" android:id="@+id/pvrPrgNom" android:layout_width="fill_parent" android:layout_height="wrap_content"></EditText>
 			<TextView android:text="@string/pvrTxtDisque" android:id="@+id/TxtDisque" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="26sp"></TextView>
 			<Spinner android:id="@+id/pvrPrgDisque" android:layout_width="fill_parent" android:layout_height="wrap_content"></Spinner>
+			
+			<TextView android:id="@+id/pvrPrgInfosDisque1" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+			<TextView android:id="@+id/pvrPrgInfosDisque2" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+			<TextView android:id="@+id/pvrPrgInfosDisque3" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+			<TextView android:id="@+id/pvrPrgInfosDisque4" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+			<TextView android:id="@+id/pvrPrgInfosDisqueEspaceFaible" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+			
 			<TextView android:text="@string/pvrTxtRecurrence" android:id="@+id/TxtDisque" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="26sp"></TextView>
 			<Button android:text="@string/pvrTxtPrgBtnRecur" android:id="@+id/pvrPrgBtnRecur" android:layout_width="wrap_content" android:layout_height="wrap_content" android:clickable="true"></Button>
 			<TextView android:text="@string/pvrTxtRecurrenceInfo" android:id="@+id/TxtDisque" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>

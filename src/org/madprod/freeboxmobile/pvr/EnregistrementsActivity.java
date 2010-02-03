@@ -215,7 +215,10 @@ public class EnregistrementsActivity extends ExpandableListActivity {
         		EnregistrementsDbAdapter.KEY_HEURE,
         		EnregistrementsDbAdapter.KEY_DUREE,
         		EnregistrementsDbAdapter.KEY_NOM
-        		}, EnregistrementsDbAdapter.KEY_DATE + " ASC");
+        		},
+        		EnregistrementsDbAdapter.KEY_DATE + " ASC, "
+        		+ EnregistrementsDbAdapter.KEY_HEURE + " ASC, "
+        		+ EnregistrementsDbAdapter.KEY_MIN + " ASC");
 
 		if (listCursor != null && listCursor.moveToFirst()) {
 			succesChargement = true;
