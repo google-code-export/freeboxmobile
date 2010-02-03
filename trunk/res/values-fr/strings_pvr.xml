@@ -19,6 +19,12 @@ Par exemple, si vous voulez enregistrer une émission tous les mardi et mercredi
 	<string name="pvrTxtPrgBtnRecur">Récurrence</string>
 	<string name="pvrNomDefaut">Entrez le titre de l\'émission...</string>
 	
+	<string name="pvrInfosDisque1">Nom du disque : #nom</string>
+	<string name="pvrInfosDisque2">Espace libre : #libre GiB</string>
+	<string name="pvrInfosDisque3">Espace total : #total GiB</string>
+	<string name="pvrInfosDisque4">Point de montage : #mount</string>
+	<string name="pvrInfosDisqueEspaceFaible">Attention : espace disque faible !</string>
+	
 	<string name="pvrTxtQualiteParDefaut">Par défaut</string>
 	
 	<string name="pvrTxtModif">Modifier</string>

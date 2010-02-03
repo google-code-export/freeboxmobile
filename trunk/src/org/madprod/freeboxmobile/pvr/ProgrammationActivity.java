@@ -345,7 +345,7 @@ public class ProgrammationActivity extends Activity {
      * 
      * @return true en cas de succès, false sinon
      */
-    private boolean telechargerEtParser() {        
+    private boolean telechargerEtParser() {
         // Récupérer chaines et disques durs        
         String url = "http://adsl.free.fr/admin/magneto.pl";
         List<NameValuePair> param = new ArrayList<NameValuePair>();
@@ -656,13 +656,36 @@ public class ProgrammationActivity extends Activity {
 	        
 	        duree.setText(c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_DUREE)));
 	        nom.setText(c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_NOM)));
-	        
+
 	        int disqueId = Integer.parseInt(c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_WHERE_ID)));
 	        disques.setSelection(disqueId);
+	        afficherInfosDisque(disqueId);
 	        return c;
         }
         
+        afficherInfosDisque(0);
+        
         return null;
+    }
+    private void afficherInfosDisque(int disqueId) {
+        // Infos disque
+        Disque d = mDisques.get(disqueId);
+        
+        if (d != null) {
+        	((TextView) findViewById(R.id.pvrPrgInfosDisque1))
+    			.setText(getString(R.string.pvrInfosDisque1).replace("#nom", d.getLabel()));
+        	((TextView) findViewById(R.id.pvrPrgInfosDisque2))
+    			.setText(getString(R.string.pvrInfosDisque2).replace("#libre", ""+d.getGigaFree()));
+        	((TextView) findViewById(R.id.pvrPrgInfosDisque3))
+    			.setText(getString(R.string.pvrInfosDisque3).replace("#total", ""+d.getGigaTotal()));
+        	((TextView) findViewById(R.id.pvrPrgInfosDisque4))
+    			.setText(getString(R.string.pvrInfosDisque4).replace("#mount", d.getMountPt()));
+        	
+        	if (d.getGigaFree() < 4) {
+        		((TextView) findViewById(R.id.pvrPrgInfosDisqueEspaceFaible))
+        			.setText(getString(R.string.pvrInfosDisqueEspaceFaible));
+        	}
+        }
     }
     
     private void remplirSpinner(int id) {
@@ -690,6 +713,7 @@ public class ProgrammationActivity extends Activity {
 				disqueName += " " + getString(R.string.pvrGioLibres) + ")";
 				liste.add(disqueName);
 			}
+			afficherInfosDisque(0);
 		} else { // R.id.pvrPrgQualite
 			int idChaine = chaineSpinner.getSelectedItemPosition();
 			List<Chaine.Service> services = mChaines.get(idChaine).getServices();
