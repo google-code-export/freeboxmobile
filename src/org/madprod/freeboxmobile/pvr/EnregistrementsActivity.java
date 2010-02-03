@@ -155,8 +155,11 @@ public class EnregistrementsActivity extends ExpandableListActivity {
         	}
         	else {
             	erreur("Impossible de se connecter à la console Free\n"
-            			+ "Avez-vous renseigné votre identifiant et mot de passe "
-            			+ "dans la configuration ?");
+// Je commente parceque l'erreur ne vient probablement pas de l'id ou du pass
+// (c'est vérifié à la création du compte maintenant)
+//            			+ "Avez-vous renseigné votre identifiant et mot de passe "
+//            			+ "dans la configuration ?"
+            			);
         	}
         	
         	if (updateFromConsole && progressDialog != null) {

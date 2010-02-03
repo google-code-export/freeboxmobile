@@ -281,11 +281,15 @@ public class FBMHttpConnection implements Constants
 		{
 			ContentValues consoleValues = new ContentValues();
 			String br = getPage(getAuthRequestISR(suiviTechUrl, null, true, true));
-	    	consoleValues.put(KEY_LINETYPE,
-	    			parsePage(br, "Raccordée actuellement en offre", "<font", "</font>")
-	    			.contains("Freebox dégroupé")?"1":"0");
+			String offre = parsePage(br, "Raccordée actuellement en offre", "<font", "</font>");
+			if (offre.contains("Freebox dégroupé"))
+		    	consoleValues.put(KEY_LINETYPE, "1");
+			else if (offre.contains("Fibre Optique"))
+				consoleValues.put(KEY_LINETYPE, "2");
+			else
+				consoleValues.put(KEY_LINETYPE, "0");
 	    	// TODO : enlever la ligne suivante après debug
-	    	if (!consoleValues.get(KEY_LINETYPE).equals("1"))
+	    	if (consoleValues.get(KEY_LINETYPE).equals("0"))
 				FBMLog("DEBUG INFO TECHNIQUES : "+br);		    		
 	    	FBMLog("type:"+consoleValues.get(KEY_LINETYPE));
 	    	consoleValues.put(KEY_NRA, parsePage(br, "NRA :", "red\">", "</"));
@@ -351,7 +355,7 @@ public class FBMHttpConnection implements Constants
     		h = prepareConnection(serverUrl, "POST");
     		h.setDoOutput(true);
     		OutputStreamWriter o = new OutputStreamWriter(h.getOutputStream());
-			o.write(makeStringForPost(listParameter, false));
+			o.write(makeStringForPost(listParameter, false, null));
 			o.flush();
 			o.close();
 			if (h.getHeaderFields().get("location") != null)
@@ -414,7 +418,7 @@ public class FBMHttpConnection implements Constants
 	private static HttpURLConnection prepareConnection(String url, String method) throws IOException
 	{
 		URL u = new URL(url);
-		FBMLog("PREPARECONNECTION : URL "+ u);
+		FBMLog("PREPARECONNECTION : URL["+ u +"]METHOD ["+method+"]");
 		HttpURLConnection c = (HttpURLConnection) u.openConnection();
 		c.setRequestMethod(method);
 		c.setAllowUserInteraction(false);
@@ -447,7 +451,7 @@ public class FBMHttpConnection implements Constants
 			if (connected == CONNECT_CONNECTED)
 			{
 				Log.d(DEBUGTAG, "GETFILE : VERIF SI ON EST AUTHENTIFIE");
-				c = prepareConnection(url+"?"+makeStringForPost(p, auth), "GET");
+				c = prepareConnection(url+"?"+makeStringForPost(p, auth, null), "GET");
 				c.setDoInput(true);
 				Log.d(DEBUGTAG, "HEADERS : "+c.getHeaderFields());
 				Log.d(DEBUGTAG, "RESPONSE : "+c.getResponseCode()+" "+c.getResponseMessage());
@@ -468,7 +472,7 @@ public class FBMHttpConnection implements Constants
 				if (connected == CONNECT_CONNECTED)
 				{
 					Log.d(DEBUGTAG, "GETFILE : REAUTHENTIFICATION OK");
-					c = prepareConnection(url+"?"+makeStringForPost(p, auth), "GET");
+					c = prepareConnection(url+"?"+makeStringForPost(p, auth, null), "GET");
 					c.setDoInput(true);
 					Log.d(DEBUGTAG, "HEADERS : "+c.getHeaderFields());
 					Log.d(DEBUGTAG, "RESPONSE : "+c.getResponseCode()+" "+c.getResponseMessage());
@@ -527,9 +531,9 @@ public class FBMHttpConnection implements Constants
 			{
 				FBMLog("GETIS : VERIF SI ON EST AUTHENTIFIE");
 				if (retour)
-					h = prepareConnection(url+"?"+makeStringForPost(p, auth), "GET");
+					h = prepareConnection(url+"?"+makeStringForPost(p, auth, null), "GET");
 				else
-					h = prepareConnection(url+"?"+makeStringForPost(p, auth), "HEAD");
+					h = prepareConnection(url+"?"+makeStringForPost(p, auth, null), "HEAD");
 
 				h.setDoInput(true);
 				FBMLog("HEADERS : "+h.getHeaderFields());
@@ -552,9 +556,9 @@ public class FBMHttpConnection implements Constants
 				{
 					FBMLog("GETIS :  REAUTHENTIFICATION OK");
 					if (retour)
-						h = prepareConnection(url+"?"+makeStringForPost(p, auth), "GET");
+						h = prepareConnection(url+"?"+makeStringForPost(p, auth, null), "GET");
 					else
-						h = prepareConnection(url+"?"+makeStringForPost(p, auth), "HEAD");
+						h = prepareConnection(url+"?"+makeStringForPost(p, auth, null), "HEAD");
 					h.setDoInput(true);
 					FBMLog("HEADERS : "+h.getHeaderFields());
 					FBMLog("RESPONSE : "+h.getResponseCode()+" "+h.getResponseMessage());
@@ -582,8 +586,8 @@ public class FBMHttpConnection implements Constants
 		}
 		catch (Exception e)
 		{
-			FBMLog("getAuthRequest "+e);
-			Log.e(DEBUGTAG, "getAuthRequest "+e);
+			FBMLog("getAuthRequestIS "+e);
+			e.printStackTrace();
 		}
 		return (null);
 	}
@@ -601,7 +605,7 @@ public class FBMHttpConnection implements Constants
 	{
 		int c;
 		HttpURLConnection h = null;
-		String Charset = null;
+		String charset = null;
 
 		c = checkConnected(CONNECT_CONNECTED);
 		try
@@ -611,11 +615,16 @@ public class FBMHttpConnection implements Constants
 			{
 				FBMLog("GETISR : VERIF SI ON EST AUTHENTIFIE");
 				if (retour)
-					h = prepareConnection(url+"?"+makeStringForPost(p, auth), "GET");
+					h = prepareConnection(url+"?"+makeStringForPost(p, auth, charset), "GET");
 				else
-					h = prepareConnection(url+"?"+makeStringForPost(p, auth), "HEAD");
-
+					h = prepareConnection(url+"?"+makeStringForPost(p, auth, charset), "HEAD");
 				h.setDoInput(true);
+				if (h.getContentType() != null)
+				{
+					String temp = h.getContentType();
+					charset = temp.substring(temp.indexOf("charset=")+8);
+					FBMLog("GETISR : CHARSET : "+charset);
+				}
 				FBMLog("HEADERS : "+h.getHeaderFields());
 				FBMLog("RESPONSE : "+h.getResponseCode()+" "+h.getResponseMessage());
 				if (h.getHeaderFields().get("location") != null)
@@ -636,9 +645,9 @@ public class FBMHttpConnection implements Constants
 				{
 					FBMLog("GETISR :  REAUTHENTIFICATION OK");
 					if (retour)
-						h = prepareConnection(url+"?"+makeStringForPost(p, auth), "GET");
+						h = prepareConnection(url+"?"+makeStringForPost(p, auth, charset), "GET");
 					else
-						h = prepareConnection(url+"?"+makeStringForPost(p, auth), "HEAD");
+						h = prepareConnection(url+"?"+makeStringForPost(p, auth, charset), "HEAD");
 					h.setDoInput(true);
 					FBMLog("HEADERS : "+h.getHeaderFields());
 					FBMLog("RESPONSE : "+h.getResponseCode()+" "+h.getResponseMessage());
@@ -651,20 +660,20 @@ public class FBMHttpConnection implements Constants
 			}
 			if ((c == CONNECT_CONNECTED) && (retour == true))
 			{
-				FBMLog("GETISR : LECTURE DONNEES");
-				FBMLog("GETISR : TYPE : "+h.getContentType());
+				FBMLog("GETISR : LECTURE DONNEES - TYPE : "+h.getContentType());
 				if (h.getContentType() != null)
 				{
 					String temp = h.getContentType();
-					Charset = temp.substring(temp.indexOf("charset=")+8);
-					FBMLog("GETISR : CHARSET : "+Charset);
+					charset = temp.substring(temp.indexOf("charset=")+8);
+					FBMLog("GETISR : CHARSET : "+charset);
 				}
-				return (new InputStreamReader(h.getInputStream(), Charset));
+				return (new InputStreamReader(h.getInputStream(), charset));
 			}
 		}
 		catch (Exception e)
 		{
-			FBMLog("getAuthRequest "+e);
+			FBMLog("getAuthRequestISR "+e);
+			e.printStackTrace();
 		}
 		return (null);
 	}
@@ -682,19 +691,25 @@ public class FBMHttpConnection implements Constants
 		int c;
 		String pagesCharset = "ISO8859_1";
 		
-		FBMLog("POST: " + url);
+		FBMLog("-- POST: " + url);
 		Log.d(DEBUGTAG, "POST: " + url);
 		try
 		{
 			c = checkConnected(CONNECT_CONNECTED);
 			if (c == CONNECT_CONNECTED)
 			{
-				h = prepareConnection(url+(auth ? "?"+makeStringForPost(null, auth) : ""), "POST");
+				h = prepareConnection(url+(auth ? "?"+makeStringForPost(null, auth, null) : ""), "POST");
 				h.setDoOutput(true);
 				if (retour)
 					h.setDoInput(true);
 				OutputStreamWriter o = new OutputStreamWriter(h.getOutputStream());
-				o.write(makeStringForPost(p, false));
+				if (h.getContentType() != null)
+				{
+					String temp = h.getContentType();
+					pagesCharset = temp.substring(temp.indexOf("charset=")+8);
+					FBMLog("POST : CHARSET : "+pagesCharset);
+				}
+				o.write(makeStringForPost(p, false, pagesCharset));
 				o.flush();
 				o.close();
 				if (h.getHeaderFields().get("location") != null)
@@ -716,12 +731,12 @@ public class FBMHttpConnection implements Constants
 				{
 					FBMLog("POST :  REAUTHENTIFICATION OK");
 					Log.d(DEBUGTAG, "POST :  REAUTHENTIFICATION OK");
-					h = prepareConnection(url+(auth ? "?"+makeStringForPost(null, auth) : ""), "POST");
+					h = prepareConnection(url+(auth ? "?"+makeStringForPost(null, auth, pagesCharset) : ""), "POST");
 					h.setDoOutput(true);
 					if (retour)
 						h.setDoInput(true);
 					OutputStreamWriter o = new OutputStreamWriter(h.getOutputStream());
-					o.write(makeStringForPost(p, false));
+					o.write(makeStringForPost(p, false, pagesCharset));
 					o.flush();
 					o.close();
 				}
@@ -741,7 +756,7 @@ public class FBMHttpConnection implements Constants
 					String temp = h.getContentType();
 					int pos = temp.indexOf("charset=");
 					pagesCharset = temp.substring(pos+8);
-					FBMLog("GET : CHARSET : "+pagesCharset);
+					FBMLog("POST : CHARSET : "+pagesCharset);
 				}
 				return (new InputStreamReader(h.getInputStream(), pagesCharset));
 			}
@@ -753,9 +768,14 @@ public class FBMHttpConnection implements Constants
 		return (null);
 	}
 
-	private static String makeStringForPost(List<NameValuePair> p, boolean auth)
+	private static String makeStringForPost(List<NameValuePair> p, boolean auth, String charset)
     {
         String listConcat = "";
+        
+        if (charset == null)
+        {
+        	charset = "iso-8859-1";
+        }
 		if ((p == null) && (auth))
 		{
 			p = new ArrayList<NameValuePair>();
@@ -769,10 +789,9 @@ public class FBMHttpConnection implements Constants
         {
         	try
         	{
-                listConcat += URLEncoder.encode(p.get(0).getName(), "iso-8859-1");
-//                listConcat += URLEncoder.encode(p.get(0).getName(), pagesCharset);
+                listConcat += URLEncoder.encode(p.get(0).getName(), charset);
                 listConcat += '=';
-                listConcat += URLEncoder.encode(p.get(0).getValue(), "iso-8859-1");
+                listConcat += URLEncoder.encode(p.get(0).getValue(), charset);
         	}
         	catch (Exception e)
         	{
@@ -787,9 +806,9 @@ public class FBMHttpConnection implements Constants
                 listConcat += "&";
                 try
                 {
-	                listConcat += URLEncoder.encode(p.get(i).getName(), "iso-8859-1");
+	                listConcat += URLEncoder.encode(p.get(i).getName(), charset);
 	                listConcat += '=';
-	                listConcat += URLEncoder.encode(p.get(i).getValue(), "iso-8859-1");
+	                listConcat += URLEncoder.encode(p.get(i).getValue(), charset);
                 }
                 catch (Exception e)
                 {
