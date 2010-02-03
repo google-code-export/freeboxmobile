@@ -43,11 +43,11 @@ import android.view.ViewGroup.LayoutParams;
 
 public class LigneInfoActivity extends Activity implements LigneInfoConstants
 {
-	String DSLAM_Info = "";
-	String DSLAM_Date = "";
-	boolean DSLAM_ok = false;
-	Cursor mTicketCursor;
-	Object[] DSLAM_Histo = null;
+	private static String DSLAM_Info = "";
+	private static String DSLAM_Date = "";
+	private static boolean DSLAM_ok = false;
+	private static Cursor mTicketCursor;
+	private static Object[] DSLAM_Histo = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -55,9 +55,7 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
         super.onCreate(savedInstanceState);
 
         FBMHttpConnection.initVars(this, null);
-        SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 
-        new UpdateCompte().execute(new Payload(mgr.getString(KEY_NRA, "").equals(""), mgr.getString(KEY_TITLE, ""), mgr.getString(KEY_USER, ""), mgr.getString(KEY_PASSWORD, ""), mgr.getString(KEY_NRA, "")));
         setContentView(R.layout.ligne_info);
         setTitle(getString(R.string.app_name)+" - Info Ligne ADSL Freebox");
     }
@@ -66,6 +64,11 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
     public void onStart()
     {
     	super.onStart();
+        SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
+        if (DSLAM_Info.equals(""))
+        	new UpdateCompte().execute(new Payload(mgr.getString(KEY_NRA, "").equals(""), mgr.getString(KEY_TITLE, ""), mgr.getString(KEY_USER, ""), mgr.getString(KEY_PASSWORD, ""), mgr.getString(KEY_NRA, "")));
+        else
+        	refreshView();
     }
 
 	@Override
@@ -275,7 +278,6 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
 				XMLRPCClient client = new XMLRPCClient(uri);
 				Map<String, Object> map = (Map<String, Object>) client.call("getExchangeInfo", nra);
 				loc = (String) map.get("localisation");
-				FBMHttpConnection.FBMLog("XMLRPC : "+map.get("commune")+" "+map.get("localisation"));
 				DSLAM_Info = map.get("commune") + (loc.equals("") ? "" : " - "+(String) map.get("localisation"));
 				DSLAM_Date = MevoMessage.convertDateTimeHR((String) client.call("getLastDSLAMResultSetDate"));
 				DSLAM_ok = (Boolean) client.call("getDSLAMStatus", mgr.getString(KEY_DSLAM, ""));
