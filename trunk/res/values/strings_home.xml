@@ -26,13 +26,20 @@
 	<string name="comptes_edit_nom">Nom du compte :</string>
 	<string name="comptes_edit_login">Identifiant :</string>
 	<string name="comptes_edit_password">Mot de passe :</string>
-	<string name="comptes_edit_nom_desc">Ce nom sera affiché par FreeboxMobile pour identifier ce compte.</string>
-	<string name="comptes_edit_login_desc">L identifiant Freebox.</string>
+	<string name="comptes_edit_nom_desc">Ce nom sera affiché par FreeboxMobile pour identifier ce compte. Entrez ce que vous voulez.</string>
+	<string name="comptes_edit_login_desc">L identifiant Freebox : le numéro de téléphone de la ligne</string>
 	<string name="comptes_edit_password_desc">Le mot de passe Freebox.</string>
 	<string name="comptes_button_cancel">Annuler</string>
-	<string name="comptes_button_ok">Valider</string>
+	<string name="button_valider">Valider</string>
 	<string name="mail_subject">Application FreeboxMobile</string>
 	<string name="mail_text1">Salut,\n\nFreeboxMobile est une application Open Source (gratuite) qui te permet d\'accéder aux services de ta Freebox à partir de ton smartphone Android.\n\nTu peux la télécharger (à partir de ton smartphone) en cliquant sur le lien ci-dessous.\n\nA plus tard !\n\n-</string>
 	<string name="mail_link">Télécharger Freebox Mobile</string>
 	<string name="app_url">http://market.android.com/details?id=org.madprod.freeboxmobile</string>
+	<string name="sendlog_3GWifi">Le problème arrive :</string>
+	<string-array name="GGGWifi">
+	      <item name="3G">Uniquement en 3G</item>
+	      <item name="Wifi">Uniquement en Wifi</item>
+	      <item name="both">Dans les deux cas</item>
+	</string-array>
+	<string name="sendlog_pbdesc">Entrez ici une description du problème rencontré aussi précise que possible.</string>
 </resources>

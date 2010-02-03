@@ -10,7 +10,6 @@ import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;

@@ -14,7 +14,7 @@
 <EditText android:layout_height="wrap_content" android:layout_width="fill_parent" android:layout_marginBottom="15dip" android:id="@+id/comptes_edit_password" android:inputType="textPassword"></EditText>
 
 <LinearLayout android:id="@+id/LinearLayout01" android:layout_height="wrap_content" android:layout_width="fill_parent" android:gravity="right"><Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/comptes_button_cancel" android:id="@+id/comptes_button_cancel"></Button>
-<Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/comptes_button_ok" android:id="@+id/comptes_button_ok"></Button>
+<Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/comptes_button_ok" android:text="@string/button_valider"></Button>
 </LinearLayout>
 
 </LinearLayout>
