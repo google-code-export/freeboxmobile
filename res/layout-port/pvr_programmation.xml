@@ -20,6 +20,16 @@
 		    android:orientation="vertical"
         	android:padding="10dp"
 		    android:layout_width="fill_parent" android:layout_height="fill_parent">
+			    
+			<TextView android:text="@string/pvrTxtBoitier" android:id="@+id/TxtBoitier" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="26sp"></TextView>
+			<Spinner android:id="@+id/pvrPrgBoitier" android:layout_width="fill_parent" android:layout_height="wrap_content"></Spinner>
+		    
+		</LinearLayout>
+    
+	    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		    android:orientation="vertical"
+        	android:padding="10dp"
+		    android:layout_width="fill_parent" android:layout_height="fill_parent">
 	        
 			<TextView
 				android:text="@string/pvrTxtChaine"
@@ -104,7 +114,7 @@
 				    android:layout_width="fill_parent"
 				    android:layout_height="wrap_content">
 						<EditText android:text="120" android:id="@+id/pvrPrgDuree" android:layout_width="90px" android:layout_height="wrap_content" android:inputType="phone" android:maxLength="3"></EditText>
-						<Spinner android:id="@+id/pvrPrgDurees" android:layout_width="fill_parent" android:layout_height="wrap_content"></Spinner>
+						<Spinner android:id="@+id/pvrPrgDurees" android:layout_width="fill_parent" android:layout_height="wrap_content" android:paddingRight="10dp"></Spinner>
 					</LinearLayout>
 					
 					<TextView
@@ -116,6 +126,7 @@
 					<EditText
 						android:text="@string/pvrNomDefaut"
 						android:id="@+id/pvrPrgNom"
+        				android:paddingRight="10dp"
 						android:layout_width="fill_parent"
 						android:layout_height="wrap_content"></EditText>
 						
@@ -127,8 +138,17 @@
 						android:layout_height="wrap_content"></TextView>
 					<Spinner
 						android:id="@+id/pvrPrgDisque"
+        				android:paddingRight="10dp"
 						android:layout_width="fill_parent"
 						android:layout_height="wrap_content"></Spinner>
+						
+					<ProgressBar
+						android:id="@+id/pvrPrgDisquePB"
+        				style="?android:attr/progressBarStyleHorizontal"
+        				android:paddingRight="10dp"
+						android:layout_width="fill_parent"
+						android:layout_height="wrap_content"></ProgressBar>
+						
 					<TextView android:id="@+id/pvrPrgInfosDisque1" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
 					<TextView android:id="@+id/pvrPrgInfosDisque2" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
 					<TextView android:id="@+id/pvrPrgInfosDisque3" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
