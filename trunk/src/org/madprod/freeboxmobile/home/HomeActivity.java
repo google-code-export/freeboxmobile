@@ -77,12 +77,27 @@ public class HomeActivity extends Activity implements HomeConstants
     	FBMHttpConnection.FBMLog("MainActivity Start");
     	super.onStart();
     	SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
+		FBMHttpConnection.initVars(this, null);
         if (mgr.getString(KEY_TITLE, "").equals(""))
 		{
 			showNoCompte();
 		}
-        
-		FBMHttpConnection.initVars(this, null);
+        else
+        {
+        	if (!mgr.getString(KEY_FBMVERSION, "0").equals(getString(R.string.app_version)))
+        	{
+        		FBMHttpConnection.FBMLog("HOME : on rafraichi le compte "+mgr.getString(KEY_FBMVERSION, "0"));
+				ManageCompte.activity = this;
+		        new ManageCompte().execute(new ComptePayload(
+		        		mgr.getString(KEY_TITLE, ""),
+		        		mgr.getString(KEY_USER, ""),
+		        		mgr.getString(KEY_PASSWORD, ""),
+		        		null, true));
+				Editor editor = mgr.edit();
+				editor.putString(KEY_FBMVERSION, getString(R.string.app_version));
+				editor.commit();
+        	}
+        }
 
         Button phoneButton = (Button) findViewById(R.id.phone);
         Button faxButton = (Button) findViewById(R.id.fax);
@@ -143,7 +158,8 @@ public class HomeActivity extends Activity implements HomeConstants
 					);				
 			}
 
-			if (!mgr.getString(KEY_LINETYPE, "1").equals("0"))
+			if (true)
+//			if (!mgr.getString(KEY_LINETYPE, "1").equals("0"))
 			{
 				pvrButton.setOnClickListener(
 						new View.OnClickListener()

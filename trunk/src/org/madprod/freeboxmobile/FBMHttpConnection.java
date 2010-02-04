@@ -42,6 +42,7 @@ public class FBMHttpConnection implements Constants
 	private static String title = null;
 	private static String login = null;
 	private static String password = null;
+	private static String fbmversion = "";
 	// Variables id et idt d'accès à MonCompteFree
 	private static String id = null;
 	private static String idt = null;
@@ -83,6 +84,7 @@ public class FBMHttpConnection implements Constants
         title = c.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_TITLE, null);
 		login = c.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_USER, null);
 		password = c.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_PASSWORD, null);
+		fbmversion = c.getString(R.string.app_version);
 	}
 
 	/**
@@ -223,8 +225,9 @@ public class FBMHttpConnection implements Constants
 			login = l;
 			password = p;
 			v = parseConsole(l, p);
+			v.put(KEY_FBMVERSION, fbmversion);
+			FBMLog("FBMVERSION : "+fbmversion);
 			FBMLog("connectFreeCheck : "+v);
-			Log.d(DEBUGTAG, "connectFreeCheck : "+v);
 
 			// restauration des données présentes avant
 			login = mLogin;
@@ -366,7 +369,6 @@ public class FBMHttpConnection implements Constants
 		HttpURLConnection h = null;
 		
 		FBMLog("Connect Free start ");
-		Log.d(DEBUGTAG,"Connect Free start ");
         try
         {
     		List<NameValuePair> listParameter = new ArrayList<NameValuePair>();
@@ -382,7 +384,7 @@ public class FBMHttpConnection implements Constants
 			if (h.getHeaderFields().get("location") != null)
 			{
 				String s = h.getHeaderFields().get("location").toString();
-				Log.d(DEBUGTAG, "connectFree : "+s);
+				FBMLog("connectFree : "+s);
 	    		String priv;
 				if (s.indexOf("idt=")>-1)
 				{
@@ -393,19 +395,16 @@ public class FBMHttpConnection implements Constants
 					}
 					m_idt = priv;
 					FBMLog("idt :"+priv);
-					Log.d(DEBUGTAG,"idt :"+priv);
 					priv = s.substring(s.indexOf("?id=")+4);
 					priv = priv.substring(0, priv.indexOf('&'));
 					m_id = priv;
 					FBMLog("id :"+priv);
-					Log.d(DEBUGTAG,"id :"+priv);
 				}
 			}
         }
 		catch (Exception e)
 		{
 			FBMLog("connectFree : "+e);
-        	Log.e(DEBUGTAG, "connectFree : "+e);
         	e.printStackTrace();
         	connectionStatus = CONNECT_NOT_CONNECTED;
         	id = null;
@@ -428,7 +427,6 @@ public class FBMHttpConnection implements Constants
        	else
        	{
        		FBMLog("MonCompeFree : AUTHENTIFICATION FAILED !");
-       		Log.d(DEBUGTAG,"MonCompeFree : AUTHENTIFICATION FAILED !");
        		connectionStatus = CONNECT_LOGIN_FAILED;
        		id = null;
        		idt = null;

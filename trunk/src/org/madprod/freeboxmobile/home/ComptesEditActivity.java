@@ -5,10 +5,7 @@ import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
 
 import android.app.Activity;
-import android.content.ContentValues;
-import android.content.Intent;
 import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -29,8 +26,6 @@ public class ComptesEditActivity extends Activity implements Constants
     private EditText mUserText;
     private EditText mPasswordText;
     private Long mRowId;
-    private ComptesDbAdapter mDbHelper;
-    private static int exit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -38,10 +33,6 @@ public class ComptesEditActivity extends Activity implements Constants
         super.onCreate(savedInstanceState);
         
         FBMHttpConnection.initVars(ComptesEditActivity.this, null);
-
-        mDbHelper = new ComptesDbAdapter(this);
-        mDbHelper.open();
-        exit = RESULT_CANCELED;
 
         setContentView(R.layout.comptes_edit);
         setTitle(getString(R.string.app_name)+" - Edition Compte Freebox");
@@ -88,6 +79,8 @@ public class ComptesEditActivity extends Activity implements Constants
 
                 if (!title.equals("") && !user.equals("") && !password.equals(""))
                 {
+                	ComptesDbAdapter mDbHelper = new ComptesDbAdapter(ComptesEditActivity.this);
+                	mDbHelper.open();
                 	if (mDbHelper.isValuePresent(ComptesDbAdapter.KEY_TITLE, title) &&
                 		!mDbHelper.isMatch(mRowId, ComptesDbAdapter.KEY_TITLE, title))
                 	{
@@ -102,8 +95,10 @@ public class ComptesEditActivity extends Activity implements Constants
                 	}
                 	else
                 	{
-		                new CheckFree().execute(new Payload(title, user, password));
+                		ManageCompte.activity = ComptesEditActivity.this;
+		                new ManageCompte().execute(new ComptePayload(title, user, password, mRowId, false));
                 	}
+                	mDbHelper.close();
                 }
                 else
                 {
@@ -128,12 +123,15 @@ public class ComptesEditActivity extends Activity implements Constants
     {
         if (mRowId != null)
         {
+        	ComptesDbAdapter mDbHelper = new ComptesDbAdapter(this);
+        	mDbHelper.open();
             Cursor compte = mDbHelper.fetchCompte(mRowId);
             startManagingCursor(compte);
             mTitleText.setText(compte.getString(compte.getColumnIndexOrThrow(ComptesDbAdapter.KEY_TITLE)));
             mUserText.setText(compte.getString(compte.getColumnIndexOrThrow(ComptesDbAdapter.KEY_USER)));
             mPasswordText.setText(compte.getString(compte.getColumnIndexOrThrow(ComptesDbAdapter.KEY_PASSWORD)));
 //            stopManagingCursor(compte);
+            mDbHelper.close();
         }
     }
     
@@ -158,7 +156,7 @@ public class ComptesEditActivity extends Activity implements Constants
     protected void onPause()
     {
         super.onPause();
-//        saveState();
+        // TODO : checker si on fait un screen rotation, est-ce que ca efface les données ?
     }
 
     @Override
@@ -170,105 +168,7 @@ public class ComptesEditActivity extends Activity implements Constants
     @Override
     protected void onDestroy()
     {
-    	mDbHelper.close();
     	FBMHttpConnection.closeDisplay();
         super.onDestroy();
-    }
-
-    private void saveState(Payload p)
-    {
-        Bundle bundle = new Bundle();
-        Intent mIntent = new Intent();
-
-    	ContentValues v = p.result;
- 
-    	if (ComptesEditActivity.exit == RESULT_OK)
-    	{
-        	Log.d(DEBUGTAG, "ComptesEditActivity RESULT_OK");
-
-	        if (mRowId == null)
-	        {
-	            long id = mDbHelper.createCompte(p.title, p.login, p.password, (String) v.get(KEY_NRA),
-	            		(String) v.get(KEY_DSLAM), (String) v.get(KEY_IP), (String) v.get(KEY_LINELENGTH),
-	            		(String) v.get(KEY_ATTN), (String) v.get(KEY_TEL), (String) v.get(KEY_LINETYPE));
-	            if (id > 0)
-	            {
-	                mRowId = id;
-	            }
-	        }
-	        else
-	        {
-	            mDbHelper.updateCompte(mRowId, p.title, p.login, p.password, (String) v.get(KEY_NRA),
-	            		(String) v.get(KEY_DSLAM), (String) v.get(KEY_IP), (String) v.get(KEY_LINELENGTH),
-	            		(String) v.get(KEY_ATTN), (String) v.get(KEY_TEL), (String) v.get(KEY_LINETYPE));
-	        }
-
-            bundle.putLong(ComptesDbAdapter.KEY_ROWID, mRowId);
-/* NOT USED FOR NOW
- 	        bundle.putString(ComptesDbAdapter.KEY_TITLE, title);
-	        bundle.putString(ComptesDbAdapter.KEY_USER, login);
-	        bundle.putString(ComptesDbAdapter.KEY_PASSWORD, password);
-*/
-    	}
-    	else
-    	{
-/* NOT USED FOR NOW
-	        bundle.putString(ComptesDbAdapter.KEY_TITLE, null);
-	        bundle.putString(ComptesDbAdapter.KEY_USER, null);
-	        bundle.putString(ComptesDbAdapter.KEY_PASSWORD, null);
-*/
-            bundle.putLong(ComptesDbAdapter.KEY_ROWID, 0);
-    	}
-        mIntent.putExtras(bundle);
-        setResult(ComptesEditActivity.exit, mIntent);
-    }
-
-    public static class Payload
-    {
-    	public String title;
-        public String login;
-        public String password;
-//        public Intent intent;
-        public ContentValues result;
-        
-        public Payload(String title, String login, String password)
-        {
-        	this.title = title;
-        	this.login = login;
-        	this.password = password;
-        }
-    }
-
-    private class CheckFree extends AsyncTask<Payload, Void, Payload> implements Constants
-    {
-    	@Override
-    	protected Payload doInBackground(Payload... payload)
-    	{
-    		payload[0].result = FBMHttpConnection.connectFreeCheck(payload[0].login, payload[0].password);
-    		return payload[0];
-    	}
-
-		@Override
-    	protected void onPreExecute()
-    	{
-    		FBMHttpConnection.showProgressDialog(ComptesEditActivity.this);
-    	}
-
-    	@Override
-    	protected void onPostExecute(Payload payload)
-    	{
-    		FBMHttpConnection.dismissPd();
-    		if (payload.result != null)
-    		{
-   				ComptesEditActivity.exit = RESULT_OK;
-   				saveState(payload);
-   				finish();
-    		}
-    		else
-    		{
-   				FBMHttpConnection.showError(ComptesEditActivity.this);
-   				ComptesEditActivity.exit = RESULT_CANCELED;
-    		}
-    	}
     }
 }
