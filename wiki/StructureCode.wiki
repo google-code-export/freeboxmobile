@@ -14,9 +14,9 @@ Définir un fichier par module : res/values/strings_mevo.xml par exemple
 == Dans le code==
 === Utiliser la connexion à la console de Free===
  * dans le onCreate de chaque Activity, appeler impérativement : 
-   * *!FBMHttpConnection.initVars(this, null);*
+   * *FBMHttpConnection.initVars(this, null);*
  * dans le onDestroy de chaque Activity, appeler impérativement :
-   * *!FBMHttpConnection.closeDisplay();*
+   * *FBMHttpConnection.closeDisplay();*
 ===Gérer le multicomptes===
  * Les utilisateurs peuvent utiliser !FreeboxMobile sur plusieurs comptes Freebox. Toutefois, un seul compte est actif à un moment donné. Ils peuvent modifier le compte actif à partir du menu dans la page d'accueil de !FreeboxMobile.
  * Pour connaître le compte actif (au démarrage d'un module par exemple), utiliser * !HttpConnection.getIdentifiant() *
