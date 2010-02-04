@@ -23,6 +23,7 @@ public interface Constants
     static final String KEY_LINELENGTH	= "length";
     static final String KEY_ATTN		= "attn";
     static final String KEY_LINETYPE	= "linetype"; // 0 = non dégroupé / 1 = dégroupé
+    static final String KEY_FBMVERSION	= "fbmversion"; // version de FBM qui a généré les infos du compte
 
     static final String KEY_PREFS		= "freeboxmobile";
     static final String KEY_MEVO_PREFS_FREQ	= "mevo_freq";

@@ -342,12 +342,13 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
     	SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
     	String user = mgr.getString(KEY_USER, "");
     	Log.d(DEBUGTAG, "User:"+user);
-    	Integer rowid = mDbHelper.getIdFromLogin(user);
+    	Long rowid = mDbHelper.getIdFromLogin(user);
     	if (rowid != null)
     	{
 	    	mDbHelper.updateCompte(rowid, p.title, p.login, p.password, (String) v.get(KEY_NRA),
 	    			(String) v.get(KEY_DSLAM), (String) v.get(KEY_IP), (String) v.get(KEY_LINELENGTH),
-	    			(String) v.get(KEY_ATTN), (String) v.get(KEY_TEL), (String) v.get(KEY_LINETYPE));
+	    			(String) v.get(KEY_ATTN), (String) v.get(KEY_TEL), (String) v.get(KEY_LINETYPE),
+	    			(String) v.get(KEY_FBMVERSION));
 			Editor editor = mgr.edit();
 			editor.putString(KEY_NRA, (String) v.get(KEY_NRA));
 			editor.putString(KEY_DSLAM, (String) v.get(KEY_DSLAM));
@@ -355,6 +356,8 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
 			editor.putString(KEY_TEL, (String) v.get(KEY_TEL));
 			editor.putString(KEY_LINELENGTH, (String) v.get(KEY_LINELENGTH));
 			editor.putString(KEY_ATTN, (String) v.get(KEY_ATTN));
+			editor.putString(KEY_LINETYPE, (String) v.get(KEY_LINETYPE));
+			editor.putString(KEY_FBMVERSION, (String) v.get(KEY_FBMVERSION));
 			editor.commit();
     	}
     	else
