@@ -1,6 +1,5 @@
 package org.madprod.freeboxmobile.pvr;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,6 +76,7 @@ public class ProgrammationActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pvr_programmation);
+        FBMHttpConnection.initVars(this, null);
         resetJours();
 
         setTitle(getString(R.string.app_name) + " " + getString(R.string.pvrPVR)
@@ -182,6 +182,12 @@ public class ProgrammationActivity extends Activity {
         }
         
         new TelechargerChainesDisquesTask().execute((Void[])null);
+    }
+    
+    @Override
+	protected void onDestroy() {
+    	super.onDestroy();
+    	FBMHttpConnection.closeDisplay();
     }
     
     class SelectionRecurrenceListener implements OnCheckedChangeListener {

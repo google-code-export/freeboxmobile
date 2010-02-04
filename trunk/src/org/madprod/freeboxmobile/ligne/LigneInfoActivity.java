@@ -48,6 +48,7 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
 	private static boolean DSLAM_ok = false;
 	private static Cursor mTicketCursor;
 	private static Object[] DSLAM_Histo = null;
+	private static String lineType = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -55,7 +56,8 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
         super.onCreate(savedInstanceState);
 
         FBMHttpConnection.initVars(this, null);
-
+        FBMHttpConnection.FBMLog("LINEINFO START");
+        
         setContentView(R.layout.ligne_info);
         setTitle(getString(R.string.app_name)+" - Info Ligne ADSL Freebox");
     }
@@ -65,6 +67,8 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
     {
     	super.onStart();
         SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
+        lineType = mgr.getString(KEY_LINETYPE, "");
+        FBMHttpConnection.FBMLog("LineType : "+lineType);
         if (DSLAM_Info.equals(""))
         	new UpdateCompte().execute(new Payload(mgr.getString(KEY_NRA, "").equals(""), mgr.getString(KEY_TITLE, ""), mgr.getString(KEY_USER, ""), mgr.getString(KEY_PASSWORD, ""), mgr.getString(KEY_NRA, "")));
         else
@@ -133,136 +137,152 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
         TextView t1_2 = (TextView) findViewById(R.id.infoLigne1_2);
         TextView t2 = (TextView) findViewById(R.id.infoLigne2);
         TextView t3 = (TextView) findViewById(R.id.infoLigne3);
-        text1_1 = "\tVotre ligne "+mgr.getString(KEY_USER, "")+" est connectée au central ADSL \"NRA\" "+mgr.getString(KEY_NRA, "")+" ("+DSLAM_Info+") ";
-        text1_1 += "situé à "+mgr.getString(KEY_LINELENGTH, "0")+" mètres de votre Freebox.";
-        text1_2 = "\tActuellement ("+DSLAM_Date+") les équipements dont vous dépendez ("+mgr.getString(KEY_DSLAM, "")+") ";
-        if (DSLAM_ok)
+        text1_1 = "\tVotre ligne "+mgr.getString(KEY_USER, "")+" est connectée au central ADSL \"NRA\" "+mgr.getString(KEY_NRA, "")+" ";
+        if (!DSLAM_Info.equals(""))
         {
-        	text1_2 += "fonctionnent correctement.";
+        	text1_1 += "("+DSLAM_Info+") ";
+        }
+        text1_1 += "situé à "+mgr.getString(KEY_LINELENGTH, "0")+" mètres de votre Freebox.";
+        
+        if (lineType.equals("1"))
+        {
+	        text1_2 = "\tActuellement ("+DSLAM_Date+") les équipements dont vous dépendez ("+mgr.getString(KEY_DSLAM, "")+") ";
+	        if (DSLAM_ok)
+	        {
+	        	text1_2 += "fonctionnent correctement.";
+	        }
+	        else
+	        {
+	        	text1_2 += "sont en interruption de service.";
+	        	t1_2.setTextColor(0xffff0000);
+	        }
+	        text2 = "Liste des tickets de "+mgr.getString(KEY_DSLAM, "")+" :";
+	        text3 = "Historique de l'état de "+mgr.getString(KEY_DSLAM, "")+" :";
+	        
+	        LinearLayout lt = (LinearLayout) findViewById(R.id.LinearLayoutTickets);
+	        LigneInfoDbAdapter mDb = new LigneInfoDbAdapter(LigneInfoActivity.this);
+			mDb.open();
+	        mTicketCursor = mDb.fetchAllTickets();
+	        startManagingCursor(mTicketCursor);
+	        if (mTicketCursor.moveToFirst())
+	        {
+	        	do
+	        	{
+	        		Button t = new Button(this);
+	        		t.setText(mTicketCursor.getString(mTicketCursor.getColumnIndexOrThrow(KEY_TITLE)));
+	        		t.setTextSize(14);
+	        		final Long id = mTicketCursor.getLong(mTicketCursor.getColumnIndexOrThrow(KEY_ROWID));
+	        		t.setOnClickListener(
+	    					new View.OnClickListener()
+	    					{
+	    						public void onClick(View view)
+	    						{
+	    							displayTicket(id);
+	    						}
+	    					}
+	    				);
+	        		lt.addView(t);
+	        	}
+	       		while (mTicketCursor.moveToNext());
+	        }
+	        else
+	        {
+	        	TextView t = new TextView(this);
+	    		t.setText("Pas de ticket pour cet équipement.");
+	    		t.setTextSize(16);
+	    		t.setPadding(10, 0, 0, 0);
+	    		lt.addView(t);        	
+	        }
+	        
+	        if (DSLAM_Histo != null)
+	        {
+		    	LinearLayout.LayoutParams imgParam = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
+		    	imgParam.setMargins(1,5,1,1);
+		    	imgParam.weight = 1;
+	
+		    	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		    	SimpleDateFormat formatCourt = new SimpleDateFormat("dd/MM");
+		    	GregorianCalendar calendar = new java.util.GregorianCalendar();
+		    	calendar.setTime(new Date());
+		    	int j = 0;
+		    	while (j++ < 7)
+		    	{
+		    		String f = format.format(calendar.getTime());
+		    		int l = DSLAM_Histo.length - 1;
+		    		boolean trouve = false;
+		    		while (l >=0 && !trouve)
+		    		{
+		    			Map<String, Object> map = (Map<String, Object>) DSLAM_Histo[l];
+			        	String h = (String) map.get("date");
+			        	if (h.equals(f))
+			        	{
+			        		trouve = true;
+			        	}
+			        	else
+			        		l = l-1;
+		    		}
+			        if (l >= 0)
+					{
+				        LinearLayout layoutH = (LinearLayout) findViewById(R.id.LinearLayoutHistory);
+			        	LinearLayout layoutHistory = new LinearLayout(this);
+			        	LinearLayout cellDate = new LinearLayout(this);
+			        	cellDate.setOrientation(LinearLayout.VERTICAL);
+				    	LinearLayout.LayoutParams cellDateParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+			        	cellDate.setLayoutParams(cellDateParams);
+			        	
+				    	TextView tdate = new TextView(this);
+				    	tdate.setText(formatCourt.format(calendar.getTime()));
+				    	tdate.setPadding(0,0,5,0);
+				    	tdate.setInputType(InputType.TYPE_CLASS_TEXT);
+	
+			        	LinearLayout ligneImages = new LinearLayout(this);
+			        	ligneImages.setOrientation(LinearLayout.HORIZONTAL);
+				    	LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
+				    	ligneImages.setLayoutParams(llp);
+
+			        	Map<String, Object> map = (Map<String, Object>) DSLAM_Histo[l];
+			        	String h = (String) map.get("summary");
+				        for (int i = 0; i <48; i++)
+				        {	
+				        	ImageView img = new ImageView(LigneInfoActivity.this);
+				        	img.setLayoutParams(imgParam);
+				        	try
+				        	{
+					        	if (h.charAt(i) == '1')
+					        		img.setBackgroundColor(0xff00ff00);
+					        	else
+					        		img.setBackgroundColor(0xffff0000);
+				        	}
+				        	catch (Exception e)
+				        	{
+				        		// on laisse l'image transparente
+				        	}
+				        	img.setMinimumHeight(10);
+				        	ligneImages.addView(img);
+				        }
+				    	cellDate.addView(tdate);
+			        	layoutHistory.addView(cellDate);
+			        	layoutHistory.addView(ligneImages);
+			        	layoutH.addView(layoutHistory);
+					}
+		    		calendar.add(Calendar.DATE, -1);
+		    	}
+	        }
+	        mDb.close();
         }
         else
         {
-        	text1_2 += "sont en interruption de service.";
-        	t1_2.setTextColor(0xffff0000);
+        	text1_2 = "\tInformations non disponibles pour votre type de ligne.";
+	        text2 = "";
+	        text3 = "";
+	        LinearLayout l = (LinearLayout) findViewById(R.id.LinearLayoutHistoLigne);
+	        l.setVisibility(View.GONE);
         }
-        text2 = "Liste des tickets de "+mgr.getString(KEY_DSLAM, "")+" :";
-        text3 = "Historique de l'état de "+mgr.getString(KEY_DSLAM, "")+" :";
         t_compte.setText(FBMHttpConnection.getTitle());
         t1_1.setText(text1_1);
         t1_2.setText(text1_2);
         t2.setText(text2);
-        t3.setText(text3);  
-        
-        LinearLayout lt = (LinearLayout) findViewById(R.id.LinearLayoutTickets);
-        LigneInfoDbAdapter mDb = new LigneInfoDbAdapter(LigneInfoActivity.this);
-		mDb.open();
-        mTicketCursor = mDb.fetchAllTickets();
-        startManagingCursor(mTicketCursor);
-        if (mTicketCursor.moveToFirst())
-        {
-        	do
-        	{
-        		Button t = new Button(this);
-        		t.setText(mTicketCursor.getString(mTicketCursor.getColumnIndexOrThrow(KEY_TITLE)));
-        		t.setTextSize(14);
-        		final Long id = mTicketCursor.getLong(mTicketCursor.getColumnIndexOrThrow(KEY_ROWID));
-        		t.setOnClickListener(
-    					new View.OnClickListener()
-    					{
-    						public void onClick(View view)
-    						{
-    							displayTicket(id);
-    						}
-    					}
-    				);
-        		lt.addView(t);
-        	}
-       		while (mTicketCursor.moveToNext());
-        }
-        else
-        {
-        	TextView t = new TextView(this);
-    		t.setText("Pas de ticket pour cet équipement.");
-    		t.setTextSize(16);
-    		t.setPadding(10, 0, 0, 0);
-    		lt.addView(t);        	
-        }
-        
-        if (DSLAM_Histo != null)
-        {
-	    	LinearLayout.LayoutParams imgParam = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
-	    	imgParam.setMargins(1,5,1,1);
-	    	imgParam.weight = 1;
-
-	    	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-	    	SimpleDateFormat formatCourt = new SimpleDateFormat("dd/MM");
-	    	GregorianCalendar calendar = new java.util.GregorianCalendar();
-	    	calendar.setTime(new Date());
-	    	int j = 0;
-	    	while (j++ < 7)
-	    	{
-	    		String f = format.format(calendar.getTime());
-	    		int l = DSLAM_Histo.length - 1;
-	    		boolean trouve = false;
-	    		while (l >=0 && !trouve)
-	    		{
-	    			Map<String, Object> map = (Map<String, Object>) DSLAM_Histo[l];
-		        	String h = (String) map.get("date");
-		        	if (h.equals(f))
-		        	{
-		        		trouve = true;
-		        	}
-		        	else
-		        		l = l-1;
-	    		}
-		        if (l >= 0)
-				{
-			        LinearLayout layoutH = (LinearLayout) findViewById(R.id.LinearLayoutHistory);
-		        	LinearLayout layoutHistory = new LinearLayout(this);
-		        	LinearLayout cellDate = new LinearLayout(this);
-		        	cellDate.setOrientation(LinearLayout.VERTICAL);
-			    	LinearLayout.LayoutParams cellDateParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-		        	cellDate.setLayoutParams(cellDateParams);
-		        	
-			    	TextView tdate = new TextView(this);
-			    	tdate.setText(formatCourt.format(calendar.getTime()));
-			    	tdate.setPadding(0,0,5,0);
-			    	tdate.setInputType(InputType.TYPE_CLASS_TEXT);
-
-		        	LinearLayout ligneImages = new LinearLayout(this);
-		        	ligneImages.setOrientation(LinearLayout.HORIZONTAL);
-			    	LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
-			    	ligneImages.setLayoutParams(llp);
-
-		        	Map<String, Object> map = (Map<String, Object>) DSLAM_Histo[l];
-		        	String h = (String) map.get("summary");
-			        for (int i = 0; i <48; i++)
-			        {	
-			        	ImageView img = new ImageView(LigneInfoActivity.this);
-			        	img.setLayoutParams(imgParam);
-			        	try
-			        	{
-				        	if (h.charAt(i) == '1')
-				        		img.setBackgroundColor(0xff00ff00);
-				        	else
-				        		img.setBackgroundColor(0xffff0000);
-			        	}
-			        	catch (Exception e)
-			        	{
-			        		// on laisse l'image transparente
-			        	}
-			        	img.setMinimumHeight(10);
-			        	ligneImages.addView(img);
-			        }
-			    	cellDate.addView(tdate);
-		        	layoutHistory.addView(cellDate);
-		        	layoutHistory.addView(ligneImages);
-		        	layoutH.addView(layoutHistory);
-				}
-	    		calendar.add(Calendar.DATE, -1);
-	    	}
-        }
-        mDb.close();
+        t3.setText(text3);
     }
 
     private void updateInfos(Payload p)

@@ -266,8 +266,29 @@ public class FBMHttpConnection implements Constants
 		}
 		else
 			FBMLog("parsePage itag pb : "+tag);
-		FBMLog("["+tag+"] "+r);
-		return r;
+		// On supprimer les éventuels tags HTML qui seraient dans la chaine découpée
+		String dest="";
+		int l = r.length();
+		int i = 0;
+		while (i<l)
+		{
+			if (r.charAt(i) == '<')
+			{
+				while ((i < l) && (r.charAt(i) != '>'))
+				{
+					i++;
+				}
+				if (i<l)
+					i++;
+			}
+			if ((i<l) && (r.charAt(i) != '<'))
+			{
+				dest += r.charAt(i);
+				i++;
+			}
+		}
+		FBMLog("["+tag+"] "+dest);
+		return dest;
 	}
 	
 	/**
@@ -292,7 +313,7 @@ public class FBMHttpConnection implements Constants
 	    	if (consoleValues.get(KEY_LINETYPE).equals("0"))
 				FBMLog("DEBUG INFO TECHNIQUES : "+br);		    		
 	    	FBMLog("type:"+consoleValues.get(KEY_LINETYPE));
-	    	consoleValues.put(KEY_NRA, parsePage(br, "NRA :", "red\">", "</"));
+	    	consoleValues.put(KEY_NRA, parsePage(br, "NRA :", "\">", "</"));
 	    	consoleValues.put(KEY_LINELENGTH, parsePage(br, "Longueur :", "red\">", " mètres"));
 	    	consoleValues.put(KEY_ATTN, parsePage(br, "Affaiblissement :", "red\">", " dB"));
 	    	consoleValues.put(KEY_IP, parsePage(br, "Votre adresse IP", "<b>", " / "));

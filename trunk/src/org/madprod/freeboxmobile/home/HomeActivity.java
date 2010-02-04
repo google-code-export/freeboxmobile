@@ -24,7 +24,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -95,6 +94,7 @@ public class HomeActivity extends Activity implements HomeConstants
 		}
 		else
 		{
+			FBMHttpConnection.FBMLog("type:"+mgr.getString(KEY_LINETYPE, ""));
 			phoneButton.setOnClickListener(
 					new View.OnClickListener()
 					{
@@ -111,23 +111,21 @@ public class HomeActivity extends Activity implements HomeConstants
 					new View.OnClickListener()
 					{
 						@Override
-						public void onClick(View arg0) {
-							Intent i = new Intent(homeActivity, FaxActivity.class);
-							startActivity(i);
+						public void onClick(View arg0)
+						{
+							startActivity(new Intent(homeActivity, FaxActivity.class));
 						}
 					}
 				);
-			
-			Log.d(DEBUGTAG, "type:"+mgr.getString(KEY_LINETYPE, ""));
-			if (!mgr.getString(KEY_LINETYPE, "1").equals("0"))
+
+			if (mgr.getString(KEY_LINETYPE, "1").equals("0") || mgr.getString(KEY_LINETYPE, "1").equals("1"))
 			{
 				ligneButton.setOnClickListener(
 						new View.OnClickListener()
 						{
 								public void onClick(View view)
 								{
-									Intent i = new Intent(homeActivity, org.madprod.freeboxmobile.ligne.LigneInfoActivity.class);
-							    	startActivity(i);
+							    	startActivity(new Intent(homeActivity, org.madprod.freeboxmobile.ligne.LigneInfoActivity.class));
 								}
 						}
 					);
@@ -152,8 +150,7 @@ public class HomeActivity extends Activity implements HomeConstants
 						{
 							public void onClick(View view)
 							{
-						    	Intent i = new Intent(homeActivity, org.madprod.freeboxmobile.pvr.EnregistrementsActivity.class);
-						    	startActivity(i);
+						    	startActivity(new Intent(homeActivity, org.madprod.freeboxmobile.pvr.EnregistrementsActivity.class));
 							}
 						}
 					);
@@ -278,8 +275,7 @@ public class HomeActivity extends Activity implements HomeConstants
 				public void onClick(DialogInterface dialog, int which)
 				{
 					dialog.dismiss();
-					Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("http://market.android.com/details?id=org.madprod.freeboxmobile"));
-					startActivity(i);
+					startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://market.android.com/details?id=org.madprod.freeboxmobile")));
 				}
 			});
 		d.setButton(DialogInterface.BUTTON_NEGATIVE, "Plus tard", new DialogInterface.OnClickListener()
@@ -395,8 +391,7 @@ public class HomeActivity extends Activity implements HomeConstants
 		{
 			public void onClick(DialogInterface dialog, int which)
 			{
-				Intent i = new Intent(homeActivity, org.madprod.freeboxmobile.home.WhatsNewActivity.class);
-		    	startActivity(i);
+		    	startActivity(new Intent(homeActivity, org.madprod.freeboxmobile.home.WhatsNewActivity.class));
 			}
 		});
 		d.show();
