@@ -69,6 +69,7 @@ public class EnregistrementsActivity extends ExpandableListActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pvr);
         FBMHttpConnection.initVars(this, null);
+        FBMHttpConnection.FBMLog("ENREGISTREMENTSACTIVITY START");
 
 		this.listeEnregistrements = new ListeEnregistrements();
         this.succesChargement = false;
