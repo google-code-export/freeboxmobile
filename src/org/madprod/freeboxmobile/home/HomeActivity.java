@@ -1,5 +1,7 @@
 package org.madprod.freeboxmobile.home;
 
+import java.io.File;
+
 import org.madprod.freeboxmobile.Config;
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
@@ -55,13 +57,16 @@ public class HomeActivity extends Activity implements HomeConstants
 		e.commit();
 		e = mgr.edit();
 */
-		if (!mgr.getString(KEY_SPLASH, "0").equals(getString(R.string.app_version)))
+		if (true)
+//		if (!mgr.getString(KEY_SPLASH, "0").equals(getString(R.string.app_version)))
 		{
 	        Log.d(DEBUGTAG,Environment.getExternalStorageDirectory().toString()+"/freeboxmobile");
 			Editor editor = mgr.edit();
 			editor.putString(KEY_SPLASH, getString(R.string.app_version));
 			editor.commit();
 			displayAbout();
+			File log = new File(Environment.getExternalStorageDirectory()+DIR_FBM, file_log);
+			log.delete();
 		}
 
         homeActivity = this;
@@ -120,7 +125,6 @@ public class HomeActivity extends Activity implements HomeConstants
 						}
 					}
 				);
-			FBMHttpConnection.FBMLog("type:"+mgr.getString(KEY_LINETYPE, ""));
 			if (!mgr.getString(KEY_LINETYPE, "1").equals("0"))
 			faxButton.setOnClickListener(
 					new View.OnClickListener()
@@ -152,7 +156,7 @@ public class HomeActivity extends Activity implements HomeConstants
 						{
 								public void onClick(View view)
 								{
-									showNonDegroupe();
+									showNonADSL();
 								}
 						}
 					);				
@@ -339,25 +343,6 @@ public class HomeActivity extends Activity implements HomeConstants
 		    	startActivity(new Intent(homeActivity, SendlogActivity.class));
 			}
 		});
-/*    	d.setButton(DialogInterface.BUTTON_POSITIVE, "Envoyer", new DialogInterface.OnClickListener()
-		{
-			public void onClick(DialogInterface dialog, int which)
-			{
-		    	SpannableStringBuilder ssb = new SpannableStringBuilder(
-		    			getString(R.string.app_name)+" "+
-		    			getString(R.string.app_version)+"\n\n"+
-		    			FBMHttpConnection.fbmlog);
-		    	Intent i = new Intent(Intent.ACTION_SEND)
-		    		.putExtra(Intent.EXTRA_EMAIL, new String[]{"freeboxmobiledev@ml.free.fr"})
-		    		.putExtra(Intent.EXTRA_TEXT, ssb)
-		    		.putExtra(Intent.EXTRA_SUBJECT, 
-		    				getString(R.string.mail_subject)) 
-		    				.setType("message/rfc822");
-		    	startActivity(Intent.createChooser(i,  "Choisissez votre logiciel de mail")); 
-				dialog.dismiss();
-			}
-		});
-*/
     	d.setButton(DialogInterface.BUTTON_POSITIVE, "Annuler", new DialogInterface.OnClickListener()
 		{
 			public void onClick(DialogInterface dialog, int which)
@@ -413,19 +398,31 @@ public class HomeActivity extends Activity implements HomeConstants
 		d.show();
     }
 
+    private void showNonADSL()
+    {
+		AlertDialog d = new AlertDialog.Builder(this).create();
+		d.setTitle(getString(R.string.app_name));
+		d.setMessage(
+			"Cette fonctionnalité n'est accessible qu'aux abonnés ADSL.\n\n"+
+			"Etes-vous un chanceux en Fibre Optique ? :)\n"
+		);
+
+		d.setButton(DialogInterface.BUTTON_NEUTRAL, "Ok", new DialogInterface.OnClickListener()
+		{
+			public void onClick(DialogInterface dialog, int which)
+			{
+				dialog.dismiss();
+			}
+		});
+		d.show();      
+    }
+
     private void showNonDegroupe()
     {
 		AlertDialog d = new AlertDialog.Builder(this).create();
 		d.setTitle(getString(R.string.app_name));
 		d.setMessage(
-			"Cette fonctionnalité n'est accessible qu'aux abonnés dégroupés.\n\n"+
-			"Si ce message est une erreur (si vous êtes dégroupé ou en fibre optique) "+
-			"tentez la procédure suivante :\n"+
-			"- touche Menu\n"+
-			"- Comptes\n"+
-			"- Cliquez sur le nom du compte que vous utilisez afin de l'éditer\n"+
-			"- Validez\n"+
-			"- Retestez"
+			"Cette fonctionnalité n'est accessible qu'aux abonnés dégroupé.\n"
 		);
 
 		d.setButton(DialogInterface.BUTTON_NEUTRAL, "Ok", new DialogInterface.OnClickListener()
