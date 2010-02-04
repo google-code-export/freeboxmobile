@@ -27,6 +27,7 @@ public interface Constants
 
     static final String KEY_PREFS		= "freeboxmobile";
     static final String KEY_MEVO_PREFS_FREQ	= "mevo_freq";
+    static final String KEY_INFOADSL_PREFS_FREQ	= "infoadsl_freq";
 
 	static final String DEBUGTAG		= "_FreeboxMobile";
 	static final String DIR_FBM			= "/freeboxmobile/";
@@ -36,4 +37,8 @@ public interface Constants
     public static final int CONNECT_CONNECTED = 1;
     
     static final String file_log = "fbm.log";
+
+    // Pour Notification Manager
+	public final int NOTIF_MEVO = 1;
+	public final int NOTIF_INFOADSL = 2;
 }

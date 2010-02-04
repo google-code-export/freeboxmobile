@@ -6,6 +6,8 @@ import org.madprod.freeboxmobile.Config;
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.fax.FaxActivity;
+import org.madprod.freeboxmobile.ligne.InfoAdslCheck;
+import org.madprod.freeboxmobile.mvv.MevoSync;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -57,6 +59,9 @@ public class HomeActivity extends Activity implements HomeConstants
 		e.commit();
 		e = mgr.edit();
 */
+		
+		// Si on est sur un premier lancement de la nouvelle version :
+//		if (true)
 		if (!mgr.getString(KEY_SPLASH, "0").equals(getString(R.string.app_version)))
 		{
 	        Log.d(DEBUGTAG,Environment.getExternalStorageDirectory().toString()+"/freeboxmobile");
@@ -66,6 +71,18 @@ public class HomeActivity extends Activity implements HomeConstants
 			displayAbout();
 			File log = new File(Environment.getExternalStorageDirectory()+DIR_FBM, file_log);
 			log.delete();
+			
+			// On reinstalle les timers de notif si nécessaire
+			String ms = mgr.getString(KEY_MEVO_PREFS_FREQ, "0");
+			if (!ms.equals("0"))
+			{
+				MevoSync.changeTimer(Integer.decode(ms), this);
+			}
+			ms = mgr.getString(KEY_INFOADSL_PREFS_FREQ, "0");
+			if (!ms.equals("0"))
+			{
+				InfoAdslCheck.changeTimer(Integer.decode(ms), this);
+			}
 		}
 
         homeActivity = this;

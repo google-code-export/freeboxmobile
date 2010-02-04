@@ -76,7 +76,7 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 		try
 		{
 			BufferedWriter out = new BufferedWriter (new FileWriter(log.getAbsolutePath(), true));
-			out.write("start: ");
+			out.write("mevosync_start: ");
 			out.write(new Date().toString());
 			out.write("\n");
 			out.close();
@@ -89,11 +89,6 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 		mDbHelper = new MevoDbAdapter(this);
 
 		FBMHttpConnection.initVars(null, getBaseContext());
-//		FBMHttpConnection.setVars(
-//				getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_USER, null),
-//				getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_PASSWORD, null),
-//				getBaseContext()
-//				);
 		newmsg = checkUpdate();
 		if (newmsg > 0)
 		{
@@ -107,7 +102,7 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 		try
 		{
 			BufferedWriter out = new BufferedWriter (new FileWriter(log.getAbsolutePath(), true));
-			out.write("end: ");
+			out.write("mevosync_end: ");
 			out.write(new Date().toString());
 			out.write("\n\n");
 			out.close();
@@ -285,12 +280,12 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 		if (ms != 0)
 		{
 			amgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), ms, pi);
-			Log.i(DEBUGTAG, "Timer  changed to "+ms);
+			Log.i(DEBUGTAG, "MevoTimer  changed to "+ms);
 		}
 		else
 		{
 			amgr.cancel(pi);
-			Log.i(DEBUGTAG, "Timer canceled");			
+			Log.i(DEBUGTAG, "MevoTimer canceled");			
 		}
 	}
 

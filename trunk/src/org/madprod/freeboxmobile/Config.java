@@ -1,5 +1,6 @@
 package org.madprod.freeboxmobile;
 
+import org.madprod.freeboxmobile.ligne.InfoAdslCheck;
 import org.madprod.freeboxmobile.mvv.MevoSync;
 
 import android.app.AlertDialog;
@@ -37,7 +38,7 @@ public class Config extends PreferenceActivity implements OnSharedPreferenceChan
     	if (myAlertDialog != null)
     	{
     		myAlertDialog.show();
-    	}   	
+    	}
     }
 
     @Override
@@ -85,6 +86,13 @@ public class Config extends PreferenceActivity implements OnSharedPreferenceChan
     		if (value != null)
     		{
     			MevoSync.changeTimer(Integer.decode(value), this);
+    		}
+		}
+    	else if (KEY_INFOADSL_PREFS_FREQ.equals(key))
+		{
+    		if (value != null)
+    		{
+    			InfoAdslCheck.changeTimer(Integer.decode(value), this);
     		}
 		}
 
