@@ -44,7 +44,7 @@ import org.madprod.freeboxmobile.R;
 public class EnregistrementsActivity extends ExpandableListActivity {
 	private String tableEnregistrements;
 	private boolean succesChargement;
-    ListeEnregistrements listeEnregistrements;
+    private static ListeEnregistrements listeEnregistrements = null;
     public static EnregistrementsActivity enrAct = null;
 
 	static final int MENU_UPDATE = 0;
@@ -71,8 +71,8 @@ public class EnregistrementsActivity extends ExpandableListActivity {
         FBMHttpConnection.initVars(this, null);
         FBMHttpConnection.FBMLog("ENREGISTREMENTSACTIVITY START");
 
-		this.listeEnregistrements = new ListeEnregistrements();
-        this.succesChargement = false;
+		listeEnregistrements = new ListeEnregistrements();
+        succesChargement = false;
         enrAct = this;
         
         registerForContextMenu(getExpandableListView());
@@ -87,8 +87,6 @@ public class EnregistrementsActivity extends ExpandableListActivity {
         		ajouterNouvelEnregistrement();
         	}
         });
-
-        updaterEnregistrements(true);
     }
     
     @Override
@@ -105,6 +103,12 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 		super.onPause();
 	}
     
+	@Override
+	protected void onStart() {
+		super.onStart();
+		updaterEnregistrements(listeEnregistrements == null);
+	}
+	
     private void erreur(String msgErreur) {
     	AlertDialog d = new AlertDialog.Builder(this).create();
 		d.setTitle(getString(R.string.pvrErreur));
@@ -112,6 +116,7 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 		d.setButton("Ok", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.dismiss();
+				finish();
 			}
 		});
 		d.show();
@@ -463,6 +468,10 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 		ListeEnregistrements() {
 			listeEnregistrements = new ArrayList<String>();
 			detailsEnregistrements = new ArrayList<List<String>>();
+		}
+		
+		public int size() {
+			return listeEnregistrements.size();
 		}
 		
 	    public void vider() {
