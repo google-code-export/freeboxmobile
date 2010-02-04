@@ -78,7 +78,6 @@ public class ProgrammationActivity extends Activity {
         setContentView(R.layout.pvr_programmation);
         FBMHttpConnection.initVars(this, null);
         resetJours();
-    	Log.d(TAG, "onCreate, chaines = "+(mChaines==null?"null":"not null"));
 
         setTitle(getString(R.string.app_name) + " " + getString(R.string.pvrPVR)
         		+ " - "+FBMHttpConnection.getTitle());
@@ -187,8 +186,6 @@ public class ProgrammationActivity extends Activity {
     protected void onStart() {
     	super.onStart();
     	
-    	Log.d(TAG, "onStart, chaines = "+(mChaines==null?"null":"not null"));
-    	
     	if (mChaines != null && mChaines.size() > 0) {
     		preparerActivite();
     	}
@@ -200,8 +197,6 @@ public class ProgrammationActivity extends Activity {
     @Override
 	protected void onDestroy() {
     	super.onDestroy();
-    	
-    	Log.d(TAG, "onDestroy, chaines = "+(mChaines==null?"null":"not null"));
     	FBMHttpConnection.closeDisplay();
     }
     
@@ -216,8 +211,6 @@ public class ProgrammationActivity extends Activity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-    	
-    	Log.d(TAG, "onPause, chaines = "+(mChaines==null?"null":"not null"));
     	
 		if (progressDialog != null) {
 			progressDialog.dismiss();
