@@ -203,21 +203,7 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 				if (c.getCount() > 0)
 				{
 					SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
-//					Editor editor = mgr.edit();
 					updatePrefs(mgr.edit(), c);
-/*					editor.putString(KEY_USER, c.getString(c.getColumnIndexOrThrow(KEY_USER)));
-					editor.putString(KEY_PASSWORD, c.getString(c.getColumnIndexOrThrow(KEY_PASSWORD)));
-					editor.putString(KEY_TITLE, c.getString(c.getColumnIndexOrThrow(KEY_TITLE)));
-					editor.putString(KEY_NRA, c.getString(c.getColumnIndexOrThrow(KEY_NRA)));
-					editor.putString(KEY_DSLAM, c.getString(c.getColumnIndexOrThrow(KEY_DSLAM)));
-					editor.putString(KEY_IP, c.getString(c.getColumnIndexOrThrow(KEY_IP)));
-					editor.putString(KEY_TEL, c.getString(c.getColumnIndexOrThrow(KEY_TEL)));
-					editor.putString(KEY_LINELENGTH, c.getString(c.getColumnIndexOrThrow(KEY_LINELENGTH)));
-					editor.putString(KEY_ATTN, c.getString(c.getColumnIndexOrThrow(KEY_ATTN)));
-					editor.putString(KEY_LINETYPE, c.getString(c.getColumnIndexOrThrow(KEY_LINETYPE)));
-					editor.putString(KEY_FBMVERSION, c.getString(c.getColumnIndexOrThrow(KEY_FBMVERSION)));
-					editor.commit();
-*/
 					FBMHttpConnection.initCompte(ComptesActivity.this);
 				}
 				else
@@ -231,7 +217,6 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 			@Override
 			public void onNothingSelected(AdapterView<?> arg0)
 			{
-				// TODO Auto-generated method stub	
 			}
         });
         //mComptesCursor.close();
@@ -268,21 +253,7 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 				if (c.getCount() > 0)
 				{
 					SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
-//					Editor editor = mgr.edit();
 					updatePrefs(mgr.edit(), c);
-/*					editor.putString(KEY_USER, c.getString(c.getColumnIndexOrThrow(KEY_USER)));
-					editor.putString(KEY_PASSWORD,  c.getString(c.getColumnIndexOrThrow(KEY_PASSWORD)));
-					editor.putString(KEY_TITLE, c.getString(c.getColumnIndexOrThrow(KEY_TITLE)));
-					editor.putString(KEY_NRA, c.getString(c.getColumnIndexOrThrow(KEY_NRA)));
-					editor.putString(KEY_DSLAM, c.getString(c.getColumnIndexOrThrow(KEY_DSLAM)));
-					editor.putString(KEY_IP, c.getString(c.getColumnIndexOrThrow(KEY_IP)));
-					editor.putString(KEY_TEL, c.getString(c.getColumnIndexOrThrow(KEY_TEL)));
-					editor.putString(KEY_LINELENGTH, c.getString(c.getColumnIndexOrThrow(KEY_LINELENGTH)));
-					editor.putString(KEY_ATTN, c.getString(c.getColumnIndexOrThrow(KEY_ATTN)));
-					editor.putString(KEY_LINETYPE, c.getString(c.getColumnIndexOrThrow(KEY_LINETYPE)));
-					editor.putString(KEY_FBMVERSION, c.getString(c.getColumnIndexOrThrow(KEY_FBMVERSION)));
-					editor.commit();
-*/
 					FBMHttpConnection.initCompte(this);
 	            	Toast t = Toast.makeText(ComptesActivity.this, "Compte "+c.getString(c.getColumnIndexOrThrow(KEY_TITLE))+" selectionné",Toast.LENGTH_LONG);
 	            	t.show();
