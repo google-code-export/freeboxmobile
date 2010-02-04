@@ -12,7 +12,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,7 +21,6 @@ import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.Toast;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
 
 import org.apache.http.NameValuePair;
@@ -470,10 +468,6 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 			detailsEnregistrements = new ArrayList<List<String>>();
 		}
 		
-		public int size() {
-			return listeEnregistrements.size();
-		}
-		
 	    public void vider() {
 	    	listeEnregistrements.clear();
 	    	detailsEnregistrements.clear();
@@ -482,13 +476,6 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 	    // Ajout d'un enregistrement à la liste, avec détails
 	    public void ajouter(String nom, List<String> details) {
 	    	listeEnregistrements.add(nom);
-	    	detailsEnregistrements.add(details);
-	    }
-	    // Ajout d'un enregistrement à la liste, sans détails == erreur
-	    public void ajouter(String message) {
-	    	listeEnregistrements.add("Erreur");
-	    	ArrayList<String> details = new ArrayList<String>();
-	    	details.add(message);
 	    	detailsEnregistrements.add(details);
 	    }
 	    
