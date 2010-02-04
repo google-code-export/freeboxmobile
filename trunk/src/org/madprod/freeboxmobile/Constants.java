@@ -34,4 +34,6 @@ public interface Constants
     public static final int CONNECT_LOGIN_FAILED = -1;
     public static final int CONNECT_NOT_CONNECTED = 0;
     public static final int CONNECT_CONNECTED = 1;
+    
+    static final String file_log = "fbm.log";
 }

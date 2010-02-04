@@ -72,7 +72,7 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 
 		Log.i(DEBUGTAG,"MevoSync onHandleIntent ");
 
-		File log = new File(Environment.getExternalStorageDirectory()+DIR_FBM, "fbm.log");
+		File log = new File(Environment.getExternalStorageDirectory()+DIR_FBM, file_log);
 		try
 		{
 			BufferedWriter out = new BufferedWriter (new FileWriter(log.getAbsolutePath(), true));
