@@ -33,6 +33,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -49,6 +50,9 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 public class ProgrammationActivity extends Activity {
 	private static List<Chaine> mChaines = null;
 	private static List<Disque> mDisques = null;
+	private static List<String> mBoitiers = null;
+	private int mBoitierHD = 0;
+	private boolean plusieursBoitiersHD = false;
 	private long mRowId = -1;
 	Activity progAct = null;
 	final String TAG = "FreeboxMobileProg";
@@ -58,8 +62,9 @@ public class ProgrammationActivity extends Activity {
 	TextView nomEmission = null;
 	Spinner chainesSpinner = null;
 	Spinner dureeSpinner = null;
+	Spinner boitierHDSpinner = null;
 	
-	boolean orentationPortrait = false;
+	boolean orientationPortrait = false;
 	int positionEcran = 0;
 	int nbEcrans = 3;
     private Button suivant, precedent, boutonOK, buttonRecur;
@@ -104,22 +109,23 @@ public class ProgrammationActivity extends Activity {
         nomEmission = (TextView) findViewById(R.id.pvrPrgNom);
         chainesSpinner = (Spinner) findViewById(R.id.pvrPrgChaine);
         dureeSpinner = (Spinner) findViewById(R.id.pvrPrgDurees);
+        boitierHDSpinner = (Spinner) findViewById(R.id.pvrPrgBoitier);
         slideLeftIn = AnimationUtils.loadAnimation(this, R.anim.slide_left_in);
         slideLeftOut = AnimationUtils.loadAnimation(this, R.anim.slide_left_out);
         slideRightIn = AnimationUtils.loadAnimation(this, R.anim.slide_right_in);
         slideRightOut = AnimationUtils.loadAnimation(this, R.anim.slide_right_out);
-        lendi = ((CheckBox) findViewById(R.id.pvrPrgJour0));
-        mordi = ((CheckBox) findViewById(R.id.pvrPrgJour1));
-        credi = ((CheckBox) findViewById(R.id.pvrPrgJour2));
-        joudi = ((CheckBox) findViewById(R.id.pvrPrgJour3));
-        dredi = ((CheckBox) findViewById(R.id.pvrPrgJour4));
-        sadi = ((CheckBox) findViewById(R.id.pvrPrgJour5));
-        gromanche = ((CheckBox) findViewById(R.id.pvrPrgJour6));
+        lendi = (CheckBox) findViewById(R.id.pvrPrgJour0);
+        mordi = (CheckBox) findViewById(R.id.pvrPrgJour1);
+        credi = (CheckBox) findViewById(R.id.pvrPrgJour2);
+        joudi = (CheckBox) findViewById(R.id.pvrPrgJour3);
+        dredi = (CheckBox) findViewById(R.id.pvrPrgJour4);
+        sadi = (CheckBox) findViewById(R.id.pvrPrgJour5);
+        gromanche = (CheckBox) findViewById(R.id.pvrPrgJour6);
         viewFlipper = (ViewFlipper) findViewById(R.id.pvrFlipper);
         
         dureeSpinner.setSelection(8);// 8 == 2H
         
-        orentationPortrait = getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
+        orientationPortrait = getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
         
         // Vider le champ quand on le clique
         nomEmission.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -156,7 +162,11 @@ public class ProgrammationActivity extends Activity {
         }
         
         // Flipper
-        if (orentationPortrait) {
+        if (orientationPortrait) {
+            // Le choix du boitier HD est masqué par défaut, on fera showPrevious si on détecte 2 boitiers HD
+    		viewFlipper.showNext();
+    		
+    		// Listeners sur les boutons
 	        suivant.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View arg0) {
@@ -180,6 +190,19 @@ public class ProgrammationActivity extends Activity {
 	        sadi.setOnCheckedChangeListener(new SelectionRecurrenceListener(5));
 	        gromanche.setOnCheckedChangeListener(new SelectionRecurrenceListener(6));
         }
+        
+        // Boitier HD
+        boitierHDSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				mBoitierHD = position;
+				new TelechargerChainesDisquesTask().execute((Void[])null);
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+			}
+        });
     }
     
     @Override
@@ -202,7 +225,7 @@ public class ProgrammationActivity extends Activity {
     
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (orentationPortrait) {
+        if (orientationPortrait) {
         	return gestureDetector.onTouchEvent(event);
         }
 	    return false;
@@ -367,6 +390,7 @@ public class ProgrammationActivity extends Activity {
         String url = "http://adsl.free.fr/admin/magneto.pl";
         List<NameValuePair> param = new ArrayList<NameValuePair>();
         param.add(new BasicNameValuePair("detail","1"));
+        param.add(new BasicNameValuePair("box", ""+mBoitierHD));
     	
         String resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequestISR(url, param, true, true));
         if (resultat != null) {
@@ -390,6 +414,37 @@ public class ProgrammationActivity extends Activity {
 	        	getListeChaines(strChaines);
 	        	getListeDisques(strDisques);
 	        	
+	        	// Deux boitiers HD ?
+/*	        	<a href="?id=711787&idt=6f2499badcd4b1be&detail=0&box=0"><strong>Boitier HD n°1</strong></a>&nbsp;&nbsp;
+	        	<a href="?id=711787&idt=6f2499badcd4b1be&detail=0&box=1">Boitier HD n°2</a>&nbsp;&nbsp;*/
+	        	int posDebut = resultat.indexOf("Boitier HD n°1");
+	        	if (posDebut > 0) {
+	        		nbEcrans++;
+	        		int d, f, i = 0;
+	        		String boitiers = resultat.substring(posDebut-40);
+	        		mBoitiers = new ArrayList<String>();
+	        		plusieursBoitiersHD = true;
+	        		
+	        		do {
+	        			d = boitiers.indexOf("strong");
+	        			if (d > 0) {
+	        				mBoitierHD = i;
+	        				d += 7; // strlen("strong>") == 7
+	        			}
+	        			else {
+		        			d = boitiers.indexOf("&box=") + 8; // strlen("&box=*">") == 8
+		        			if (d <= 0) {
+		        				break;
+		        			}
+	        			}
+
+	        			f = d + boitiers.substring(d).indexOf("</");
+	        			
+	        			mBoitiers.add(boitiers.substring(d, f));
+	        			i++;
+	        		} while (true);
+	        	}
+	        	
 	        	return true;
 	        }
         }
@@ -402,6 +457,18 @@ public class ProgrammationActivity extends Activity {
     }
     
     private void preparerActivite() {
+    	// Suppression du layout de sélection si on n'a qu'un boitier HD
+		if (plusieursBoitiersHD) {
+    		boitierHDSpinner.setSelection(mBoitierHD);
+    		
+    		if (orientationPortrait) {
+        		viewFlipper.showPrevious();
+        	}
+    	}
+    	else if (orientationPortrait == false) {
+    		findViewById(R.id.pvrPrgLayoutBoitier).setVisibility(View.GONE);
+    	}
+		
 		// Remplissage des spinners
     	remplirSpinner(R.id.pvrPrgChaine);
     	remplirSpinner(R.id.pvrPrgDisque);
@@ -565,6 +632,7 @@ public class ProgrammationActivity extends Activity {
 
         		// Requete HTTP
         		String url = "http://adsl.free.fr/admin/magneto.pl";
+                postVars.add(new BasicNameValuePair("box", ""+mBoitierHD));
         		String resultat = FBMHttpConnection.getPage(FBMHttpConnection.postAuthRequest(url, postVars, true, true));
 
         		int erreurPos = resultat.indexOf("erreurs");
@@ -689,12 +757,15 @@ public class ProgrammationActivity extends Activity {
         Disque d = mDisques.get(disqueId);
         
         if (d != null) {
+        	int gigaFree = d.getGigaFree();
+        	int gigaTotal = d.getGigaTotal();
+        	
         	((TextView) findViewById(R.id.pvrPrgInfosDisque1))
     			.setText(getString(R.string.pvrInfosDisque1).replace("#nom", d.getLabel()));
         	((TextView) findViewById(R.id.pvrPrgInfosDisque2))
-    			.setText(getString(R.string.pvrInfosDisque2).replace("#libre", ""+d.getGigaFree()));
+    			.setText(getString(R.string.pvrInfosDisque2).replace("#libre", ""+gigaFree));
         	((TextView) findViewById(R.id.pvrPrgInfosDisque3))
-    			.setText(getString(R.string.pvrInfosDisque3).replace("#total", ""+d.getGigaTotal()));
+    			.setText(getString(R.string.pvrInfosDisque3).replace("#total", ""+gigaTotal));
         	((TextView) findViewById(R.id.pvrPrgInfosDisque4))
     			.setText(getString(R.string.pvrInfosDisque4).replace("#mount", d.getMountPt()));
         	
@@ -702,6 +773,10 @@ public class ProgrammationActivity extends Activity {
         		((TextView) findViewById(R.id.pvrPrgInfosDisqueEspaceFaible))
         			.setText(getString(R.string.pvrInfosDisqueEspaceFaible));
         	}
+        	
+        	ProgressBar pb = (ProgressBar) findViewById(R.id.pvrPrgDisquePB);
+        	pb.setMax(gigaTotal);
+        	pb.setProgress(gigaTotal-gigaFree);
         }
     }
     

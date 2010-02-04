@@ -19,6 +19,8 @@ If the first selected day is not the same as the chosen date, the recording will
 For example, if you want to record a show every Tuesday and Wednesday, be sure that the chosen date is a Tuesday.</string>
 	<string name="pvrNomDefaut">Type program title...</string>
 	
+	<string name="pvrTxtBoitier">HD Box:</string>
+	
 	<string name="pvrInfosDisque1">Disk name: #nom</string>
 	<string name="pvrInfosDisque2">Free space: #libre GiB</string>
 	<string name="pvrInfosDisque3">Total space: #total GiB</string>
