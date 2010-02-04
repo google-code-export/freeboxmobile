@@ -57,8 +57,7 @@ public class HomeActivity extends Activity implements HomeConstants
 		e.commit();
 		e = mgr.edit();
 */
-		if (true)
-//		if (!mgr.getString(KEY_SPLASH, "0").equals(getString(R.string.app_version)))
+		if (!mgr.getString(KEY_SPLASH, "0").equals(getString(R.string.app_version)))
 		{
 	        Log.d(DEBUGTAG,Environment.getExternalStorageDirectory().toString()+"/freeboxmobile");
 			Editor editor = mgr.edit();
