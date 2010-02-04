@@ -47,8 +47,8 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
  *
  */
 public class ProgrammationActivity extends Activity {
-	private List<Chaine> mChaines = null;
-	private List<Disque> mDisques = null;
+	private static List<Chaine> mChaines = null;
+	private static List<Disque> mDisques = null;
 	private long mRowId = -1;
 	Activity progAct = null;
 	final String TAG = "FreeboxMobileProg";
@@ -78,6 +78,7 @@ public class ProgrammationActivity extends Activity {
         setContentView(R.layout.pvr_programmation);
         FBMHttpConnection.initVars(this, null);
         resetJours();
+    	Log.d(TAG, "onCreate, chaines = "+(mChaines==null?"null":"not null"));
 
         setTitle(getString(R.string.app_name) + " " + getString(R.string.pvrPVR)
         		+ " - "+FBMHttpConnection.getTitle());
@@ -180,14 +181,55 @@ public class ProgrammationActivity extends Activity {
 	        sadi.setOnCheckedChangeListener(new SelectionRecurrenceListener(5));
 	        gromanche.setOnCheckedChangeListener(new SelectionRecurrenceListener(6));
         }
-        
-        new TelechargerChainesDisquesTask().execute((Void[])null);
+    }
+    
+    @Override
+    protected void onStart() {
+    	super.onStart();
+    	
+    	Log.d(TAG, "onStart, chaines = "+(mChaines==null?"null":"not null"));
+    	
+    	if (mChaines != null && mChaines.size() > 0) {
+    		preparerActivite();
+    	}
+    	else {
+    		new TelechargerChainesDisquesTask().execute((Void[])null);
+    	}
     }
     
     @Override
 	protected void onDestroy() {
     	super.onDestroy();
+    	
+    	Log.d(TAG, "onDestroy, chaines = "+(mChaines==null?"null":"not null"));
     	FBMHttpConnection.closeDisplay();
+    }
+    
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (orentationPortrait) {
+        	return gestureDetector.onTouchEvent(event);
+        }
+	    return false;
+    }
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+    	
+    	Log.d(TAG, "onPause, chaines = "+(mChaines==null?"null":"not null"));
+    	
+		if (progressDialog != null) {
+			progressDialog.dismiss();
+		}
+		// TODO: enregistrer l'état du formulaire qqpart pour
+		// le récupérer quand on revient sur l'activité
+	}
+    
+	@Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putLong(EnregistrementsDbAdapter.KEY_ROWID, mRowId);
     }
     
     class SelectionRecurrenceListener implements OnCheckedChangeListener {
@@ -251,30 +293,6 @@ public class ProgrammationActivity extends Activity {
             }
             return false;
         }
-    }
-    
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if (orentationPortrait) {
-        	return gestureDetector.onTouchEvent(event);
-        }
-	    return false;
-    }
-	
-	@Override
-	protected void onPause() {
-		super.onPause();
-		if (progressDialog != null) {
-			progressDialog.dismiss();
-		}
-		// TODO: enregistrer l'état du formulaire qqpart pour
-		// le récupérer quand on revient sur l'activité
-	}
-    
-	@Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putLong(EnregistrementsDbAdapter.KEY_ROWID, mRowId);
     }
     
     void resetJours() {
