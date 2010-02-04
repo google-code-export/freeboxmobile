@@ -1,4 +1,4 @@
-package org.madprod.freeboxmobile.mvv;
+package org.madprod.freeboxmobile.ligne;
 
 import org.madprod.freeboxmobile.Constants;
 import org.madprod.freeboxmobile.WakefullIntentService;
@@ -16,13 +16,13 @@ import android.util.Log;
 * 
 */
 
-public class OnMevoAlarmReceiver extends BroadcastReceiver implements Constants
+public class OnInfoAdslAlarmReceiver extends BroadcastReceiver implements Constants
 {
 	@Override
 	public void onReceive(Context context, Intent intent)
 	{
-		Log.i(DEBUGTAG,"onReceive Mevo Alarm");
+		Log.i(DEBUGTAG,"onReceive InfoAdsl Alarm");
 		WakefullIntentService.acquireStaticLock(context);
-		context.startService(new Intent(context, MevoSync.class));
+		context.startService(new Intent(context, InfoAdslCheck.class));
 	}
 }

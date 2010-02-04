@@ -374,6 +374,8 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
         private String password;
         private String nra;
         private ContentValues result = null;
+        // refresh est demandé si NRA n'existe pas dans les prefs, donc si on est dans le cas d'un compte
+		// configuré avec Freeboxmobile <= 0.16 
         private boolean refresh;
         
         public Payload(boolean refresh, String title, String login, String password, String nra)
