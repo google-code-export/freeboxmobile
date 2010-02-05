@@ -226,7 +226,6 @@ public class FBMHttpConnection implements Constants
 			password = p;
 			v = parseConsole(l, p);
 			v.put(KEY_FBMVERSION, fbmversion);
-			FBMLog("FBMVERSION : "+fbmversion);
 			FBMLog("connectFreeCheck : "+v);
 
 			// restauration des données présentes avant

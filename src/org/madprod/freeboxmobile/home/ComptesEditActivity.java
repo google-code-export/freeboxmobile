@@ -126,11 +126,12 @@ public class ComptesEditActivity extends Activity implements Constants
         	ComptesDbAdapter mDbHelper = new ComptesDbAdapter(this);
         	mDbHelper.open();
             Cursor compte = mDbHelper.fetchCompte(mRowId);
-            startManagingCursor(compte);
+//            startManagingCursor(compte);
             mTitleText.setText(compte.getString(compte.getColumnIndexOrThrow(ComptesDbAdapter.KEY_TITLE)));
             mUserText.setText(compte.getString(compte.getColumnIndexOrThrow(ComptesDbAdapter.KEY_USER)));
             mPasswordText.setText(compte.getString(compte.getColumnIndexOrThrow(ComptesDbAdapter.KEY_PASSWORD)));
 //            stopManagingCursor(compte);
+            compte.close();
             mDbHelper.close();
         }
     }
