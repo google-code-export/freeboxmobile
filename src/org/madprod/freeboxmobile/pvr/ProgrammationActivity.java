@@ -443,6 +443,8 @@ public class ProgrammationActivity extends Activity {
 	        			f = d + boitiers.substring(d).indexOf("</");
 	        			
 	        			mBoitiers.add(boitiers.substring(d, f));
+	        			
+	        			boitiers = boitiers.substring(f);
 	        			i++;
 	        		} while (true);
 	        	}
