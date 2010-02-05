@@ -36,16 +36,20 @@ public class ComptesActivity extends ListActivity implements HomeConstants
     private static final int COMPTE_CREATE=0;
     private static final int COMPTE_EDIT=1;
 
-	private ComptesDbAdapter mDbHelper;
-    private Cursor mComptesCursor;
+	private static ComptesDbAdapter mDbHelper = null;
+	private Cursor mComptesCursor = null;
+	private SimpleCursorAdapter comptes = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
     	super.onCreate(savedInstanceState);
+    	if (mDbHelper == null)
+    	{
+	        mDbHelper = new ComptesDbAdapter(this);
+	        mDbHelper.open();
+    	}
         setContentView(R.layout.comptes_list);
-        mDbHelper = new ComptesDbAdapter(this);
-        mDbHelper.open();
         registerForContextMenu(getListView());
         setTitle(getString(R.string.app_name)+" - Comptes Freebox");
         TextView t = (TextView) findViewById(R.id.Compte_Actif);
@@ -124,19 +128,28 @@ public class ComptesActivity extends ListActivity implements HomeConstants
     protected void onStart()
     {
     	super.onStart();
-        fillData();
     }
     
     @Override
     protected void onStop()
 	{
+    	if (mComptesCursor != null)
+    	{
+//    		stopManagingCursor(mComptesCursor);
+    		mComptesCursor.close();
+    		mComptesCursor = null;
+    	}
     	super.onStop();
 	}
 
     @Override
     protected void onDestroy()
     {
-    	mDbHelper.close();
+    	if (mDbHelper != null)
+    	{
+    		mDbHelper.close();
+    		mDbHelper = null;
+    	}
     	super.onDestroy();
     }
 
@@ -150,21 +163,22 @@ public class ComptesActivity extends ListActivity implements HomeConstants
     protected void onResume()
     {
     	super.onResume();
+        fillData();
     }
 
     private void createCompte()
     {
-        Intent i = new Intent(this, ComptesEditActivity.class);
-        startActivityForResult(i, COMPTE_CREATE);
+        startActivityForResult(new Intent(this, ComptesEditActivity.class), COMPTE_CREATE);
     }
 
     private void fillData()
     {
+    	FBMHttpConnection.FBMLog("FILLDATA");
         mComptesCursor = mDbHelper.fetchAllComptes();
-        startManagingCursor(mComptesCursor);
+//        startManagingCursor(mComptesCursor);
         String[] from = new String[]{KEY_TITLE};
         int[] to = new int[]{R.id.comptes_liste_row};
-        SimpleCursorAdapter comptes = new SimpleCursorAdapter(this, R.layout.comptes_row, mComptesCursor, from, to);
+        comptes = new SimpleCursorAdapter(this, R.layout.comptes_row, mComptesCursor, from, to);
         setListAdapter(comptes);
 
         Spinner s = (Spinner) findViewById(R.id.Spinner01);
@@ -199,7 +213,7 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 			public void onItemSelected(AdapterView<?> parent, View v, int i, long l)
 			{
 				Cursor c = mDbHelper.fetchFromTitle(parent.getSelectedItem().toString());
-				startManagingCursor(c);
+//				startManagingCursor(c);
 				if (c.getCount() > 0)
 				{
 					SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
@@ -211,6 +225,7 @@ public class ComptesActivity extends ListActivity implements HomeConstants
                 	Toast t = Toast.makeText(ComptesActivity.this, "Impossible de selectionner ce compte",Toast.LENGTH_LONG);
                 	t.show();
 				}
+//				stopManagingCursor(c);
 				c.close();
 			}
 
@@ -219,7 +234,7 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 			{
 			}
         });
-        //mComptesCursor.close();
+//        stopManagingCursor(mComptesCursor);
     }
     
     private void updatePrefs(Editor editor, Cursor c)
@@ -242,14 +257,16 @@ public class ComptesActivity extends ListActivity implements HomeConstants
     protected void onActivityResult(int requestCode, int resultCode, Intent intent)
     {
         super.onActivityResult(requestCode, resultCode, intent);
+
         // Si il n'y avait pas de compte définit et qu'un compte vient d'être créé, on le selectionne par défaut
         if ((getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_USER, null) == null) && (resultCode != 0))
         {
        		Long id = intent.getLongExtra(ComptesDbAdapter.KEY_ROWID, 0);
         	if (id != 0)
         	{
-				Cursor c = mDbHelper.fetchCompte(id);
-				startManagingCursor(c);
+        		ComptesDbAdapter mDb = new ComptesDbAdapter(this).open();
+				Cursor c = mDb.fetchCompte(id);
+//				startManagingCursor(c);
 				if (c.getCount() > 0)
 				{
 					SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
@@ -258,7 +275,9 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 	            	Toast t = Toast.makeText(ComptesActivity.this, "Compte "+c.getString(c.getColumnIndexOrThrow(KEY_TITLE))+" selectionné",Toast.LENGTH_LONG);
 	            	t.show();
 				}
+//				stopManagingCursor(c);
 				c.close();
+				mDb.close();
         	}
         }
         fillData();

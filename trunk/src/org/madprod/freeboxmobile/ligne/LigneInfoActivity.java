@@ -47,7 +47,6 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
 	private static String DSLAM_Info = "";
 	private static String DSLAM_Date = "";
 	private static boolean DSLAM_ok = false;
-	private static Cursor mTicketCursor;
 	private static Object[] DSLAM_Histo = null;
 	private static String lineType = "";
 
@@ -121,6 +120,7 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
 				}
 			});
 		d.show();
+		c.close();
 		mDb.close();
     }
 
@@ -130,6 +130,7 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
     	String text1_2;
     	String text2;
     	String text3;
+    	Cursor mTicketCursor;
 
     	SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 //        TextView t0_0 = (TextView) findViewById(R.id.infoLigne0_0);
@@ -271,6 +272,7 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
 		    		calendar.add(Calendar.DATE, -1);
 		    	}
 	        }
+	        mTicketCursor.close();
 	        mDb.close();
         }
         else

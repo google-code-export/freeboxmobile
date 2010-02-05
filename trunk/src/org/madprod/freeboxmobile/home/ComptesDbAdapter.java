@@ -324,7 +324,9 @@ public class ComptesDbAdapter implements Constants
                     null, null, null, null);
 	    if ((mCursor != null) && (mCursor.moveToFirst()))
 	    {
-	        return mCursor.getLong(mCursor.getColumnIndexOrThrow(KEY_ROWID));
+	    	Long ret = mCursor.getLong(mCursor.getColumnIndexOrThrow(KEY_ROWID));
+	    	mCursor.close();
+	        return ret;
 	    }
 	    else
 	    {
