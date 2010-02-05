@@ -395,8 +395,10 @@ public class ProgrammationActivity extends Activity {
         String resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequestISR(url, param, true, true));
         if (resultat != null) {
 			FBMHttpConnection.FBMLog("telechargerEtParser not null");
-	        int posChaines = resultat.indexOf("var serv_a = [{");
-	        int posDisques = resultat.indexOf("var disk_a = [{");
+    		FBMHttpConnection.FBMLog(resultat);
+    		
+	        int posChaines = resultat.indexOf("var serv_a = [");
+	        int posDisques = resultat.indexOf("var disk_a = [");
 	        
 	        if (posChaines > 0 && posDisques > 0) {
 	    		FBMHttpConnection.FBMLog("telechargerEtParser posChaines > 0 && posDisques > 0");
@@ -417,7 +419,7 @@ public class ProgrammationActivity extends Activity {
 	        	// Deux boitiers HD ?
 /*	        	<a href="?id=711787&idt=6f2499badcd4b1be&detail=0&box=0"><strong>Boitier HD n°1</strong></a>&nbsp;&nbsp;
 	        	<a href="?id=711787&idt=6f2499badcd4b1be&detail=0&box=1">Boitier HD n°2</a>&nbsp;&nbsp;*/
-	        	int posDebut = resultat.indexOf("Boitier HD n°1");
+	        	int posDebut = resultat.indexOf("Boitier HD");
 	        	if (posDebut > 0) {
 	        		nbEcrans++;
 	        		int d, f, i = 0;
@@ -447,9 +449,11 @@ public class ProgrammationActivity extends Activity {
 	        	
 	        	return true;
 	        }
+	        else {
+	    		FBMHttpConnection.FBMLog("telechargerEtParser impossible de trouver le json dans le html");
+	        }
         }
-        if (resultat != null)
-    		FBMHttpConnection.FBMLog(resultat);
+
 		FBMHttpConnection.FBMLog("telechargerEtParser null");
         FBMHttpConnection.FBMLog("Impossible de télécharger le json des chaines/disques");
     	Log.d(TAG, "Impossible de télécharger le json des chaines/disques");
