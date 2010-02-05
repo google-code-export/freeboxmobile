@@ -329,13 +329,11 @@ public class FBMHttpConnection implements Constants
 				if (response.length > 0)
 				{
 					FBMLog("XMLRPC : "+response[0]);
-					Log.d(DEBUGTAG, "XMLRPC : "+response[0]);
 					consoleValues.put(KEY_DSLAM,(String) response[0]);
 				}
 				else
 				{
 					consoleValues.put(KEY_DSLAM,"");
-					Log.d(DEBUGTAG, "DSLAM pas trouvé");
 					FBMLog("DSLAM pas trouvé");
 				}
 			}
@@ -611,6 +609,25 @@ public class FBMHttpConnection implements Constants
 		return (null);
 	}
 
+	static String getCharset(String temp, String defaultCharset)
+	{
+		String charset = defaultCharset;
+		if (temp != null)
+		{
+			int pos = temp.indexOf("charset=");
+			if (pos != -1)
+			{
+				charset = temp.substring(pos+8);
+				FBMLog("CHARSET : "+charset);
+			}
+			else
+				FBMLog("CHARSET : not found - keep default "+charset);
+		}
+		else
+			FBMLog("CHARSET : "+charset);
+		return charset;
+	}
+
 	/**
 	 * getAuthRequest : perform a GET on an URL with p parameters
 	 * do not provide id or idt in URL
@@ -624,7 +641,7 @@ public class FBMHttpConnection implements Constants
 	{
 		int c;
 		HttpURLConnection h = null;
-		String charset = null;
+		String charset = "ISO8859_1";
 
 		c = checkConnected(CONNECT_CONNECTED);
 		try
@@ -638,12 +655,18 @@ public class FBMHttpConnection implements Constants
 				else
 					h = prepareConnection(url+"?"+makeStringForPost(p, auth, charset), "HEAD");
 				h.setDoInput(true);
-				if (h.getContentType() != null)
+				charset = getCharset(h.getContentType(), charset);
+/*				if (h.getContentType() != null)
 				{
 					String temp = h.getContentType();
-					charset = temp.substring(temp.indexOf("charset=")+8);
+					int pos = temp.indexOf("charset=");
+					if (pos != -1)
+					{
+						charset = temp.substring(pos+8);
+					}
 					FBMLog("GETISR : CHARSET : "+charset);
 				}
+*/
 				FBMLog("HEADERS : "+h.getHeaderFields());
 				FBMLog("RESPONSE : "+h.getResponseCode()+" "+h.getResponseMessage());
 				if (h.getHeaderFields().get("location") != null)
@@ -680,12 +703,15 @@ public class FBMHttpConnection implements Constants
 			if ((c == CONNECT_CONNECTED) && (retour == true))
 			{
 				FBMLog("GETISR : LECTURE DONNEES - TYPE : "+h.getContentType());
+				charset = getCharset(h.getContentType(), charset);
+/*
 				if (h.getContentType() != null)
 				{
 					String temp = h.getContentType();
 					charset = temp.substring(temp.indexOf("charset=")+8);
 					FBMLog("GETISR : CHARSET : "+charset);
 				}
+*/
 				return (new InputStreamReader(h.getInputStream(), charset));
 			}
 		}
@@ -722,12 +748,14 @@ public class FBMHttpConnection implements Constants
 				if (retour)
 					h.setDoInput(true);
 				OutputStreamWriter o = new OutputStreamWriter(h.getOutputStream());
-				if (h.getContentType() != null)
+				pagesCharset = getCharset(h.getContentType(), pagesCharset);
+/*				if (h.getContentType() != null)
 				{
 					String temp = h.getContentType();
 					pagesCharset = temp.substring(temp.indexOf("charset=")+8);
 					FBMLog("POST : CHARSET : "+pagesCharset);
 				}
+*/
 				o.write(makeStringForPost(p, false, pagesCharset));
 				o.flush();
 				o.close();
@@ -770,13 +798,15 @@ public class FBMHttpConnection implements Constants
 			{
 				FBMLog("POST : LECTURE DONNEES");
 				Log.d(DEBUGTAG, "POST : LECTURE DONNEES");
-				if (h.getContentType() != null)
+				pagesCharset = getCharset(h.getContentType(), pagesCharset);
+/*				if (h.getContentType() != null)
 				{
 					String temp = h.getContentType();
 					int pos = temp.indexOf("charset=");
 					pagesCharset = temp.substring(pos+8);
 					FBMLog("POST : CHARSET : "+pagesCharset);
 				}
+*/
 				return (new InputStreamReader(h.getInputStream(), pagesCharset));
 			}
 		}
