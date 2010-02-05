@@ -12,24 +12,27 @@
 		<activity android:theme="@android:style/Theme.Light.NoTitleBar" android:name=".home.ComptesActivity"></activity>
 		<activity android:theme="@android:style/Theme.Light" android:name=".home.ComptesEditActivity"></activity>
 		<activity android:theme="@android:style/Theme.Light" android:name=".home.SendlogActivity"></activity>
-		
 		<activity android:theme="@android:style/Theme.Light" android:name=".fax.FaxActivity"></activity>
 		<activity android:theme="@android:style/Theme.Light" android:name=".fax.FileChooserActivity"></activity>
-		
-    	<activity android:name=".Config"></activity><activity android:theme="@android:style/Theme.Light.NoTitleBar" android:name=".ligne.LigneInfoActivity"></activity>
+    	<activity android:name=".Config"></activity>
+    	<activity android:theme="@android:style/Theme.Light.NoTitleBar" android:name=".ligne.LigneInfoActivity"></activity>
 		<activity android:theme="@android:style/Theme.Light" android:name=".mvv.MevoActivity"></activity>
+		<activity android:theme="@android:style/Theme.Light" android:name=".pvr.EnregistrementsActivity"></activity>
+		<activity android:theme="@android:style/Theme.Light" android:name=".pvr.ProgrammationActivity"></activity>
+		<activity android:theme="@android:style/Theme.Light" android:name=".pvr.EnregistrementActivity"></activity>
+
 		<service android:name=".mvv.MevoSync"></service>
+    	<service android:name=".ligne.InfoAdslCheck"></service>
+
 		<receiver android:name=".OnBootReceiver">
 			<intent-filter>
 				<action android:name="android.intent.action.BOOT_COMPLETED" />
 			</intent-filter>
 		</receiver>
-		<receiver android:name=".mvv.OnMevoAlarmReceiver">
-		</receiver>
-		<activity android:theme="@android:style/Theme.Light" android:name=".pvr.EnregistrementsActivity"></activity>
-		<activity android:theme="@android:style/Theme.Light" android:name=".pvr.ProgrammationActivity"></activity>
-		<activity android:theme="@android:style/Theme.Light" android:name=".pvr.EnregistrementActivity"></activity>
+		<receiver android:name=".mvv.OnMevoAlarmReceiver"></receiver>
+		<receiver android:name=".ligne.OnInfoAdslAlarmReceiver"></receiver>
 	</application>
+
 	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
 	<uses-permission android:name="android.permission.READ_CONTACTS"></uses-permission>
 	<uses-permission android:name="android.permission.CALL_PHONE"></uses-permission>

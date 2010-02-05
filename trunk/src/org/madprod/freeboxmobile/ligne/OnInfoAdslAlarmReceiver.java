@@ -2,7 +2,6 @@ package org.madprod.freeboxmobile.ligne;
 
 import org.madprod.freeboxmobile.Constants;
 import org.madprod.freeboxmobile.WakefullIntentService;
-import org.madprod.freeboxmobile.mvv.MevoSync;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -21,7 +20,7 @@ public class OnInfoAdslAlarmReceiver extends BroadcastReceiver implements Consta
 	@Override
 	public void onReceive(Context context, Intent intent)
 	{
-		Log.i(DEBUGTAG,"onReceive InfoAdsl Alarm");
+		Log.d(DEBUGTAG,"onReceive InfoAdsl Alarm");
 		WakefullIntentService.acquireStaticLock(context);
 		context.startService(new Intent(context, InfoAdslCheck.class));
 	}

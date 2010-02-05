@@ -1,6 +1,7 @@
 package org.madprod.freeboxmobile.home;
 
 import java.io.File;
+import java.util.Date;
 
 import org.madprod.freeboxmobile.Config;
 import org.madprod.freeboxmobile.FBMHttpConnection;
@@ -47,7 +48,7 @@ public class HomeActivity extends Activity implements HomeConstants
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
-		FBMHttpConnection.FBMLog("MainActivity Create "+getString(R.string.app_version));
+		FBMHttpConnection.FBMLog("MainActivity Create "+getString(R.string.app_version)+"\n"+new Date().toString());
         super.onCreate(savedInstanceState);
 
 		// On teste si on est dans le cas d'un premier lancement pour cette version de l'appli
@@ -61,17 +62,15 @@ public class HomeActivity extends Activity implements HomeConstants
 */
 		
 		// Si on est sur un premier lancement de la nouvelle version :
-//		if (true)
 		if (!mgr.getString(KEY_SPLASH, "0").equals(getString(R.string.app_version)))
 		{
-	        Log.d(DEBUGTAG,Environment.getExternalStorageDirectory().toString()+"/freeboxmobile");
 			Editor editor = mgr.edit();
 			editor.putString(KEY_SPLASH, getString(R.string.app_version));
 			editor.commit();
 			displayAbout();
 			File log = new File(Environment.getExternalStorageDirectory()+DIR_FBM, file_log);
 			log.delete();
-			
+
 			// On reinstalle les timers de notif si nécessaire
 			String ms = mgr.getString(KEY_MEVO_PREFS_FREQ, "0");
 			if (!ms.equals("0"))
@@ -380,7 +379,7 @@ public class HomeActivity extends Activity implements HomeConstants
 			"Site web :\nhttp://freeboxmobile.googlecode.com\n\n"+
 			"Contact :\nfreeboxmobile@free.fr\n\n"+
 			"Version : "+getString(R.string.app_version)+"\n\n"+
-			"Facebook :\nhttp://www.facebook.com/search/?q=freeboxmobile\n\n"+
+			"Facebook (devenez fan !) :\nhttp://www.facebook.com/search/?q=freeboxmobile\n\n"+
 			"Auteurs :\n"+
 			"- Olivier Rosello : Architecture / Réseau / Home / Info ADSL / Téléphone\n"+
 			"- Benoit Duffez : Magnétosocope\n\n"+
