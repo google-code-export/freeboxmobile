@@ -146,7 +146,7 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
         	text1_1 += "("+DSLAM_Info+") ";
         }
         text1_1 += "situé à "+mgr.getString(KEY_LINELENGTH, "0")+" mètres de votre Freebox.";
-        
+
         if (lineType.equals("1"))
         {
 	        text1_2 = "\tActuellement ("+DSLAM_Date+") les équipements dont vous dépendez ("+mgr.getString(KEY_DSLAM, "")+") ";
