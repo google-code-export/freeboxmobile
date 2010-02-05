@@ -11,6 +11,7 @@ Ici se trouvent des liens vers les articles qui parlent de !FreeboxMobile
  * [http://www.mobifrance.com/news/2010-02-02/id16079/Nouvelle-version-de-Freebox-Mobile-pour-Android-disponible/ MobiFrance]
  * [http://www.universfreebox.com/article10247.html Univers Freebox]
  * [http://www.freenews.fr/spip.php?article7615 Freenews]
+ * [http://www.webdevonlinux.fr/2010/02/freebox-mobile-passe-en-version-0-2/ WebDevOnLinux]
 
 == Janvier 2010 ==
  * [http://www.pcworld.fr/2010/01/04/high-tech/telephonie-voip/freebox-mobile-gerer-son-compte-depuis-mobile-android-est-possible/467241/ PCWorld]
