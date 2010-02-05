@@ -19,7 +19,7 @@ Dans ce cas, à partir de la page d'accueil de l'application, effectuez l'opéra
 A priori c'est bon !
 
 == Ma ligne vient de changer de NRA pour passer en NRA-ZO et la rubrique "Info ADSL" m'indique toujours mes anciennes informations ==
-Effectuez la même opération que ci-dessus.
+Effectuez la même opération [http://code.google.com/p/freeboxmobile/wiki/FAQ#Je_viens_d'être_dégroupé_et_la_rubrique_"Info_ADSL& que ci-dessus].
 
 = Sécurité et confidentialité =
 == Est-ce que Freebox Mobile communique mes identifiants Free ? ==
