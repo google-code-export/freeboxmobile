@@ -104,7 +104,7 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 			BufferedWriter out = new BufferedWriter (new FileWriter(log.getAbsolutePath(), true));
 			out.write("mevosync_end: ");
 			out.write(new Date().toString());
-			out.write("\n\n");
+			out.write("\n");
 			out.close();
 		}
 		catch (IOException e)

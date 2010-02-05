@@ -16,6 +16,7 @@ import org.xmlrpc.android.XMLRPCClient;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.NotificationManager;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -73,6 +74,8 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
         	new UpdateCompte().execute(new Payload(mgr.getString(KEY_NRA, "").equals(""), mgr.getString(KEY_TITLE, ""), mgr.getString(KEY_USER, ""), mgr.getString(KEY_PASSWORD, ""), mgr.getString(KEY_NRA, "")));
         else
         	refreshView();
+        NotificationManager mNotif = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        mNotif.cancel(NOTIF_INFOADSL);
     }
 
 	@Override

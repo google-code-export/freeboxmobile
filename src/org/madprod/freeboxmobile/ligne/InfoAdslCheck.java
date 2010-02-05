@@ -22,6 +22,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Environment;
 import android.os.SystemClock;
 import android.util.Log;
@@ -66,6 +67,7 @@ public class InfoAdslCheck extends WakefullIntentService implements Constants
 		{
 			SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 			String DSLAM = mgr.getString(KEY_DSLAM, "");
+			String LastDSLAMCheck = mgr.getString(KEY_LAST_DSLAM_CHECK, "");
 			if (!DSLAM.equals(""))
 			{
 				URI uri = URI.create(FBMHttpConnection.frimousseUrl);
@@ -73,7 +75,22 @@ public class InfoAdslCheck extends WakefullIntentService implements Constants
 				boolean DSLAM_ok = (Boolean) client.call("getDSLAMStatus", DSLAM);
 				if (!DSLAM_ok)
 				{
-					_initNotif();
+					if (!LastDSLAMCheck.equals("0"))
+					{
+						_initNotif();
+						Editor editor = mgr.edit();
+						editor.putString(KEY_LAST_DSLAM_CHECK, "0");
+						editor.commit();
+					}
+				}
+				else
+				{
+					if (!LastDSLAMCheck.equals("1"))
+					{
+						Editor editor = mgr.edit();
+						editor.putString(KEY_LAST_DSLAM_CHECK, "1");
+						editor.commit();
+					}
 				}
 			}
 		}
@@ -88,7 +105,7 @@ public class InfoAdslCheck extends WakefullIntentService implements Constants
 			BufferedWriter out = new BufferedWriter (new FileWriter(log.getAbsolutePath(), true));
 			out.write("infoadsl_end: ");
 			out.write(new Date().toString());
-			out.write("\n\n");
+			out.write("\n");
 			out.close();
 		}
 		catch (IOException e)
@@ -124,12 +141,6 @@ public class InfoAdslCheck extends WakefullIntentService implements Constants
 		notification.defaults |= Notification.DEFAULT_SOUND;
 		mNotificationManager.notify(NOTIF_INFOADSL, notification);
 	}
-
-	public static void cancelNotif(int id)
-	{
-		if (mNotificationManager != null)
-			mNotificationManager.cancel(id);
-	}
 	
 	/**
 	 * Change timer to ms value (or cancel if ms == 0)
@@ -144,7 +155,7 @@ public class InfoAdslCheck extends WakefullIntentService implements Constants
 		if (ms != 0)
 		{
 			amgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), ms, pi);
-			Log.i(DEBUGTAG, "InfoAdslTimer  changed to "+ms);
+			Log.i(DEBUGTAG, "InfoAdslTimer changed to "+ms);
 		}
 		else
 		{
