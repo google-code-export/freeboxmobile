@@ -456,11 +456,7 @@ public class ProgrammationActivity extends Activity {
 	        }
         }
 
-        if (resultat != null)
-        {
-        	FBMHttpConnection.FBMLog("telechargerEtParser page : "+resultat);
-        }
-        else
+        if (resultat == null)
         	FBMHttpConnection.FBMLog("telechargerEtParser null");
         FBMHttpConnection.FBMLog("Impossible de télécharger le json des chaines/disques");
     	return false;
