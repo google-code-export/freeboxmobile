@@ -1,5 +1,6 @@
 package org.madprod.freeboxmobile.pvr;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +13,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,8 +28,10 @@ import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.madprod.freeboxmobile.Constants;
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
+import org.madprod.freeboxmobile.mvv.MevoDbAdapter;
 
 /**
  * Activité Enregistrements
@@ -59,6 +64,8 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 	static final int RESULT_PROG_OK = 2;
 	static final int RESULT_PROG_NOK = 3;
 	
+	static final String DIR_PVR = "/pvr/";
+	
 	ProgressDialog progressDialog = null;
 
     /** Called when the activity is first created. */
@@ -68,6 +75,16 @@ public class EnregistrementsActivity extends ExpandableListActivity {
         setContentView(R.layout.pvr);
         FBMHttpConnection.initVars(this, null);
         FBMHttpConnection.FBMLog("ENREGISTREMENTSACTIVITY START");
+
+        File old_db = getDatabasePath("freeboxmobile"+FBMHttpConnection.getIdentifiant());
+        if (old_db.exists()) {
+        	FBMHttpConnection.FBMLog("PVR: Ancien nom de bdd sqlite, renommage en pvr_");
+        	if (old_db.renameTo(getDatabasePath(EnregistrementsDbAdapter.DATABASE_NAME))) {
+        		FBMHttpConnection.FBMLog("OK");
+        	} else {
+        		FBMHttpConnection.FBMLog("KO");
+        	}
+        }
 
 		listeEnregistrements = new ListeEnregistrements();
         succesChargement = false;
