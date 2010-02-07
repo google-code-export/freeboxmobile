@@ -9,6 +9,7 @@ import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.fax.FaxActivity;
 import org.madprod.freeboxmobile.ligne.InfoAdslCheck;
 import org.madprod.freeboxmobile.mvv.MevoSync;
+import org.madprod.freeboxmobile.pvr.EnregistrementsActivity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -233,6 +234,7 @@ public class HomeActivity extends Activity implements HomeConstants
     protected void onResume()
     {
 		FBMHttpConnection.FBMLog("MainActivity Resume");
+		EnregistrementsActivity.reset();
     	super.onResume();
     }
     
