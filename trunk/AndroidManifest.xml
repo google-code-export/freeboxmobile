@@ -12,7 +12,13 @@
 		<activity android:theme="@android:style/Theme.Light.NoTitleBar" android:name=".home.ComptesActivity"></activity>
 		<activity android:theme="@android:style/Theme.Light" android:name=".home.ComptesEditActivity"></activity>
 		<activity android:theme="@android:style/Theme.Light" android:name=".home.SendlogActivity"></activity>
-		<activity android:theme="@android:style/Theme.Light" android:name=".fax.FaxActivity"></activity>
+		<activity android:theme="@android:style/Theme.Light" android:name=".fax.FaxActivity">
+			<intent-filter android:label="Fax">
+				<action android:name="android.intent.action.SEND"></action>
+     			<category android:name="android.intent.category.DEFAULT" />
+     			<data android:mimeType="application/pdf" />
+			</intent-filter>
+		</activity>
 		<activity android:theme="@android:style/Theme.Light" android:name=".fax.FileChooserActivity"></activity>
     	<activity android:name=".Config"></activity>
     	<activity android:theme="@android:style/Theme.Light.NoTitleBar" android:name=".ligne.LigneInfoActivity"></activity>

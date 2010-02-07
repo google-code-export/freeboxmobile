@@ -26,7 +26,6 @@ import android.widget.AdapterView.OnItemClickListener;
  * @author Ludovic Meurillon
  */
 public class FileChooserActivity extends Activity {
-	public static final int PICK_FILE_REQUEST = 1;
 
 	private File currentDir = null;
 	private ArrayAdapter<String> fileNameAdapter = null;
@@ -78,7 +77,7 @@ public class FileChooserActivity extends Activity {
 			final String[] fileNames = currentDir.list(new FilenameFilter() {
 				@Override
 				public boolean accept(File parent, String filename) {
-					return filename.endsWith(".pdf");
+					return filename.endsWith(".pdf") || filename.endsWith(".jpg") || filename.endsWith(".jpeg");
 				}
 			});
 			
@@ -159,7 +158,7 @@ public class FileChooserActivity extends Activity {
 				refreshFileNames();
 			} else {
 				//Un fichier a ete selectionne : fin de l'activite
-				this.setResult(1, new Intent(Intent.ACTION_PICK, Uri.fromFile(clickedFile)));
+				this.setResult(Activity.RESULT_OK, new Intent(Intent.ACTION_PICK, Uri.fromFile(clickedFile)));
 				this.finish();
 			}
 		}

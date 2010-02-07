@@ -27,6 +27,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.util.Log;
+import android.webkit.MimeTypeMap;
  
 /**
 *
@@ -938,8 +939,6 @@ public class FBMHttpConnection implements Constants
 	}
 	
 
-	
-	
 	/**
 	 * Post d'un fichier en multipart
 	 * 
@@ -982,6 +981,7 @@ public class FBMHttpConnection implements Constants
 	
 			final DataOutputStream ds = new DataOutputStream(conn.getOutputStream());
 			final FileInputStream fStream = new FileInputStream(fileToPost);
+			final long fileLength = fileToPost.length();
 			final int bufferSize = 1024;
 			final byte[] buffer = new byte[bufferSize];
 			
@@ -993,11 +993,25 @@ public class FBMHttpConnection implements Constants
 			}
 	
 			ds.writeBytes("Content-Disposition: form-data; name=\"document\"; filename=\""+ fileToPost.getAbsolutePath() + "\"" + END);
-			ds.writeBytes("Content-Type : application/pdf"+END+END);
+			final String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileToPost.getName());
+			ds.writeBytes("Content-Type : "+mimeType+END+END);
 			
 			int length = -1;
+			float writtenBytes = 0;
+			
+			//Calcul de la progression
+			//int lastSendedValue = 0;
+			//int minStep = 5;
+			
 			while ((length = fStream.read(buffer)) != -1) {
 				ds.write(buffer, 0, length);
+				writtenBytes +=length;
+				
+				/* Calcul de la progression
+				int progress = (int)(((float)writtenBytes/(float)fileLength)*100);
+				if(progress >= lastSendedValue+minStep || progress==100){
+					lastSendedValue = progress;
+				}*/
 			}
 			
 			ds.writeBytes(END);
@@ -1010,7 +1024,7 @@ public class FBMHttpConnection implements Constants
 	
 			//Test du code de retour
 			if (conn.getResponseCode() != expectedHttpStatus){
-				Log.d(DEBUGTAG, "Mauvais code Http retourné lors du post multipart : "+conn.getResponseCode()+" au lieu de "+expectedHttpStatus);
+				Log.e(DEBUGTAG, "Mauvais code Http retourné lors du post multipart : "+conn.getResponseCode()+" au lieu de "+expectedHttpStatus);
 				return null;
 			}
 			
@@ -1022,8 +1036,11 @@ public class FBMHttpConnection implements Constants
 			while ((leng = is.read(data)) != -1) {
 				b.append(new String(data, 0, leng));
 			}
-			return b.toString();
+			final String result = b.toString();
+			FBMLog("Reponse FAX lue : "+result);
+			return result;
 		}
+		Log.e(FBMHttpConnection.DEBUGTAG, "Connexion impossible pour faxer le fichier "+fileToPost.getName());
 		return null;
 	}
 }
