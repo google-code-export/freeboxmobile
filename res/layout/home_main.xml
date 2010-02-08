@@ -4,7 +4,7 @@
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical" android:id="@+id/LinearLayout01">
+	android:orientation="vertical" android:id="@+id/LinearLayout01" android:background="@drawable/freebox_big_claire" android:padding="10dip">
 	
 	
 <ImageView
@@ -45,7 +45,7 @@
 <Button android:layout_width="wrap_content" android:layout_weight="1" android:layout_height="fill_parent" android:width="1.0dp" android:id="@+id/fax" android:text="@string/buttonFax" android:clickable="true" android:focusable="true" android:textSize="19dip"></Button>
 
 </LinearLayout><LinearLayout android:layout_height="wrap_content" android:orientation="horizontal" android:layout_width="fill_parent" android:id="@+id/LinearLayout05">
-<Button android:layout_width="wrap_content" android:layout_weight="1" android:layout_height="fill_parent" android:width="1.0dp" android:textSize="19dip" android:id="@+id/ligne" android:text="@string/buttonLigne"></Button><Button android:layout_width="wrap_content" android:layout_weight="1" android:layout_height="fill_parent" android:width="1.0dp" android:id="@+id/actu" android:text="@string/buttonActu" android:textColor="#888888" android:clickable="false" android:focusable="false" android:textSize="19dip"></Button>
+<Button android:layout_width="wrap_content" android:layout_weight="1" android:layout_height="fill_parent" android:width="1.0dp" android:textSize="19dip" android:id="@+id/ligne" android:text="@string/buttonLigne"></Button><Button android:layout_width="wrap_content" android:layout_weight="1" android:layout_height="fill_parent" android:width="1.0dp" android:id="@+id/actu" android:text="@string/buttonActu" android:textColor="#888888" android:clickable="false" android:focusable="false" android:textSize="17dip"></Button>
 </LinearLayout>
 
 
