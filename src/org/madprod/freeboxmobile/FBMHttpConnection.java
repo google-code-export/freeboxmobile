@@ -38,7 +38,7 @@ import android.webkit.MimeTypeMap;
 
 public class FBMHttpConnection implements Constants
 {
-	private static String USER_AGENT = "FreeboxMobile (Linux; U; Android; fr-fr;)";
+	public static String USER_AGENT = "FreeboxMobile (Linux; U; Android; fr-fr;)";
 
 	private static String title = null;
 	private static String login = null;
