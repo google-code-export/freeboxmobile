@@ -62,6 +62,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
     static Activity mevoActivity;
     AudioManager mAudioManager;
     Cursor mCursor;
+    int audioManagerModeAtStart;
 
     Button speakerButton;
     static Button callbackButton;
@@ -83,6 +84,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
         speakerButton = (Button) findViewById(R.id.MevoButtonSpeaker);
         callbackButton = (Button) findViewById(R.id.MevoButtonCallback);
         deleteButton = (Button) findViewById(R.id.MevoButtonDelete);
+        audioManagerModeAtStart = mAudioManager.getMode(); 
 		if (mAudioManager.getMode() != AudioManager.MODE_IN_CALL)
 			speakerButton.setTextColor(Color.GREEN);
 		else
@@ -172,9 +174,10 @@ public class MevoActivity extends ListActivity implements MevoConstants
     @Override
 	public void onStop()
 	{
-		super.onStop();
 		this.mAdapter.stop();
 		MevoSync.setUpdateListener(null);
+		mAudioManager.setMode(audioManagerModeAtStart);
+		super.onStop();
 	}
 
     @Override
@@ -504,6 +507,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
         			((Activity) mContext).setTitle(mContext.getString(R.string.app_name)+" "+mContext.getString(R.string.mevo_title_mevo)+" ("+nb+") - "+FBMHttpConnection.getTitle());
         		break;
     		}
+    		FBMHttpConnection.FBMLog("Mevo nombre msgs : "+mDbHelper.getNbMsg());
     		return nb;
     	}
 
@@ -743,6 +747,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
 					play_current_mp.start();
 					this.setMessageSeekBar(0, play_current_mp.getCurrentPosition(), play_current_mp.getDuration());
 					this.messageTimer.schedule(messageUpdateTask = new UpdateTimeTask(), 250, 250);
+					updateMessageCount();
 					MevoSync.cancelNotif(NOTIF_MEVO);
 				}
 				catch (IllegalStateException e)
