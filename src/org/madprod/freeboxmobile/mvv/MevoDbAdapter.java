@@ -212,11 +212,14 @@ public class MevoDbAdapter implements MevoConstants
 	 */
 	public long getNbUnreadMsg()
 	{
-		long id;
-		id = this.mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE + " WHERE status = '"+MSG_STATUS_UNLISTENED+"' AND "+KEY_PRESENCE+" > '0'").simpleQueryForLong();
-		return id;
+		return mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE + " WHERE status = '"+MSG_STATUS_UNLISTENED+"' AND "+KEY_PRESENCE+" > '0'").simpleQueryForLong();
 	}
-	
+
+	public long getNbMsg()
+	{
+		return mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE + " WHERE "+KEY_PRESENCE+" > '0'").simpleQueryForLong();
+	}
+
 	/**
 	 * Update the message using the details provided. The message to be updated is
 	 * specified using its name
