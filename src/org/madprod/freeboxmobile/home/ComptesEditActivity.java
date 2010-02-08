@@ -26,6 +26,7 @@ public class ComptesEditActivity extends Activity implements Constants
     private EditText mUserText;
     private EditText mPasswordText;
     private Long mRowId;
+    private ComptesDbAdapter mDbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -33,6 +34,9 @@ public class ComptesEditActivity extends Activity implements Constants
         super.onCreate(savedInstanceState);
         
         FBMHttpConnection.initVars(ComptesEditActivity.this, null);
+
+    	mDbHelper = new ComptesDbAdapter(ComptesEditActivity.this);
+    	mDbHelper.open();
 
         setContentView(R.layout.comptes_edit);
         setTitle(getString(R.string.app_name)+" - Edition Compte Freebox");
@@ -79,8 +83,6 @@ public class ComptesEditActivity extends Activity implements Constants
 
                 if (!title.equals("") && !user.equals("") && !password.equals(""))
                 {
-                	ComptesDbAdapter mDbHelper = new ComptesDbAdapter(ComptesEditActivity.this);
-                	mDbHelper.open();
                 	if (mDbHelper.isValuePresent(ComptesDbAdapter.KEY_TITLE, title) &&
                 		!mDbHelper.isMatch(mRowId, ComptesDbAdapter.KEY_TITLE, title))
                 	{
@@ -98,7 +100,6 @@ public class ComptesEditActivity extends Activity implements Constants
                 		ManageCompte.activity = ComptesEditActivity.this;
 		                new ManageCompte().execute(new ComptePayload(title, user, password, mRowId, false));
                 	}
-                	mDbHelper.close();
                 }
                 else
                 {
@@ -123,16 +124,11 @@ public class ComptesEditActivity extends Activity implements Constants
     {
         if (mRowId != null)
         {
-        	ComptesDbAdapter mDbHelper = new ComptesDbAdapter(this);
-        	mDbHelper.open();
             Cursor compte = mDbHelper.fetchCompte(mRowId);
-//            startManagingCursor(compte);
             mTitleText.setText(compte.getString(compte.getColumnIndexOrThrow(ComptesDbAdapter.KEY_TITLE)));
             mUserText.setText(compte.getString(compte.getColumnIndexOrThrow(ComptesDbAdapter.KEY_USER)));
             mPasswordText.setText(compte.getString(compte.getColumnIndexOrThrow(ComptesDbAdapter.KEY_PASSWORD)));
-//            stopManagingCursor(compte);
             compte.close();
-            mDbHelper.close();
         }
     }
     
@@ -170,6 +166,7 @@ public class ComptesEditActivity extends Activity implements Constants
     protected void onDestroy()
     {
     	FBMHttpConnection.closeDisplay();
+    	mDbHelper.close();
         super.onDestroy();
     }
 }
