@@ -13,8 +13,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,10 +26,8 @@ import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-import org.madprod.freeboxmobile.Constants;
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
-import org.madprod.freeboxmobile.mvv.MevoDbAdapter;
 
 /**
  * Activité Enregistrements
@@ -92,8 +88,9 @@ public class EnregistrementsActivity extends ExpandableListActivity {
         	curId = FBMHttpConnection.getIdentifiant();
         	reset();
         }
-        else
+        else {
         	listeEnregistrements = new ListeEnregistrements();
+        }
         succesChargement = false;
         enrAct = this;
         
@@ -174,13 +171,14 @@ public class EnregistrementsActivity extends ExpandableListActivity {
         }
     	
         protected Boolean doInBackground(Void... arg0) {
-        	if (listeEnregistrements != null)
+        	if (listeEnregistrements != null) {
         		listeEnregistrements.vider();
-        	else
+        	} else {
         		listeEnregistrements = new ListeEnregistrements();
+        	}
             
         	if (updateFromConsole) {
-        		return doUpdateEnregistrements();
+        		return updateEnregistrementsFromConsole();
         	}
         	
 			return Boolean.TRUE;
@@ -208,7 +206,7 @@ public class EnregistrementsActivity extends ExpandableListActivity {
      * Télécharge la page HTML de l'interface, et stocke la liste des enregistrements dans
      * la base sqlite (via la fonction recupererEnregistrements)
      */
-    private boolean doUpdateEnregistrements() {		
+    private boolean updateEnregistrementsFromConsole() {		
 		String url;
 		
         // Recup if tv
