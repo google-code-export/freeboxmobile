@@ -56,7 +56,7 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
         super.onCreate(savedInstanceState);
 
         FBMHttpConnection.initVars(this, null);
-        FBMHttpConnection.FBMLog("LINEINFO START");
+        FBMHttpConnection.FBMLog("LINEINFO CREATE");
         
         setContentView(R.layout.ligne_info);
         setTitle(getString(R.string.app_name)+" - Info Ligne ADSL Freebox");
