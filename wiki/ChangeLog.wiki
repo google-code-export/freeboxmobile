@@ -72,6 +72,7 @@ Release : 17
  * INFO ADSL : Fonctionne maintenant pour les non dégroupés
  * SERVICES : Alerte en cas de ligne ADSL coupée
  * PVR : accessible en Freebox Optique
+ * PVR : support de plusieurs boitiers
 
 == 0.20rc7 ==
 Sortie le 01/02/2010<br>
