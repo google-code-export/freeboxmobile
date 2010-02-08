@@ -18,7 +18,6 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -420,30 +419,31 @@ public class ProgrammationActivity extends Activity {
 /*	        	<a href="?id=711787&idt=6f2499badcd4b1be&detail=0&box=0"><strong>Boitier HD n°1</strong></a>&nbsp;&nbsp;
 	        	<a href="?id=711787&idt=6f2499badcd4b1be&detail=0&box=1">Boitier HD n°2</a>&nbsp;&nbsp;*/
 	        	int posDebut = resultat.indexOf("Boitier HD");
+        		int d, f, i;
+        		String boitiers;
 	        	if (posDebut > 0) {
 	        		nbEcrans++;
-	        		int d, f, i = 0;
-	        		String boitiers = resultat.substring(posDebut-40);
+	        		i = 0;
+	        		boitiers = resultat.substring(posDebut);
 	        		mBoitiers = new ArrayList<String>();
 	        		plusieursBoitiersHD = true;
 	        		
 	        		do {
-	        			d = boitiers.indexOf("strong");
-	        			if (d > 0) {
+	        			d = boitiers.indexOf("Boitier HD");
+	        			if (d != -1) {
 	        				mBoitierHD = i;
-	        				d += 7; // strlen("strong>") == 7
+//	        				d += 7; // strlen("strong>") == 7
 	        			}
 	        			else {
-		        			d = boitiers.indexOf("&box=") + 8; // strlen("&box=*">") == 8
-		        			if (d <= 0) {
+//		        			d = boitiers.indexOf("&box=") + 8; // strlen("&box=*">") == 8
+//		        			if (d <= 0) {
 		        				break;
-		        			}
+//		        			}
 	        			}
-
 	        			f = d + boitiers.substring(d).indexOf("</");
-	        			
+	        			FBMHttpConnection.FBMLog("TRACE : "+d+" "+f);
+	        			FBMHttpConnection.FBMLog("Boitier "+i+" trouvé : "+boitiers.substring(d, f));
 	        			mBoitiers.add(boitiers.substring(d, f));
-	        			
 	        			boitiers = boitiers.substring(f);
 	        			i++;
 	        		} while (true);
@@ -465,7 +465,8 @@ public class ProgrammationActivity extends Activity {
     	// Suppression du layout de sélection si on n'a qu'un boitier HD
 		if (plusieursBoitiersHD) {
     		boitierHDSpinner.setSelection(mBoitierHD);
-    		
+    		remplirSpinner(R.id.pvrPrgBoitier);
+
     		if (orientationPortrait) {
         		viewFlipper.showPrevious();
         	}
@@ -793,43 +794,55 @@ public class ProgrammationActivity extends Activity {
 		List<String> liste = new ArrayList<String>();
 		int i, size;
 		
-		// Construction de la liste de String à mettre dans le spinner
-		if (id == R.id.pvrPrgChaine) {
-			size = mChaines.size();
-			for (i = 0; i < size; i++) {
-				liste.add(mChaines.get(i).getName());
-			}
-		} else if (id == R.id.pvrPrgDisque) {
-			size = mDisques.size();
-			String disqueName;
-			Disque disque;
-			for (i = 0; i < size; i++) {
-				disque = mDisques.get(i);
-				disqueName = disque.getLabel();
-				disqueName += " (" + disque.getGigaFree() + "/" + disque.getGigaTotal();
-				disqueName += " " + getString(R.string.pvrGioLibres) + ")";
-				liste.add(disqueName);
-			}
-			afficherInfosDisque(0);
-		} else { // R.id.pvrPrgQualite
-			int idChaine = chaineSpinner.getSelectedItemPosition();
-			List<Chaine.Service> services = mChaines.get(idChaine).getServices();
-			size = services.size();
-			String serviceName;
-			for (i = 0; i < size; i++) {
-				if (i == 0 && idChaine == 0) {
-					liste.add(getString(R.string.pvrNonEnregistrable));
-				} else {
-					serviceName = services.get(i).getDesc();
-					if (serviceName.length() == 0) {
-						serviceName = getString(R.string.pvrTxtQualiteParDefaut);
-					}
-					if (services.get(i).getPvrMode() != PVR_MODE.PUBLIC) {
-						serviceName += " *";
-					}
-					liste.add(serviceName);
+		switch (id)
+		{
+			// Construction de la liste de String à mettre dans le spinner
+			case R.id.pvrPrgChaine:
+				size = mChaines.size();
+				for (i = 0; i < size; i++) {
+					liste.add(mChaines.get(i).getName());
 				}
-			}
+				break;
+			case R.id.pvrPrgDisque:
+				size = mDisques.size();
+				String disqueName;
+				Disque disque;
+				for (i = 0; i < size; i++) {
+					disque = mDisques.get(i);
+					disqueName = disque.getLabel();
+					disqueName += " (" + disque.getGigaFree() + "/" + disque.getGigaTotal();
+					disqueName += " " + getString(R.string.pvrGioLibres) + ")";
+					liste.add(disqueName);
+				}
+				afficherInfosDisque(0);
+				break;
+			case R.id.pvrPrgQualite:
+				int idChaine = chaineSpinner.getSelectedItemPosition();
+				List<Chaine.Service> services = mChaines.get(idChaine).getServices();
+				size = services.size();
+				String serviceName;
+				for (i = 0; i < size; i++) {
+					if (i == 0 && idChaine == 0) {
+						liste.add(getString(R.string.pvrNonEnregistrable));
+					} else {
+						serviceName = services.get(i).getDesc();
+						if (serviceName.length() == 0) {
+							serviceName = getString(R.string.pvrTxtQualiteParDefaut);
+						}
+						if (services.get(i).getPvrMode() != PVR_MODE.PUBLIC) {
+							serviceName += " *";
+						}
+						liste.add(serviceName);
+					}
+				}
+			break;
+			case R.id.pvrPrgBoitier:
+				liste = mBoitiers;
+//	    		ArrayAdapter<String> adapter= new ArrayAdapter<String>(
+//	    				this, android.R.layout.simple_spinner_item, mBoitiers);
+//	    		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//	    		boitierHDSpinner.setAdapter(adapter);
+				break;
 		}
 		
 		ArrayAdapter<String> adapter= new ArrayAdapter<String>(
