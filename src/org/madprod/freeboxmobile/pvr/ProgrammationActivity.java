@@ -418,18 +418,12 @@ public class ProgrammationActivity extends Activity {
 	        	getListeDisques(strDisques);
 	        	
 	        	// Deux boitiers HD ?
-
-	        	String resultat2 = "\n"	      
-	    	        +"<div>\n"
-	    		    +"<a href=\"?id=2536851&idt=90da8c3abf8b94b2&detail=0&box=0\"><strong>Boitier HD n°1</strong></a>&nbsp;&nbsp;\n"
-	    		    +"<a href=\"?id=2536851&idt=90da8c3abf8b94b2&detail=0&box=1\">Boitier HD n°2</a>&nbsp;&nbsp;\n"
-	    		  +"<br>\n";
-	        	int posDebut = resultat2.indexOf("Boitier HD");
+	        	int posDebut = resultat.indexOf("Boitier HD");
 	        	if (posDebut > 0) {
 	        		int d, f;
 	        		String boitiers;	        		
 	        		nbEcrans++;
-	        		boitiers = resultat2.substring(posDebut);
+	        		boitiers = resultat.substring(posDebut);
 	        		mBoitiers = new ArrayList<String>();
 	        		plusieursBoitiersHD = true;
 	        		
