@@ -142,7 +142,7 @@ public class ProgrammationActivity extends Activity {
         chainesSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				remplirSpinner(R.id.pvrPrgQualite, (Spinner) arg0);
+				remplirSpinner(R.id.pvrPrgQualite);
 			}
 
 			@Override
@@ -194,8 +194,10 @@ public class ProgrammationActivity extends Activity {
         boitierHDSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				mBoitierHD = position;
-				new TelechargerChainesDisquesTask().execute((Void[])null);
+				if (mBoitierHD != position) {
+					mBoitierHD = position;
+					new TelechargerChainesDisquesTask().execute((Void[])null);
+				}
 			}
 
 			@Override
@@ -416,36 +418,30 @@ public class ProgrammationActivity extends Activity {
 	        	getListeDisques(strDisques);
 	        	
 	        	// Deux boitiers HD ?
-/*	        	<a href="?id=711787&idt=6f2499badcd4b1be&detail=0&box=0"><strong>Boitier HD n°1</strong></a>&nbsp;&nbsp;
-	        	<a href="?id=711787&idt=6f2499badcd4b1be&detail=0&box=1">Boitier HD n°2</a>&nbsp;&nbsp;*/
-	        	int posDebut = resultat.indexOf("Boitier HD");
-        		int d, f, i;
-        		String boitiers;
+
+	        	String resultat2 = "\n"	      
+	    	        +"<div>\n"
+	    		    +"<a href=\"?id=2536851&idt=90da8c3abf8b94b2&detail=0&box=0\"><strong>Boitier HD n°1</strong></a>&nbsp;&nbsp;\n"
+	    		    +"<a href=\"?id=2536851&idt=90da8c3abf8b94b2&detail=0&box=1\">Boitier HD n°2</a>&nbsp;&nbsp;\n"
+	    		  +"<br>\n";
+	        	int posDebut = resultat2.indexOf("Boitier HD");
 	        	if (posDebut > 0) {
+	        		int d, f;
+	        		String boitiers;	        		
 	        		nbEcrans++;
-	        		i = 0;
-	        		boitiers = resultat.substring(posDebut);
+	        		boitiers = resultat2.substring(posDebut);
 	        		mBoitiers = new ArrayList<String>();
 	        		plusieursBoitiersHD = true;
 	        		
 	        		do {
 	        			d = boitiers.indexOf("Boitier HD");
-	        			if (d != -1) {
-	        				mBoitierHD = i;
-//	        				d += 7; // strlen("strong>") == 7
+	        			if (d == -1) {
+		        			break;
 	        			}
-	        			else {
-//		        			d = boitiers.indexOf("&box=") + 8; // strlen("&box=*">") == 8
-//		        			if (d <= 0) {
-		        				break;
-//		        			}
-	        			}
+	        			
 	        			f = d + boitiers.substring(d).indexOf("</");
-	        			FBMHttpConnection.FBMLog("TRACE : "+d+" "+f);
-	        			FBMHttpConnection.FBMLog("Boitier "+i+" trouvé : "+boitiers.substring(d, f));
 	        			mBoitiers.add(boitiers.substring(d, f));
 	        			boitiers = boitiers.substring(f);
-	        			i++;
 	        		} while (true);
 	        	}
 	        	
@@ -464,7 +460,6 @@ public class ProgrammationActivity extends Activity {
     private void preparerActivite() {
     	// Suppression du layout de sélection si on n'a qu'un boitier HD
 		if (plusieursBoitiersHD) {
-    		boitierHDSpinner.setSelection(mBoitierHD);
     		remplirSpinner(R.id.pvrPrgBoitier);
 
     		if (orientationPortrait) {
@@ -495,7 +490,7 @@ public class ProgrammationActivity extends Activity {
 			public void onNothingSelected(AdapterView<?> arg0) {
 			}
     	});
-        ArrayAdapter adapter = ArrayAdapter.createFromResource(this, R.array.pvrListeDurees,
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.pvrListeDurees,
         		android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         s.setAdapter(adapter);
@@ -734,6 +729,7 @@ public class ProgrammationActivity extends Activity {
 	        
 	        // Remplissage
 	        chaines.setSelection(getChaineSpinnerId(c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_CHAINE))));
+	        disques.setSelection(getDisqueSpinnerId(c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_WHERE_ID))));
 	        
 	        String strDate = c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_DATE));
 	        int day = Integer.parseInt(strDate.substring(0,2));
@@ -787,15 +783,11 @@ public class ProgrammationActivity extends Activity {
     }
     
     private void remplirSpinner(int id) {
-    	remplirSpinner(id, null);
-    }
-    private void remplirSpinner(int id, Spinner chaineSpinner) {
 		Spinner spinner = (Spinner) findViewById(id);
 		List<String> liste = new ArrayList<String>();
 		int i, size;
 		
-		switch (id)
-		{
+		switch (id) {
 			// Construction de la liste de String à mettre dans le spinner
 			case R.id.pvrPrgChaine:
 				size = mChaines.size();
@@ -803,6 +795,7 @@ public class ProgrammationActivity extends Activity {
 					liste.add(mChaines.get(i).getName());
 				}
 				break;
+				
 			case R.id.pvrPrgDisque:
 				size = mDisques.size();
 				String disqueName;
@@ -816,8 +809,9 @@ public class ProgrammationActivity extends Activity {
 				}
 				afficherInfosDisque(0);
 				break;
+				
 			case R.id.pvrPrgQualite:
-				int idChaine = chaineSpinner.getSelectedItemPosition();
+				int idChaine = chainesSpinner.getSelectedItemPosition();
 				List<Chaine.Service> services = mChaines.get(idChaine).getServices();
 				size = services.size();
 				String serviceName;
@@ -836,12 +830,9 @@ public class ProgrammationActivity extends Activity {
 					}
 				}
 			break;
+			
 			case R.id.pvrPrgBoitier:
 				liste = mBoitiers;
-//	    		ArrayAdapter<String> adapter= new ArrayAdapter<String>(
-//	    				this, android.R.layout.simple_spinner_item, mBoitiers);
-//	    		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//	    		boitierHDSpinner.setAdapter(adapter);
 				break;
 		}
 		
