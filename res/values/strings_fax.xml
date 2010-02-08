@@ -2,6 +2,7 @@
 <resources>
 	<!-- Valeur affichées dans l'écrans de fax -->
 	<string name="faxNumberLabel">Fax number</string>
+	<string name="faxNumberHint">write a number</string>
 	<string name="faxMailConfirmation">E-mail Acknowledgement</string>
 	<string name="faxAnonymousNumber">Anonymou fax</string>
 	<string name="faxChooseAFile">Pick</string>

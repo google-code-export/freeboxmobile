@@ -29,9 +29,9 @@
 					android:layout_height="wrap_content" android:layout_width="wrap_content"
 					android:src="@android:drawable/ic_menu_add" android:layout_gravity="center_vertical">
 				</ImageButton>
-				<EditText android:id="@+id/faxNumber" android:layout_width="125dip"
+				<EditText android:id="@+id/faxNumber" android:layout_width="170dip"
 					android:maxLength="10" android:layout_height="wrap_content"
-					android:inputType="phone" android:hint="09XXXXXX"
+					android:inputType="phone" android:hint="@string/faxNumberHint"
 					android:layout_gravity="center_vertical">
 				</EditText>
 				<TextView android:id="@+id/faxNumberLabel"
@@ -53,7 +53,7 @@
 					android:layout_gravity="center_vertical" android:layout_margin="-5dp">
 				</ImageButton>
 				<EditText android:id="@+id/faxFilePath"
-					android:layout_width="125dip" android:maxLines="1"
+					android:layout_width="170dip" android:maxLines="1"
 					android:layout_height="wrap_content" android:enabled="false"
 					android:layout_gravity="center_vertical" android:hint="">
 				</EditText>
@@ -70,7 +70,8 @@
 			</LinearLayout>
 			<CheckBox android:id="@+id/faxSendMailBox"
 				android:layout_width="fill_parent" android:layout_height="40dip"
-				android:checked="true" android:text="@string/faxMailConfirmation" />
+				android:checked="true" android:text="@string/faxMailConfirmation" 
+				android:layout_marginTop="15dip"/>
 			<CheckBox android:id="@+id/faxMaskMyNumberBox"
 				android:layout_width="fill_parent" android:layout_height="40dip"
 				android:checked="true" android:text="@string/faxAnonymousNumber" />
@@ -81,7 +82,8 @@
 		android:id="@+id/sendFaxButton"
 		android:text="@string/faxSend" 
 		android:layout_width="wrap_content"
-		android:layout_height="wrap_content" />
+		android:layout_height="wrap_content" 
+		android:layout_marginTop="15dip"/>
 
 </LinearLayout>
 
