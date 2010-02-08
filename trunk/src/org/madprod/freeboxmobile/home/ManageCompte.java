@@ -100,5 +100,4 @@ public class ManageCompte extends AsyncTask<ComptePayload, Void, ComptePayload> 
 	        activity.setResult(p.exit, mIntent);
     	}
     }
-
 }

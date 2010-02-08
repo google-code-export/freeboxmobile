@@ -36,9 +36,9 @@ public class ComptesActivity extends ListActivity implements HomeConstants
     private static final int COMPTE_CREATE=0;
     private static final int COMPTE_EDIT=1;
 
-	private static ComptesDbAdapter mDbHelper = null;
+	private ComptesDbAdapter mDbHelper = null;
 	private Cursor mComptesCursor = null;
-	private SimpleCursorAdapter comptes = null;
+	private SimpleCursorAdapter comptesAdapter = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -135,7 +135,6 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 	{
     	if (mComptesCursor != null)
     	{
-//    		stopManagingCursor(mComptesCursor);
     		mComptesCursor.close();
     		mComptesCursor = null;
     	}
@@ -178,8 +177,8 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 //        startManagingCursor(mComptesCursor);
         String[] from = new String[]{KEY_TITLE};
         int[] to = new int[]{R.id.comptes_liste_row};
-        comptes = new SimpleCursorAdapter(this, R.layout.comptes_row, mComptesCursor, from, to);
-        setListAdapter(comptes);
+        comptesAdapter = new SimpleCursorAdapter(this, R.layout.comptes_row, mComptesCursor, from, to);
+        setListAdapter(comptesAdapter);
 
         Spinner s = (Spinner) findViewById(R.id.Spinner01);
         ArrayAdapter<String> liste = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
@@ -266,7 +265,7 @@ public class ComptesActivity extends ListActivity implements HomeConstants
         	{
         		ComptesDbAdapter mDb = new ComptesDbAdapter(this).open();
 				Cursor c = mDb.fetchCompte(id);
-//				startManagingCursor(c);
+				startManagingCursor(c);
 				if (c.getCount() > 0)
 				{
 					SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
@@ -275,8 +274,6 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 	            	Toast t = Toast.makeText(ComptesActivity.this, "Compte "+c.getString(c.getColumnIndexOrThrow(KEY_TITLE))+" selectionné",Toast.LENGTH_LONG);
 	            	t.show();
 				}
-//				stopManagingCursor(c);
-				c.close();
 				mDb.close();
         	}
         }
