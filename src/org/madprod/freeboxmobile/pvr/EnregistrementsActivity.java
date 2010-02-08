@@ -67,6 +67,8 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 	static final String DIR_PVR = "/pvr/";
 	
 	ProgressDialog progressDialog = null;
+	
+	static String curId = "";
 
     /** Called when the activity is first created. */
     @Override
@@ -74,7 +76,7 @@ public class EnregistrementsActivity extends ExpandableListActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pvr);
         FBMHttpConnection.initVars(this, null);
-        FBMHttpConnection.FBMLog("ENREGISTREMENTSACTIVITY START");
+        FBMHttpConnection.FBMLog("ENREGISTREMENTSACTIVITY CREATE");
 
         File old_db = getDatabasePath("freeboxmobile"+FBMHttpConnection.getIdentifiant());
         if (old_db.exists()) {
@@ -85,8 +87,13 @@ public class EnregistrementsActivity extends ExpandableListActivity {
         		FBMHttpConnection.FBMLog("KO");
         	}
         }
-
-		listeEnregistrements = new ListeEnregistrements();
+        
+        if (!curId.equals(FBMHttpConnection.getIdentifiant())) {
+        	curId = FBMHttpConnection.getIdentifiant();
+        	reset();
+        }
+        else
+        	listeEnregistrements = new ListeEnregistrements();
         succesChargement = false;
         enrAct = this;
         
@@ -138,7 +145,10 @@ public class EnregistrementsActivity extends ExpandableListActivity {
     }
     
     public static void reset() {
-    	listeEnregistrements = null;
+    	if (listeEnregistrements != null) {
+    		listeEnregistrements.vider();
+    		listeEnregistrements = null;
+    	}
     }
     
     public void updaterEnregistrements(boolean updateFromConsole) {
@@ -163,8 +173,11 @@ public class EnregistrementsActivity extends ExpandableListActivity {
         	}
         }
     	
-        protected Boolean doInBackground(Void... arg0) {        	
-        	listeEnregistrements.vider();
+        protected Boolean doInBackground(Void... arg0) {
+        	if (listeEnregistrements != null)
+        		listeEnregistrements.vider();
+        	else
+        		listeEnregistrements = new ListeEnregistrements();
             
         	if (updateFromConsole) {
         		return doUpdateEnregistrements();
