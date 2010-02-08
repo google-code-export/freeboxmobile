@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<LinearLayout android:id="@+id/LinearLayout01" android:layout_width="fill_parent" android:layout_height="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="horizontal">
+<ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/home_main_row_img" android:minHeight="42dip" android:minWidth="51dip" android:layout_marginRight="10dip" android:layout_marginLeft="10dip"></ImageView><LinearLayout android:id="@+id/LinearLayout02" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical"><TextView android:text="@+id/TextView01" android:layout_height="wrap_content" android:id="@+id/home_main_row_titre" android:layout_width="fill_parent" android:textSize="24dip" android:layout_marginRight="10dip"></TextView><TextView android:text="@+id/TextView02" android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/home_main_row_desc" android:textSize="14dip" android:layout_marginRight="10dip"></TextView></LinearLayout>
+
+
+
+</LinearLayout>

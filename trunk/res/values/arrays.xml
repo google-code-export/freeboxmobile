@@ -30,4 +30,15 @@
 		<item>210</item>
 		<item>240</item>
 	</string-array>
+	<string-array name="homeModulesNames">
+		<item>Télévision</item>
+		<item>Magnétoscope</item>
+		<item>Guide TV</item>
+		<item>Téléphone</item>
+		<item>Musique</item>
+		<item>Radios</item>
+		<item>Fax</item>
+		<item>Info ADSL</item>
+		<item>Actualité Freenautes</item>
+	</string-array>
 </resources>
