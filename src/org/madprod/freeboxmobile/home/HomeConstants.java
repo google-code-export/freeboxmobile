@@ -26,4 +26,9 @@ public interface HomeConstants extends Constants
     static final int COMPTES_OPTION_NEW = Menu.FIRST;
     static final int COMPTES_OPTION_DELETE = Menu.FIRST + 1;
     static final int COMPTES_OPTION_MODIFY = Menu.FIRST + 2;
+    
+    static final String M_TITRE = "titre";
+    static final String M_DESC = "desc";
+    static final String M_ICON = "icon";
+    static final String M_CLASS = "class";
 }
