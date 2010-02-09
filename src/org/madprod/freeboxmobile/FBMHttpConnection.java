@@ -126,12 +126,23 @@ public class FBMHttpConnection implements Constants
 
 	public static void showProgressDialog(Activity a)
 	{
-		httpProgressDialog = ProgressDialog.show(a, "Mon Compte Free", "Connexion en cours ...", true,false);
+		httpProgressDialog = new ProgressDialog(a);
+		httpProgressDialog.setIcon(R.drawable.icon_fbm_reverse);
+		httpProgressDialog.setTitle("Mon compte Freebox");
+		httpProgressDialog.setMessage("Connexion en cours...");
+		httpProgressDialog.show();
+
+//		httpProgressDialog = ProgressDialog.show(a, "Mon Compte Free", "Connexion en cours ...", true,false);
 	}
 
 	public static void showProgressDialog2(Activity a)
 	{
-		httpProgressDialog = ProgressDialog.show(a, "Mise à jour des données", "Connexion en cours ...", true,false);
+		httpProgressDialog = new ProgressDialog(a);
+		httpProgressDialog.setIcon(R.drawable.icon_fbm_reverse);
+		httpProgressDialog.setTitle("Mise à jour des données");
+		httpProgressDialog.setMessage("Connexion en cours...");
+		httpProgressDialog.show();
+//		httpProgressDialog = ProgressDialog.show(a, "Mise à jour des données", "Connexion en cours ...", true,false);
 	}
 
 	public static void dismissPd()
@@ -147,6 +158,7 @@ public class FBMHttpConnection implements Constants
 	{
 		errorAlert = new AlertDialog.Builder(a).create();
 		errorAlert.setTitle("Connexion impossible");
+		errorAlert.setIcon(R.drawable.icon_fbm_reverse);
 		errorAlert.setMessage(
 				"Impossible de se connecter au portail de Free.\n"+
 				"Vérifiez votre identifiant, " +
