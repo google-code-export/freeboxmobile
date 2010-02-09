@@ -70,7 +70,7 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 	{
 		int newmsg = 0;
 
-		Log.i(DEBUGTAG,"MevoSync onHandleIntent ");
+		FBMHttpConnection.FBMLog("MevoSync onHandleIntent ");
 
 		File log = new File(Environment.getExternalStorageDirectory()+DIR_FBM, file_log);
 		try
@@ -83,7 +83,7 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 		}
 		catch (IOException e)
 		{
-			Log.e(DEBUGTAG, "Exception appending to log file ",e);
+			FBMHttpConnection.FBMLog("Exception appending to log file "+e.getMessage()+"\n"+FBMHttpConnection.getStackTrace(e));
 		}
 
 		mDbHelper = new MevoDbAdapter(this);
@@ -109,7 +109,7 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 		}
 		catch (IOException e)
 		{
-			Log.e(DEBUGTAG, "Exception appending to log file ",e);
+			FBMHttpConnection.FBMLog("Exception appending to log file "+e.getMessage()+"\n"+FBMHttpConnection.getStackTrace(e));
 		}
 
 		super.onHandleIntent(intent);
@@ -145,22 +145,22 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 	        File f = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_MEVO);
 	        if (f.exists())
 	        {
-	        	Log.d(DEBUGTAG, "Ancienne config sans multicompte : migration messages...");
+	        	FBMHttpConnection.FBMLog("Ancienne config sans multicompte : migration messages...");
 	        	File nf = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+FBMHttpConnection.getIdentifiant());
 	        	nf.mkdirs();
 	        	if (f.renameTo(new File(nf, f.getName())))
 	        	{
-	        		Log.d(DEBUGTAG, "ok");
+	        		FBMHttpConnection.FBMLog(" ok");
 	        	}
 	        	else
 	        	{
-	        		Log.d(DEBUGTAG, " notok");
+	        		FBMHttpConnection.FBMLog(" notok");
 	        	}
 	        }
 	        File old_db = activity.getDatabasePath(MevoDbAdapter.DATABASE_NAME);
 	        if (old_db.exists())
 	        {
-	        	Log.d(DEBUGTAG, "Ancienne config sans multicomptes : migration base de données... "+FBMHttpConnection.getIdentifiant());
+	        	FBMHttpConnection.FBMLog("Ancienne config sans multicomptes : migration base de données... "+FBMHttpConnection.getIdentifiant());
 	        	if (old_db.renameTo(activity.getDatabasePath(MevoDbAdapter.DATABASE_NAME+"_"+FBMHttpConnection.getIdentifiant())))
 	        	{
 	        		Log.d(DEBUGTAG, "ok");
@@ -181,14 +181,14 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 	@Override
 	public void onCreate()
 	{
-		Log.i(DEBUGTAG,"MevoSync onCreate");
+		FBMHttpConnection.FBMLog("MevoSync onCreate");
 		super.onCreate();
 	}
 
 	@Override
 	public void onDestroy()
 	{
-		Log.i(DEBUGTAG,"MevoSync onDestroy");
+		FBMHttpConnection.FBMLog("MevoSync onDestroy");
 		super.onDestroy();
 	}
 
@@ -280,12 +280,12 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 		if (ms != 0)
 		{
 			amgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), ms, pi);
-			Log.i(DEBUGTAG, "MevoTimer  changed to "+ms);
+			FBMHttpConnection.FBMLog("MevoTimer  changed to "+ms);
 		}
 		else
 		{
 			amgr.cancel(pi);
-			Log.i(DEBUGTAG, "MevoTimer canceled");			
+			FBMHttpConnection.FBMLog("MevoTimer canceled");			
 		}
 	}
 
@@ -413,32 +413,32 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 							Log.d(DEBUGTAG,"Pas de nouveau message !");
 						else
 						{
-							Log.d(DEBUGTAG,"MESSAGE");
+							FBMHttpConnection.FBMLog("MESSAGE");
 							priv = s.substring(s.indexOf("<td"));
 							priv = priv.substring(priv.indexOf(">")+1);
 							status = priv.substring(0,priv.indexOf("<"));
-							Log.d(DEBUGTAG,"->STATUS:"+status);
+							FBMHttpConnection.FBMLog("->STATUS:"+status);
 							priv = priv.substring(priv.indexOf("<td"));
 							priv = priv.substring(priv.indexOf(">")+1);
 							from = priv.substring(0,priv.indexOf("<"));
-							Log.d(DEBUGTAG,"->FROM:"+from);
+							FBMHttpConnection.FBMLog("->FROM:"+from);
 							priv = priv.substring(priv.indexOf("<td"));
 							priv = priv.substring(priv.indexOf(">")+1);
 							when = priv.substring(0,priv.indexOf("<"));
-							Log.d(DEBUGTAG,"->WHEN:"+when);
+							FBMHttpConnection.FBMLog("->WHEN:"+when);
 							priv = priv.substring(priv.indexOf("<td"));
 							priv = priv.substring(priv.indexOf(">")+1);
 							length = priv.substring(0,priv.indexOf(" "));
-							Log.d(DEBUGTAG,"->LENGTH:"+length);
+							FBMHttpConnection.FBMLog("->LENGTH:"+length);
 							s = br.readLine();
 							priv = s.substring(s.indexOf("href=")+6);
 							link = priv.substring(0,priv.indexOf("'"));
-							Log.d(DEBUGTAG,"->LINK:"+link);
+							FBMHttpConnection.FBMLog("->LINK:"+link);
 							priv = priv.substring(priv.indexOf("href=")+6);
 							del = priv.substring(0,priv.indexOf("'"));
-							Log.d(DEBUGTAG,"->DEL:"+del);
+							FBMHttpConnection.FBMLog("->DEL:"+del);
 							name = link.substring(link.indexOf("fichier=")+8);
-							Log.d(DEBUGTAG,"->NAME:"+name);
+							FBMHttpConnection.FBMLog("->NAME:"+name);
 							if (status.compareTo(STR_NEWMESSAGE) == 0)
 							{
 								intstatus = 0;
@@ -459,35 +459,35 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 							if (curs.moveToFirst() == false)
 				        	{
 								// Store data in db if the message is not present in the db
-				        		Log.d(DEBUGTAG,"STORING IN DB");
+								FBMHttpConnection.FBMLog("STORING IN DB");
 					        	mDbHelper.createMessage(intstatus, presence, from, when, link, del, Integer.parseInt(length), name);
 					        	newmsg++;
 				        	}
 				        	else
 				        	{
 								// Update data in db if the message is already present in the db
-				        		Log.d(DEBUGTAG,"UPDATING DB");
+				        		FBMHttpConnection.FBMLog("UPDATING DB");
 				        		mDbHelper.updateMessage(presence, link, del, name);
 				        	}
 				        	curs.close();
 						}
 					}
 				}
-				Log.d(DEBUGTAG,"fin extract");
+				FBMHttpConnection.FBMLog("fin extract");
 			}
 			else
 			{
-				Log.d(DEBUGTAG,"pb extract");
+				FBMHttpConnection.FBMLog("pb extract");
 			}
 			mDbHelper.close();
 		}
 
 		catch (Exception e)
 		{
-			Log.e(DEBUGTAG, "getMessageList : " + e.getMessage());
+			FBMHttpConnection.FBMLog("getMessageList : " + e.getMessage());
 			e.printStackTrace();
 		}
-		Log.d(DEBUGTAG,"getmessage end "+newmsg);
+		FBMHttpConnection.FBMLog("getmessage end "+newmsg);
 		return newmsg;
  	}
 

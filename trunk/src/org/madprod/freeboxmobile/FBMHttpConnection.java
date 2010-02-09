@@ -9,6 +9,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
@@ -49,7 +52,6 @@ public class FBMHttpConnection implements Constants
 	private static String idt = null;
 
 	public static String fbmlog = "";
-//	private static String pagesCharset = "ISO8859_1";
 
 	private static int connectionStatus = CONNECT_NOT_CONNECTED;
 	
@@ -164,10 +166,20 @@ public class FBMHttpConnection implements Constants
 		return errorAlert;
 	}
 
+	// TODO : A supprimer lors de la migration vers la classe FMLog
 	public static void FBMLog(String s)
 	{
 		Log.d(DEBUGTAG, s);
 		fbmlog += s+"\n";
+	}
+
+	// TODO : A supprimer lors de la migration vers la classe FMLog
+	public static String getStackTrace(Throwable throwable)
+	{
+		Writer writer = new StringWriter();
+		PrintWriter printWriter = new PrintWriter(writer);
+		throwable.printStackTrace(printWriter);
+		return writer.toString();
 	}
 
     /**
