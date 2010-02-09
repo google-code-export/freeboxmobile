@@ -7,10 +7,8 @@ C'est très simple : il faut vous inscrire à la mailing liste !FreeboxMobile<br
 Une fois inscrit, vous recevrez un email lors de la publication de versions de test de !FreeboxMobile. Suivez les instructions, et remontez les éventuels problems dans la rubrique [http://code.google.com/p/freeboxmobile/issues/list Issues] du projet.
 
 = Comment s'inscrire à la mailing liste !FreeboxMobile ? =
- * envoyer un email à freeboxmobile-request@ml.free.fr avec comme sujet : subscribe
- * suivre les instructions contenues dans le mail que vous recevrez ensuite
+ * Vous devez vous rendre [http://groups.google.fr/group/freeboxmobile-tests/subscribe sur la page d'inscription du groupe Google "Freebox Mobile Tests"] et suivre les instructions
  * lorsqu'une version de test sera disponible, vous recevrez un email
 
 = Comment me désabonner de la mailing liste !FreeboxMobile ? =
- * envoyer un email à freeboxmobile-request@ml.free.fr avec comme sujet : unsubscribe
- * suivre les instructions contenues dans le mail que vous recevrez ensuite
+ * Vous devez vous rendre [http://groups.google.fr/group/freeboxmobile-tests/ sur la page d'inscription du groupe Google "Freebox Mobile Tests"] et modifier les paramètres de votre inscription
