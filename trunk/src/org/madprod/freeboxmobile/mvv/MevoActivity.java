@@ -757,7 +757,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
 					this.messageUpdateTask.cancel();
 					this.messageTimer.purge();
 					this.setMessageSeekBar(-1, 0, 0);
-					Log.e(DEBUGTAG,"MEDIAPLAYER : Illegal State Exception "+e);
+					FBMHttpConnection.FBMLog("MEDIAPLAYER : Illegal State Exception "+e);
 				}
 			}
 			// sinon, l'utilisateur voulait juste arreter ou reprendre le message courant
