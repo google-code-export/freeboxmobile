@@ -7,6 +7,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
 
 import android.content.ContentResolver;
@@ -234,14 +235,17 @@ public class MevoMessage implements MevoConstants
 		}
 		catch (IllegalArgumentException e)
 		{
+			FBMHttpConnection.FBMLog("setMsgSource : "+e.getMessage()+" "+FBMHttpConnection.getStackTrace(e));
 			e.printStackTrace();
 		}
 		catch (IllegalStateException e)
 		{
+			FBMHttpConnection.FBMLog("setMsgSource : "+e.getMessage()+" "+FBMHttpConnection.getStackTrace(e));
 			e.printStackTrace();
 		}
 		catch (IOException e)
 		{
+			FBMHttpConnection.FBMLog("setMsgSource : "+e.getMessage()+" "+FBMHttpConnection.getStackTrace(e));
 			e.printStackTrace();
 		}
 	}
