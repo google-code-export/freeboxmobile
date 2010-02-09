@@ -163,7 +163,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		map.put(M_CLASS, org.madprod.freeboxmobile.pvr.EnregistrementsActivity.class);
 		modulesList.add(map);
 		map = new HashMap<String,Object>();
-		map.put(M_ICON, R.drawable.icon_fbm);
+		map.put(M_ICON, R.drawable.fm_repondeur);
 		map.put(M_TITRE, getString(R.string.buttonMevo));
 		map.put(M_DESC, "Accédez à la messagerie vocale de votre Freebox");
 		map.put(M_CLASS, org.madprod.freeboxmobile.mvv.MevoActivity.class);
