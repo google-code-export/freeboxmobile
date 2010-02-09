@@ -127,91 +127,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 				editor.commit();
         	}
         }
-/*
-        Button phoneButton = (Button) findViewById(R.id.phone);
-        Button faxButton = (Button) findViewById(R.id.fax);
-        Button ligneButton = (Button) findViewById(R.id.ligne);
-        Button pvrButton = (Button) findViewById(R.id.magneto);
-*/
-        if (mgr.getString(KEY_TITLE, "").equals(""))
-		{
-		}
-		else
-		{
-			FBMHttpConnection.FBMLog("type:"+mgr.getString(KEY_LINETYPE, ""));
-/*			phoneButton.setOnClickListener(
-					new View.OnClickListener()
-					{
-						public void onClick(View view)
-						{
-					    	Intent i = new Intent(homeActivity, org.madprod.freeboxmobile.mvv.MevoActivity.class);
-					    	startActivity(i);
-						}
-					}
-				);
-*/			if (!mgr.getString(KEY_LINETYPE, "1").equals("0"))
-/*			faxButton.setOnClickListener(
-					new View.OnClickListener()
-					{
-						@Override
-						public void onClick(View arg0)
-						{
-							startActivity(new Intent(homeActivity, FaxActivity.class));
-						}
-					}
-				);
-*/
-			if (mgr.getString(KEY_LINETYPE, "1").equals("0") || mgr.getString(KEY_LINETYPE, "1").equals("1"))
-			{
-/*				ligneButton.setOnClickListener(
-						new View.OnClickListener()
-						{
-								public void onClick(View view)
-								{
-							    	startActivity(new Intent(homeActivity, org.madprod.freeboxmobile.ligne.LigneInfoActivity.class));
-								}
-						}
-					);
-*/			}
-			else
-			{
-/*				ligneButton.setOnClickListener(
-						new View.OnClickListener()
-						{
-								public void onClick(View view)
-								{
-									showNonADSL();
-								}
-						}
-					);				
-*/			}
-
-			if (true)
-//			if (!mgr.getString(KEY_LINETYPE, "1").equals("0"))
-			{
-/*				pvrButton.setOnClickListener(
-						new View.OnClickListener()
-						{
-							public void onClick(View view)
-							{
-						    	startActivity(new Intent(homeActivity, org.madprod.freeboxmobile.pvr.EnregistrementsActivity.class));
-							}
-						}
-					);
-*/			}
-			else
-			{
-/*				pvrButton.setOnClickListener(
-						new View.OnClickListener()
-						{
-								public void onClick(View view)
-								{
-									showNonDegroupe();
-								}
-						}
-					);				
-*/			}
-		}
+        FBMHttpConnection.FBMLog("type:"+mgr.getString(KEY_LINETYPE, ""));
 		setTitle(getString(R.string.app_name)+" "+FBMHttpConnection.getTitle());
     }
     
@@ -220,7 +136,6 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 	{
     	FBMHttpConnection.FBMLog("MainActivity Stop");
 		super.onStop();
-//		this.mDbHelper.close();
 	}
 
     @Override
@@ -237,28 +152,12 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     	super.onPause();
 		FBMHttpConnection.closeDisplay();
     }
-    
-    /*
-	<string name="buttonMusic">Musique</string>
-	<string name="buttonGuide">Guide TV</string>
-	<string name="buttonActu">Actu Freenautes</string>
-*/
+
     private void setModules()
     {
     	Map<String,Object> map;
+
     	map = new HashMap<String,Object>();
-		map.put(M_ICON, R.drawable.fm_television);
-		map.put(M_TITRE, getString(R.string.buttonTv));
-		map.put(M_DESC, "Regardez vos chaînes de TV Freebox");
-		map.put(M_CLASS, null);
-		modulesList.add(map);
-    	map = new HashMap<String,Object>();
-		map.put(M_ICON, R.drawable.bouton_clear);
-		map.put(M_TITRE, getString(R.string.buttonRadios));
-		map.put(M_DESC, "Ecoutez les radios Freebox");
-		map.put(M_CLASS, null);
-		modulesList.add(map);
-		map = new HashMap<String,Object>();
 		map.put(M_ICON, R.drawable.fm_magnetoscope);
 		map.put(M_TITRE, getString(R.string.buttonPvr));
 		map.put(M_DESC, "Programmez votre Freebox à distance");
@@ -283,17 +182,29 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		map.put(M_CLASS, org.madprod.freeboxmobile.ligne.LigneInfoActivity.class);
 		modulesList.add(map);
 		map = new HashMap<String,Object>();
-		map.put(M_ICON, R.drawable.bouton_clear);
-		map.put(M_TITRE, "Medias");
-		map.put(M_DESC, "Accédez aux vidéos, aux enregistrements et aux musiques qui sont chez vous");
-		map.put(M_CLASS, null);
-		modulesList.add(map);
-		map = new HashMap<String,Object>();
 		map.put(M_ICON, R.drawable.fm_actus_freenautes);
 		map.put(M_TITRE, getString(R.string.buttonActu));
 		map.put(M_DESC, "Consultez l'actualité de Free et de la Freebox");
 		map.put(M_CLASS, null);
 		modulesList.add(map);    	
+    	map = new HashMap<String,Object>();
+		map.put(M_ICON, R.drawable.fm_television);
+		map.put(M_TITRE, getString(R.string.buttonTv));
+		map.put(M_DESC, "Regardez vos chaînes de TV Freebox\n\nCette fonctionnalité n'est pas encore disponible");
+		map.put(M_CLASS, null);
+		modulesList.add(map);
+    	map = new HashMap<String,Object>();
+		map.put(M_ICON, R.drawable.bouton_clear);
+		map.put(M_TITRE, getString(R.string.buttonRadios));
+		map.put(M_DESC, "Ecoutez les radios Freebox\n\nCette fonctionnalité n'est pas encore disponible");
+		map.put(M_CLASS, null);
+		modulesList.add(map);
+		map = new HashMap<String,Object>();
+		map.put(M_ICON, R.drawable.bouton_clear);
+		map.put(M_TITRE, "Medias");
+		map.put(M_DESC, "Accédez aux vidéos, aux enregistrements et aux musiques qui sont chez vous\n\nCette fonctionnalité n'est pas encore disponible");
+		map.put(M_CLASS, null);
+		modulesList.add(map);
     }
 
     @Override
@@ -314,11 +225,19 @@ public class HomeListActivity extends ListActivity implements HomeConstants
         Class<?> moduleClass = (Class<?>) modulesList.get((int) id).get(M_CLASS);
     	SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 
-    	if (moduleName.equals(getString(R.string.buttonLigne)))
-        if (!mgr.getString(KEY_LINETYPE, "1").equals("0") && !mgr.getString(KEY_LINETYPE, "1").equals("1"))
+        if (mgr.getString(KEY_TITLE, "").equals(""))
+		{
+        	showNoCompte();
+		}
+        else
         {
-        	showNonADSL();
-        	return;
+	    	if (moduleName.equals(getString(R.string.buttonLigne)) &&
+    			!mgr.getString(KEY_LINETYPE, "1").equals("0") &&
+    			!mgr.getString(KEY_LINETYPE, "1").equals("1"))
+	        {
+	        	showNonADSL();
+	        	return;
+	        }
         }
     	if (moduleClass != null)
     	{
@@ -472,7 +391,10 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 			"Facebook (devenez fan !) :\nhttp://www.facebook.com/search/?q=freeboxmobile\n\n"+
 			"Auteurs :\n"+
 			"- Olivier Rosello : Architecture / Réseau / Home / Info ADSL / Téléphone\n"+
-			"- Benoit Duffez : Magnétosocope\n\n"+
+			"- Benoit Duffez : Magnétosocope\n"+
+			"- Ludovic Meurillon : Fax\n"+
+			"- Alban Pelé : Icônes de la page d'accueil\n"+
+			"\n"+
 			"Cette application opensource utilise :\n"+
 			"- Android-XMLRPC : http://code.google.com/p/android-xmlrpc/\n"+
 			"- Icônes Tango : http://tango.freedesktop.org/\n" +
