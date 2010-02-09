@@ -97,7 +97,6 @@ public class HomeListActivity extends ListActivity implements HomeConstants
         	showSdCardError();
 		setContentView(R.layout.home_main_list);
 		setTitle(getString(R.string.app_name)+" "+FBMHttpConnection.getTitle());
-		
     }
 
     @Override
@@ -164,15 +163,15 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		map.put(M_CLASS, org.madprod.freeboxmobile.pvr.EnregistrementsActivity.class);
 		modulesList.add(map);
 		map = new HashMap<String,Object>();
-		map.put(M_ICON, R.drawable.bouton_clear);
+		map.put(M_ICON, R.drawable.icon_fbm);
 		map.put(M_TITRE, getString(R.string.buttonMevo));
 		map.put(M_DESC, "Accédez à la messagerie vocale de votre Freebox");
 		map.put(M_CLASS, org.madprod.freeboxmobile.mvv.MevoActivity.class);
 		modulesList.add(map);
 		map = new HashMap<String,Object>();
-		map.put(M_ICON, R.drawable.bouton_clear);
+		map.put(M_ICON, R.drawable.fm_telecopie);
 		map.put(M_TITRE, getString(R.string.buttonFax));
-		map.put(M_DESC, "Utilisez votre ligne Freebox pour envoyer des Fax à partir de votre mobile");
+		map.put(M_DESC, "Utilisez votre compte Freebox pour envoyer des Fax à partir de votre mobile");
 		map.put(M_CLASS, FaxActivity.class);
 		modulesList.add(map);
 		map = new HashMap<String,Object>();
@@ -194,15 +193,15 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		map.put(M_CLASS, null);
 		modulesList.add(map);
     	map = new HashMap<String,Object>();
-		map.put(M_ICON, R.drawable.bouton_clear);
+		map.put(M_ICON, R.drawable.icon_fbm);
 		map.put(M_TITRE, getString(R.string.buttonRadios));
 		map.put(M_DESC, "Ecoutez les radios Freebox\n\nCette fonctionnalité n'est pas encore disponible");
 		map.put(M_CLASS, null);
 		modulesList.add(map);
 		map = new HashMap<String,Object>();
-		map.put(M_ICON, R.drawable.bouton_clear);
+		map.put(M_ICON, R.drawable.icon_fbm);
 		map.put(M_TITRE, "Medias");
-		map.put(M_DESC, "Accédez aux vidéos, aux enregistrements et aux musiques qui sont chez vous\n\nCette fonctionnalité n'est pas encore disponible");
+		map.put(M_DESC, "Accédez aux vidéos, enregistrements et musiques qui sont chez vous\n\nCette fonctionnalité n'est pas encore disponible");
 		map.put(M_CLASS, null);
 		modulesList.add(map);
     }
