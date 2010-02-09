@@ -242,7 +242,11 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 				{
 					public void run()
 					{
-						myProgressDialog = ProgressDialog.show(CUR_ACTIVITY, "Mon Compte Free", "Vérification des nouveaux messages ...", true,false);
+						myProgressDialog = new ProgressDialog(CUR_ACTIVITY);
+						myProgressDialog.setIcon(R.drawable.fm_repondeur);
+						myProgressDialog.setTitle("Messagerie Vocale Freebox");
+						myProgressDialog.setMessage("Vérification des nouveaux messages ...");
+						myProgressDialog.show();
 					}
 				});
 		}
@@ -493,7 +497,11 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 
 	public static void showPdDelete()
 	{
-		myProgressDialog = ProgressDialog.show(CUR_ACTIVITY, "Suppression", "Suppression du serveur en cours...", true,false);
+		myProgressDialog = new ProgressDialog(CUR_ACTIVITY);
+		myProgressDialog.setIcon(R.drawable.fm_repondeur);
+		myProgressDialog.setTitle("Messagerie Vocale Freebox");
+		myProgressDialog.setMessage("Suppression du message en cours...");
+		myProgressDialog.show();
 	}
 
 	public static void dismissPd()
