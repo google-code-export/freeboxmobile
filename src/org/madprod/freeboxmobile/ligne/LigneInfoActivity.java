@@ -164,6 +164,7 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
 	        text3 = "Historique de l'état de "+mgr.getString(KEY_DSLAM, "")+" :";
 	        
 	        LinearLayout lt = (LinearLayout) findViewById(R.id.LinearLayoutTickets);
+	        lt.removeAllViews();
 	        LigneInfoDbAdapter mDb = new LigneInfoDbAdapter(LigneInfoActivity.this);
 			mDb.open();
 	        mTicketCursor = mDb.fetchAllTickets();
@@ -209,6 +210,8 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
 		    	GregorianCalendar calendar = new java.util.GregorianCalendar();
 		    	calendar.setTime(new Date());
 		    	int j = 0;
+		        LinearLayout layoutH = (LinearLayout) findViewById(R.id.LinearLayoutHistory);
+		        layoutH.removeAllViews();
 		    	while (j++ < 7)
 		    	{
 		    		String f = format.format(calendar.getTime());
@@ -227,7 +230,6 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
 		    		}
 			        if (l >= 0)
 					{
-				        LinearLayout layoutH = (LinearLayout) findViewById(R.id.LinearLayoutHistory);
 			        	LinearLayout layoutHistory = new LinearLayout(this);
 			        	LinearLayout cellDate = new LinearLayout(this);
 			        	cellDate.setOrientation(LinearLayout.VERTICAL);
