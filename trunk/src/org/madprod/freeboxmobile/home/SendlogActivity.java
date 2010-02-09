@@ -74,11 +74,12 @@ public class SendlogActivity extends Activity implements HomeConstants
 			    			"Description :\n----------\n" + description + "\n----------\n"+
 			    			FBMHttpConnection.fbmlog);
 			    	Intent i = new Intent(Intent.ACTION_SEND)
-			    		.putExtra(Intent.EXTRA_EMAIL, new String[]{"freeboxmobiledev@ml.free.fr"})
+			    		.putExtra(Intent.EXTRA_EMAIL, new String[]{"freeboxmobile-developpement@googlegroups.com"})
 			    		.putExtra(Intent.EXTRA_TEXT, ssb)
 			    		.putExtra(Intent.EXTRA_SUBJECT, 
 			    				getString(R.string.mail_subject)) 
 			    				.setType("message/rfc822");
+			    	// TODO : faire un startactivity for result et fermer cette activity au retour
 			    	startActivity(Intent.createChooser(i,  "Choisissez votre logiciel de mail")); 
         		}
         		else
