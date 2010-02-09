@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent" android:paddingLeft="10dip" android:paddingTop="10dip" android:paddingBottom="10dip" android:paddingRight="10dip">
-		<ImageView
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent">
+		<ImageView 
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:id="@+id/LogoFreeboxMobile"
 			android:src="@drawable/freebox_mobile"
 			android:layout_gravity="center"
-			android:layout_marginBottom="10dip" android:layout_marginTop="10dip">
+			android:layout_marginBottom="5dip" android:layout_marginTop="5dip">
 		</ImageView>
-		<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/compte_actif" android:id="@+id/Compte_Actif" android:textSize="16dip"></TextView>
-		<Spinner android:id="@+id/Spinner01" android:layout_height="wrap_content" android:prompt="@string/compte_choose" android:layout_width="fill_parent" android:layout_marginLeft="10dip" android:layout_marginRight="10dip"></Spinner>
-		<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/comptes_liste" android:layout_marginTop="5dip" android:id="@+id/Compte_Liste" android:textSize="16dip"></TextView>
-		<ListView android:id="@android:id/list" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_weight="1">
-		</ListView>
-		<TextView android:layout_width="wrap_content"
-        	android:layout_height="wrap_content" android:text="@string/comptes_empty" android:id="@id/android:empty"/>
-		<LinearLayout android:id="@+id/LinearLayout01" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_width="fill_parent" android:gravity="right" android:layout_marginTop="5dip">
-			<Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/comptes_button_new" android:id="@+id/comptes_button_new" android:textSize="16dip"></Button>
+		<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent" android:paddingLeft="10dip" android:paddingTop="10dip" android:paddingBottom="10dip" android:paddingRight="10dip" android:background="@drawable/freebox_background">
+			<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/compte_actif" android:id="@+id/Compte_Actif" android:textSize="16dip"></TextView>
+			<Spinner android:id="@+id/Spinner01" android:layout_height="wrap_content" android:prompt="@string/compte_choose" android:layout_width="fill_parent" android:layout_marginLeft="10dip" android:layout_marginRight="10dip"></Spinner>
+			<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/comptes_liste" android:layout_marginTop="5dip" android:id="@+id/Compte_Liste" android:textSize="16dip"></TextView>
+			<ListView android:id="@android:id/list" android:cacheColorHint="#00000000" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_weight="1" android:background="#00000000">
+			</ListView>
+			<TextView android:layout_width="wrap_content"
+	        	android:layout_height="wrap_content" android:text="@string/comptes_empty" android:id="@id/android:empty"/>
+			<LinearLayout android:id="@+id/LinearLayout01" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_width="fill_parent" android:gravity="right" android:layout_marginTop="5dip">
+				<Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/comptes_button_new" android:id="@+id/comptes_button_new" android:textSize="16dip"></Button>
+			</LinearLayout>
 		</LinearLayout>
-	</LinearLayout>
-	
+	</LinearLayout>	
