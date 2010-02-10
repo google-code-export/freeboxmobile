@@ -132,6 +132,7 @@ public class EnregistrementsActivity extends ExpandableListActivity {
     	AlertDialog d = new AlertDialog.Builder(this).create();
 		d.setTitle(getString(R.string.pvrErreur));
 		d.setMessage(msgErreur);
+		d.setIcon(R.drawable.fm_magnetoscope);
 		d.setButton("Ok", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.dismiss();
@@ -166,7 +167,12 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 
         protected void onPreExecute() {
         	if (updateFromConsole) {
-            	progressDialog = ProgressDialog.show(enrAct, "Enregistrements", "Mise à jour...", true, false);
+        		progressDialog = new ProgressDialog(enrAct);
+        		progressDialog.setIcon(R.drawable.fm_magnetoscope);
+        		progressDialog.setTitle("Enregistrements");
+        		progressDialog.setMessage("Mise à jour...");
+        		progressDialog.show();
+//            	progressDialog = ProgressDialog.show(enrAct, "Enregistrements", "Mise à jour...", true, false);
         	}
         }
     	

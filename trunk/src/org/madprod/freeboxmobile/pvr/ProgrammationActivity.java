@@ -1,6 +1,7 @@
 package org.madprod.freeboxmobile.pvr;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.apache.http.NameValuePair;
@@ -12,7 +13,10 @@ import org.madprod.freeboxmobile.pvr.Chaine.Service.PVR_MODE;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.database.Cursor;
@@ -66,7 +70,7 @@ public class ProgrammationActivity extends Activity {
 	boolean orientationPortrait = false;
 	int positionEcran = 0;
 	int nbEcrans = 3;
-    private Button suivant, precedent, boutonOK, buttonRecur;
+    private Button suivant, precedent, boutonOK, buttonRecur, ButtonDate, ButtonTime;
 	private GestureDetector gestureDetector;
 	private Animation slideLeftIn;
 	private Animation slideLeftOut;
@@ -74,12 +78,21 @@ public class ProgrammationActivity extends Activity {
     private Animation slideRightOut;
     CheckBox lendi, mordi, credi, joudi, dredi, sadi, gromanche;
     ViewFlipper viewFlipper;
+    
+    private static int choosen_year = 0;
+    private static int choosen_month = 0;
+    private static int choosen_day = 0;
+    private static int choosen_hour = -1;
+    private static int choosen_minute = -1;
+    
+    private static final int DIALOG_DATE = 0;
+    private static final int DIALOG_TIME = 1;
 	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.pvr_programmation);
+        setContentView(R.layout.pvr_programmation2);
         FBMHttpConnection.initVars(this, null);
         resetJours();
 
@@ -101,6 +114,8 @@ public class ProgrammationActivity extends Activity {
         progAct = this;
         
         // Chargement des ressources
+        ButtonDate = (Button) findViewById(R.id.ButtonDate);
+        ButtonTime = (Button) findViewById(R.id.ButtonTime);
         boutonOK = (Button) findViewById(R.id.pvrPrgBtnOK);
         suivant = (Button) findViewById(R.id.pvrPrgBtnSuivant);
         precedent = (Button) findViewById(R.id.pvrPrgBtnPrecedent);
@@ -124,8 +139,44 @@ public class ProgrammationActivity extends Activity {
         
         dureeSpinner.setSelection(8);// 8 == 2H
         
-        orientationPortrait = getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
+        orientationPortrait = false;
+//        orientationPortrait = getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
         
+        Calendar c = Calendar.getInstance();
+        if (choosen_year == 0)
+        {
+	        choosen_year = c.get(Calendar.YEAR);
+	        choosen_month = c.get(Calendar.MONTH);
+	        choosen_day = c.get(Calendar.DAY_OF_MONTH);
+        }
+        ButtonDate.setText(makeDate(choosen_year, choosen_month, choosen_day));
+        ButtonDate.setOnClickListener(
+				new View.OnClickListener()
+				{
+					@Override
+					public void onClick(View arg0)
+					{
+						showDialog(DIALOG_DATE);
+					}
+				}
+			);
+        if (choosen_hour == -1)
+        {
+	        choosen_hour = c.get(Calendar.HOUR_OF_DAY);
+	        choosen_minute = c.get(Calendar.MINUTE);
+        }
+        ButtonTime.setText(makeTime(choosen_hour,choosen_minute));
+        ButtonTime.setOnClickListener(
+				new View.OnClickListener()
+				{
+					@Override
+					public void onClick(View arg0)
+					{
+						showDialog(DIALOG_TIME);
+					}
+				}
+			);
+
         // Vider le champ quand on le clique
         nomEmission.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             public void onFocusChange(View v, boolean b) {
@@ -242,6 +293,63 @@ public class ProgrammationActivity extends Activity {
 		// TODO: enregistrer l'état du formulaire qqpart pour
 		// le récupérer quand on revient sur l'activité
 	}
+    
+	@Override    
+    protected Dialog onCreateDialog(int id) 
+    {
+        switch (id) {
+            case DIALOG_DATE: 
+                return new DatePickerDialog(
+                    this, mDateSetListener, choosen_year, choosen_month, choosen_day);
+		    case DIALOG_TIME: 
+		        return new TimePickerDialog(
+		            this, mTimeSetListener, choosen_hour, choosen_minute, false);
+		}
+        return null;    
+    }
+
+	private DatePickerDialog.OnDateSetListener mDateSetListener =
+	    new DatePickerDialog.OnDateSetListener() 
+	    {        
+	        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) 
+	        {
+	        	choosen_year = year;
+	        	choosen_month = monthOfYear;
+	        	choosen_day = dayOfMonth;
+        		
+        		ButtonDate.setText(makeDate(year, monthOfYear, dayOfMonth));
+	        }
+	    };
+	    
+	private String makeDate(int y, int m, int d)
+	{
+		String cdate;
+		
+		cdate  = d < 10 ? "0" : "";
+		cdate += d;
+		cdate += "/";
+		cdate += m+1 < 10 ? "0" : "";
+		cdate += m+1;
+		cdate += "/";
+		cdate += y;
+		return cdate;
+	}
+
+    private TimePickerDialog.OnTimeSetListener mTimeSetListener =
+        new TimePickerDialog.OnTimeSetListener() 
+        {        
+            public void onTimeSet(TimePicker view, int h, int m) 
+            {
+            	choosen_hour = h;
+            	choosen_minute = m;
+        		ButtonTime.setText(makeTime(h,m));
+            }
+        };
+
+    private String makeTime(int h, int m)
+    {
+		return (h<10?"0"+h:""+h)+":"+(m<10?"0"+m:""+m);
+    }
     
 	@Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -360,8 +468,13 @@ public class ProgrammationActivity extends Activity {
 	 */
     class TelechargerChainesDisquesTask extends AsyncTask<Void, Integer, Boolean> {
         protected void onPreExecute() {
-        	progressDialog = ProgressDialog.show(progAct, getString(R.string.pvrPatientez),
-        			getString(R.string.pvrTelechargementChaines), true, false);
+    		progressDialog = new ProgressDialog(progAct);
+    		progressDialog.setIcon(R.drawable.fm_magnetoscope);
+    		progressDialog.setTitle(getString(R.string.pvrPatientez));
+    		progressDialog.setMessage(getString(R.string.pvrTelechargementChaines));
+    		progressDialog.show();
+//        	progressDialog = ProgressDialog.show(progAct, getString(R.string.pvrPatientez),
+//        			getString(R.string.pvrTelechargementChaines), true, false);
         }
     	
         protected Boolean doInBackground(Void... arg0) {
@@ -463,7 +576,7 @@ public class ProgrammationActivity extends Activity {
     	else if (orientationPortrait == false) {
     		findViewById(R.id.pvrPrgLayoutBoitier).setVisibility(View.GONE);
     	}
-		
+
 		// Remplissage des spinners
     	remplirSpinner(R.id.pvrPrgChaine);
     	remplirSpinner(R.id.pvrPrgDisque);
@@ -500,11 +613,16 @@ public class ProgrammationActivity extends Activity {
             class TraiterFormulaireTask extends AsyncTask<Void, Integer, String> {
             	ProgressDialog progressDialog = null;
 
-                protected void onPreExecute() {    
-                	progressDialog = ProgressDialog.show(progAct, getString(R.string.pvrPatientez),
+                protected void onPreExecute() {
+            		progressDialog = new ProgressDialog(progAct);
+            		progressDialog.setIcon(R.drawable.fm_magnetoscope);
+            		progressDialog.setTitle(getString(R.string.pvrPatientez));
+            		progressDialog.setMessage(getString(enr == null ? R.string.pvrProgrammationEnCours : R.string.pvrModificationEnCours));
+            		progressDialog.show();
+/*                	progressDialog = ProgressDialog.show(progAct, getString(R.string.pvrPatientez),
                 			getString(enr == null ? R.string.pvrProgrammationEnCours : R.string.pvrModificationEnCours),
                 			true, false);
-                }
+*/                }
             	
                 protected String doInBackground(Void... arg0) {
     	        	return doAction();
@@ -568,7 +686,7 @@ public class ProgrammationActivity extends Activity {
         		service = mChaines.get(chaineId).getServices().get(serviceId).getServiceId();
         		
         		// Date
-        		DatePicker datePicker = (DatePicker) findViewById(R.id.pvrPrgDate);
+/*        		DatePicker datePicker = (DatePicker) findViewById(R.id.pvrPrgDate);
         		date  = datePicker.getDayOfMonth() < 10 ? "0" : "";
         		date += datePicker.getDayOfMonth();
         		date += "/";
@@ -576,16 +694,21 @@ public class ProgrammationActivity extends Activity {
         		date += datePicker.getMonth()+1;
         		date += "/";
         		date += datePicker.getYear();
+  */
+        		date = makeDate(choosen_year, choosen_month, choosen_day);
         		
         		// Heure minutes
-        		TimePicker timePicker = (TimePicker) findViewById(R.id.pvrPrgHeure);
+/*        		TimePicker timePicker = (TimePicker) findViewById(R.id.pvrPrgHeure);
         		h = timePicker.getCurrentHour();
         		m = timePicker.getCurrentMinute();
+*/
+        		h = choosen_hour;
+        		m = choosen_minute;
         		if (h < 10) {	heure = "0" + h; }
         		else { 			heure = "" + h; }
         		if (m < 10) {	minutes = "0" + m; }
         		else { 			minutes = "" + m; }
-    
+        		
         		// Disque
         		int disqueId = ((Spinner) findViewById(R.id.pvrPrgDisque)).getSelectedItemPosition();
         		where_id = mDisques.get(disqueId).getId();
@@ -621,15 +744,20 @@ public class ProgrammationActivity extends Activity {
             	//pour un ajout:
             	// chaine=7&service=0&date=07%2F01%2F2010&heure=12&minutes=01
             	//&duree=134&emission=pouet&where_id=0&submit=PROGRAMMER+L%27ENREGISTREMENT
+
+            	// nok:
+            	//chaine=2&service=0&date=10%2F02%2F2010&heure=01&minutes=46
+            	//&duree=5&emission=qwwer&where_id=0&submit=PROGRAMMER+L%27ENREGISTREMENT
             	else {
-            		postVars.add(new BasicNameValuePair("submit", "PROGRAMMER+L%27ENREGISTREMENT"));
+            		postVars.add(new BasicNameValuePair("submit", "PROGRAMMER L'ENREGISTREMENT"));
             	}
 
         		// Requete HTTP
         		String url = "http://adsl.free.fr/admin/magneto.pl";
-                postVars.add(new BasicNameValuePair("box", ""+mBoitierHD));
+                //postVars.add(new BasicNameValuePair("box", ""+mBoitierHD));
         		String resultat = FBMHttpConnection.getPage(FBMHttpConnection.postAuthRequest(url, postVars, true, true));
 
+        		FBMHttpConnection.FBMLog("Page resultat :\n"+resultat);
         		int erreurPos = resultat.indexOf("erreurs");
         		if (erreurPos > 0) {
         			int debutErr, finErr;
@@ -676,6 +804,7 @@ public class ProgrammationActivity extends Activity {
 	private void afficherMsgErreur(String msg) {	
     	AlertDialog d = new AlertDialog.Builder(this).create();
 		d.setTitle("Erreur!");
+		d.setIcon(R.drawable.fm_magnetoscope);
 		d.setMessage(msg);
 		d.setButton("Ok", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
