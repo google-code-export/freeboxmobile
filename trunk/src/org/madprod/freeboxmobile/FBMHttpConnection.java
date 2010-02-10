@@ -639,7 +639,7 @@ public class FBMHttpConnection implements Constants
 				FBMLog("CHARSET : not found - keep default "+charset);
 		}
 		else
-			FBMLog("CHARSET : "+charset);
+			FBMLog("CHARSET default : "+charset);
 		return charset;
 	}
 
@@ -773,20 +773,12 @@ public class FBMHttpConnection implements Constants
 			else
 			{
 				FBMLog("POST : AUTHENTIFICATION OK");
-				Log.d(DEBUGTAG, "POST : AUTHENTIFICATION OK");
 				c = CONNECT_CONNECTED;
 			}
 			if ((c == CONNECT_CONNECTED) && (retour))
 			{
 				FBMLog("POST : LECTURE DONNEES");
-				Log.d(DEBUGTAG, "POST : LECTURE DONNEES");
-				if (h.getContentType() != null)
-				{
-					String temp = h.getContentType();
-					int pos = temp.indexOf("charset=");
-					pagesCharset = temp.substring(pos+8);
-					FBMLog("GET : CHARSET : "+pagesCharset);
-				}
+				pagesCharset = getCharset(h.getContentType(), pagesCharset);
 				return (new InputStreamReader(h.getInputStream(), pagesCharset));
 			}
 		}
