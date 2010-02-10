@@ -572,14 +572,13 @@ public class ProgrammationActivity extends Activity {
 	        }
 	        else {
 	    		FBMHttpConnection.FBMLog("telechargerEtParser impossible de trouver le json dans le html");
-	    		FBMHttpConnection.FBMLog(resultat);
 	        }
         }
         else {
         	FBMHttpConnection.FBMLog("telechargerEtParser null");
-    		FBMHttpConnection.FBMLog(resultat);
         }
-        FBMHttpConnection.FBMLog("Impossible de télécharger le json des chaines/disques");
+        FBMHttpConnection.FBMLog("==> Impossible de télécharger le json des chaines/disques");
+        FBMHttpConnection.FBMLog(resultat);
     	return false;
     }
     
@@ -789,6 +788,7 @@ public class ProgrammationActivity extends Activity {
         		// Requete HTTP
         		String url = "http://adsl.free.fr/admin/magneto.pl";
                 //postVars.add(new BasicNameValuePair("box", ""+mBoitierHD));
+        		FBMHttpConnection.FBMLog("Programmation sur le serveur de Free");
         		String resultat = FBMHttpConnection.getPage(FBMHttpConnection.postAuthRequest(url, postVars, true, true));
 
         		FBMHttpConnection.FBMLog("Page resultat :\n"+resultat);
