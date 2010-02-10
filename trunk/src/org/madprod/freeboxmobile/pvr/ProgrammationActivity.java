@@ -67,6 +67,11 @@ public class ProgrammationActivity extends Activity {
 	Spinner dureeSpinner = null;
 	Spinner boitierHDSpinner = null;
 	
+	private final int LAYOUT_BENOIT = 1;
+	private final int LAYOUT_OLIVIER = 2;
+	
+	private int selectedLayout = LAYOUT_OLIVIER;
+	
 	boolean orientationPortrait = false;
 	int positionEcran = 0;
 	int nbEcrans = 3;
@@ -139,8 +144,12 @@ public class ProgrammationActivity extends Activity {
         
         dureeSpinner.setSelection(8);// 8 == 2H
         
+        if (selectedLayout == LAYOUT_OLIVIER) {
         orientationPortrait = false;
-//        orientationPortrait = getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
+        }
+        else {
+        	orientationPortrait = getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
+        }
         
         Calendar c = Calendar.getInstance();
         if (choosen_year == 0)
@@ -685,25 +694,29 @@ public class ProgrammationActivity extends Activity {
         		int serviceId = spinnerQualite.getSelectedItemPosition();
         		service = mChaines.get(chaineId).getServices().get(serviceId).getServiceId();
         		
-        		// Date
-/*        		DatePicker datePicker = (DatePicker) findViewById(R.id.pvrPrgDate);
-        		date  = datePicker.getDayOfMonth() < 10 ? "0" : "";
-        		date += datePicker.getDayOfMonth();
-        		date += "/";
-        		date += datePicker.getMonth()+1 < 10 ? "0" : "";
-        		date += datePicker.getMonth()+1;
-        		date += "/";
-        		date += datePicker.getYear();
-  */
-        		date = makeDate(choosen_year, choosen_month, choosen_day);
+        		// Date et heure
+       	       	if (selectedLayout == LAYOUT_BENOIT) {
+	        		DatePicker datePicker = (DatePicker) findViewById(R.id.pvrPrgDate);
+	        		date = makeDate(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
+
+	        		TimePicker timePicker = (TimePicker) findViewById(R.id.pvrPrgHeure);
+	        		h = timePicker.getCurrentHour();
+	        		m = timePicker.getCurrentMinute();
+
+/*	        		date  = datePicker.getDayOfMonth() < 10 ? "0" : "";
+	        		date += datePicker.getDayOfMonth();
+	        		date += "/";
+	        		date += datePicker.getMonth()+1 < 10 ? "0" : "";
+	        		date += datePicker.getMonth()+1;
+	        		date += "/";
+	        		date += datePicker.getYear();
+*/     	       	}
+       	       	else {
+       	       		date = makeDate(choosen_year, choosen_month, choosen_day);
+            		h = choosen_hour;
+            		m = choosen_minute;
+       	       	}
         		
-        		// Heure minutes
-/*        		TimePicker timePicker = (TimePicker) findViewById(R.id.pvrPrgHeure);
-        		h = timePicker.getCurrentHour();
-        		m = timePicker.getCurrentMinute();
-*/
-        		h = choosen_hour;
-        		m = choosen_minute;
         		if (h < 10) {	heure = "0" + h; }
         		else { 			heure = "" + h; }
         		if (m < 10) {	minutes = "0" + m; }
@@ -877,6 +890,7 @@ public class ProgrammationActivity extends Activity {
         
         return null;
     }
+
     private void afficherInfosDisque(int disqueId) {
         // Infos disque
         Disque d = mDisques.get(disqueId);
@@ -891,9 +905,16 @@ public class ProgrammationActivity extends Activity {
     			.setText(getString(R.string.pvrInfosDisque2).replace("#libre", ""+gigaFree));
         	((TextView) findViewById(R.id.pvrPrgInfosDisque3))
     			.setText(getString(R.string.pvrInfosDisque3).replace("#total", ""+gigaTotal));
-        	((TextView) findViewById(R.id.pvrPrgInfosDisque4))
-    			.setText(getString(R.string.pvrInfosDisque4).replace("#mount", d.getMountPt()));
-        	
+        	switch (selectedLayout)	{
+        		case LAYOUT_BENOIT:
+                	((TextView) findViewById(R.id.pvrPrgInfosDisque4))
+        			.setText(getString(R.string.pvrInfosDisque4).replace("#mount", d.getMountPt()));
+        		break;
+        		case LAYOUT_OLIVIER:
+                	((TextView) findViewById(R.id.pvrPrgInfosDisque4))
+        			.setText(getString(R.string.pvrInfosDisque4_2).replace("#mount", d.getMountPt()));
+        	}
+        		
         	if (d.getGigaFree() < 4) {
         		((TextView) findViewById(R.id.pvrPrgInfosDisqueEspaceFaible))
         			.setText(getString(R.string.pvrInfosDisqueEspaceFaible));
@@ -927,7 +948,7 @@ public class ProgrammationActivity extends Activity {
 					disque = mDisques.get(i);
 					disqueName = disque.getLabel();
 					disqueName += " (" + disque.getGigaFree() + "/" + disque.getGigaTotal();
-					disqueName += " " + getString(R.string.pvrGioLibres) + ")";
+					disqueName += " " + getString(R.string.pvrGoLibres) + ")";
 					liste.add(disqueName);
 				}
 				afficherInfosDisque(0);
