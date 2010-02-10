@@ -25,6 +25,7 @@ For example, if you want to record a show every Tuesday and Wednesday, be sure t
 	<string name="pvrInfosDisque2">Free space: #libre GiB</string>
 	<string name="pvrInfosDisque3">Total space: #total GiB</string>
 	<string name="pvrInfosDisque4">Mount point: #mount</string>
+	<string name="pvrInfosDisque4_2">Directory: #mount</string>
 	<string name="pvrInfosDisqueEspaceFaible">Warning: disk almost full!</string>
 	
 	<string name="pvrTxtQualiteParDefaut">Default</string>
@@ -57,6 +58,7 @@ For example, if you want to record a show every Tuesday and Wednesday, be sure t
 	
 	<string name="pvrNonEnregistrable">Not recordable</string>
 	<string name="pvrGioLibres">GiB free</string>
+	<string name="pvrGoLibres">Go free</string>
 	
 	<string name="pvrPatientez">Please wait</string>
 	<string name="pvrSuppressionEnCours">Deleting...</string>

@@ -53,8 +53,8 @@
 				android:layout_height="wrap_content"></ProgressBar>
 				
 			<TextView android:id="@+id/pvrPrgInfosDisque1" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
-			<TextView android:id="@+id/pvrPrgInfosDisque2" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
-			<TextView android:id="@+id/pvrPrgInfosDisque3" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+			<TextView android:id="@+id/pvrPrgInfosDisque2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:visibility="gone"></TextView>
+			<TextView android:id="@+id/pvrPrgInfosDisque3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:visibility="gone"></TextView>
 			<TextView android:id="@+id/pvrPrgInfosDisque4" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
 			<TextView android:id="@+id/pvrPrgInfosDisqueEspaceFaible" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
 			
