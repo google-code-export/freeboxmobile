@@ -306,6 +306,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     {
     	AlertDialog d = new AlertDialog.Builder(this).create();
 		d.setTitle(getString(R.string.app_name));
+		d.setIcon(R.drawable.icon_fbm_reverse);
     	d.setMessage(
 			"Votez pour soutenir Freebox Mobile !\n\n"+
 			"Afin d'améliorer la visibilité sur l'Android Market "+
@@ -358,6 +359,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     	l.addView(tlog);
     	AlertDialog d = new AlertDialog.Builder(this).create();
 		d.setTitle(getString(R.string.app_name) + " : Rapport d'erreur");
+		d.setIcon(R.drawable.icon_fbm_reverse);
     	d.setView(s);
     	d.setButton(DialogInterface.BUTTON_NEUTRAL, "Continuer", new DialogInterface.OnClickListener()
 		{
@@ -407,6 +409,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     	s.addView(t);
     	d.setView(s);
 		d.setTitle(getString(R.string.app_name));
+		d.setIcon(R.drawable.icon_fbm_reverse);
 		d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
 			{
 				public void onClick(DialogInterface dialog, int which)
@@ -428,6 +431,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     {
 		AlertDialog d = new AlertDialog.Builder(this).create();
 		d.setTitle(getString(R.string.app_name));
+		d.setIcon(R.drawable.icon_fbm_reverse);
 		d.setMessage(
 			"Cette fonctionnalité n'est accessible qu'aux abonnés ADSL.\n\n"+
 			"Etes-vous un chanceux en Fibre Optique ? :)\n"
@@ -446,6 +450,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     private void showNonDegroupe()
     {
 		AlertDialog d = new AlertDialog.Builder(this).create();
+		d.setIcon(R.drawable.icon_fbm_reverse);
 		d.setTitle(getString(R.string.app_name));
 		d.setMessage(
 			"Cette fonctionnalité n'est accessible qu'aux abonnés dégroupé.\n"
@@ -465,6 +470,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     {
 		AlertDialog d = new AlertDialog.Builder(this).create();
 		d.setTitle("Pas de compte configuré");
+		d.setIcon(R.drawable.icon_fbm_reverse);
 		d.setMessage(
 			"Veuillez configurer au moins un compte pour pouvoir utiliser cette application.\n\n"+
 			"Vous pouvez configurer des comptes en utilisant la touche MENU sur la page d'accueil "+
@@ -485,6 +491,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     {
 		AlertDialog d = new AlertDialog.Builder(this).create();
 		d.setTitle("SDCard Necessaire !");
+		d.setIcon(R.drawable.icon_fbm_reverse);
 		d.setMessage(
 			"Une carte SD est nécessaire afin d'utiliser "+
 			"cette application."
