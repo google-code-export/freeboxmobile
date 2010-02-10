@@ -526,7 +526,6 @@ public class ProgrammationActivity extends Activity {
         String resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequestISR(url, param, true, true));
         if (resultat != null) {
 			FBMHttpConnection.FBMLog("telechargerEtParser not null");
-    		FBMHttpConnection.FBMLog(resultat);
     		
 	        int posChaines = resultat.indexOf("var serv_a = [");
 	        int posDisques = resultat.indexOf("var disk_a = [");
@@ -573,10 +572,13 @@ public class ProgrammationActivity extends Activity {
 	        }
 	        else {
 	    		FBMHttpConnection.FBMLog("telechargerEtParser impossible de trouver le json dans le html");
+	    		FBMHttpConnection.FBMLog(resultat);
 	        }
         }
-        else
+        else {
         	FBMHttpConnection.FBMLog("telechargerEtParser null");
+    		FBMHttpConnection.FBMLog(resultat);
+        }
         FBMHttpConnection.FBMLog("Impossible de télécharger le json des chaines/disques");
     	return false;
     }
