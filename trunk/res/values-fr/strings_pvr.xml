@@ -25,6 +25,7 @@ Par exemple, si vous voulez enregistrer une émission tous les mardi et mercredi
 	<string name="pvrInfosDisque2">Espace libre : #libre GiB</string>
 	<string name="pvrInfosDisque3">Espace total : #total GiB</string>
 	<string name="pvrInfosDisque4">Point de montage : #mount</string>
+	<string name="pvrInfosDisque4_2">Dossier : #mount</string>
 	<string name="pvrInfosDisqueEspaceFaible">Attention : espace disque faible !</string>
 	
 	<string name="pvrTxtQualiteParDefaut">Par défaut</string>
@@ -57,6 +58,7 @@ Par exemple, si vous voulez enregistrer une émission tous les mardi et mercredi
 	
 	<string name="pvrNonEnregistrable">Non enregistrable</string>
 	<string name="pvrGioLibres">Gio libres</string>
+	<string name="pvrGoLibres">Go libres</string>
 	
 	<string name="pvrPatientez">Veuillez patienter</string>
 	<string name="pvrSuppressionEnCours">Suppression en cours...</string>
