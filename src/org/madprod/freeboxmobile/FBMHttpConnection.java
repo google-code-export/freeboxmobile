@@ -426,7 +426,7 @@ public class FBMHttpConnection implements Constants
         }
 		catch (Exception e)
 		{
-			FBMLog("connectFree : "+e);
+			FBMLog("connectFree : "+e.getMessage());
         	e.printStackTrace();
         	connectionStatus = CONNECT_NOT_CONNECTED;
         	id = null;
@@ -627,7 +627,7 @@ public class FBMHttpConnection implements Constants
 		}
 		catch (Exception e)
 		{
-			FBMLog("getAuthRequestIS "+e);
+			FBMLog("getAuthRequestIS "+e.getMessage());
 			e.printStackTrace();
 		}
 		return (null);
@@ -836,6 +836,7 @@ public class FBMHttpConnection implements Constants
 		}
 		catch (Exception e)
 		{
+			FBMLog("PostAuthRequest : "+e.getMessage()+" "+getStackTrace(e));
 			e.printStackTrace();
 		}
 		return (null);
@@ -868,8 +869,7 @@ public class FBMHttpConnection implements Constants
         	}
         	catch (Exception e)
         	{
-        		FBMLog("makeStringForPost PB ENCODE : "+e);
-            	Log.d(DEBUGTAG, "makeStringForPost PB ENCODE : "+e);
+        		FBMLog("makeStringForPost PB ENCODE : "+e.getMessage());
                 listConcat += URLEncoder.encode(p.get(0).getName());
                 listConcat += '=';
                 listConcat += URLEncoder.encode(p.get(0).getValue());        		
@@ -885,51 +885,17 @@ public class FBMHttpConnection implements Constants
                 }
                 catch (Exception e)
                 {
-                	Log.d(DEBUGTAG, "makeStringForPost PB ENCODE : "+e);
+                	Log.d(DEBUGTAG, "makeStringForPost PB ENCODE : "+e.getMessage());
 	                listConcat += URLEncoder.encode(p.get(i).getName());
 	                listConcat += '=';
 	                listConcat += URLEncoder.encode(p.get(i).getValue());
                 }
             }
         }
-//        Log.d(DEBUGTAG, "makeStringForPost : "+listConcat);
+        if (auth)
+        	FBMLog("makeStringForPost : "+listConcat);
         return (listConcat);
     }
-	
-	/**
-	 * BufferedReader to String conversion
-	 * @param	BufferedReader
-	 * @return	String
-	 * @throws	IOException
-	 */
-/*  NOT USED ANYMORE
-  	public static String getPage(InputStream is)
- 
-	{
-		FBMHttpConnection.FBMLog("getPage start");
-		if (is == null)
-		{
-			FBMHttpConnection.FBMLog("getPage is null");
-			return null;
-		}
-		try
-		{
-			FBMHttpConnection.FBMLog("getPage try");
-			InputStreamReader isr = new InputStreamReader(is, pagesCharset);
-			if (isr == null) {
-				FBMHttpConnection.FBMLog("isr == null!");
-				return null;
-			}
-			return getPage(isr);
-		}
-		catch (UnsupportedEncodingException e)
-		{
-			e.printStackTrace();
-		}
-		FBMHttpConnection.FBMLog("getPage is end null");
-		return null;
-	}
-*/
 	
 	public static String getPage(InputStreamReader isr)
 	{
