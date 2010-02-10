@@ -308,11 +308,17 @@ public class ProgrammationActivity extends Activity {
     {
         switch (id) {
             case DIALOG_DATE: 
-                return new DatePickerDialog(
-                    this, mDateSetListener, choosen_year, choosen_month, choosen_day);
-		    case DIALOG_TIME: 
-		        return new TimePickerDialog(
-		            this, mTimeSetListener, choosen_hour, choosen_minute, false);
+            	DatePickerDialog dpd = new DatePickerDialog(this, mDateSetListener, choosen_year, choosen_month, choosen_day);
+            	dpd.setIcon(R.drawable.fm_magnetoscope);
+            	// TODO : Migrer dans strings.xml
+            	dpd.setTitle("Date de l'enregistrement");
+            	return dpd;
+		    case DIALOG_TIME:
+	    		TimePickerDialog tpd = new TimePickerDialog(this, mTimeSetListener, choosen_hour, choosen_minute, true);
+	    		tpd.setIcon(R.drawable.fm_magnetoscope);
+            	// TODO : Migrer dans strings.xml
+	    		tpd.setTitle("Heure de début de l'enregistrement");
+		        return tpd;
 		}
         return null;    
     }
