@@ -613,15 +613,6 @@ public class FBMHttpConnection implements Constants
 			if ((c == CONNECT_CONNECTED) && (retour == true))
 			{
 				FBMLog("GETIS : LECTURE DONNEES");
-/*				FBMLog("GETIS : TYPE : "+h.getContentType());
-				if (h.getContentType() != null)
-				{
-					String temp = h.getContentType();
-					int pos = temp.indexOf("charset=");
-					pagesCharset = temp.substring(pos+8);
-					FBMLog("GET : CHARSET : "+pagesCharset);
-				}
-				*/
 				return (h.getInputStream());
 			}
 		}
@@ -747,40 +738,26 @@ public class FBMHttpConnection implements Constants
 		return (null);
 	}
 
-	/**
-	* Sends a POST request
-	* @param  url : url to post
-	* @param  nameValuePairs : a list of NameValuePair with parameters to post
-	* @param auth : true pour ajouter automatiquement id & idt
-	* @retour true pour avec une valeur non nulle en retour (si on veut le contenu de la page ou pas)
-	*/
+	// TODO : From r249 to test (remove)
 	public static InputStreamReader postAuthRequest(String url, List<NameValuePair> p, boolean auth, boolean retour)
 	{
 		HttpURLConnection h = null;
 		int c;
 		String pagesCharset = "ISO8859_1";
 		
-		FBMLog("-- POST: " + url);
+		FBMLog("POST: " + url);
 		Log.d(DEBUGTAG, "POST: " + url);
 		try
 		{
 			c = checkConnected(CONNECT_CONNECTED);
 			if (c == CONNECT_CONNECTED)
 			{
-				h = prepareConnection(url+(auth ? "?"+makeStringForPost(null, auth, null) : ""), "POST");
+				h = prepareConnection(url+(auth ? "?"+makeStringForPost(null, auth) : ""), "POST");
 				h.setDoOutput(true);
 				if (retour)
 					h.setDoInput(true);
 				OutputStreamWriter o = new OutputStreamWriter(h.getOutputStream());
-				pagesCharset = getCharset(h.getContentType(), pagesCharset);
-/*				if (h.getContentType() != null)
-				{
-					String temp = h.getContentType();
-					pagesCharset = temp.substring(temp.indexOf("charset=")+8);
-					FBMLog("POST : CHARSET : "+pagesCharset);
-				}
-*/
-				o.write(makeStringForPost(p, false, pagesCharset));
+				o.write(makeStringForPost(p, false));
 				o.flush();
 				o.close();
 				if (h.getHeaderFields().get("location") != null)
@@ -802,12 +779,12 @@ public class FBMHttpConnection implements Constants
 				{
 					FBMLog("POST :  REAUTHENTIFICATION OK");
 					Log.d(DEBUGTAG, "POST :  REAUTHENTIFICATION OK");
-					h = prepareConnection(url+(auth ? "?"+makeStringForPost(null, auth, pagesCharset) : ""), "POST");
+					h = prepareConnection(url+(auth ? "?"+makeStringForPost(null, auth) : ""), "POST");
 					h.setDoOutput(true);
 					if (retour)
 						h.setDoInput(true);
 					OutputStreamWriter o = new OutputStreamWriter(h.getOutputStream());
-					o.write(makeStringForPost(p, false, pagesCharset));
+					o.write(makeStringForPost(p, false));
 					o.flush();
 					o.close();
 				}
@@ -822,22 +799,147 @@ public class FBMHttpConnection implements Constants
 			{
 				FBMLog("POST : LECTURE DONNEES");
 				Log.d(DEBUGTAG, "POST : LECTURE DONNEES");
-				pagesCharset = getCharset(h.getContentType(), pagesCharset);
-/*				if (h.getContentType() != null)
+				if (h.getContentType() != null)
 				{
 					String temp = h.getContentType();
 					int pos = temp.indexOf("charset=");
 					pagesCharset = temp.substring(pos+8);
-					FBMLog("POST : CHARSET : "+pagesCharset);
+					FBMLog("GET : CHARSET : "+pagesCharset);
 				}
-*/
 				return (new InputStreamReader(h.getInputStream(), pagesCharset));
 			}
 		}
 		catch (Exception e)
 		{
-			FBMLog("PostAuthRequest : "+e.getMessage()+" "+getStackTrace(e));
 			e.printStackTrace();
+		}
+		return (null);
+	}
+	
+	// TODO : From r249 to test (remove)
+	private static String makeStringForPost(List<NameValuePair> p, boolean auth)
+	   {
+	        String listConcat = "";
+			if ((p == null) && (auth))
+			{
+				p = new ArrayList<NameValuePair>();
+			}
+			if (auth)
+			{
+				p.add(new BasicNameValuePair("id",id));
+				p.add(new BasicNameValuePair("idt",idt));
+			}
+	        if ((p != null) && (p.size() > 0))
+	        {
+	        	try
+	        	{
+//	                listConcat += URLEncoder.encode(p.get(0).getName(), "iso-8859-1");
+	                listConcat += URLEncoder.encode(p.get(0).getName(), "iso-8859-1");
+	                listConcat += '=';
+	                listConcat += URLEncoder.encode(p.get(0).getValue(), "iso-8859-1");
+	        	}
+	        	catch (Exception e)
+	        	{
+	        		FBMLog("makeStringForPost PB ENCODE : "+e);
+	            	Log.d(DEBUGTAG, "makeStringForPost PB ENCODE : "+e);
+	                listConcat += URLEncoder.encode(p.get(0).getName());
+	                listConcat += '=';
+	                listConcat += URLEncoder.encode(p.get(0).getValue());        		
+	        	}
+	            for(int i = 1 ; i < p.size() ; i++)
+	            {
+	                listConcat += "&";
+	                try
+	                {
+		                listConcat += URLEncoder.encode(p.get(i).getName(), "iso-8859-1");
+		                listConcat += '=';
+		                listConcat += URLEncoder.encode(p.get(i).getValue(), "iso-8859-1");
+	                }
+	                catch (Exception e)
+	                {
+	                	Log.d(DEBUGTAG, "makeStringForPost PB ENCODE : "+e);
+		                listConcat += URLEncoder.encode(p.get(i).getName());
+		                listConcat += '=';
+		                listConcat += URLEncoder.encode(p.get(i).getValue());
+	                }
+	            }
+	        }
+//	        Log.d(DEBUGTAG, "makeStringForPost : "+listConcat);
+	        return (listConcat);
+	    }
+	   
+	/**
+	* Sends a POST request
+	* @param  url : url to post
+	* @param  nameValuePairs : a list of NameValuePair with parameters to post
+	* @param auth : true pour ajouter automatiquement id & idt
+	* @retour true pour avec une valeur non nulle en retour (si on veut le contenu de la page ou pas)
+	*/
+	public static InputStreamReader postAuthRequest2(String url, List<NameValuePair> p, boolean auth, boolean retour)
+	{
+		HttpURLConnection h = null;
+		int c;
+		String pagesCharset = "ISO8859_1";
+		
+		FBMLog("-- POST: " + url);
+		try
+		{
+			c = checkConnected(CONNECT_CONNECTED);
+			if (c == CONNECT_CONNECTED)
+			{
+				FBMLog("POST : VERIFICATION DE SESSION");
+				h = prepareConnection(url+(auth ? "?"+makeStringForPost(null, auth, null) : ""), "POST");
+				h.setDoOutput(true);
+				if (retour)
+					h.setDoInput(true);
+				OutputStreamWriter o = new OutputStreamWriter(h.getOutputStream());
+				pagesCharset = getCharset(h.getContentType(), pagesCharset);
+
+				o.write(makeStringForPost(p, false, pagesCharset));
+				if (h.getHeaderFields().get("location") != null)
+				{
+					c = CONNECT_NOT_CONNECTED;
+				}
+				o.flush();
+				o.close();
+			}
+			if (c != CONNECT_CONNECTED)
+			{
+				if (h != null)
+				{
+					h.disconnect();
+					h = null;
+				}
+				FBMLog("POST : PAS AUTHENTIFIE SUR LA CONSOLE - SESSION EXPIREE");
+				c = connectionFree(login, password);
+				if (c == CONNECT_CONNECTED)
+				{
+					FBMLog("POST :  REAUTHENTIFICATION OK");
+					h = prepareConnection(url+(auth ? "?"+makeStringForPost(null, auth, pagesCharset) : ""), "POST");
+					h.setDoOutput(true);
+					if (retour)
+						h.setDoInput(true);
+					OutputStreamWriter o = new OutputStreamWriter(h.getOutputStream());
+					o.write(makeStringForPost(p, false, pagesCharset));
+					o.flush();
+					o.close();
+				}
+			}
+			else
+			{
+				FBMLog("POST : AUTHENTIFICATION OK");
+				c = CONNECT_CONNECTED;
+			}
+			if ((c == CONNECT_CONNECTED) && (retour))
+			{
+				FBMLog("POST : LECTURE DONNEES");
+				pagesCharset = getCharset(h.getContentType(), pagesCharset);
+				return (new InputStreamReader(h.getInputStream(), pagesCharset));
+			}
+		}
+		catch (Exception e)
+		{
+			FBMLog("EXCEPTION PostAuthRequest : "+e.getMessage()+" "+getStackTrace(e));
 		}
 		return (null);
 	}
@@ -845,10 +947,11 @@ public class FBMHttpConnection implements Constants
 	private static String makeStringForPost(List<NameValuePair> p, boolean auth, String charset)
     {
         String listConcat = "";
-        
+        boolean log = true;
+  
         if (charset == null)
         {
-        	charset = "iso-8859-1";
+        	charset = "ISO8859_1";
         }
 		if ((p == null) && (auth))
 		{
@@ -863,6 +966,8 @@ public class FBMHttpConnection implements Constants
         {
         	try
         	{
+        		if (p.get(0).getName().equals("pass"))
+        			log = false;
                 listConcat += URLEncoder.encode(p.get(0).getName(), charset);
                 listConcat += '=';
                 listConcat += URLEncoder.encode(p.get(0).getValue(), charset);
@@ -879,6 +984,8 @@ public class FBMHttpConnection implements Constants
                 listConcat += "&";
                 try
                 {
+            		if (p.get(0).getName().equals("pass"))
+            			log = false;
 	                listConcat += URLEncoder.encode(p.get(i).getName(), charset);
 	                listConcat += '=';
 	                listConcat += URLEncoder.encode(p.get(i).getValue(), charset);
@@ -892,7 +999,7 @@ public class FBMHttpConnection implements Constants
                 }
             }
         }
-        if (auth)
+        if (log)
         	FBMLog("makeStringForPost : "+listConcat);
         return (listConcat);
     }
