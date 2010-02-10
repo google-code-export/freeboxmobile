@@ -66,6 +66,7 @@ public class ProgrammationActivity extends Activity {
 	Spinner chainesSpinner = null;
 	Spinner dureeSpinner = null;
 	Spinner boitierHDSpinner = null;
+	Spinner disqueSpinner = null;
 	
 	private final int LAYOUT_BENOIT = 1;
 	private final int LAYOUT_OLIVIER = 2;
@@ -129,6 +130,7 @@ public class ProgrammationActivity extends Activity {
         chainesSpinner = (Spinner) findViewById(R.id.pvrPrgChaine);
         dureeSpinner = (Spinner) findViewById(R.id.pvrPrgDurees);
         boitierHDSpinner = (Spinner) findViewById(R.id.pvrPrgBoitier);
+        disqueSpinner = (Spinner) findViewById(R.id.pvrPrgDisque);
         slideLeftIn = AnimationUtils.loadAnimation(this, R.anim.slide_left_in);
         slideLeftOut = AnimationUtils.loadAnimation(this, R.anim.slide_left_out);
         slideRightIn = AnimationUtils.loadAnimation(this, R.anim.slide_right_in);
@@ -145,7 +147,7 @@ public class ProgrammationActivity extends Activity {
         dureeSpinner.setSelection(8);// 8 == 2H
         
         if (selectedLayout == LAYOUT_OLIVIER) {
-        orientationPortrait = false;
+        	orientationPortrait = false;
         }
         else {
         	orientationPortrait = getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
@@ -221,7 +223,7 @@ public class ProgrammationActivity extends Activity {
         }
         
         // Flipper
-        if (orientationPortrait) {
+        if (orientationPortrait && selectedLayout == LAYOUT_BENOIT) {
             // Le choix du boitier HD est masqué par défaut, on fera showPrevious si on détecte 2 boitiers HD
     		viewFlipper.showNext();
     		
@@ -595,6 +597,17 @@ public class ProgrammationActivity extends Activity {
 		// Remplissage des spinners
     	remplirSpinner(R.id.pvrPrgChaine);
     	remplirSpinner(R.id.pvrPrgDisque);
+    	
+    	disqueSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				afficherInfosDisque(position);
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+			}
+    	});
 		
     	// S'il s'agit d'une modification, remplir le formulaire
     	final Cursor enr = remplirFiche();
@@ -729,7 +742,7 @@ public class ProgrammationActivity extends Activity {
         		else { 			minutes = "" + m; }
         		
         		// Disque
-        		int disqueId = ((Spinner) findViewById(R.id.pvrPrgDisque)).getSelectedItemPosition();
+        		int disqueId = disqueSpinner.getSelectedItemPosition();
         		where_id = mDisques.get(disqueId).getId();
 
         		// Creation des variables POST
@@ -867,11 +880,11 @@ public class ProgrammationActivity extends Activity {
 	        TimePicker heure = (TimePicker) findViewById(R.id.pvrPrgHeure);
 	        EditText duree = (EditText) findViewById(R.id.pvrPrgDuree);
 	        EditText nom = (EditText) findViewById(R.id.pvrPrgNom);
-	        Spinner disques = (Spinner) findViewById(R.id.pvrPrgDisque);
+//	        Spinner disques = (Spinner) findViewById(R.id.pvrPrgDisque);
 	        
 	        // Remplissage
 	        chaines.setSelection(getChaineSpinnerId(c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_CHAINE))));
-	        disques.setSelection(getDisqueSpinnerId(c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_WHERE_ID))));
+	        disqueSpinner.setSelection(getDisqueSpinnerId(c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_WHERE_ID))));
 	        
 	        String strDate = c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_DATE));
 	        int day = Integer.parseInt(strDate.substring(0,2));
@@ -887,7 +900,7 @@ public class ProgrammationActivity extends Activity {
 	        nom.setText(c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_NOM)));
 
 	        int disqueId = Integer.parseInt(c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_WHERE_ID)));
-	        disques.setSelection(disqueId);
+	        disqueSpinner.setSelection(disqueId);
 	        afficherInfosDisque(disqueId);
 	        return c;
         }
@@ -1021,6 +1034,7 @@ public class ProgrammationActivity extends Activity {
 		getListe(strChaines, "}]},{\"name\"", 3, true);
 		return mChaines;
 	}
+	
 	private List<Disque> getListeDisques(String strDisques) {
 		getListe(strDisques, "}", 1, false);
 		return mDisques;
