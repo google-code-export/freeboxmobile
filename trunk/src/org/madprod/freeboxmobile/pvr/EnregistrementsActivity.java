@@ -172,7 +172,6 @@ public class EnregistrementsActivity extends ExpandableListActivity {
         		progressDialog.setTitle("Enregistrements");
         		progressDialog.setMessage("Mise à jour...");
         		progressDialog.show();
-//            	progressDialog = ProgressDialog.show(enrAct, "Enregistrements", "Mise à jour...", true, false);
         	}
         }
     	
