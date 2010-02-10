@@ -671,17 +671,7 @@ public class FBMHttpConnection implements Constants
 					h = prepareConnection(url+"?"+makeStringForPost(p, auth, charset), "HEAD");
 				h.setDoInput(true);
 				charset = getCharset(h.getContentType(), charset);
-/*				if (h.getContentType() != null)
-				{
-					String temp = h.getContentType();
-					int pos = temp.indexOf("charset=");
-					if (pos != -1)
-					{
-						charset = temp.substring(pos+8);
-					}
-					FBMLog("GETISR : CHARSET : "+charset);
-				}
-*/
+
 				FBMLog("HEADERS : "+h.getHeaderFields());
 				FBMLog("RESPONSE : "+h.getResponseCode()+" "+h.getResponseMessage());
 				if (h.getHeaderFields().get("location") != null)
@@ -719,14 +709,7 @@ public class FBMHttpConnection implements Constants
 			{
 				FBMLog("GETISR : LECTURE DONNEES - TYPE : "+h.getContentType());
 				charset = getCharset(h.getContentType(), charset);
-/*
-				if (h.getContentType() != null)
-				{
-					String temp = h.getContentType();
-					charset = temp.substring(temp.indexOf("charset=")+8);
-					FBMLog("GETISR : CHARSET : "+charset);
-				}
-*/
+
 				return (new InputStreamReader(h.getInputStream(), charset));
 			}
 		}
@@ -744,20 +727,20 @@ public class FBMHttpConnection implements Constants
 		HttpURLConnection h = null;
 		int c;
 		String pagesCharset = "ISO8859_1";
-		
+
 		FBMLog("POST: " + url);
-		Log.d(DEBUGTAG, "POST: " + url);
 		try
 		{
 			c = checkConnected(CONNECT_CONNECTED);
 			if (c == CONNECT_CONNECTED)
 			{
-				h = prepareConnection(url+(auth ? "?"+makeStringForPost(null, auth) : ""), "POST");
+				FBMLog("POST : VERIFICATION DE SESSION");
+				h = prepareConnection(url+(auth ? "?"+makeStringForPost(null, auth, null) : ""), "POST");
 				h.setDoOutput(true);
 				if (retour)
 					h.setDoInput(true);
 				OutputStreamWriter o = new OutputStreamWriter(h.getOutputStream());
-				o.write(makeStringForPost(p, false));
+				o.write(makeStringForPost(p, false, null));
 				o.flush();
 				o.close();
 				if (h.getHeaderFields().get("location") != null)
@@ -773,18 +756,16 @@ public class FBMHttpConnection implements Constants
 					h = null;
 				}
 				FBMLog("POST : PAS AUTHENTIFIE SUR LA CONSOLE - SESSION EXPIREE");
-				Log.d(DEBUGTAG, "POST : PAS AUTHENTIFIE SUR LA CONSOLE - SESSION EXPIREE");
 				c = connectionFree(login, password);
 				if (c == CONNECT_CONNECTED)
 				{
 					FBMLog("POST :  REAUTHENTIFICATION OK");
-					Log.d(DEBUGTAG, "POST :  REAUTHENTIFICATION OK");
-					h = prepareConnection(url+(auth ? "?"+makeStringForPost(null, auth) : ""), "POST");
+					h = prepareConnection(url+(auth ? "?"+makeStringForPost(null, auth, null) : ""), "POST");
 					h.setDoOutput(true);
 					if (retour)
 						h.setDoInput(true);
 					OutputStreamWriter o = new OutputStreamWriter(h.getOutputStream());
-					o.write(makeStringForPost(p, false));
+					o.write(makeStringForPost(p, false, null));
 					o.flush();
 					o.close();
 				}
@@ -811,63 +792,11 @@ public class FBMHttpConnection implements Constants
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			FBMLog("EXCEPTION PostAuthRequest : "+e.getMessage()+" "+getStackTrace(e));
 		}
 		return (null);
 	}
-	
-	// TODO : From r249 to test (remove)
-	private static String makeStringForPost(List<NameValuePair> p, boolean auth)
-	   {
-	        String listConcat = "";
-			if ((p == null) && (auth))
-			{
-				p = new ArrayList<NameValuePair>();
-			}
-			if (auth)
-			{
-				p.add(new BasicNameValuePair("id",id));
-				p.add(new BasicNameValuePair("idt",idt));
-			}
-	        if ((p != null) && (p.size() > 0))
-	        {
-	        	try
-	        	{
-//	                listConcat += URLEncoder.encode(p.get(0).getName(), "iso-8859-1");
-	                listConcat += URLEncoder.encode(p.get(0).getName(), "iso-8859-1");
-	                listConcat += '=';
-	                listConcat += URLEncoder.encode(p.get(0).getValue(), "iso-8859-1");
-	        	}
-	        	catch (Exception e)
-	        	{
-	        		FBMLog("makeStringForPost PB ENCODE : "+e);
-	            	Log.d(DEBUGTAG, "makeStringForPost PB ENCODE : "+e);
-	                listConcat += URLEncoder.encode(p.get(0).getName());
-	                listConcat += '=';
-	                listConcat += URLEncoder.encode(p.get(0).getValue());        		
-	        	}
-	            for(int i = 1 ; i < p.size() ; i++)
-	            {
-	                listConcat += "&";
-	                try
-	                {
-		                listConcat += URLEncoder.encode(p.get(i).getName(), "iso-8859-1");
-		                listConcat += '=';
-		                listConcat += URLEncoder.encode(p.get(i).getValue(), "iso-8859-1");
-	                }
-	                catch (Exception e)
-	                {
-	                	Log.d(DEBUGTAG, "makeStringForPost PB ENCODE : "+e);
-		                listConcat += URLEncoder.encode(p.get(i).getName());
-		                listConcat += '=';
-		                listConcat += URLEncoder.encode(p.get(i).getValue());
-	                }
-	            }
-	        }
-//	        Log.d(DEBUGTAG, "makeStringForPost : "+listConcat);
-	        return (listConcat);
-	    }
-	   
+
 	/**
 	* Sends a POST request
 	* @param  url : url to post
