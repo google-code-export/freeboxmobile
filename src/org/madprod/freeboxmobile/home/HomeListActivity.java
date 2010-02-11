@@ -13,7 +13,6 @@ import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.fax.FaxActivity;
 import org.madprod.freeboxmobile.ligne.InfoAdslCheck;
 import org.madprod.freeboxmobile.mvv.MevoSync;
-import org.madprod.freeboxmobile.pvr.PvrNetwork;
 
 import android.app.Activity;
 import android.app.AlertDialog;

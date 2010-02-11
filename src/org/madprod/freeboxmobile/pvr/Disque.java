@@ -2,6 +2,7 @@ package org.madprod.freeboxmobile.pvr;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.madprod.freeboxmobile.FBMHttpConnection;
 
 /**
  *  conteneur correspondant au JSON d'un disque
@@ -36,10 +37,10 @@ public class Disque {
 	private String mLabel;
 	private int mId;
 	private String mMountPt;
-	boolean mNoMedia;
-	boolean mDirty;
-	boolean mReadOnly;
-	boolean mBusy;
+	int mNoMedia;
+	int mDirty;
+	int mReadOnly;
+	int mBusy;
 	
 	public Disque(String json) {
 		try {
@@ -61,16 +62,23 @@ public class Disque {
 		}
 	}
 	
-	private boolean getBoolean(JSONObject o, String key) {
+	public void storeDb(ChainesDbAdapter db, String bName, int bNumber)
+	{
+		if (db.createBoitierDisque(bName, bNumber, mFreeSize, mTotalSize,
+				mId, mNoMedia, mDirty, mReadOnly, mBusy, mMountPt, mLabel) == -1)
+			FBMHttpConnection.FBMLog("DISQUE STOREDB : Boitier disque non inséré "+this.mLabel);
+	}
+	
+	private int getBoolean(JSONObject o, String key) {
 		if (o.has(key)) {
 			try {
-				return o.getBoolean(key);
+				return (o.getBoolean(key)?1:0);
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		return false;
+		return 0;
 	}
 	
 	public String getMountPt() {
@@ -82,7 +90,7 @@ public class Disque {
 	}
 	
 	public boolean isOk() {
-		return mDirty == false && mBusy == false && mReadOnly == false && mNoMedia == false;
+		return mDirty == 0 && mBusy == 0 && mReadOnly == 0 && mNoMedia == 0;
 	}
 
 	public int getGigaFree() {

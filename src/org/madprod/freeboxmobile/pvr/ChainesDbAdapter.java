@@ -24,6 +24,17 @@ public class ChainesDbAdapter {
     public static final String KEY_SERVICE_ID = "service_id";
     public static final String KEY_PVR_MODE = "pvr_mode";
     public static final String KEY_ROWID = "_id";
+    public static final String KEY_BOITIER_NAME = "b_name";
+    public static final String KEY_BOITIER_ID = "b_id";
+    public static final String KEY_DISQUE_FREE_SIZE = "d_free_size";
+    public static final String KEY_DISQUE_TOTAL_SIZE = "d_total_size";
+    public static final String KEY_DISQUE_ID = "d_id";
+    public static final String KEY_DISQUE_NOMEDIA = "d_nomedia";
+    public static final String KEY_DISQUE_DIRTY = "d_dirty";
+    public static final String KEY_DISQUE_READONLY = "d_readonly";
+    public static final String KEY_DISQUE_BUSY = "d_busy";
+    public static final String KEY_DISQUE_MOUNT = "d_mount";
+    public static final String KEY_DISQUE_LABEL = "d_label";
 
     private static final String TAG = "ChainesDbAdapter";
     private DatabaseHelper mDbHelper;
@@ -34,22 +45,37 @@ public class ChainesDbAdapter {
      */
     
     private static final String TABLE_CHAINES = " (_id integer primary key autoincrement, "
-	        + "name text not null,"
-	        + "chaine_id integer not null);";
+	        + KEY_NAME+" text not null,"
+	        + KEY_CHAINE_ID+" integer not null);";
 
     private static final String TABLE_SERVICES = " (_id integer primary key autoincrement, "
-    	+ "chaine_id integer not null,"
-        + "service_desc text not null,"
-        + "service_id integer not null,"
-        + "pvr_mode integer not null);";
+    	+ KEY_CHAINE_ID+" integer not null,"
+        + KEY_SERVICE_DESC+" text not null,"
+        + KEY_SERVICE_ID+" integer not null,"
+        + KEY_PVR_MODE+" integer not null);";
+
+    private static final String TABLE_BOITIERSDISQUES = " (_id integer primary key autoincrement, "
+    	+ KEY_BOITIER_NAME+" text not null,"
+    	+ KEY_BOITIER_ID+" integer not null,"
+        + KEY_DISQUE_FREE_SIZE+" integer not null,"
+        + KEY_DISQUE_TOTAL_SIZE+" integer not null,"
+        + KEY_DISQUE_ID+" integer not null,"
+        + KEY_DISQUE_NOMEDIA+" integer not null,"
+        + KEY_DISQUE_DIRTY+" integer not null,"
+        + KEY_DISQUE_READONLY+" integer not null,"
+        + KEY_DISQUE_BUSY+" integer not null,"
+        + KEY_DISQUE_MOUNT+" text not null,"
+        + KEY_DISQUE_LABEL+" text not null);";
 
     private static final String DATABASE_NAME = "pvrchaines_" + FBMHttpConnection.getIdentifiant();
     private static final String DATABASE_TABLE_CHAINES = "chaines";
     private static final String DATABASE_TABLE_CHAINESTEMP = "chainestemp";
     private static final String DATABASE_TABLE_SERVICES = "services";
     private static final String DATABASE_TABLE_SERVICESTEMP = "servicestemp";
+    private static final String DATABASE_TABLE_BOITIERSDISQUES = "boitiersdisques";
+    private static final String DATABASE_TABLE_BOITIERSDISQUESTEMP = "boitiersdisquestemp";
     
-    private static final int DATABASE_VERSION = 8;
+    private static final int DATABASE_VERSION = 11;
 
     private static final String DATABASE_CREATE_CHAINES =
         "create table "+DATABASE_TABLE_CHAINES+TABLE_CHAINES;
@@ -60,6 +86,11 @@ public class ChainesDbAdapter {
         "create table "+DATABASE_TABLE_SERVICES+TABLE_SERVICES;
     private static final String DATABASE_CREATE_SERVICESTEMP =
         "create table "+DATABASE_TABLE_SERVICESTEMP+TABLE_SERVICES;
+
+    private static final String DATABASE_CREATE_BOITIERSDISQUES =
+        "create table "+DATABASE_TABLE_BOITIERSDISQUES+TABLE_BOITIERSDISQUES;
+    private static final String DATABASE_CREATE_BOITIERSDISQUESTEMP =
+        "create table "+DATABASE_TABLE_BOITIERSDISQUESTEMP+TABLE_BOITIERSDISQUES;
 
     private final Context mCtx;
 
@@ -77,6 +108,8 @@ public class ChainesDbAdapter {
             db.execSQL(DATABASE_CREATE_CHAINESTEMP);
             db.execSQL(DATABASE_CREATE_SERVICES);
             db.execSQL(DATABASE_CREATE_SERVICESTEMP);
+            db.execSQL(DATABASE_CREATE_BOITIERSDISQUES);
+            db.execSQL(DATABASE_CREATE_BOITIERSDISQUESTEMP);
         }
 
         @Override
@@ -87,6 +120,8 @@ public class ChainesDbAdapter {
             db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_CHAINESTEMP);
             db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_SERVICES);
             db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_SERVICESTEMP);
+            db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_BOITIERSDISQUES);
+            db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_BOITIERSDISQUESTEMP);
             onCreate(db);
         }
     }
@@ -134,6 +169,13 @@ public class ChainesDbAdapter {
         mDb.execSQL(DATABASE_CREATE_CHAINESTEMP);
         mDb.execSQL(DATABASE_CREATE_SERVICESTEMP);
     }
+    
+    public void swapBoitiersDisques()
+    {
+        mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_BOITIERSDISQUES);
+    	mDb.execSQL("ALTER TABLE "+DATABASE_TABLE_BOITIERSDISQUESTEMP+" RENAME TO "+DATABASE_TABLE_BOITIERSDISQUES);
+        mDb.execSQL(DATABASE_CREATE_BOITIERSDISQUESTEMP);    	
+    }
 
     /**
      * Create a new Chaine using the title and body provided. If the Chaine is
@@ -160,7 +202,25 @@ public class ChainesDbAdapter {
         initialValues.put(KEY_PVR_MODE, pvr_mode);        
         return mDb.insert(DATABASE_TABLE_SERVICESTEMP, null, initialValues);
     }
-    
+
+	public long createBoitierDisque(String b_name, int b_id, int d_free_size, int d_total_size, int d_id,
+			int d_nomedia, int d_dirty, int d_readonly, int d_busy, String d_mount, String d_label)
+	{
+    	ContentValues initialValues = new ContentValues();
+        initialValues.put(KEY_BOITIER_NAME, b_name);
+        initialValues.put(KEY_BOITIER_ID, b_id);
+        initialValues.put(KEY_DISQUE_FREE_SIZE,d_free_size);
+        initialValues.put(KEY_DISQUE_TOTAL_SIZE,d_total_size);
+        initialValues.put(KEY_DISQUE_ID,d_id);
+        initialValues.put(KEY_DISQUE_NOMEDIA,d_nomedia);
+        initialValues.put(KEY_DISQUE_DIRTY,d_dirty);
+        initialValues.put(KEY_DISQUE_READONLY,d_readonly);
+        initialValues.put(KEY_DISQUE_BUSY,d_busy);
+        initialValues.put(KEY_DISQUE_MOUNT,d_mount);
+        initialValues.put(KEY_DISQUE_LABEL,d_label);
+        return mDb.insert(DATABASE_TABLE_BOITIERSDISQUESTEMP, null, initialValues);
+	}
+
     /**
      * Modifies an existing Chaine using the title and body provided. If the Chaine is
      * successfully created return the new rowId for that Chaine, otherwise return

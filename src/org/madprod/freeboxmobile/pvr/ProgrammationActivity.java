@@ -35,9 +35,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -1137,7 +1135,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 		} else  {
 			mDisques = new ArrayList<Disque>();
 		}
-		
+
 		// Loop
 		do {
 			// pos contient la position de la fin du string JSON
