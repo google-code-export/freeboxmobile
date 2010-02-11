@@ -1,6 +1,7 @@
 package org.madprod.freeboxmobile.home;
 
 import org.madprod.freeboxmobile.Constants;
+import org.madprod.freeboxmobile.FBMHttpConnection;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -8,7 +9,6 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 /**
 *
@@ -53,7 +53,7 @@ public class ComptesDbAdapter implements Constants
     	@Override
     	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
     	{
-    		Log.d(DEBUGTAG, "ComptesDbAdapter : Upgrading database from version " + oldVersion + " to "
+    		FBMHttpConnection.FBMLog("ComptesDbAdapter : Upgrading database from version " + oldVersion + " to "
                 + newVersion);
     		if (newVersion > oldVersion)
     		{

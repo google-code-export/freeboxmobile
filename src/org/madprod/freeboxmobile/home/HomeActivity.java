@@ -106,8 +106,7 @@ public class HomeActivity extends Activity implements HomeConstants
         	if (!mgr.getString(KEY_FBMVERSION, "0").equals(getString(R.string.app_version)))
         	{
         		FBMHttpConnection.FBMLog("HOME : on rafraichi le compte "+mgr.getString(KEY_FBMVERSION, "0"));
-				ManageCompte.activity = this;
-		        new ManageCompte().execute(new ComptePayload(
+		        new ManageCompte(this).execute(new ComptePayload(
 		        		mgr.getString(KEY_TITLE, ""),
 		        		mgr.getString(KEY_USER, ""),
 		        		mgr.getString(KEY_PASSWORD, ""),

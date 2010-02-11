@@ -97,8 +97,7 @@ public class ComptesEditActivity extends Activity implements Constants
                 	}
                 	else
                 	{
-                		ManageCompte.activity = ComptesEditActivity.this;
-		                new ManageCompte().execute(new ComptePayload(title, user, password, mRowId, false));
+		                new ManageCompte(ComptesEditActivity.this).execute(new ComptePayload(title, user, password, mRowId, false));
                 	}
                 }
                 else

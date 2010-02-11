@@ -2,6 +2,7 @@ package org.madprod.freeboxmobile.home;
 
 import org.madprod.freeboxmobile.Constants;
 import org.madprod.freeboxmobile.FBMHttpConnection;
+import org.madprod.freeboxmobile.pvr.PvrNetwork;
 
 import android.app.Activity;
 import android.content.ContentValues;
@@ -24,6 +25,8 @@ public class ManageCompte extends AsyncTask<ComptePayload, Void, ComptePayload> 
 	protected ComptePayload doInBackground(ComptePayload... payload)
 	{
 		payload[0].result = FBMHttpConnection.connectFreeCheck(payload[0].login, payload[0].password);
+		if (payload[0].result != null)
+			new PvrNetwork(activity);
 		return payload[0];
 	}
 
@@ -41,6 +44,7 @@ public class ManageCompte extends AsyncTask<ComptePayload, Void, ComptePayload> 
 		{
 				payload.exit = Activity.RESULT_OK;
 				saveState(payload);
+
 				if (!payload.refresh)
 				{
 					activity.finish();
@@ -51,6 +55,11 @@ public class ManageCompte extends AsyncTask<ComptePayload, Void, ComptePayload> 
 				FBMHttpConnection.showError(activity);
 				payload.exit = Activity.RESULT_CANCELED;
 		}
+	}
+
+	public ManageCompte(Activity a)
+	{
+		activity = a;
 	}
 
     private void saveState(ComptePayload p)

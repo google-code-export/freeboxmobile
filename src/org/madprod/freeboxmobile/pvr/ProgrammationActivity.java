@@ -540,14 +540,14 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 	        	strDisques = strDisques.substring(0, fin);
 	        	
 	        	// Conversion JSON -> objet dans la RAM
-	        	getListeChaines(strChaines);
+	        	getListeChainesFromDb();
 	        	getListeDisques(strDisques);
 	        	
 	        	// Deux boitiers HD ?
 	        	int posDebut = resultat.indexOf("Boitier HD");
 	        	if (posDebut > 0) {
 	        		int d, f;
-	        		String boitiers;	        		
+	        		String boitiers;
 	        		nbEcrans++;
 	        		boitiers = resultat.substring(posDebut);
 	        		mBoitiers = new ArrayList<String>();
@@ -663,10 +663,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
             		progressDialog.setTitle(getString(R.string.pvrPatientez));
             		progressDialog.setMessage(getString(enr == null ? R.string.pvrProgrammationEnCours : R.string.pvrModificationEnCours));
             		progressDialog.show();
-/*                	progressDialog = ProgressDialog.show(progAct, getString(R.string.pvrPatientez),
-                			getString(enr == null ? R.string.pvrProgrammationEnCours : R.string.pvrModificationEnCours),
-                			true, false);
-*/                }
+                }
             	
                 protected String doInBackground(Void... arg0) {
     	        	return doAction();
@@ -737,15 +734,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 	        		TimePicker timePicker = (TimePicker) findViewById(R.id.pvrPrgHeure);
 	        		h = timePicker.getCurrentHour();
 	        		m = timePicker.getCurrentMinute();
-
-/*	        		date  = datePicker.getDayOfMonth() < 10 ? "0" : "";
-	        		date += datePicker.getDayOfMonth();
-	        		date += "/";
-	        		date += datePicker.getMonth()+1 < 10 ? "0" : "";
-	        		date += datePicker.getMonth()+1;
-	        		date += "/";
-	        		date += datePicker.getYear();
-*/     	       	}
+     	       	}
        	       	else {
        	       		date = makeDate(choosen_year, choosen_month, choosen_day);
             		h = choosen_hour;
@@ -793,9 +782,6 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
             	// chaine=7&service=0&date=07%2F01%2F2010&heure=12&minutes=01
             	//&duree=134&emission=pouet&where_id=0&submit=PROGRAMMER+L%27ENREGISTREMENT
 
-            	// nok:
-            	//chaine=2&service=0&date=10%2F02%2F2010&heure=01&minutes=46
-            	//&duree=5&emission=qwwer&where_id=0&submit=PROGRAMMER+L%27ENREGISTREMENT
             	else {
             		postVars.add(new BasicNameValuePair("submit", "PROGRAMMER L'ENREGISTREMENT"));
             	}
@@ -1046,17 +1032,47 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 		return -1;
 	}
 
-	// Fonctions pour parser le javascript listant les chaines et les disques durs
-	private List<Chaine> getListeChaines(String strChaines) {
-		getListe(strChaines, "}]},{\"name\"", 3, true);
-		return mChaines;
+	private void getListeChainesFromDb() {
+		getListeFromDb(true);
 	}
 	
 	private List<Disque> getListeDisques(String strDisques) {
 		getListe(strDisques, "}", 1, false);
 		return mDisques;
 	}
-	
+
+	/**
+	 * Crée la liste des chaines ou des disques (selon le boolean)
+	 * @param strSource:	l'array de JSON (commence par { sinon crash)
+	 * @param sep:			ce qui sépare deux objets JSON
+	 * @param shift:		le nombre d'octets inutiles entre deux objets JSON
+	 * @param isChaines:	true si c'est la liste des chaines, false si c'est celle des disques
+	 */
+	private void getListeFromDb(boolean isChaines) {
+		ChainesDbAdapter db = new ChainesDbAdapter(this);
+
+		FBMHttpConnection.FBMLog("getListeFromDb START");
+		// Init
+		db.open();
+		if (isChaines) {
+			mChaines = new ArrayList<Chaine>();
+		} else  {
+			mDisques = new ArrayList<Disque>();
+		}
+
+		Cursor c = db.fetchAllChaines();
+        if (c.moveToFirst())
+        {
+        	do
+        	{
+        		mChaines.add(new Chaine(c, db));
+        	} while (c.moveToNext());
+        }
+        c.close();
+		db.close();
+		FBMHttpConnection.FBMLog("getListeFromDb END");
+    }
+
 	/**
 	 * Crée la liste des chaines ou des disques (selon le boolean)
 	 * @param strSource:	l'array de JSON (commence par { sinon crash)
