@@ -21,13 +21,12 @@ import android.os.AsyncTask;
 public class PvrNetwork extends AsyncTask<Void, Integer, Boolean>
 {
 	public static Activity activity;
-	private List<Chaine> mChaines;
 	private List<Disque> mDisques;
 	private static List<String> mBoitiers = null;
 	private boolean plusieursBoitiersHD = false;
 	
         protected void onPreExecute() {
-//        	ProgrammationActivity.showPatientez(a);
+//        	ProgrammationActivity.showPatientez(activity);
         }
 
         protected Boolean doInBackground(Void... arg0) {
@@ -45,6 +44,12 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean>
 //            ProgrammationActivity.dismissPd();
         }
     
+    public PvrNetwork(Activity a)
+    {
+    	activity = a;
+    	FBMHttpConnection.FBMLog("PVRNETWORK START");
+    	telechargerEtParser();
+    }
     /**
      * 
      * @return true en cas de succès, false sinon
@@ -134,16 +139,12 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean>
 	private void getListe(String strSource, String sep, int shift, boolean isChaines) {
 		String str;
 		int pos;
-		String chaineName;
 		ChainesDbAdapter db;
-		int chaineId;
-		int i;
 
 		db = new ChainesDbAdapter(activity);
 		db.open();
 		// Init
 		if (isChaines) {
-			mChaines = new ArrayList<Chaine>();
 		} else  {
 			mDisques = new ArrayList<Disque>();
 		}
@@ -166,15 +167,8 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean>
 			// Ajout à la liste
 			if (isChaines) {
 				Chaine chaine = new Chaine(str);
-				List<Chaine.Service> s = chaine.getServices();
-				mChaines.add(chaine);
-				chaineName = chaine.getName();
-				chaineId = chaine.getChaineId();
-				FBMHttpConnection.FBMLog("CHAINE : "+chaineName+" "+chaineId+" "+s.size());
-				for (i = 0; i < s.size(); i++) {
-					FBMHttpConnection.FBMLog("   SERVICE : "+s.get(i).getServiceId()+" "+s.get(i).getPvrMode()+" "+s.get(i).getDesc()+" "+
-					+db.createChaine(chaineName, chaineId, s.get(i).getDesc(), s.get(i).getServiceId(), s.get(i).getPvrMode()));
-				}
+				chaine.storeDb(db);
+				FBMHttpConnection.FBMLog("CHAINE : "+chaine.getName());
 			} else {
 				mDisques.add(new Disque(str));
 			}

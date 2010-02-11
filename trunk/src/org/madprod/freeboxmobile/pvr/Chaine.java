@@ -5,6 +5,9 @@ import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.madprod.freeboxmobile.FBMHttpConnection;
+
+import android.database.Cursor;
 
 /**
  *  conteneur correspondant au JSON d'une chaine
@@ -26,11 +29,16 @@ import org.json.JSONObject;
 
 public class Chaine implements PvrConstants {
 	static class Service {
-//		enum PVR_MODE { DISABLED, PUBLIC, PRIVATE };
-//		private PVR_MODE mPvrMode;
 		private int mPvrMode;
 		private String mServiceDesc;
 		private int mServiceId;
+		
+		public Service(Cursor c)
+		{
+    		this.mPvrMode = c.getInt(c.getColumnIndex(ChainesDbAdapter.KEY_PVR_MODE));
+    		this.mServiceDesc = c.getString(c.getColumnIndex(ChainesDbAdapter.KEY_SERVICE_DESC));
+    		this.mServiceId = c.getInt(c.getColumnIndex(ChainesDbAdapter.KEY_SERVICE_ID));
+		}
 		
 		public Service(String json) {
 			try {
@@ -38,14 +46,11 @@ public class Chaine implements PvrConstants {
 
 				String mode = o.getString("pvr_mode");
 				if (mode.equals("private")) {
-//					this.mPvrMode = Service.PVR_MODE.PRIVATE;
 					this.mPvrMode = PVR_MODE_PRIVATE;
 				} else if (mode.equals("public")) {
-//					this.mPvrMode = Service.PVR_MODE.PUBLIC;
 					this.mPvrMode = PVR_MODE_PUBLIC;
 				}
 				else {
-//					this.mPvrMode = Service.PVR_MODE.DISABLED;
 					this.mPvrMode = PVR_MODE_DISABLED;
 				}
 
@@ -60,7 +65,6 @@ public class Chaine implements PvrConstants {
 		public int getServiceId() {
 			return this.mServiceId;
 		}
-//		public PVR_MODE getPvrMode() {
 		public int getPvrMode() {
 			return this.mPvrMode;
 		}
@@ -73,6 +77,22 @@ public class Chaine implements PvrConstants {
 	private int mId;
 	private List<Service> mServices;
 	
+	public Chaine(Cursor c, ChainesDbAdapter db)
+	{
+		this.mName = c.getString(c.getColumnIndex(ChainesDbAdapter.KEY_NAME));
+		this.mId = c.getInt(c.getColumnIndex(ChainesDbAdapter.KEY_CHAINE_ID));
+		this.mServices = new ArrayList<Service>();
+		Cursor cs = db.fetchServicesChaine(this.mId);
+		if (cs.moveToFirst())
+        {
+        	do
+        	{
+        		this.mServices.add(new Service(cs));
+        	} while (cs.moveToNext());
+        }
+        cs.close();
+	}
+
 	public Chaine(String json) {
 		try {
 			JSONObject o = new JSONObject(json);
@@ -103,6 +123,18 @@ public class Chaine implements PvrConstants {
 		}
 	}
 	
+	public void storeDb(ChainesDbAdapter db)
+	{
+		if (db.createChaine(this.mName, this.mId) == -1)
+			FBMHttpConnection.FBMLog("CHAINE STOREDB : Chaine non insérée "+this.mName);
+		int size = mServices.size();
+		
+		for (int i = 0; i < size; i++) {
+			if (db.createService(this.mId, mServices.get(i).getDesc(), mServices.get(i).getServiceId(), mServices.get(i).getPvrMode()) == -1)
+				FBMHttpConnection.FBMLog("CHAINE STOREDB :Service non inséré "+this.mName);
+		}
+	}
+
 	public String getName() {
 		return this.mName;
 	}

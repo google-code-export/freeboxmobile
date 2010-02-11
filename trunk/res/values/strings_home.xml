@@ -14,6 +14,7 @@
 	<string name="home_option_vote">Voter</string>
 	<string name="home_option_log">Log erreur</string>
 	<string name="home_option_share">Partager FreeboxMobile</string>
+	<string name="home_option_refresh">Rafraichir compte</string>
 	<string name="whatsnew_title">Nouveautés</string>
 	<string name="whatsnew_back">Retour</string>
 	<string name="comptes_empty">\nPas de compte.\nVeuillez définir un nouveau compte.</string>

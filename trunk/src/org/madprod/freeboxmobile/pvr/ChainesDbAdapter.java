@@ -32,23 +32,34 @@ public class ChainesDbAdapter {
      * Database creation sql statement
      */
     
-    private static final String TABLE_CHAINE = " (_id integer primary key autoincrement, "
+    private static final String TABLE_CHAINES = " (_id integer primary key autoincrement, "
 	        + "name text not null,"
-	        + "chaine_id integer not null,"
-	        + "service_desc text not null,"
-	        + "service_id integer not null,"
-	        + "pvr_mode integer not null);";
+	        + "chaine_id integer not null);";
+
+    private static final String TABLE_SERVICES = " (_id integer primary key autoincrement, "
+    	+ "chaine_id integer not null,"
+        + "service_desc text not null,"
+        + "service_id integer not null,"
+        + "pvr_mode integer not null);";
 
     private static final String DATABASE_NAME = "pvrchaines_" + FBMHttpConnection.getIdentifiant();
-    private static final String DATABASE_TABLE = "chaines";
-    private static final String DATABASE_TABLE_TEMP = "chainestemp";
-    private static final int DATABASE_VERSION = 6;
+    private static final String DATABASE_TABLE_CHAINES = "chaines";
+    private static final String DATABASE_TABLE_CHAINESTEMP = "chainestemp";
+    private static final String DATABASE_TABLE_SERVICES = "services";
+    private static final String DATABASE_TABLE_SERVICESTEMP = "servicestemp";
+    private static final int DATABASE_VERSION = 8;
 
-    private static final String DATABASE_CREATE =
-        "create table "+DATABASE_TABLE+TABLE_CHAINE;
+    private static final String DATABASE_CREATE_CHAINES =
+        "create table "+DATABASE_TABLE_CHAINES+TABLE_CHAINES;
 
-    private static final String DATABASE_CREATE_TEMP =
-        "create table "+DATABASE_TABLE_TEMP+TABLE_CHAINE;
+    private static final String DATABASE_CREATE_CHAINESTEMP =
+        "create table "+DATABASE_TABLE_CHAINESTEMP+TABLE_CHAINES;
+
+    private static final String DATABASE_CREATE_SERVICES =
+        "create table "+DATABASE_TABLE_SERVICES+TABLE_SERVICES;
+
+    private static final String DATABASE_CREATE_SERVICESTEMP =
+        "create table "+DATABASE_TABLE_SERVICESTEMP+TABLE_SERVICES;
 
     private final Context mCtx;
 
@@ -62,16 +73,20 @@ public class ChainesDbAdapter {
         public void onCreate(SQLiteDatabase db) {
             Log.d(TAG, "DatabaseHelper onCreate called");
 
-            db.execSQL(DATABASE_CREATE);
-            db.execSQL(DATABASE_CREATE_TEMP);
+            db.execSQL(DATABASE_CREATE_CHAINES);
+            db.execSQL(DATABASE_CREATE_CHAINESTEMP);
+            db.execSQL(DATABASE_CREATE_SERVICES);
+            db.execSQL(DATABASE_CREATE_SERVICESTEMP);
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
                     + newVersion + ", which will destroy all old data");
-            db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE);
-            db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_TEMP);
+            db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_CHAINES);
+            db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_CHAINESTEMP);
+            db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_SERVICES);
+            db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_SERVICESTEMP);
             onCreate(db);
         }
     }
@@ -112,9 +127,12 @@ public class ChainesDbAdapter {
     }
 */
     public void swapChaines() {
-        mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE);
-    	mDb.execSQL("ALTER TABLE "+DATABASE_TABLE_TEMP+" RENAME TO "+DATABASE_TABLE);
-        mDb.execSQL(DATABASE_CREATE_TEMP);
+        mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_SERVICES);
+    	mDb.execSQL("ALTER TABLE "+DATABASE_TABLE_SERVICESTEMP+" RENAME TO "+DATABASE_TABLE_SERVICES);
+        mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_CHAINES);
+    	mDb.execSQL("ALTER TABLE "+DATABASE_TABLE_CHAINESTEMP+" RENAME TO "+DATABASE_TABLE_CHAINES);
+        mDb.execSQL(DATABASE_CREATE_CHAINESTEMP);
+        mDb.execSQL(DATABASE_CREATE_SERVICESTEMP);
     }
 
     /**
@@ -126,17 +144,21 @@ public class ChainesDbAdapter {
      * @param body the body of the Chaine
      * @return rowId or -1 if failed
      */
-    public long createChaine(String name, int chaine_id, String service_desc, int service_id,
-    		int pvr_mode) {
+    public long createChaine(String name, int chaine_id) {
         ContentValues initialValues = new ContentValues();
-        
         initialValues.put(KEY_NAME, name);
+        initialValues.put(KEY_CHAINE_ID, chaine_id);
+        return mDb.insert(DATABASE_TABLE_CHAINESTEMP, null, initialValues);
+    }
+    
+    public long createService(int chaine_id, String service_desc, int service_id, int pvr_mode)
+    {
+    	ContentValues initialValues = new ContentValues();
         initialValues.put(KEY_CHAINE_ID, chaine_id);
         initialValues.put(KEY_SERVICE_DESC, service_desc);
         initialValues.put(KEY_SERVICE_ID, service_id);
-        initialValues.put(KEY_PVR_MODE, pvr_mode);
-        
-        return mDb.insert(DATABASE_TABLE_TEMP, null, initialValues);
+        initialValues.put(KEY_PVR_MODE, pvr_mode);        
+        return mDb.insert(DATABASE_TABLE_SERVICESTEMP, null, initialValues);
     }
     
     /**
@@ -162,7 +184,7 @@ public class ChainesDbAdapter {
         
         Log.d(TAG, "MODIF = "+newValues.toString());
 
-        return mDb.update(DATABASE_TABLE, newValues, KEY_ROWID+" = ?", strRowId);
+        return mDb.update(DATABASE_TABLE_CHAINES, newValues, KEY_ROWID+" = ?", strRowId);
     }
 
     /**
@@ -173,12 +195,12 @@ public class ChainesDbAdapter {
      */
     public boolean deleteChaine(long rowId) {
 
-        return mDb.delete(DATABASE_TABLE, KEY_ROWID + "=" + rowId, null) > 0;
+        return mDb.delete(DATABASE_TABLE_CHAINES, KEY_ROWID + "=" + rowId, null) > 0;
     }
     
     public boolean deleteAllChaines() {
     	
-    	return mDb.delete(DATABASE_TABLE, "1", null) > 0;
+    	return mDb.delete(DATABASE_TABLE_CHAINES, "1", null) > 0;
     }
 
     /**
@@ -186,9 +208,17 @@ public class ChainesDbAdapter {
      * 
      * @return Cursor over all Chaines
      */
-    public Cursor fetchAllChaines(String[] colonnes) {
+    public Cursor fetchAllChaines() {
+		return mDb.query(DATABASE_TABLE_CHAINES, new String[] {KEY_ROWID, KEY_NAME,
+	        KEY_CHAINE_ID},
+	        null, null, null, null, null);
+    }
 
-        return mDb.query(DATABASE_TABLE, colonnes, null, null, null, null, null);
+    public Cursor fetchServicesChaine(int chaineId) {
+		return mDb.query(DATABASE_TABLE_SERVICES, new String[] {KEY_ROWID, KEY_SERVICE_DESC,
+	        KEY_SERVICE_ID, KEY_PVR_MODE},
+	        KEY_CHAINE_ID + "=" + chaineId,
+	        null, null, null, null, null);
     }
 
     /**
@@ -199,17 +229,12 @@ public class ChainesDbAdapter {
      * @throws SQLException if Chaine could not be found/retrieved
      */
     public Cursor fetchChaine(long rowId) throws SQLException {
-
         Cursor mCursor =
-
-                mDb.query(true, DATABASE_TABLE,
+                mDb.query(true, DATABASE_TABLE_CHAINES,
                 		new String[] {
                 		KEY_ROWID,
                 		KEY_NAME,
-                		KEY_CHAINE_ID,
-                		KEY_SERVICE_DESC,
-                		KEY_SERVICE_ID,
-                		KEY_PVR_MODE},
+                		KEY_CHAINE_ID},
                 		KEY_ROWID + "=" + rowId, null,
                         null, null, null, null);
         if (mCursor != null) {
@@ -239,6 +264,6 @@ public class ChainesDbAdapter {
         args.put(KEY_SERVICE_ID, service_id);
         args.put(KEY_PVR_MODE, pvr_mode);
 
-        return mDb.update(DATABASE_TABLE, args, KEY_ROWID + "=" + rowId, null) > 0;
+        return mDb.update(DATABASE_TABLE_CHAINES, args, KEY_ROWID + "=" + rowId, null) > 0;
     }
 }

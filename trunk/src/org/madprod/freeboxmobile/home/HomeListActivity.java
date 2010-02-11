@@ -13,6 +13,7 @@ import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.fax.FaxActivity;
 import org.madprod.freeboxmobile.ligne.InfoAdslCheck;
 import org.madprod.freeboxmobile.mvv.MevoSync;
+import org.madprod.freeboxmobile.pvr.PvrNetwork;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -106,30 +107,34 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     	super.onStart();
     	SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 		FBMHttpConnection.initVars(this, null);
+		// Si l'utilisateur n'a pas configuré de compte
         if (mgr.getString(KEY_TITLE, "").equals(""))
 		{
 			showNoCompte();
 		}
         else
         {
+        	// S'il s'agit du premier lancement de cette version, on rafraichi pas mal d'infos
         	if (!mgr.getString(KEY_FBMVERSION, "0").equals(getString(R.string.app_version)))
         	{
         		FBMHttpConnection.FBMLog("HOME : on rafraichi le compte "+mgr.getString(KEY_FBMVERSION, "0"));
-				ManageCompte.activity = this;
-		        new ManageCompte().execute(new ComptePayload(
+        		refreshCompte();
+/*        		new ManageCompte(this).execute(new ComptePayload(
 		        		mgr.getString(KEY_TITLE, ""),
 		        		mgr.getString(KEY_USER, ""),
 		        		mgr.getString(KEY_PASSWORD, ""),
 		        		null, true));
-				Editor editor = mgr.edit();
+*/
+        		Editor editor = mgr.edit();
 				editor.putString(KEY_FBMVERSION, getString(R.string.app_version));
 				editor.commit();
         	}
         }
         FBMHttpConnection.FBMLog("type:"+mgr.getString(KEY_LINETYPE, ""));
+
 		setTitle(getString(R.string.app_name)+" "+FBMHttpConnection.getTitle());
     }
-    
+
     @Override
     protected void onStop()
 	{
@@ -150,6 +155,17 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		FBMHttpConnection.FBMLog("MainActivity Pause");
     	super.onPause();
 		FBMHttpConnection.closeDisplay();
+    }
+
+
+    private void refreshCompte()
+    {
+    	SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
+        new ManageCompte(this).execute(new ComptePayload(
+        		mgr.getString(KEY_TITLE, ""),
+        		mgr.getString(KEY_USER, ""),
+        		mgr.getString(KEY_PASSWORD, ""),
+        		null, true));    	
     }
 
     private void setModules()
@@ -181,9 +197,15 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		map.put(M_CLASS, org.madprod.freeboxmobile.ligne.LigneInfoActivity.class);
 		modulesList.add(map);
 		map = new HashMap<String,Object>();
+		map.put(M_ICON, R.drawable.icon_fbm);
+		map.put(M_TITRE, getString(R.string.buttonGuide));
+		map.put(M_DESC, "Consultez le guide TV, programmez des enregistrements, regardez la télévision\n\nCette fonctionnalité n'est pas encore disponible");
+		map.put(M_CLASS, null);
+		modulesList.add(map);    	
+		map = new HashMap<String,Object>();
 		map.put(M_ICON, R.drawable.fm_actus_freenautes);
 		map.put(M_TITRE, getString(R.string.buttonActu));
-		map.put(M_DESC, "Consultez l'actualité de Free et de la Freebox");
+		map.put(M_DESC, "Consultez l'actualité de Free et de la Freebox\n\nCette fonctionnalité n'est pas encore disponible");
 		map.put(M_CLASS, null);
 		modulesList.add(map);    	
     	map = new HashMap<String,Object>();
@@ -251,10 +273,11 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 
         menu.add(0, HOME_OPTION_COMPTES, 0, R.string.home_option_comptes).setIcon(android.R.drawable.ic_menu_myplaces);
         menu.add(0, HOME_OPTION_CONFIG, 1, R.string.home_option_config).setIcon(android.R.drawable.ic_menu_preferences);
-        menu.add(0, HOME_OPTION_SHARE, 2, R.string.home_option_share).setIcon(android.R.drawable.ic_menu_share);
-        menu.add(0, HOME_OPTION_VOTE, 3, R.string.home_option_vote).setIcon(android.R.drawable.ic_menu_add);
-        menu.add(0, HOME_OPTION_ABOUT, 4, R.string.home_option_about).setIcon(android.R.drawable.ic_menu_info_details);
-        menu.add(0, HOME_OPTION_LOG, 4, R.string.home_option_log).setIcon(android.R.drawable.ic_menu_send);
+        menu.add(0, HOME_OPTION_SHARE, 4, R.string.home_option_share).setIcon(android.R.drawable.ic_menu_share);
+        menu.add(0, HOME_OPTION_VOTE, 8, R.string.home_option_vote).setIcon(android.R.drawable.ic_menu_add);
+        menu.add(0, HOME_OPTION_ABOUT, 9, R.string.home_option_about).setIcon(android.R.drawable.ic_menu_info_details);
+        menu.add(0, HOME_OPTION_LOG, 3, R.string.home_option_log).setIcon(android.R.drawable.ic_menu_send);
+        menu.add(0, HOME_OPTION_REFRESH, 2, R.string.home_option_refresh).setIcon(android.R.drawable.ic_menu_rotate);
         return true;
     }
 
@@ -284,6 +307,9 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     			return true;
     		case HOME_OPTION_LOG:
     			displayLog();
+    			return true;
+    		case HOME_OPTION_REFRESH:
+    			refreshCompte();
     			return true;
         }
         return super.onOptionsItemSelected(item);
