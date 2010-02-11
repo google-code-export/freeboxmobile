@@ -1,13 +1,16 @@
 package org.madprod.freeboxmobile.pvr;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.madprod.freeboxmobile.Constants;
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
-
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
@@ -18,15 +21,16 @@ import android.os.AsyncTask;
  * $Id :
  */
 
-public class PvrNetwork extends AsyncTask<Void, Integer, Boolean>
+public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Constants
 {
-	public static Activity activity;
-	private List<Disque> mDisques;
-	private static List<String> mBoitiers = null;
-	private boolean plusieursBoitiersHD = false;
+	private Activity activity;
+
+//	private static List<String> mBoitiers = null;
+//	private boolean plusieursBoitiersHD = false;
 	
         protected void onPreExecute() {
-//        	ProgrammationActivity.showPatientez(activity);
+        	if (activity != null)
+        		ProgrammationActivity.showPatientez(activity);
         }
 
         protected Boolean doInBackground(Void... arg0) {
@@ -38,24 +42,25 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean>
 //        		preparerActivite();
         	}
         	else {
-//        		afficherMsgErreur(getString(R.string.pvrErreurTelechargementChaines));
+        		ProgrammationActivity.afficherMsgErreur(activity.getString(R.string.pvrErreurTelechargementChaines), activity);
 //        		boutonOK.setEnabled(false);
         	}
-//            ProgrammationActivity.dismissPd();
+        	if (activity != null)
+        		ProgrammationActivity.dismissPd();
         }
     
-    public PvrNetwork(Activity a)
+    public PvrNetwork(Activity a, boolean async)
     {
     	activity = a;
     	FBMHttpConnection.FBMLog("PVRNETWORK START");
-    	telechargerEtParser();
+    	if (!async)
+    		telechargerEtParser();
     }
     /**
      * 
      * @return true en cas de succès, false sinon
      */
     private boolean telechargerEtParser() {
-
         // Récupérer chaines et disques durs        
         String url = "http://adsl.free.fr/admin/magneto.pl";
         List<NameValuePair> param = new ArrayList<NameValuePair>();
@@ -75,25 +80,19 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean>
 	        	String strChaines = resultat.substring(posChaines+14, posDisques);
 	        	int finChaines = strChaines.lastIndexOf("}");
 	        	strChaines = strChaines.substring(0, finChaines+1);
-	        	
-	        	// Récupération du javascript correspondant à la liste des disques durs
-	        	String strDisques = resultat.substring(posDisques+14);
-	        	int fin = strDisques.lastIndexOf("}];")+1;
-	        	strDisques = strDisques.substring(0, fin);
-	        	
+
 	        	// Conversion JSON -> objet dans la RAM
 	        	getListeChaines(strChaines);
-	        	getListeDisques(strDisques);
-	        	
+
 	        	// Deux boitiers HD ?
-	        	int posDebut = resultat.indexOf("Boitier HD");
+/*	        	int posDebut = resultat.indexOf("Boitier HD");
 	        	if (posDebut > 0) {
 	        		int d, f;
 	        		String boitiers;
 	        		boitiers = resultat.substring(posDebut);
 	        		mBoitiers = new ArrayList<String>();
 	        		plusieursBoitiersHD = true;
-	        		
+
 	        		do {
 	        			d = boitiers.indexOf("Boitier HD");
 	        			if (d == -1) {
@@ -105,7 +104,13 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean>
 	        			boitiers = boitiers.substring(f);
 	        		} while (true);
 	        	}
+	        	*/
 	        	
+	        	// On met à jour le timestamp du dernier refresh
+	    		SharedPreferences mgr = activity.getSharedPreferences(KEY_PREFS, activity.MODE_PRIVATE);
+	        	Editor editor = mgr.edit();
+	        	editor.putLong(KEY_LAST_REFRESH+FBMHttpConnection.getIdentifiant(), (new Date()).getTime());
+	        	editor.commit();
 	        	return true;
 	        }
 	        else {
@@ -122,11 +127,7 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean>
     
 	// Fonctions pour parser le javascript listant les chaines et les disques durs
 	private void getListeChaines(String strChaines) {
-		getListe(strChaines, "}]},{\"name\"", 3, true);
-	}
-	
-	private void getListeDisques(String strDisques) {
-		getListe(strDisques, "}", 1, false);
+		getListe(strChaines, "}]},{\"name\"", 3);
 	}
 
 	/**
@@ -136,18 +137,13 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean>
 	 * @param shift:		le nombre d'octets inutiles entre deux objets JSON
 	 * @param isChaines:	true si c'est la liste des chaines, false si c'est celle des disques
 	 */
-	private void getListe(String strSource, String sep, int shift, boolean isChaines) {
+	private void getListe(String strSource, String sep, int shift) {
 		String str;
 		int pos;
 		ChainesDbAdapter db;
 
 		db = new ChainesDbAdapter(activity);
 		db.open();
-		// Init
-		if (isChaines) {
-		} else  {
-			mDisques = new ArrayList<Disque>();
-		}
 		
 		// Loop
 		do {
@@ -165,13 +161,9 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean>
 			str = strSource.substring(0, pos);
 			
 			// Ajout à la liste
-			if (isChaines) {
-				Chaine chaine = new Chaine(str);
-				chaine.storeDb(db);
-				FBMHttpConnection.FBMLog("CHAINE : "+chaine.getName());
-			} else {
-				mDisques.add(new Disque(str));
-			}
+			Chaine chaine = new Chaine(str);
+			chaine.storeDb(db);
+			FBMHttpConnection.FBMLog("CHAINE : "+chaine.getName());
 			
 			// Préparation du prochain item JSON
 			if (strSource.length() > pos+1) {
@@ -181,9 +173,7 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean>
 				break;
 			}
 		} while(true);
-		if (isChaines) {
-			db.swapChaines();
-		}
+		db.swapChaines();
 		db.close();
     }
 }

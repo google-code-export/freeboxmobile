@@ -1,7 +1,10 @@
 package org.madprod.freeboxmobile.home;
 
+import java.util.Date;
+
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
+import org.madprod.freeboxmobile.pvr.PvrNetwork;
 
 import android.app.ListActivity;
 import android.content.Intent;
@@ -174,7 +177,6 @@ public class ComptesActivity extends ListActivity implements HomeConstants
     {
     	FBMHttpConnection.FBMLog("FILLDATA");
         mComptesCursor = mDbHelper.fetchAllComptes();
-//        startManagingCursor(mComptesCursor);
         String[] from = new String[]{KEY_TITLE};
         int[] to = new int[]{R.id.comptes_liste_row};
         comptesAdapter = new SimpleCursorAdapter(this, R.layout.comptes_row, mComptesCursor, from, to);
@@ -212,19 +214,32 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 			public void onItemSelected(AdapterView<?> parent, View v, int i, long l)
 			{
 				Cursor c = mDbHelper.fetchFromTitle(parent.getSelectedItem().toString());
-//				startManagingCursor(c);
-				if (c.getCount() > 0)
+				if (!c.getString(c.getColumnIndexOrThrow(KEY_USER)).equals(FBMHttpConnection.getIdentifiant()))
 				{
-					SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
-					updatePrefs(mgr.edit(), c);
-					FBMHttpConnection.initCompte(ComptesActivity.this);
+					if (c.getCount() > 0)
+					{
+						SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
+						Long duree = (new Date()).getTime() - getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getLong(KEY_LAST_REFRESH+c.getString(c.getColumnIndexOrThrow(KEY_USER)), 0);
+						FBMHttpConnection.FBMLog("TEMPS : "+c.getString(c.getColumnIndexOrThrow(KEY_USER))+" - "+getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getLong(KEY_LAST_REFRESH+c.getString(c.getColumnIndexOrThrow(KEY_USER)), 0)+" "+duree);
+						// Si ca fait + de 24 heures, on met à jour
+						if (duree > 86400000L)
+						{
+							updatePrefs(mgr.edit(), c);
+							FBMHttpConnection.initCompte(ComptesActivity.this);
+							new PvrNetwork(ComptesActivity.this, true).execute((Void[])null);
+						}
+						else
+						{
+							updatePrefs(mgr.edit(), c);
+							FBMHttpConnection.initCompte(ComptesActivity.this);
+						}
+					}
+					else
+					{
+	                	Toast t = Toast.makeText(ComptesActivity.this, "Impossible de selectionner ce compte",Toast.LENGTH_LONG);
+	                	t.show();
+					}
 				}
-				else
-				{
-                	Toast t = Toast.makeText(ComptesActivity.this, "Impossible de selectionner ce compte",Toast.LENGTH_LONG);
-                	t.show();
-				}
-//				stopManagingCursor(c);
 				c.close();
 			}
 
@@ -233,7 +248,6 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 			{
 			}
         });
-//        stopManagingCursor(mComptesCursor);
     }
     
     private void updatePrefs(Editor editor, Cursor c)

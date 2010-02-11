@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.util.Log;
 
 /**
@@ -47,17 +48,16 @@ public class ChainesDbAdapter {
     private static final String DATABASE_TABLE_CHAINESTEMP = "chainestemp";
     private static final String DATABASE_TABLE_SERVICES = "services";
     private static final String DATABASE_TABLE_SERVICESTEMP = "servicestemp";
+    
     private static final int DATABASE_VERSION = 8;
 
     private static final String DATABASE_CREATE_CHAINES =
         "create table "+DATABASE_TABLE_CHAINES+TABLE_CHAINES;
-
     private static final String DATABASE_CREATE_CHAINESTEMP =
         "create table "+DATABASE_TABLE_CHAINESTEMP+TABLE_CHAINES;
 
     private static final String DATABASE_CREATE_SERVICES =
         "create table "+DATABASE_TABLE_SERVICES+TABLE_SERVICES;
-
     private static final String DATABASE_CREATE_SERVICESTEMP =
         "create table "+DATABASE_TABLE_SERVICESTEMP+TABLE_SERVICES;
 
@@ -66,7 +66,7 @@ public class ChainesDbAdapter {
     private static class DatabaseHelper extends SQLiteOpenHelper {
 
         DatabaseHelper(Context context) {
-            super(context, DATABASE_NAME, null, DATABASE_VERSION);
+       		super(context, DATABASE_NAME, null, DATABASE_VERSION);
         }
 
         @Override
