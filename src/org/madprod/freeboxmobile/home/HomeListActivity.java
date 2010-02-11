@@ -62,7 +62,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
        	modulesList = new ArrayList< Map<String,Object> >();
        	setModules();
-       	
+
 		// Simulate first launch (for test only, these lines have to be commented for release)
 /*		Editor e = mgr.edit();
 		e.remove(KEY_NRA);
@@ -119,12 +119,6 @@ public class HomeListActivity extends ListActivity implements HomeConstants
         	{
         		FBMHttpConnection.FBMLog("HOME : on rafraichi le compte "+mgr.getString(KEY_FBMVERSION, "0"));
         		refreshCompte();
-/*        		new ManageCompte(this).execute(new ComptePayload(
-		        		mgr.getString(KEY_TITLE, ""),
-		        		mgr.getString(KEY_USER, ""),
-		        		mgr.getString(KEY_PASSWORD, ""),
-		        		null, true));
-*/
         		Editor editor = mgr.edit();
 				editor.putString(KEY_FBMVERSION, getString(R.string.app_version));
 				editor.commit();
@@ -156,7 +150,6 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     	super.onPause();
 		FBMHttpConnection.closeDisplay();
     }
-
 
     private void refreshCompte()
     {

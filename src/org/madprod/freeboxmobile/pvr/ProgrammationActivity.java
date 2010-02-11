@@ -53,7 +53,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 	private static List<Chaine> mChaines = null;
 	private static List<Disque> mDisques = null;
 	private static List<String> mBoitiers = null;
-	private int mBoitierHD = 0;
+	private static int mBoitierHD = 0;
 	private boolean plusieursBoitiersHD = false;
 	private long mRowId = -1;
 	Activity progAct = null;
@@ -257,7 +257,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				if (mBoitierHD != position) {
 					mBoitierHD = position;
-					new TelechargerChainesDisquesTask().execute((Void[])null);
+					//new TelechargerChainesDisquesTask().execute((Void[])null);
 				}
 			}
 
@@ -487,10 +487,10 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
     		progressDialog = new ProgressDialog(progAct);
     		progressDialog.setIcon(R.drawable.fm_magnetoscope);
     		progressDialog.setTitle(getString(R.string.pvrPatientez));
-    		progressDialog.setMessage(getString(R.string.pvrTelechargementChaines));
+    		progressDialog.setMessage(getString(R.string.pvrTelechargementDonnees));
     		progressDialog.show();
         }
-    	
+
         protected Boolean doInBackground(Void... arg0) {
         	return telechargerEtParser();
         }
@@ -500,7 +500,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
         		preparerActivite();
         	}
         	else {
-        		afficherMsgErreur(getString(R.string.pvrErreurTelechargementChaines));
+        		afficherMsgErreur(getString(R.string.pvrErreurTelechargementDonnees), progAct);
         		boutonOK.setEnabled(false);
         	}
             
@@ -511,7 +511,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
     
     /**
      * 
-     * @return true en cas de succÃ¨s, false sinon
+     * @return true en cas de succès, false sinon
      */
     private boolean telechargerEtParser() {
         // Récupérer chaines et disques durs        
@@ -524,15 +524,16 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
         if (resultat != null) {
 			FBMHttpConnection.FBMLog("telechargerEtParser not null");
     		
-	        int posChaines = resultat.indexOf("var serv_a = [");
+//	        int posChaines = resultat.indexOf("var serv_a = [");
 	        int posDisques = resultat.indexOf("var disk_a = [");
 	        
-	        if (posChaines > 0 && posDisques > 0) {
+//	        if (posChaines > 0 && posDisques > 0) {
+		    if (posDisques > 0) {
 	    		FBMHttpConnection.FBMLog("telechargerEtParser posChaines > 0 && posDisques > 0");
 	        	// Récupération du javascript correspondant à  la liste des chaines
-	        	String strChaines = resultat.substring(posChaines+14, posDisques);
-	        	int finChaines = strChaines.lastIndexOf("}");
-	        	strChaines = strChaines.substring(0, finChaines+1);
+//	        	String strChaines = resultat.substring(posChaines+14, posDisques);
+//	        	int finChaines = strChaines.lastIndexOf("}");
+//	        	strChaines = strChaines.substring(0, finChaines+1);
 	        	
 	        	// Récupération du javascript correspondant à la liste des disques durs
 	        	String strDisques = resultat.substring(posDisques+14);
@@ -552,19 +553,18 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 	        		boitiers = resultat.substring(posDebut);
 	        		mBoitiers = new ArrayList<String>();
 	        		plusieursBoitiersHD = true;
-	        		
+
 	        		do {
 	        			d = boitiers.indexOf("Boitier HD");
 	        			if (d == -1) {
 		        			break;
 	        			}
-	        			
 	        			f = d + boitiers.substring(d).indexOf("</");
 	        			mBoitiers.add(boitiers.substring(d, f));
 	        			boitiers = boitiers.substring(f);
 	        		} while (true);
 	        	}
-	        	
+
 	        	return true;
 	        }
 	        else {
@@ -675,7 +675,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 
                     if (errMsg != null) {
 						setResult(EnregistrementsActivity.RESULT_PROG_NOK);
-                        afficherMsgErreur(errMsg);
+                        afficherMsgErreur(errMsg, progAct);
 	                }
                     else {
 						setResult(EnregistrementsActivity.RESULT_PROG_OK);
@@ -788,7 +788,8 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 
         		// Requete HTTP
         		String url = "http://adsl.free.fr/admin/magneto.pl";
-                //postVars.add(new BasicNameValuePair("box", ""+mBoitierHD));
+        		if (plusieursBoitiersHD)
+        			postVars.add(new BasicNameValuePair("box", ""+mBoitierHD));
         		FBMHttpConnection.FBMLog("Programmation sur le serveur de Free");
         		String resultat = FBMHttpConnection.getPage(FBMHttpConnection.postAuthRequest(url, postVars, true, true));
 
@@ -836,8 +837,8 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
         });
     }
 	
-	private void afficherMsgErreur(String msg) {	
-    	AlertDialog d = new AlertDialog.Builder(this).create();
+	static void afficherMsgErreur(String msg, Activity a) {	
+    	AlertDialog d = new AlertDialog.Builder(a).create();
 		d.setTitle("Erreur!");
 		d.setIcon(R.drawable.fm_magnetoscope);
 		d.setMessage(msg);
