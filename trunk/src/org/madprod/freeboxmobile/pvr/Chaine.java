@@ -19,15 +19,16 @@ import org.json.JSONObject;
  * 		{"pvr_mode":"private","desc":"","id":0},
  * 		{"pvr_mode":"private","desc":"HD","id":487},
  * 		{"pvr_mode":"private","desc":"standard","id":333},
- * 		{"pvr_mode":"private","desc":"bas d�bit","id":346}
+ * 		{"pvr_mode":"private","desc":"bas débit","id":346}
  *  ]
  * }
  */
 
-public class Chaine {
+public class Chaine implements PvrConstants {
 	static class Service {
-		enum PVR_MODE { DISABLED, PUBLIC, PRIVATE };
-		private PVR_MODE mPvrMode;
+//		enum PVR_MODE { DISABLED, PUBLIC, PRIVATE };
+//		private PVR_MODE mPvrMode;
+		private int mPvrMode;
 		private String mServiceDesc;
 		private int mServiceId;
 		
@@ -37,13 +38,15 @@ public class Chaine {
 
 				String mode = o.getString("pvr_mode");
 				if (mode.equals("private")) {
-					this.mPvrMode = Service.PVR_MODE.PRIVATE;
+//					this.mPvrMode = Service.PVR_MODE.PRIVATE;
+					this.mPvrMode = PVR_MODE_PRIVATE;
 				} else if (mode.equals("public")) {
-
-					this.mPvrMode = Service.PVR_MODE.PUBLIC;
+//					this.mPvrMode = Service.PVR_MODE.PUBLIC;
+					this.mPvrMode = PVR_MODE_PUBLIC;
 				}
 				else {
-					this.mPvrMode = Service.PVR_MODE.DISABLED;
+//					this.mPvrMode = Service.PVR_MODE.DISABLED;
+					this.mPvrMode = PVR_MODE_DISABLED;
 				}
 
 				this.mServiceDesc = o.getString("desc");
@@ -57,7 +60,8 @@ public class Chaine {
 		public int getServiceId() {
 			return this.mServiceId;
 		}
-		public PVR_MODE getPvrMode() {
+//		public PVR_MODE getPvrMode() {
+		public int getPvrMode() {
 			return this.mPvrMode;
 		}
 		public String getDesc() {
@@ -87,7 +91,7 @@ public class Chaine {
 				if (debut < 0 || fin <= 0 || fin > servicesJson.length()) {
 					break;
 				}
-				
+
 				serviceJson = servicesJson.substring(debut, fin);
 				this.mServices.add(new Service(serviceJson));
 				
