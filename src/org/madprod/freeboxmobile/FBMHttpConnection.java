@@ -486,16 +486,16 @@ public class FBMHttpConnection implements Constants
         int connected;
 
         connected = checkConnected(CONNECT_CONNECTED);
-		Log.d(DEBUGTAG,"->DOWNLOADING FILE : "+url);
+		FBMLog("->DOWNLOADING FILE : "+url);
         try
         {
 			if (connected == CONNECT_CONNECTED)
 			{
-				Log.d(DEBUGTAG, "GETFILE : VERIF SI ON EST AUTHENTIFIE");
+				FBMLog("GETFILE : VERIF SI ON EST AUTHENTIFIE");
 				c = prepareConnection(url+"?"+makeStringForPost(p, auth, null), "GET");
 				c.setDoInput(true);
-				Log.d(DEBUGTAG, "HEADERS : "+c.getHeaderFields());
-				Log.d(DEBUGTAG, "RESPONSE : "+c.getResponseCode()+" "+c.getResponseMessage());
+				FBMLog("HEADERS : "+c.getHeaderFields());
+				FBMLog("RESPONSE : "+c.getResponseCode()+" "+c.getResponseMessage());
 				if (c.getHeaderFields().get("location") != null)
 				{
 					connected = CONNECT_NOT_CONNECTED;
@@ -508,25 +508,25 @@ public class FBMHttpConnection implements Constants
 					c.disconnect();
 					c = null;
 				}
-				Log.d(DEBUGTAG, "GETFILE : PAS AUTHENTIFIE SUR LA CONSOLE - SESSION EXPIREE");
+				FBMLog("GETFILE : PAS AUTHENTIFIE SUR LA CONSOLE - SESSION EXPIREE");
 				connected = connectionFree(login, password);
 				if (connected == CONNECT_CONNECTED)
 				{
-					Log.d(DEBUGTAG, "GETFILE : REAUTHENTIFICATION OK");
+					FBMLog("GETFILE : REAUTHENTIFICATION OK");
 					c = prepareConnection(url+"?"+makeStringForPost(p, auth, null), "GET");
 					c.setDoInput(true);
-					Log.d(DEBUGTAG, "HEADERS : "+c.getHeaderFields());
-					Log.d(DEBUGTAG, "RESPONSE : "+c.getResponseCode()+" "+c.getResponseMessage());
+					FBMLog("HEADERS : "+c.getHeaderFields());
+					FBMLog("RESPONSE : "+c.getResponseCode()+" "+c.getResponseMessage());
 				}
 			}
 			else
 			{
-				Log.d(DEBUGTAG, "GETFILE : AUTHENTIFICATION OK");
+				FBMLog("GETFILE : AUTHENTIFICATION OK");
 				connected = CONNECT_CONNECTED;
 			}
 			if (connected == CONNECT_CONNECTED)
 			{
-				Log.d(DEBUGTAG, "GETFILE : LECTURE FICHIER");
+				FBMLog("GETFILE : LECTURE FICHIER");
 		    	c.connect();
 		        f = new FileOutputStream(file);
 		        InputStream in = c.getInputStream();
@@ -537,14 +537,13 @@ public class FBMHttpConnection implements Constants
 		        }
 		    	f.close();
 		    	in.close();
-		    	Log.d(DEBUGTAG,"->FILE DOWNLOADED");
+		    	FBMLog("->FILE DOWNLOADED");
 		    	return true;
 			}
         }
         catch (Exception e)
         {
-        	Log.e(DEBUGTAG, "getFile : "+e);
-			e.printStackTrace();
+        	FBMLog("getFile : "+e.getMessage()+" "+getStackTrace(e));
 		}
         return false;
 	}
