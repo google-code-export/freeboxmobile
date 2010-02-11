@@ -60,7 +60,7 @@
 			
 			<LinearLayout android:id="@+id/LinearLayout01" android:layout_height="wrap_content" android:layout_width="fill_parent"><TextView android:text="@string/pvrTxtRecurrence" android:id="@+id/TxtDisque" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="15sp"></TextView><Button android:text="@string/pvrTxtPrgBtnRecur" android:id="@+id/pvrPrgBtnRecur" android:layout_height="wrap_content" android:clickable="true" android:layout_width="fill_parent"></Button></LinearLayout>
 			
-			<TextView android:text="@string/pvrTxtRecurrenceInfo" android:id="@+id/TxtDisque" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+			<TextView android:text="@string/pvrTxtRecurrenceInfo" android:id="@+id/TxtDisque" android:layout_width="wrap_content" android:layout_height="wrap_content" android:visibility="gone"></TextView>
 			 
 			<Button
 				android:drawableLeft="@drawable/pvr_btn_record"
