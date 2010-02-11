@@ -35,7 +35,9 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -54,7 +56,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 	private static List<Disque> mDisques = null;
 	private static List<String> mBoitiers = null;
 	private static int mBoitierHD = 0;
-	private boolean plusieursBoitiersHD = false;
+	private static boolean plusieursBoitiersHD;
 	private long mRowId = -1;
 	Activity progAct = null;
 	final String TAG = "FreeboxMobileProg";
@@ -66,7 +68,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 	Spinner dureeSpinner = null;
 	Spinner boitierHDSpinner = null;
 	Spinner disqueSpinner = null;
-	
+
 	private final int LAYOUT_BENOIT = 1;
 	private final int LAYOUT_OLIVIER = 2;
 	
@@ -447,6 +449,45 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 				getString(R.string.pvrMercredi), getString(R.string.pvrJeudi), getString(R.string.pvrVendredi),
 				getString(R.string.pvrSamedi), getString(R.string.pvrDimanche) };
 
+    	AlertDialog d = new AlertDialog.Builder(this).create();
+		d.setTitle("Récurrence");
+		d.setIcon(R.drawable.fm_magnetoscope);
+		d.setMessage(getString(R.string.pvrTxtRecurrenceInfo));
+		d.setButton("Continuer", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+				setTheme(android.R.style.Theme_Black);
+				AlertDialog alert = new AlertDialog.Builder(progAct)
+					.setMultiChoiceItems(jours,
+							null,
+							new DialogInterface.OnMultiChoiceClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog, int which, boolean what) {
+									joursChoisis[which] = what;						
+								}
+							})
+					.setPositiveButton(getString(R.string.OK),
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog, int whichButton) {
+									progAct.setTheme(android.R.style.Theme_Light);
+								}
+							}) 
+		            .setNegativeButton(getString(R.string.Annuler),
+		            		new DialogInterface.OnClickListener() { 
+		            			public void onClick(DialogInterface dialog, int whichButton) {
+									progAct.setTheme(android.R.style.Theme_Light);
+		            				resetJours();
+		            				dialog.cancel();
+		            			} 
+		            		})
+		        	.setTitle(getString(R.string.pvrChoixJours))
+		            .setIcon(R.drawable.pvr_date)
+		            .create();
+				alert.show();
+			}
+		});
+		d.show();
+/*
 		setTheme(android.R.style.Theme_Black);
 		AlertDialog alert = new AlertDialog.Builder(this)
 			.setMultiChoiceItems(jours,
@@ -475,6 +516,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
             .setIcon(R.drawable.pvr_date)
             .create();
 		alert.show();
+		*/
     }
 
 	/**
@@ -563,6 +605,10 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 	        			mBoitiers.add(boitiers.substring(d, f));
 	        			boitiers = boitiers.substring(f);
 	        		} while (true);
+	        	}
+	        	else
+	        	{
+	        		plusieursBoitiersHD = false;
 	        	}
 
 	        	return true;
@@ -976,7 +1022,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 				}
 				afficherInfosDisque(0);
 				break;
-				
+
 			case R.id.pvrPrgQualite:
 				int idChaine = chainesSpinner.getSelectedItemPosition();
 				List<Chaine.Service> services = mChaines.get(idChaine).getServices();
