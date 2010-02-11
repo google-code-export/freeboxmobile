@@ -9,7 +9,6 @@ import org.apache.http.message.BasicNameValuePair;
 
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
-import org.madprod.freeboxmobile.pvr.Chaine.Service.PVR_MODE;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -50,7 +49,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
  * @author bduffez
  *
  */
-public class ProgrammationActivity extends Activity {
+public class ProgrammationActivity extends Activity implements PvrConstants {
 	private static List<Chaine> mChaines = null;
 	private static List<Disque> mDisques = null;
 	private static List<String> mBoitiers = null;
@@ -61,7 +60,7 @@ public class ProgrammationActivity extends Activity {
 	final String TAG = "FreeboxMobileProg";
 	private boolean nomEmissionSaisi = false;
 	private boolean[] joursChoisis = { false, false, false, false, false, false, false };
-	ProgressDialog progressDialog = null;
+	static ProgressDialog progressDialog = null;
 	TextView nomEmission = null;
 	Spinner chainesSpinner = null;
 	Spinner dureeSpinner = null;
@@ -477,9 +476,9 @@ public class ProgrammationActivity extends Activity {
             .create();
 		alert.show();
     }
-    
+
 	/**
-	 * télécharge la liste des chaines et disques
+	 * tÃ©lÃ©charge la liste des chaines et disques
 	 * @author bduffez
 	 *
 	 */
@@ -490,8 +489,6 @@ public class ProgrammationActivity extends Activity {
     		progressDialog.setTitle(getString(R.string.pvrPatientez));
     		progressDialog.setMessage(getString(R.string.pvrTelechargementChaines));
     		progressDialog.show();
-//        	progressDialog = ProgressDialog.show(progAct, getString(R.string.pvrPatientez),
-//        			getString(R.string.pvrTelechargementChaines), true, false);
         }
     	
         protected Boolean doInBackground(Void... arg0) {
@@ -514,7 +511,7 @@ public class ProgrammationActivity extends Activity {
     
     /**
      * 
-     * @return true en cas de succès, false sinon
+     * @return true en cas de succÃ¨s, false sinon
      */
     private boolean telechargerEtParser() {
         // Récupérer chaines et disques durs        
@@ -532,7 +529,7 @@ public class ProgrammationActivity extends Activity {
 	        
 	        if (posChaines > 0 && posDisques > 0) {
 	    		FBMHttpConnection.FBMLog("telechargerEtParser posChaines > 0 && posDisques > 0");
-	        	// Récupération du javascript correspondant à la liste des chaines
+	        	// Récupération du javascript correspondant à  la liste des chaines
 	        	String strChaines = resultat.substring(posChaines+14, posDisques);
 	        	int finChaines = strChaines.lastIndexOf("}");
 	        	strChaines = strChaines.substring(0, finChaines+1);
@@ -572,16 +569,34 @@ public class ProgrammationActivity extends Activity {
 	        }
 	        else {
 	    		FBMHttpConnection.FBMLog("telechargerEtParser impossible de trouver le json dans le html");
+	    		FBMHttpConnection.FBMLog(resultat);
 	        }
         }
         else {
         	FBMHttpConnection.FBMLog("telechargerEtParser null");
         }
         FBMHttpConnection.FBMLog("==> Impossible de télécharger le json des chaines/disques");
-        FBMHttpConnection.FBMLog(resultat);
     	return false;
     }
     
+    public static void showPatientez(Activity a)
+    {
+		progressDialog = new ProgressDialog(a);
+		progressDialog.setIcon(R.drawable.fm_magnetoscope);
+		progressDialog.setTitle(a.getString(R.string.pvrPatientez));
+		progressDialog.setMessage(a.getString(R.string.pvrTelechargementChaines));
+		progressDialog.show();
+    }
+
+    public static void dismissPd()
+    {
+    	if (progressDialog != null)
+    	{
+    		progressDialog.dismiss();
+    		progressDialog = null;
+    	}
+    }
+
     private void preparerActivite() {
     	// Suppression du layout de sélection si on n'a qu'un boitier HD
 		if (plusieursBoitiersHD) {
@@ -988,7 +1003,7 @@ public class ProgrammationActivity extends Activity {
 						if (serviceName.length() == 0) {
 							serviceName = getString(R.string.pvrTxtQualiteParDefaut);
 						}
-						if (services.get(i).getPvrMode() != PVR_MODE.PUBLIC) {
+						if (services.get(i).getPvrMode() != PVR_MODE_PUBLIC) {
 							serviceName += " *";
 						}
 						liste.add(serviceName);
@@ -1030,7 +1045,7 @@ public class ProgrammationActivity extends Activity {
 		
 		return -1;
 	}
-    
+
 	// Fonctions pour parser le javascript listant les chaines et les disques durs
 	private List<Chaine> getListeChaines(String strChaines) {
 		getListe(strChaines, "}]},{\"name\"", 3, true);

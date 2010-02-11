@@ -31,17 +31,24 @@ public class ChainesDbAdapter {
     /**
      * Database creation sql statement
      */
-    private static final String DATABASE_CREATE =
-            "create table chaines (_id integer primary key autoincrement, "
-			        + "name text not null,"
-			        + "chaine_id integer not null,"
-			        + "service_desc text not null,"
-			        + "service_id integer not null,"
-			        + "pvr_mode integer not null);";
+    
+    private static final String TABLE_CHAINE = " (_id integer primary key autoincrement, "
+	        + "name text not null,"
+	        + "chaine_id integer not null,"
+	        + "service_desc text not null,"
+	        + "service_id integer not null,"
+	        + "pvr_mode integer not null);";
 
-    private static final String DATABASE_NAME = "freeboxmobile" + FBMHttpConnection.getIdentifiant();
+    private static final String DATABASE_NAME = "pvrchaines_" + FBMHttpConnection.getIdentifiant();
     private static final String DATABASE_TABLE = "chaines";
-    private static final int DATABASE_VERSION = 4;
+    private static final String DATABASE_TABLE_TEMP = "chainestemp";
+    private static final int DATABASE_VERSION = 6;
+
+    private static final String DATABASE_CREATE =
+        "create table "+DATABASE_TABLE+TABLE_CHAINE;
+
+    private static final String DATABASE_CREATE_TEMP =
+        "create table "+DATABASE_TABLE_TEMP+TABLE_CHAINE;
 
     private final Context mCtx;
 
@@ -56,13 +63,15 @@ public class ChainesDbAdapter {
             Log.d(TAG, "DatabaseHelper onCreate called");
 
             db.execSQL(DATABASE_CREATE);
+            db.execSQL(DATABASE_CREATE_TEMP);
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
                     + newVersion + ", which will destroy all old data");
-            db.execSQL("DROP TABLE IF EXISTS Chaines");
+            db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE);
+            db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_TEMP);
             onCreate(db);
         }
     }
@@ -93,15 +102,20 @@ public class ChainesDbAdapter {
     }
     
     public void close() {
+        mDb.close();
         mDbHelper.close();
     }
-    
+/*
     public void detruire() {
-
-    	mDb.rawQuery("drop table Chaines", null);
-    	mDb.rawQuery(DATABASE_CREATE, null);
+        mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE);
+        mDb.execSQL(DATABASE_CREATE);
     }
-
+*/
+    public void swapChaines() {
+        mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE);
+    	mDb.execSQL("ALTER TABLE "+DATABASE_TABLE_TEMP+" RENAME TO "+DATABASE_TABLE);
+        mDb.execSQL(DATABASE_CREATE_TEMP);
+    }
 
     /**
      * Create a new Chaine using the title and body provided. If the Chaine is
@@ -112,8 +126,8 @@ public class ChainesDbAdapter {
      * @param body the body of the Chaine
      * @return rowId or -1 if failed
      */
-    public long createChaine(String name, String chaine_id, String service_desc, String service_id,
-    		String pvr_mode) {
+    public long createChaine(String name, int chaine_id, String service_desc, int service_id,
+    		int pvr_mode) {
         ContentValues initialValues = new ContentValues();
         
         initialValues.put(KEY_NAME, name);
@@ -122,7 +136,7 @@ public class ChainesDbAdapter {
         initialValues.put(KEY_SERVICE_ID, service_id);
         initialValues.put(KEY_PVR_MODE, pvr_mode);
         
-        return mDb.insert(DATABASE_TABLE, null, initialValues);
+        return mDb.insert(DATABASE_TABLE_TEMP, null, initialValues);
     }
     
     /**
@@ -134,8 +148,8 @@ public class ChainesDbAdapter {
      * @param body the body of the Chaine
      * @return rowId or -1 if failed
      */
-    public long modifyChaine(int rowId, String name, String chaine_id, String service_desc,
-    		String service_id, String pvr_mode) {
+    public long modifyChaine(int rowId, String name, int chaine_id, String service_desc,
+    		int service_id, int pvr_mode) {
         ContentValues newValues = new ContentValues();
 
         newValues.put(KEY_NAME, name);
