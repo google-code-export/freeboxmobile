@@ -51,9 +51,19 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
  */
 public class ProgrammationActivity extends Activity implements PvrConstants {
 	private static List<Chaine> mChaines = null;
-	private static List<Disque> mDisques = null;
-	private static List<String> mBoitiers = null;
+//	private static List<Disque> mDisques = null;
+//	private static List<String> mBoitiers = null;
+	// Id du boitier séléctionné
 	private static int mBoitierHD = 0;
+	// Nom du boitier sélectionné
+	private static String mBoitierHDName = null;
+	// Id du disque selectionné
+	private static int mDisqueId = 0;
+	// Nom du disque selectionné
+	private static String mDisqueName = null;
+	// Curseur sur les disques
+	private static Cursor disquesCursor = null;
+	
 	private static boolean plusieursBoitiersHD;
 	private long mRowId = -1;
 	Activity progAct = null;
@@ -257,7 +267,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				if (mBoitierHD != position) {
 					mBoitierHD = position;
-					//new TelechargerChainesDisquesTask().execute((Void[])null);
+					mBoitierHDName = parent.getSelectedItem().toString();
 				}
 			}
 
@@ -582,9 +592,10 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 	        	
 	        	// Conversion JSON -> objet dans la RAM
 	        	getListeChainesFromDb();
-	        	getListeDisques(strDisques);
+	        	//getListeDisques(strDisques);
 	        	
 	        	// Deux boitiers HD ?
+/*
 	        	int posDebut = resultat.indexOf("Boitier HD");
 	        	if (posDebut > 0) {
 	        		int d, f;
@@ -608,7 +619,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 	        	{
 	        		plusieursBoitiersHD = false;
 	        	}
-
+*/
 	        	return true;
 	        }
 	        else {
@@ -642,11 +653,12 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
     }
 
     private void preparerActivite() {
+    	// Dans tous les cas on remplit le spinner du boitier (même si on l'affiche pas)
+    	// car son init remplit certaines variables nécessaires aux disques (chaque disque dépend d'un boitier)
+    	remplirSpinner(R.id.pvrPrgBoitier);
     	// Suppression du layout de sélection si on n'a qu'un boitier HD
 		if (plusieursBoitiersHD) {
-    		remplirSpinner(R.id.pvrPrgBoitier);
-
-    		if (orientationPortrait) {
+    		if ((orientationPortrait) && (selectedLayout == LAYOUT_BENOIT)) {
         		viewFlipper.showPrevious();
         	}
     	}
@@ -747,6 +759,9 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
         		int h, m;
         		String date, emission, heure, minutes, nomChaine;
         		
+        		ChainesDbAdapter db = new ChainesDbAdapter(progAct);
+        		db.open();
+
         		// Duree, emission, nom
         		duree = Integer.parseInt((((TextView) findViewById(R.id.pvrPrgDuree)).getText().toString()));
         		emission = ((TextView) findViewById(R.id.pvrPrgNom)).getText().toString();
@@ -792,7 +807,8 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
         		
         		// Disque
         		int disqueId = disqueSpinner.getSelectedItemPosition();
-        		where_id = mDisques.get(disqueId).getId();
+        		disquesCursor.moveToPosition(disqueId);
+        		where_id = disquesCursor.getInt(disquesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_DISQUE_ID));
 
         		// Creation des variables POST
         		postVars.add(new BasicNameValuePair("chaine", chaine.toString()));
@@ -856,26 +872,26 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
         		}
         		// Pas d'erreur, on MAJ la db
         		else {
-    				EnregistrementsDbAdapter db = new EnregistrementsDbAdapter(progAct);
-    				db.open();
+    				EnregistrementsDbAdapter dbenr = new EnregistrementsDbAdapter(progAct);
+    				dbenr.open();
 
     				// Modification
         			if (enr != null) {
         				int rowId = enr.getInt(enr.getColumnIndex(EnregistrementsDbAdapter.KEY_ROWID));
-        				db.modifyEnregistrement(rowId, nomChaine, date, heure+"h"+minutes, duree.toString(),
+        				dbenr.modifyEnregistrement(rowId, nomChaine, date, heure+"h"+minutes, duree.toString(),
         			    		emission, ide.toString(), chaine.toString(), service.toString(), heure, minutes,
         			    		duree.toString(), emission, where_id.toString(), repeat_a);
         			}
         			// Ajout
         			else {
-        				db.createEnregistrement(nomChaine, date, heure+"h"+minutes, duree.toString(),
+        				dbenr.createEnregistrement(nomChaine, date, heure+"h"+minutes, duree.toString(),
         			    		emission, ide.toString(), chaine.toString(), service.toString(), heure, minutes,
         			    		duree.toString(), emission, where_id.toString(), repeat_a);
         			}
         			
-    				db.close();
+    				dbenr.close();
         		}
-        		
+        		db.close();
         		return null;
             }
         });
@@ -957,17 +973,19 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
         return null;
     }
 
+    private int getGiga(int size)
+    {
+    	return size / 1048576;
+    }
+    
     private void afficherInfosDisque(int disqueId) {
-        // Infos disque
-//        Disque d = mDisques.get(disqueId);
-        
     	ChainesDbAdapter db = new ChainesDbAdapter(this);
     	db.open();
-    	Cursor c = db.fetchDisque(disqueId, mBoitierHD);
+    	Cursor c = db.fetchDisque(disqueId, mBoitierHDName);
     	startManagingCursor(c);
         if (c != null) {
-        	int gigaFree = c.getInt(c.getColumnIndex(ChainesDbAdapter.KEY_DISQUE_FREE_SIZE)) / 1048576;
-        	int gigaTotal = c.getInt(c.getColumnIndex(ChainesDbAdapter.KEY_DISQUE_TOTAL_SIZE)) / 1048576;
+        	int gigaFree = getGiga(c.getInt(c.getColumnIndex(ChainesDbAdapter.KEY_DISQUE_FREE_SIZE)));
+        	int gigaTotal = getGiga(c.getInt(c.getColumnIndex(ChainesDbAdapter.KEY_DISQUE_TOTAL_SIZE)));
 
         	((TextView) findViewById(R.id.pvrPrgInfosDisque1))
     			.setText(getString(R.string.pvrInfosDisque1).replace("#nom", c.getString(c.getColumnIndex(ChainesDbAdapter.KEY_DISQUE_LABEL))));
@@ -985,7 +1003,6 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
         			.setText(getString(R.string.pvrInfosDisque4_2).replace("#mount", c.getString(c.getColumnIndex(ChainesDbAdapter.KEY_DISQUE_MOUNT))));
                 break;
         	}
-        	FBMHttpConnection.FBMLog("GIGA FREE : "+gigaFree+" "+c.getCount());
         	if (gigaFree < 4) {
         		((TextView) findViewById(R.id.pvrPrgInfosDisqueEspaceFaible))
         			.setText(getString(R.string.pvrInfosDisqueEspaceFaible));
@@ -1007,6 +1024,11 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 		Spinner spinner = (Spinner) findViewById(id);
 		List<String> liste = new ArrayList<String>();
 		int i, size;
+		Cursor c;
+		String tag = "";
+		
+		ChainesDbAdapter db = new ChainesDbAdapter(this);
+		db.open();
 		
 		switch (id) {
 			// Construction de la liste de String à mettre dans le spinner
@@ -1018,16 +1040,27 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 				break;
 				
 			case R.id.pvrPrgDisque:
-				size = mDisques.size();
-				String disqueName;
-				Disque disque;
-				for (i = 0; i < size; i++) {
-					disque = mDisques.get(i);
-					disqueName = disque.getLabel();
-					disqueName += " (" + disque.getGigaFree() + "/" + disque.getGigaTotal();
-					disqueName += " " + getString(R.string.pvrGoLibres) + ")";
-					liste.add(disqueName);
-				}
+				disquesCursor = db.getListeDisques(mBoitierHDName);
+				startManagingCursor(disquesCursor);
+        		FBMHttpConnection.FBMLog("BOITIER : "+mBoitierHDName);
+		        if (disquesCursor.moveToFirst())
+		        {
+		            int disqueNameIndex = disquesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_DISQUE_LABEL);
+		            int disqueFreeIndex = disquesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_DISQUE_FREE_SIZE);
+		            int disqueTotalIndex = disquesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_DISQUE_TOTAL_SIZE);
+					mDisqueId = 0;
+					mDisqueName = disquesCursor.getString(disqueNameIndex);
+					String disqueName;
+		        	do
+		        	{
+		        		disqueName = disquesCursor.getString(disqueNameIndex);
+		        		disqueName += " (" + getGiga(disquesCursor.getInt(disqueFreeIndex)) + "/" + getGiga(disquesCursor.getInt(disqueTotalIndex));
+						disqueName += " " + getString(R.string.pvrGoLibres) + ")";
+		        		liste.add(disqueName);
+		        		FBMHttpConnection.FBMLog("DISQUE : "+disqueName);
+		        	}
+		       		while (disquesCursor.moveToNext());
+		        }
 				afficherInfosDisque(0);
 				break;
 
@@ -1053,14 +1086,29 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 			break;
 			
 			case R.id.pvrPrgBoitier:
-				liste = mBoitiers;
-				break;
+				i = 0;
+				c = db.fetchBoitiers();
+		        if (c.moveToFirst())
+		        {
+		            int boitierNameIndex = c.getColumnIndexOrThrow(ChainesDbAdapter.KEY_BOITIER_NAME);
+					mBoitierHD = 0;
+					mBoitierHDName = c.getString(boitierNameIndex);
+		        	do
+		        	{
+		        		liste.add(c.getString(boitierNameIndex));
+		        		i++;
+		        	}
+		       		while (c.moveToNext());
+		        	plusieursBoitiersHD = (i > 1);
+		        }
+			break;
 		}
 		
 		ArrayAdapter<String> adapter= new ArrayAdapter<String>(
 				this, android.R.layout.simple_spinner_item, liste);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinner.setAdapter(adapter);
+		db.close();
     }
 	
     // Fonctions pour récupérer la position d'une chaine/disque dans un spinner
@@ -1076,26 +1124,36 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 		return -1;
 	}
 	private int getDisqueSpinnerId(String disque) {
-		int i, size = mDisques.size();
-		
+		int i = 0;
+        if (disquesCursor.moveToFirst())
+        {
+            int disqueNameIndex = disquesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_DISQUE_LABEL);
+        	do
+        	{
+        		if (disquesCursor.getString(disqueNameIndex).equals(disque))
+        			return i;
+        		i++;
+        	}
+       		while (disquesCursor.moveToNext());
+        }
+/*
 		for (i = 0; i < size; i++) {
 			if (mDisques.get(i).getLabel().equals(disque)) {
 				return i;
 			}
 		}
-		
+	*/	
 		return -1;
 	}
 
 	private void getListeChainesFromDb() {
-		getListeFromDb(true);
+		getListeFromDb();
 	}
-	
-	private List<Disque> getListeDisques(String strDisques) {
+	/*
+	private getListeDisques(String strDisques) {
 		getListe(strDisques, "}", 1);
-		return mDisques;
 	}
-
+*/
 	/**
 	 * Crée la liste des chaines ou des disques (selon le boolean)
 	 * @param strSource:	l'array de JSON (commence par { sinon crash)
@@ -1103,17 +1161,13 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 	 * @param shift:		le nombre d'octets inutiles entre deux objets JSON
 	 * @param isChaines:	true si c'est la liste des chaines, false si c'est celle des disques
 	 */
-	private void getListeFromDb(boolean isChaines) {
+	private void getListeFromDb() {
 		ChainesDbAdapter db = new ChainesDbAdapter(this);
 
 		FBMHttpConnection.FBMLog("getListeFromDb START");
 		// Init
 		db.open();
-		if (isChaines) {
-			mChaines = new ArrayList<Chaine>();
-		} else  {
-			mDisques = new ArrayList<Disque>();
-		}
+		mChaines = new ArrayList<Chaine>();
 
 		Cursor c = db.fetchAllChaines();
         if (c.moveToFirst())
@@ -1134,6 +1188,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 	 * @param sep:			ce qui sépare deux objets JSON
 	 * @param shift:		le nombre d'octets inutiles entre deux objets JSON
 	 */
+	/*
 	private void getListe(String strSource, String sep, int shift) {
 		String str;
 		int pos;
@@ -1168,4 +1223,5 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 			}
 		} while(true);
     }
+    */
 }
