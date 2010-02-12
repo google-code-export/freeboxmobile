@@ -928,7 +928,6 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 	        TimePicker heure = (TimePicker) findViewById(R.id.pvrPrgHeure);
 	        EditText duree = (EditText) findViewById(R.id.pvrPrgDuree);
 	        EditText nom = (EditText) findViewById(R.id.pvrPrgNom);
-//	        Spinner disques = (Spinner) findViewById(R.id.pvrPrgDisque);
 	        
 	        // Remplissage
 	        chaines.setSelection(getChaineSpinnerId(c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_CHAINE))));
@@ -960,14 +959,18 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 
     private void afficherInfosDisque(int disqueId) {
         // Infos disque
-        Disque d = mDisques.get(disqueId);
+//        Disque d = mDisques.get(disqueId);
         
-        if (d != null) {
-        	int gigaFree = d.getGigaFree();
-        	int gigaTotal = d.getGigaTotal();
-        	
+    	ChainesDbAdapter db = new ChainesDbAdapter(this);
+    	db.open();
+    	Cursor c = db.fetchDisque(disqueId, mBoitierHD);
+    	startManagingCursor(c);
+        if (c != null) {
+        	int gigaFree = c.getInt(c.getColumnIndex(ChainesDbAdapter.KEY_DISQUE_FREE_SIZE)) / 1048576;
+        	int gigaTotal = c.getInt(c.getColumnIndex(ChainesDbAdapter.KEY_DISQUE_TOTAL_SIZE)) / 1048576;
+
         	((TextView) findViewById(R.id.pvrPrgInfosDisque1))
-    			.setText(getString(R.string.pvrInfosDisque1).replace("#nom", d.getLabel()));
+    			.setText(getString(R.string.pvrInfosDisque1).replace("#nom", c.getString(c.getColumnIndex(ChainesDbAdapter.KEY_DISQUE_LABEL))));
         	((TextView) findViewById(R.id.pvrPrgInfosDisque2))
     			.setText(getString(R.string.pvrInfosDisque2).replace("#libre", ""+gigaFree));
         	((TextView) findViewById(R.id.pvrPrgInfosDisque3))
@@ -975,22 +978,29 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
         	switch (selectedLayout)	{
         		case LAYOUT_BENOIT:
                 	((TextView) findViewById(R.id.pvrPrgInfosDisque4))
-        			.setText(getString(R.string.pvrInfosDisque4).replace("#mount", d.getMountPt()));
+        			.setText(getString(R.string.pvrInfosDisque4).replace("#mount", c.getString(c.getColumnIndex(ChainesDbAdapter.KEY_DISQUE_MOUNT))));
         		break;
         		case LAYOUT_OLIVIER:
                 	((TextView) findViewById(R.id.pvrPrgInfosDisque4))
-        			.setText(getString(R.string.pvrInfosDisque4_2).replace("#mount", d.getMountPt()));
+        			.setText(getString(R.string.pvrInfosDisque4_2).replace("#mount", c.getString(c.getColumnIndex(ChainesDbAdapter.KEY_DISQUE_MOUNT))));
+                break;
         	}
-        		
-        	if (d.getGigaFree() < 4) {
+        	FBMHttpConnection.FBMLog("GIGA FREE : "+gigaFree+" "+c.getCount());
+        	if (gigaFree < 4) {
         		((TextView) findViewById(R.id.pvrPrgInfosDisqueEspaceFaible))
         			.setText(getString(R.string.pvrInfosDisqueEspaceFaible));
         	}
-        	
+        	else
+        	{
+        		((TextView) findViewById(R.id.pvrPrgInfosDisqueEspaceFaible))
+    			.setText("");        		
+        	}
+
         	ProgressBar pb = (ProgressBar) findViewById(R.id.pvrPrgDisquePB);
         	pb.setMax(gigaTotal);
         	pb.setProgress(gigaTotal-gigaFree);
         }
+        db.close();
     }
     
     private void remplirSpinner(int id) {
@@ -1082,7 +1092,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 	}
 	
 	private List<Disque> getListeDisques(String strDisques) {
-		getListe(strDisques, "}", 1, false);
+		getListe(strDisques, "}", 1);
 		return mDisques;
 	}
 
@@ -1119,22 +1129,17 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
     }
 
 	/**
-	 * Crée la liste des chaines ou des disques (selon le boolean)
+	 * Crée la liste des disques (selon le boolean)
 	 * @param strSource:	l'array de JSON (commence par { sinon crash)
 	 * @param sep:			ce qui sépare deux objets JSON
 	 * @param shift:		le nombre d'octets inutiles entre deux objets JSON
-	 * @param isChaines:	true si c'est la liste des chaines, false si c'est celle des disques
 	 */
-	private void getListe(String strSource, String sep, int shift, boolean isChaines) {
+	private void getListe(String strSource, String sep, int shift) {
 		String str;
 		int pos;
 		
 		// Init
-		if (isChaines) {
-			mChaines = new ArrayList<Chaine>();
-		} else  {
-			mDisques = new ArrayList<Disque>();
-		}
+		mDisques = new ArrayList<Disque>();
 
 		// Loop
 		do {
@@ -1147,17 +1152,13 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 					break;
 				}
 			}
-			
+
 			// Récupération du string JSON
 			str = strSource.substring(0, pos);
-			
+
 			// Ajout à la liste
-			if (isChaines) {
-				mChaines.add(new Chaine(str));
-			} else {
-				mDisques.add(new Disque(str));
-			}
-			
+			mDisques.add(new Disque(str));
+
 			// Préparation du prochain item JSON
 			if (strSource.length() > pos+1) {
 				strSource = strSource.substring(pos+1);
