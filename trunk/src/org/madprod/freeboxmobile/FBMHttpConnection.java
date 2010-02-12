@@ -904,7 +904,7 @@ public class FBMHttpConnection implements Constants
                 listConcat += "&";
                 try
                 {
-            		if (p.get(0).getName().equals("pass"))
+            		if (p.get(i).getName().equals("pass"))
             			log = false;
 	                listConcat += URLEncoder.encode(p.get(i).getName(), charset);
 	                listConcat += '=';
