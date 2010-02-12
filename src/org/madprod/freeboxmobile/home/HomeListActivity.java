@@ -207,7 +207,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		map.put(M_CLASS, null);
 		modulesList.add(map);
     	map = new HashMap<String,Object>();
-		map.put(M_ICON, R.drawable.icon_fbm);
+		map.put(M_ICON, R.drawable.fm_radios);
 		map.put(M_TITRE, getString(R.string.buttonRadios));
 		map.put(M_DESC, "Ecoutez les radios Freebox\n\nCette fonctionnalité n'est pas encore disponible");
 		map.put(M_CLASS, null);
