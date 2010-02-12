@@ -8,7 +8,6 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.util.Log;
 
 /**
@@ -221,7 +220,7 @@ public class ChainesDbAdapter {
         return mDb.insert(DATABASE_TABLE_BOITIERSDISQUESTEMP, null, initialValues);
 	}
 
-    public Cursor fetchDisque(int disqueId, int boitierId) throws SQLException {
+    public Cursor fetchDisque(int disqueId, String boitierName) throws SQLException {
         Cursor mCursor =
                 mDb.query(true, DATABASE_TABLE_BOITIERSDISQUES,
                 		new String[] {
@@ -238,12 +237,53 @@ public class ChainesDbAdapter {
                 		KEY_DISQUE_MOUNT,
                 		KEY_DISQUE_LABEL,
                 		},
-                		KEY_BOITIER_ID + "=" + boitierId + " AND "+KEY_DISQUE_ID+"="+disqueId,
+                		KEY_BOITIER_NAME + "='" + boitierName + "' AND "+KEY_DISQUE_ID+"="+disqueId,
                 		null, null, null, null, null);
         if (mCursor != null) {
             mCursor.moveToFirst();
         }
         return mCursor;
+    }
+    
+    public Cursor getListeDisques(String boitierName) throws SQLException {
+        Cursor mCursor =
+            mDb.query(true, DATABASE_TABLE_BOITIERSDISQUES,
+            		new String[] {
+            		KEY_ROWID,
+            		KEY_BOITIER_NAME,
+            		KEY_BOITIER_ID,
+            		KEY_DISQUE_FREE_SIZE,
+            		KEY_DISQUE_TOTAL_SIZE,
+            		KEY_DISQUE_ID,
+            		KEY_DISQUE_NOMEDIA,
+            		KEY_DISQUE_DIRTY,
+            		KEY_DISQUE_READONLY,
+            		KEY_DISQUE_BUSY,
+            		KEY_DISQUE_MOUNT,
+            		KEY_DISQUE_LABEL,
+            		},
+            		KEY_BOITIER_NAME + "='" + boitierName+"'",
+            		null, null, null, null, null);
+	    if (mCursor != null) {
+	        mCursor.moveToFirst();
+	    }
+	    return mCursor;    	
+    }
+
+    public Cursor fetchBoitiers() throws SQLException
+    {
+        Cursor mCursor =
+            mDb.query(true, DATABASE_TABLE_BOITIERSDISQUES,
+            		new String[] {
+            		KEY_BOITIER_NAME,
+            		KEY_BOITIER_ID,
+            		},
+            		null,
+            		null, null, null, null, null);
+	    if (mCursor != null) {
+	        mCursor.moveToFirst();
+	    }
+	    return mCursor;    	
     }
 
     /**
