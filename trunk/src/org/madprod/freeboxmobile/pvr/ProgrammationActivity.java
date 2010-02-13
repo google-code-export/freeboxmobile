@@ -57,12 +57,10 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 	private static int mBoitierHD = 0;
 	// Nom du boitier sélectionné
 	private static String mBoitierHDName = null;
-	// Id du disque selectionné
-	private static int mDisqueId = 0;
-	// Nom du disque selectionné
-	private static String mDisqueName = null;
 	// Curseur sur les disques
 	private static Cursor disquesCursor = null;
+	// Curseur sur les boitiers
+	private static Cursor boitiersCursor = null;
 	
 	private static boolean plusieursBoitiersHD;
 	private long mRowId = -1;
@@ -79,9 +77,10 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 
 	private final int LAYOUT_BENOIT = 1;
 	private final int LAYOUT_OLIVIER = 2;
-	
 	private int selectedLayout = LAYOUT_OLIVIER;
-	
+
+	// identifiant du dernier user à être entré dans l'activité
+	public static String lastUser = "";
 	boolean orientationPortrait = false;
 	int positionEcran = 0;
 	int nbEcrans = 3;
@@ -268,6 +267,9 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 				if (mBoitierHD != position) {
 					mBoitierHD = position;
 					mBoitierHDName = parent.getSelectedItem().toString();
+					// Si on change de boitier, on met à jour les disques associés
+					remplirSpinner(R.id.pvrPrgDisque);
+					afficherInfosDisque(0);
 				}
 			}
 
@@ -281,7 +283,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
     protected void onStart() {
     	super.onStart();
     	
-    	if (mChaines != null && mChaines.size() > 0) {
+    	if (mChaines != null && mChaines.size() > 0 && lastUser.equals(FBMHttpConnection.getIdentifiant())) {
     		preparerActivite();
     	}
     	else {
@@ -572,14 +574,14 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
     	
         String resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequestISR(url, param, true, true));
         if (resultat != null) {
-			FBMHttpConnection.FBMLog("telechargerEtParser not null");
+			FBMHttpConnection.FBMLog("PtelechargerEtParser not null");
     		
 //	        int posChaines = resultat.indexOf("var serv_a = [");
 	        int posDisques = resultat.indexOf("var disk_a = [");
 	        
 //	        if (posChaines > 0 && posDisques > 0) {
 		    if (posDisques > 0) {
-	    		FBMHttpConnection.FBMLog("telechargerEtParser posChaines > 0 && posDisques > 0");
+	    		FBMHttpConnection.FBMLog("PtelechargerEtParser posChaines > 0 && posDisques > 0");
 	        	// Récupération du javascript correspondant à  la liste des chaines
 //	        	String strChaines = resultat.substring(posChaines+14, posDisques);
 //	        	int finChaines = strChaines.lastIndexOf("}");
@@ -623,14 +625,14 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 	        	return true;
 	        }
 	        else {
-	    		FBMHttpConnection.FBMLog("telechargerEtParser impossible de trouver le json dans le html");
+	    		FBMHttpConnection.FBMLog("PtelechargerEtParser impossible de trouver le json dans le html");
 	    		FBMHttpConnection.FBMLog(resultat);
 	        }
         }
         else {
-        	FBMHttpConnection.FBMLog("telechargerEtParser null");
+        	FBMHttpConnection.FBMLog("PtelechargerEtParser null");
         }
-        FBMHttpConnection.FBMLog("==> Impossible de télécharger le json des chaines/disques");
+        FBMHttpConnection.FBMLog("P==> Impossible de télécharger le json des chaines/disques");
     	return false;
     }
     
@@ -979,11 +981,22 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
     }
     
     private void afficherInfosDisque(int disqueId) {
+    	disqueId = disqueSpinner.getSelectedItemPosition();
+    	// Au démarrage de l'activity, rien n'est encore selectionné
+    	if (disqueId < 0)
+    		disqueId = 0;
+    	FBMHttpConnection.FBMLog("afficherInfosDisque pos: "+disqueId);
+		disquesCursor.moveToPosition(disqueId);
+		disqueId = disquesCursor.getInt(disquesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_DISQUE_ID));
+
     	ChainesDbAdapter db = new ChainesDbAdapter(this);
     	db.open();
+    	FBMHttpConnection.FBMLog("afficherInfosDisque :" +disqueId+" "+mBoitierHDName+" "+mBoitierHD);
     	Cursor c = db.fetchDisque(disqueId, mBoitierHDName);
+    	FBMHttpConnection.FBMLog("afficherInfosDisque c:"+c.getCount());
     	startManagingCursor(c);
         if (c != null) {
+        	c.moveToFirst();
         	int gigaFree = getGiga(c.getInt(c.getColumnIndex(ChainesDbAdapter.KEY_DISQUE_FREE_SIZE)));
         	int gigaTotal = getGiga(c.getInt(c.getColumnIndex(ChainesDbAdapter.KEY_DISQUE_TOTAL_SIZE)));
 
@@ -1025,7 +1038,6 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 		List<String> liste = new ArrayList<String>();
 		int i, size;
 		Cursor c;
-		String tag = "";
 		
 		ChainesDbAdapter db = new ChainesDbAdapter(this);
 		db.open();
@@ -1042,14 +1054,11 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 			case R.id.pvrPrgDisque:
 				disquesCursor = db.getListeDisques(mBoitierHDName);
 				startManagingCursor(disquesCursor);
-        		FBMHttpConnection.FBMLog("BOITIER : "+mBoitierHDName);
 		        if (disquesCursor.moveToFirst())
 		        {
 		            int disqueNameIndex = disquesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_DISQUE_LABEL);
 		            int disqueFreeIndex = disquesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_DISQUE_FREE_SIZE);
 		            int disqueTotalIndex = disquesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_DISQUE_TOTAL_SIZE);
-					mDisqueId = 0;
-					mDisqueName = disquesCursor.getString(disqueNameIndex);
 					String disqueName;
 		        	do
 		        	{
@@ -1057,7 +1066,6 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 		        		disqueName += " (" + getGiga(disquesCursor.getInt(disqueFreeIndex)) + "/" + getGiga(disquesCursor.getInt(disqueTotalIndex));
 						disqueName += " " + getString(R.string.pvrGoLibres) + ")";
 		        		liste.add(disqueName);
-		        		FBMHttpConnection.FBMLog("DISQUE : "+disqueName);
 		        	}
 		       		while (disquesCursor.moveToNext());
 		        }
