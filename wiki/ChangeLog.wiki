@@ -68,11 +68,13 @@ Sortie le <pas encore><br>
 Release : 17
  * RESEAU : Optimisations
  * HOME : Infolog amélioré
+ * HOME : Nouvelle option "rafraichir compte"
  * FAX : Première version
  * INFO ADSL : Fonctionne maintenant pour les non dégroupés
  * SERVICES : Alerte en cas de ligne ADSL coupée
  * PVR : accessible en Freebox Optique
  * PVR : support de plusieurs boitiers
+ * PVR : plus de chargement systématique lors de la création d'un nouvel enregistrement
 
 == 0.20rc7 ==
 Sortie le 01/02/2010<br>
