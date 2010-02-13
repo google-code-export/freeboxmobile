@@ -73,15 +73,25 @@ public class FileChooserActivity extends Activity {
 				}
 			});
 
-			//Fichiers PDF
+			//Fichiers pouvant être séléctionnés par l'activité
 			final String[] fileNames = currentDir.list(new FilenameFilter() {
 				@Override
 				public boolean accept(File parent, String filename) {
-					return filename.endsWith(".pdf") || filename.endsWith(".jpg") || filename.endsWith(".jpeg");
+					//Extensions gérées par le FileChooser
+					final String[] matchingExtensions = new String[]{".pdf",".jpg",".jpeg"};
+					//Issue 134 : On compare dorénavant le filename en lettre minuscule
+					final String lowercaseFilename = filename.toLowerCase();
+					for(int i=0;i<matchingExtensions.length;i++){
+						if(lowercaseFilename.toLowerCase().endsWith(matchingExtensions[i])){
+							return true;
+						}
+					}
+					return false;
 				}
 			});
 			
 			//Rafraichissement des vues
+			final ArrayAdapter<String> fileNameAdapter = getFileNameAdapter();
 			fileNameAdapter.clear();
 			if (dirs != null) {
 				for (File directory : dirs) {
