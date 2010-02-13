@@ -13,7 +13,7 @@ import android.util.Log;
 /**
  * 
  * @author bduffez
- *
+ * $Id: $
  */
 public class ChainesDbAdapter {
 
@@ -66,7 +66,7 @@ public class ChainesDbAdapter {
         + KEY_DISQUE_MOUNT+" text not null,"
         + KEY_DISQUE_LABEL+" text not null);";
 
-    private static final String DATABASE_NAME = "pvrchaines_" + FBMHttpConnection.getIdentifiant();
+    private static final String DATABASE_NAME = "pvrchaines";
     private static final String DATABASE_TABLE_CHAINES = "chaines";
     private static final String DATABASE_TABLE_CHAINESTEMP = "chainestemp";
     private static final String DATABASE_TABLE_SERVICES = "services";
@@ -74,7 +74,7 @@ public class ChainesDbAdapter {
     private static final String DATABASE_TABLE_BOITIERSDISQUES = "boitiersdisques";
     private static final String DATABASE_TABLE_BOITIERSDISQUESTEMP = "boitiersdisquestemp";
     
-    private static final int DATABASE_VERSION = 11;
+    private static final int DATABASE_VERSION = 12;
 
     private static final String DATABASE_CREATE_CHAINES =
         "create table "+DATABASE_TABLE_CHAINES+TABLE_CHAINES;
@@ -96,7 +96,7 @@ public class ChainesDbAdapter {
     private static class DatabaseHelper extends SQLiteOpenHelper {
 
         DatabaseHelper(Context context) {
-       		super(context, DATABASE_NAME, null, DATABASE_VERSION);
+			super(context, DATABASE_NAME+"_"+FBMHttpConnection.getIdentifiant(), null, DATABASE_VERSION);
         }
 
         @Override
@@ -154,12 +154,7 @@ public class ChainesDbAdapter {
         mDb.close();
         mDbHelper.close();
     }
-/*
-    public void detruire() {
-        mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE);
-        mDb.execSQL(DATABASE_CREATE);
-    }
-*/
+
     public void swapChaines() {
         mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_SERVICES);
     	mDb.execSQL("ALTER TABLE "+DATABASE_TABLE_SERVICESTEMP+" RENAME TO "+DATABASE_TABLE_SERVICES);
@@ -173,6 +168,16 @@ public class ChainesDbAdapter {
     {
         mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_BOITIERSDISQUES);
     	mDb.execSQL("ALTER TABLE "+DATABASE_TABLE_BOITIERSDISQUESTEMP+" RENAME TO "+DATABASE_TABLE_BOITIERSDISQUES);
+        mDb.execSQL(DATABASE_CREATE_BOITIERSDISQUESTEMP);    	
+    }
+
+    public void cleanTempTables()
+    {
+        mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_SERVICESTEMP);
+        mDb.execSQL(DATABASE_CREATE_SERVICESTEMP);
+        mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_CHAINESTEMP);
+        mDb.execSQL(DATABASE_CREATE_CHAINESTEMP);
+        mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_BOITIERSDISQUESTEMP);
         mDb.execSQL(DATABASE_CREATE_BOITIERSDISQUESTEMP);    	
     }
 
@@ -277,8 +282,7 @@ public class ChainesDbAdapter {
             		new String[] {
             		KEY_BOITIER_NAME,
             		KEY_BOITIER_ID,
-            		},
-            		null,
+            		}, "",
             		null, null, null, null, null);
 	    if (mCursor != null) {
 	        mCursor.moveToFirst();

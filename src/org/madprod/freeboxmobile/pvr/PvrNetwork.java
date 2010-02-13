@@ -24,9 +24,6 @@ import android.os.AsyncTask;
 public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Constants
 {
 	private Activity activity;
-
-//	private static List<String> mBoitiers = null;
-//	private boolean plusieursBoitiersHD = false;
 	
         protected void onPreExecute() {
         	if (activity != null)
@@ -39,11 +36,9 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Con
         
         protected void onPostExecute(Boolean telechargementOk) {
         	if (telechargementOk == Boolean.TRUE) {
-//        		preparerActivite();
         	}
         	else {
         		ProgrammationActivity.afficherMsgErreur(activity.getString(R.string.pvrErreurTelechargementChaines), activity);
-//        		boutonOK.setEnabled(false);
         	}
         	if (activity != null)
         		ProgrammationActivity.dismissPd();
@@ -84,7 +79,7 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Con
 	    		
 		        int posChaines = resultat.indexOf("var serv_a = [");
 		        int posDisques = resultat.indexOf("var disk_a = [");
-		        
+
 		        if (posChaines > 0 && posDisques > 0) {
 		    		FBMHttpConnection.FBMLog("telechargerEtParser posChaines > 0 && posDisques > 0");
 		        	// Récupération du javascript correspondant à la liste des chaines
@@ -138,7 +133,6 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Con
 		        	int fin = strDisques.lastIndexOf("}];")+1;
 		        	strDisques = strDisques.substring(0, fin);
 		        	getListeDisques(strDisques, mBoitiersName.get(boitier), mBoitiersNb.get(boitier));
-		    		FBMHttpConnection.FBMLog("Boitier courant : "+mBoitiersName.get(boitier));
 		        }
 		        else {
 		    		FBMHttpConnection.FBMLog("telechargerEtParser impossible de trouver le json dans le html");
@@ -152,6 +146,8 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Con
 	        }
 	        boitier++;
     	} while (boitier < nbBoitiers);
+    	// On échange les tables temporaires avec les vraies ou on efface les tables temp
+    	doSwap(ok);
     	if (ok)
     	{
 	    	// On met à jour le timestamp du dernier refresh
@@ -159,6 +155,8 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Con
 	    	Editor editor = mgr.edit();
 	    	editor.putLong(KEY_LAST_REFRESH+FBMHttpConnection.getIdentifiant(), (new Date()).getTime());
 	    	editor.commit();
+	    	// On met à jour une variable du PVR pour que le PVR rafraichisse son affichage
+	    	ProgrammationActivity.lastUser = "";
 	    	return true;
     	}
         FBMHttpConnection.FBMLog("==> Impossible de télécharger le json des chaines/disques");
@@ -174,6 +172,23 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Con
 		getListe(strDisques, "}", 1, bName, bNumber);
 	}
 	
+	private void doSwap(boolean ok)
+	{
+		ChainesDbAdapter db;
+
+		db = new ChainesDbAdapter(activity);
+		db.open();
+		if (ok)
+		{
+			db.swapChaines();
+			db.swapBoitiersDisques();
+		}
+		else
+		{
+			db.cleanTempTables();
+		}
+		db.close();
+	}
 	/**
 	 * Crée la liste des chaines ou des disques (selon le boolean)
 	 * @param strSource:	l'array de JSON (commence par { sinon crash)
@@ -208,13 +223,11 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Con
 			{
 				Chaine chaine = new Chaine(str);
 				chaine.storeDb(db);
-				FBMHttpConnection.FBMLog("CHAINE : "+chaine.getName());
 			}
 			else
 			{
 				Disque disque = new Disque(str);
 				disque.storeDb(db, bName, bNumber);
-				FBMHttpConnection.FBMLog("BOITIER "+bNumber+" : "+bName+" - DISQUE : "+disque.getLabel());
 			}
 			// Préparation du prochain item JSON
 			if (strSource.length() > pos+1) {
@@ -224,14 +237,6 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Con
 				break;
 			}
 		} while(true);
-		if (bName == null)
-		{
-			db.swapChaines();
-		}
-		else
-		{
-			db.swapBoitiersDisques();
-		}
 		db.close();
     }
 }

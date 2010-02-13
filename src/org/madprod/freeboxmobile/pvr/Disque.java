@@ -64,9 +64,13 @@ public class Disque {
 	
 	public void storeDb(ChainesDbAdapter db, String bName, int bNumber)
 	{
-		if (db.createBoitierDisque(bName, bNumber, mFreeSize, mTotalSize,
-				mId, mNoMedia, mDirty, mReadOnly, mBusy, mMountPt, mLabel) == -1)
-			FBMHttpConnection.FBMLog("DISQUE STOREDB : Boitier disque non inséré "+this.mLabel);
+		long id;
+		id = db.createBoitierDisque(bName, bNumber, mFreeSize, mTotalSize,
+				mId, mNoMedia, mDirty, mReadOnly, mBusy, mMountPt, mLabel);
+//		if (db.createBoitierDisque(bName, bNumber, mFreeSize, mTotalSize,
+//				mId, mNoMedia, mDirty, mReadOnly, mBusy, mMountPt, mLabel) == -1)
+//			FBMHttpConnection.FBMLog("DISQUE STOREDB : Boitier disque non inséré "+this.mLabel);
+		FBMHttpConnection.FBMLog("DISQUE STOREDB : "+this.mLabel+" "+this.mId+" "+bName+" "+bNumber+" "+id);
 	}
 	
 	private int getBoolean(JSONObject o, String key) {
