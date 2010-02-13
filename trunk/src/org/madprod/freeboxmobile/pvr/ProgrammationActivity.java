@@ -51,29 +51,31 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
  *
  */
 public class ProgrammationActivity extends Activity implements PvrConstants {
-//	private static List<Chaine> mChaines = null;
 	// Id du boitier séléctionné
 	private static int mBoitierHD = 0;
 	// Nom du boitier sélectionné
 	private static String mBoitierHDName = null;
+	// Curseur sur les boitiers
+	private static Cursor boitiersCursor = null;
+	SimpleCursorAdapter boitiersSpinnerAdapter = null;
+	private static boolean plusieursBoitiersHD;
+	
+	// Curseur sur la liste des chaines
+	private static Cursor chainesCursor = null;
+	SimpleCursorAdapter chainesSpinnerAdapter = null;
 	// id de la chaine selectionnée
 	private static Integer mChaineID = 0;
 	// nom de la chaine selectionnée
 	private static String mChaineName = null;
+
 	// Curseur sur les disques
 	private static Cursor disquesCursor = null;
-	// Curseur sur les boitiers - pas utilisé pour l'instant mais idéalement il faudrait
-	private static Cursor boitiersCursor = null;
-	// Curseur sur la liste des chaines
-	private static Cursor chainesCursor = null;
-	SimpleCursorAdapter chainesSpinnerAdapter = null;
+
 	// Curseur sur les services de la chaine selectionnée
 	private static Cursor servicesCursor = null;
-	
-	private static boolean plusieursBoitiersHD;
+
 	private long mRowId = -1;
 	Activity progAct = null;
-//	final String TAG = "FreeboxMobileProg";
 	private boolean nomEmissionSaisi = false;
 	private boolean[] joursChoisis = { false, false, false, false, false, false, false };
 	static ProgressDialog progressDialog = null;
@@ -223,12 +225,6 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
         		chainesCursor.moveToPosition(arg2);
         		mChaineID = chainesCursor.getInt(chainesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_CHAINE_ID));
         		mChaineName = chainesCursor.getString(chainesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_NAME));
-//        			FBMHttpConnection.FBMLog("CHAINES SPINNER : "+arg2+" "+arg3+" "+
-//        					chainesCursor.getString(chainesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_NAME))+" "+
-//        					chainesCursor.getInt(chainesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_CHAINE_ID))
-//        					);
-//        		else
-//        			FBMHttpConnection.FBMLog("CHAINES SPINNER : "+arg2+" "+arg3);
 				remplirSpinner(R.id.pvrPrgQualite);
 			}
 
@@ -282,10 +278,11 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				if (mBoitierHD != position) {
-					mBoitierHD = position;
-					mBoitierHDName = parent.getSelectedItem().toString();
-					// Si on change de boitier, on met à jour les disques associés
-					remplirSpinner(R.id.pvrPrgDisque);
+	        		boitiersCursor.moveToPosition(position);
+	        		mBoitierHD = boitiersCursor.getInt(boitiersCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_BOITIER_ID));
+	        		mBoitierHDName = boitiersCursor.getString(boitiersCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_BOITIER_NAME));
+//	        		FBMHttpConnection.FBMLog("BOITIER : "+mBoitierHD+" "+mBoitierHDName);
+	        		remplirSpinner(R.id.pvrPrgDisque);
 					afficherInfosDisque();
 				}
 			}
@@ -304,8 +301,6 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
     		preparerActivite();
     	}
     	else {
-    	//	new TelechargerChainesDisquesTask().execute((Void[])null);
-    		lastUser = FBMHttpConnection.getIdentifiant();
     		preparerActivite();
     	}
     }
@@ -516,144 +511,6 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 			}
 		});
 		d.show();
-/*
-		setTheme(android.R.style.Theme_Black);
-		AlertDialog alert = new AlertDialog.Builder(this)
-			.setMultiChoiceItems(jours,
-					null,
-					new DialogInterface.OnMultiChoiceClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which, boolean what) {
-							joursChoisis[which] = what;						
-						}
-					})
-			.setPositiveButton(getString(R.string.OK),
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int whichButton) {
-							progAct.setTheme(android.R.style.Theme_Light);
-						}
-					}) 
-            .setNegativeButton(getString(R.string.Annuler),
-            		new DialogInterface.OnClickListener() { 
-            			public void onClick(DialogInterface dialog, int whichButton) {
-							progAct.setTheme(android.R.style.Theme_Light);
-            				resetJours();
-            				dialog.cancel();
-            			} 
-            		})
-        	.setTitle(getString(R.string.pvrChoixJours))
-            .setIcon(R.drawable.pvr_date)
-            .create();
-		alert.show();
-		*/
-    }
-
-	/**
-	 * tÃ©lÃ©charge la liste des chaines et disques
-	 * @author bduffez
-	 *
-	 */
-    class TelechargerChainesDisquesTask extends AsyncTask<Void, Integer, Boolean> {
-        protected void onPreExecute() {
-    		progressDialog = new ProgressDialog(progAct);
-    		progressDialog.setIcon(R.drawable.fm_magnetoscope);
-    		progressDialog.setTitle(getString(R.string.pvrPatientez));
-    		progressDialog.setMessage(getString(R.string.pvrTelechargementDonnees));
-    		progressDialog.show();
-        }
-
-        protected Boolean doInBackground(Void... arg0) {
-        	return telechargerEtParser();
-        }
-        
-        protected void onPostExecute(Boolean telechargementOk) {
-        	if (telechargementOk == Boolean.TRUE) {
-        		lastUser = FBMHttpConnection.getIdentifiant();
-        		preparerActivite();
-        	}
-        	else {
-        		afficherMsgErreur(getString(R.string.pvrErreurTelechargementDonnees), progAct);
-        		boutonOK.setEnabled(false);
-        	}
-            
-            progressDialog.dismiss();
-            progressDialog = null;
-        }
-    }
-    
-    /**
-     * 
-     * @return true en cas de succès, false sinon
-     */
-    private boolean telechargerEtParser() {
-        // Récupérer chaines et disques durs        
-        String url = "http://adsl.free.fr/admin/magneto.pl";
-        List<NameValuePair> param = new ArrayList<NameValuePair>();
-        param.add(new BasicNameValuePair("detail","1"));
-        param.add(new BasicNameValuePair("box", ""+mBoitierHD));
-    	
-        String resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequestISR(url, param, true, true));
-        if (resultat != null) {
-			FBMHttpConnection.FBMLog("PtelechargerEtParser not null");
-    		
-//	        int posChaines = resultat.indexOf("var serv_a = [");
-	        int posDisques = resultat.indexOf("var disk_a = [");
-	        
-//	        if (posChaines > 0 && posDisques > 0) {
-		    if (posDisques > 0) {
-	    		FBMHttpConnection.FBMLog("PtelechargerEtParser posChaines > 0 && posDisques > 0");
-	        	// Récupération du javascript correspondant à  la liste des chaines
-//	        	String strChaines = resultat.substring(posChaines+14, posDisques);
-//	        	int finChaines = strChaines.lastIndexOf("}");
-//	        	strChaines = strChaines.substring(0, finChaines+1);
-	        	
-	        	// Récupération du javascript correspondant à la liste des disques durs
-	        	String strDisques = resultat.substring(posDisques+14);
-	        	int fin = strDisques.lastIndexOf("}];")+1;
-	        	strDisques = strDisques.substring(0, fin);
-	        	
-	        	// Conversion JSON -> objet dans la RAM
-	        	getListeChainesFromDb();
-	        	//getListeDisques(strDisques);
-	        	
-	        	// Deux boitiers HD ?
-/*
-	        	int posDebut = resultat.indexOf("Boitier HD");
-	        	if (posDebut > 0) {
-	        		int d, f;
-	        		String boitiers;
-	        		nbEcrans++;
-	        		boitiers = resultat.substring(posDebut);
-	        		mBoitiers = new ArrayList<String>();
-	        		plusieursBoitiersHD = true;
-
-	        		do {
-	        			d = boitiers.indexOf("Boitier HD");
-	        			if (d == -1) {
-		        			break;
-	        			}
-	        			f = d + boitiers.substring(d).indexOf("</");
-	        			mBoitiers.add(boitiers.substring(d, f));
-	        			boitiers = boitiers.substring(f);
-	        		} while (true);
-	        	}
-	        	else
-	        	{
-	        		plusieursBoitiersHD = false;
-	        	}
-*/
-	        	return true;
-	        }
-	        else {
-	    		FBMHttpConnection.FBMLog("PtelechargerEtParser impossible de trouver le json dans le html");
-	    		FBMHttpConnection.FBMLog(resultat);
-	        }
-        }
-        else {
-        	FBMHttpConnection.FBMLog("PtelechargerEtParser null");
-        }
-        FBMHttpConnection.FBMLog("P==> Impossible de télécharger le json des chaines/disques");
-    	return false;
     }
     
     public static void showPatientez(Activity a)
@@ -791,9 +648,6 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
         		if (emission.length() == 0) {
         			return getString(R.string.pvrErreurNomEmission);
         		}
-        		
-        		// Chaine
-//        		Spinner spinnerChaines = (Spinner) findViewById(R.id.pvrPrgChaine);
 
         		if (enr != null) {
         			ide = enr.getInt(enr.getColumnIndex(EnregistrementsDbAdapter.KEY_IDE));
@@ -1008,10 +862,10 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 
     	ChainesDbAdapter db = new ChainesDbAdapter(this);
     	db.open();
+//    	FBMHttpConnection.FBMLog("afficherInfosDisque : "+disqueId + " "+mBoitierHDName);
     	Cursor c = db.fetchDisque(disqueId, mBoitierHDName);
     	startManagingCursor(c);
-        if (c != null) {
-        	c.moveToFirst();
+        if (c.moveToFirst()) {
         	int gigaFree = getGiga(c.getInt(c.getColumnIndex(ChainesDbAdapter.KEY_DISQUE_FREE_SIZE)));
         	int gigaTotal = getGiga(c.getInt(c.getColumnIndex(ChainesDbAdapter.KEY_DISQUE_TOTAL_SIZE)));
 
@@ -1051,8 +905,6 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
     private void remplirSpinner(int id) {
 		Spinner spinner = (Spinner) findViewById(id);
 		List<String> liste = new ArrayList<String>();
-		int i;
-		Cursor c;
 		
 		ChainesDbAdapter db = new ChainesDbAdapter(this);
 		db.open();
@@ -1120,45 +972,30 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 							liste.add(serviceName);
 						}						
 					} while (servicesCursor.moveToNext());
-/*
-					for (i = 0; i < size; i++) {
-						if (i == 0 && idChaine == 0) {
-							liste.add(getString(R.string.pvrNonEnregistrable));
-						} else {
-							serviceName = services.get(i).getDesc();
-							if (serviceName.length() == 0) {
-								serviceName = getString(R.string.pvrTxtQualiteParDefaut);
-							}
-							if (services.get(i).getPvrMode() != PVR_MODE_PUBLIC) {
-								serviceName += " *";
-							}
-							liste.add(serviceName);
-						}
-					}
-					*/
 				}
 			break;
 			
 			case R.id.pvrPrgBoitier:
-				i = 0;
-				c = db.fetchBoitiers();
-		        if (c.moveToFirst())
+				int i = 0;
+				boitiersCursor = db.fetchBoitiers();
+		        if (boitiersCursor.moveToFirst())
 		        {
-		            int boitierNameIndex = c.getColumnIndexOrThrow(ChainesDbAdapter.KEY_BOITIER_NAME);
+		        	startManagingCursor(boitiersCursor);
+		            int boitierNameIndex = boitiersCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_BOITIER_NAME);
 					mBoitierHD = 0;
-					mBoitierHDName = c.getString(boitierNameIndex);
+					mBoitierHDName = boitiersCursor.getString(boitierNameIndex);
 		        	do
 		        	{
-		        		liste.add(c.getString(boitierNameIndex));
+		        		liste.add(boitiersCursor.getString(boitierNameIndex));
 		        		i++;
 		        	}
-		       		while (c.moveToNext());
+		       		while (boitiersCursor.moveToNext());
 		        	plusieursBoitiersHD = (i > 1);
 		        }
 			break;
 		}
 		
-		if (id != R.id.pvrPrgChaine)
+		if ((id != R.id.pvrPrgChaine))
 		{
 			ArrayAdapter<String> adapter= new ArrayAdapter<String>(
 					this, android.R.layout.simple_spinner_item, liste);
@@ -1201,36 +1038,4 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
         }
 		return -1;
 	}
-
-	private void getListeChainesFromDb() {
-		getListeFromDb();
-	}
-
-	/**
-	 * Crée la liste des chaines ou des disques (selon le boolean)
-	 * @param strSource:	l'array de JSON (commence par { sinon crash)
-	 * @param sep:			ce qui sépare deux objets JSON
-	 * @param shift:		le nombre d'octets inutiles entre deux objets JSON
-	 * @param isChaines:	true si c'est la liste des chaines, false si c'est celle des disques
-	 */
-	private void getListeFromDb() {
-		ChainesDbAdapter db = new ChainesDbAdapter(this);
-
-		FBMHttpConnection.FBMLog("getListeFromDb START");
-		// Init
-		db.open();
-		//mChaines = new ArrayList<Chaine>();
-
-		Cursor c = db.fetchAllChaines();
-        if (c.moveToFirst())
-        {
-        	do
-        	{
-        	//	mChaines.add(new Chaine(c, db));
-        	} while (c.moveToNext());
-        }
-        c.close();
-		db.close();
-		FBMHttpConnection.FBMLog("getListeFromDb END");
-    }
 }
