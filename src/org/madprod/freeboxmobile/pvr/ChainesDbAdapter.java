@@ -74,7 +74,7 @@ public class ChainesDbAdapter {
     private static final String DATABASE_TABLE_BOITIERSDISQUES = "boitiersdisques";
     private static final String DATABASE_TABLE_BOITIERSDISQUESTEMP = "boitiersdisquestemp";
     
-    private static final int DATABASE_VERSION = 12;
+    private static final int DATABASE_VERSION = 14;
 
     private static final String DATABASE_CREATE_CHAINES =
         "create table "+DATABASE_TABLE_CHAINES+TABLE_CHAINES;
