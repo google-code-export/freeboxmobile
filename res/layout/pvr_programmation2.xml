@@ -20,15 +20,12 @@
 					<Spinner android:id="@+id/pvrPrgQualite" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_weight="2"></Spinner>
 				</TableRow>
 				<TableRow android:id="@+id/TableRow03" android:layout_height="wrap_content" android:layout_width="fill_parent">
-					<TextView android:text="@string/pvrTxtDate" android:id="@+id/TxtDate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="15sp" android:layout_weight="1" android:layout_gravity="center_vertical"></TextView>
+					<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="15sp" android:layout_weight="1" android:layout_gravity="center_vertical" android:id="@+id/TxtDebut" android:text="@string/pvrTxtDebut"></TextView>
 					
-				<Button android:text="@+id/Button01" android:layout_height="wrap_content" android:id="@+id/ButtonDate" android:layout_width="fill_parent" android:layout_weight="2"></Button>
+				<LinearLayout android:id="@+id/LinearLayout02" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="2" android:orientation="horizontal"><Button android:text="@+id/Button01" android:layout_height="wrap_content" android:id="@+id/ButtonDate" android:layout_width="wrap_content"></Button><Button android:text="@+id/Button01" android:layout_height="wrap_content" android:id="@+id/ButtonTime" android:layout_width="wrap_content"></Button></LinearLayout>
+
 </TableRow>
-				<TableRow android:id="@+id/TableRow04" android:layout_height="wrap_content" android:layout_width="fill_parent">
-					<TextView android:text="@string/pvrTxtHeure" android:id="@+id/TxtHeure" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="1" android:textSize="15sp" android:layout_gravity="center_vertical"></TextView>
-					
-				<Button android:text="@+id/Button01" android:layout_height="wrap_content" android:id="@+id/ButtonTime" android:layout_width="fill_parent" android:layout_weight="2"></Button>
-</TableRow>
+				
 				<TableRow android:id="@+id/TableRow05" android:layout_height="wrap_content" android:layout_width="fill_parent">
 					<TextView android:text="@string/pvrTxtDuree" android:id="@+id/TxtDuree" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="15sp" android:layout_gravity="center_vertical" android:layout_weight="1"></TextView>
 					<LinearLayout android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_weight="2">
