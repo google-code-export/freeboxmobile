@@ -36,6 +36,7 @@ import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -50,22 +51,29 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
  *
  */
 public class ProgrammationActivity extends Activity implements PvrConstants {
-	private static List<Chaine> mChaines = null;
-//	private static List<Disque> mDisques = null;
-//	private static List<String> mBoitiers = null;
+//	private static List<Chaine> mChaines = null;
 	// Id du boitier séléctionné
 	private static int mBoitierHD = 0;
 	// Nom du boitier sélectionné
 	private static String mBoitierHDName = null;
+	// id de la chaine selectionnée
+	private static Integer mChaineID = 0;
+	// nom de la chaine selectionnée
+	private static String mChaineName = null;
 	// Curseur sur les disques
 	private static Cursor disquesCursor = null;
-	// Curseur sur les boitiers
+	// Curseur sur les boitiers - pas utilisé pour l'instant mais idéalement il faudrait
 	private static Cursor boitiersCursor = null;
+	// Curseur sur la liste des chaines
+	private static Cursor chainesCursor = null;
+	SimpleCursorAdapter chainesSpinnerAdapter = null;
+	// Curseur sur les services de la chaine selectionnée
+	private static Cursor servicesCursor = null;
 	
 	private static boolean plusieursBoitiersHD;
 	private long mRowId = -1;
 	Activity progAct = null;
-	final String TAG = "FreeboxMobileProg";
+//	final String TAG = "FreeboxMobileProg";
 	private boolean nomEmissionSaisi = false;
 	private boolean[] joursChoisis = { false, false, false, false, false, false, false };
 	static ProgressDialog progressDialog = null;
@@ -212,6 +220,15 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
         chainesSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+        		chainesCursor.moveToPosition(arg2);
+        		mChaineID = chainesCursor.getInt(chainesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_CHAINE_ID));
+        		mChaineName = chainesCursor.getString(chainesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_NAME));
+//        			FBMHttpConnection.FBMLog("CHAINES SPINNER : "+arg2+" "+arg3+" "+
+//        					chainesCursor.getString(chainesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_NAME))+" "+
+//        					chainesCursor.getInt(chainesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_CHAINE_ID))
+//        					);
+//        		else
+//        			FBMHttpConnection.FBMLog("CHAINES SPINNER : "+arg2+" "+arg3);
 				remplirSpinner(R.id.pvrPrgQualite);
 			}
 
@@ -269,7 +286,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 					mBoitierHDName = parent.getSelectedItem().toString();
 					// Si on change de boitier, on met à jour les disques associés
 					remplirSpinner(R.id.pvrPrgDisque);
-					afficherInfosDisque(0);
+					afficherInfosDisque();
 				}
 			}
 
@@ -283,11 +300,13 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
     protected void onStart() {
     	super.onStart();
     	
-    	if (mChaines != null && mChaines.size() > 0 && lastUser.equals(FBMHttpConnection.getIdentifiant())) {
+    	if (lastUser.equals(FBMHttpConnection.getIdentifiant())) {
     		preparerActivite();
     	}
     	else {
-    		new TelechargerChainesDisquesTask().execute((Void[])null);
+    	//	new TelechargerChainesDisquesTask().execute((Void[])null);
+    		lastUser = FBMHttpConnection.getIdentifiant();
+    		preparerActivite();
     	}
     }
     
@@ -549,6 +568,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
         
         protected void onPostExecute(Boolean telechargementOk) {
         	if (telechargementOk == Boolean.TRUE) {
+        		lastUser = FBMHttpConnection.getIdentifiant();
         		preparerActivite();
         	}
         	else {
@@ -675,7 +695,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
     	disqueSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				afficherInfosDisque(position);
+				afficherInfosDisque();
 			}
 
 			@Override
@@ -757,9 +777,9 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
              */
             private String doAction() {
         		List<NameValuePair> postVars = new ArrayList<NameValuePair>();
-        		Integer chaine, service, duree, where_id, ide = 0;
+        		Integer service, duree, where_id, ide = 0;
         		int h, m;
-        		String date, emission, heure, minutes, nomChaine;
+        		String date, emission, heure, minutes;
         		
         		ChainesDbAdapter db = new ChainesDbAdapter(progAct);
         		db.open();
@@ -773,19 +793,17 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
         		}
         		
         		// Chaine
-        		Spinner spinnerChaines = (Spinner) findViewById(R.id.pvrPrgChaine);
-        		int chaineId = spinnerChaines.getSelectedItemPosition();
-        		chaine = mChaines.get(chaineId).getChaineId();
-        		nomChaine = mChaines.get(chaineId).getName();
-        		
+//        		Spinner spinnerChaines = (Spinner) findViewById(R.id.pvrPrgChaine);
+
         		if (enr != null) {
         			ide = enr.getInt(enr.getColumnIndex(EnregistrementsDbAdapter.KEY_IDE));
         		}
         		
         		// Service
         		Spinner spinnerQualite = (Spinner) findViewById(R.id.pvrPrgQualite);
-        		int serviceId = spinnerQualite.getSelectedItemPosition();
-        		service = mChaines.get(chaineId).getServices().get(serviceId).getServiceId();
+        		servicesCursor.moveToPosition(spinnerQualite.getSelectedItemPosition());
+        		FBMHttpConnection.FBMLog("SERVICE : "+servicesCursor.getString(servicesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_SERVICE_DESC)));
+        		service = servicesCursor.getInt(servicesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_SERVICE_ID));
         		
         		// Date et heure
        	       	if (selectedLayout == LAYOUT_BENOIT) {
@@ -813,7 +831,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
         		where_id = disquesCursor.getInt(disquesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_DISQUE_ID));
 
         		// Creation des variables POST
-        		postVars.add(new BasicNameValuePair("chaine", chaine.toString()));
+        		postVars.add(new BasicNameValuePair("chaine", mChaineID.toString()));
         		postVars.add(new BasicNameValuePair("service", service.toString()));
         		postVars.add(new BasicNameValuePair("date", date));
         		postVars.add(new BasicNameValuePair("heure", heure));
@@ -880,14 +898,14 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
     				// Modification
         			if (enr != null) {
         				int rowId = enr.getInt(enr.getColumnIndex(EnregistrementsDbAdapter.KEY_ROWID));
-        				dbenr.modifyEnregistrement(rowId, nomChaine, date, heure+"h"+minutes, duree.toString(),
-        			    		emission, ide.toString(), chaine.toString(), service.toString(), heure, minutes,
+        				dbenr.modifyEnregistrement(rowId, mChaineName, date, heure+"h"+minutes, duree.toString(),
+        			    		emission, ide.toString(), mChaineID.toString(), service.toString(), heure, minutes,
         			    		duree.toString(), emission, where_id.toString(), repeat_a);
         			}
         			// Ajout
         			else {
-        				dbenr.createEnregistrement(nomChaine, date, heure+"h"+minutes, duree.toString(),
-        			    		emission, ide.toString(), chaine.toString(), service.toString(), heure, minutes,
+        				dbenr.createEnregistrement(mChaineName, date, heure+"h"+minutes, duree.toString(),
+        			    		emission, ide.toString(), mChaineID.toString(), service.toString(), heure, minutes,
         			    		duree.toString(), emission, where_id.toString(), repeat_a);
         			}
         			
@@ -966,11 +984,11 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 
 	        int disqueId = Integer.parseInt(c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_WHERE_ID)));
 	        disqueSpinner.setSelection(disqueId);
-	        afficherInfosDisque(disqueId);
+	        afficherInfosDisque();
 	        return c;
         }
         
-        afficherInfosDisque(0);
+        afficherInfosDisque();
         
         return null;
     }
@@ -980,20 +998,17 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
     	return size / 1048576;
     }
     
-    private void afficherInfosDisque(int disqueId) {
-    	disqueId = disqueSpinner.getSelectedItemPosition();
+    private void afficherInfosDisque() {
+    	int disqueId = disqueSpinner.getSelectedItemPosition();
     	// Au démarrage de l'activity, rien n'est encore selectionné
     	if (disqueId < 0)
     		disqueId = 0;
-    	FBMHttpConnection.FBMLog("afficherInfosDisque pos: "+disqueId);
 		disquesCursor.moveToPosition(disqueId);
 		disqueId = disquesCursor.getInt(disquesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_DISQUE_ID));
 
     	ChainesDbAdapter db = new ChainesDbAdapter(this);
     	db.open();
-    	FBMHttpConnection.FBMLog("afficherInfosDisque :" +disqueId+" "+mBoitierHDName+" "+mBoitierHD);
     	Cursor c = db.fetchDisque(disqueId, mBoitierHDName);
-    	FBMHttpConnection.FBMLog("afficherInfosDisque c:"+c.getCount());
     	startManagingCursor(c);
         if (c != null) {
         	c.moveToFirst();
@@ -1036,26 +1051,33 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
     private void remplirSpinner(int id) {
 		Spinner spinner = (Spinner) findViewById(id);
 		List<String> liste = new ArrayList<String>();
-		int i, size;
+		int i;
 		Cursor c;
 		
 		ChainesDbAdapter db = new ChainesDbAdapter(this);
 		db.open();
 		
 		switch (id) {
-			// Construction de la liste de String à mettre dans le spinner
 			case R.id.pvrPrgChaine:
-				size = mChaines.size();
-				for (i = 0; i < size; i++) {
-					liste.add(mChaines.get(i).getName());
+				chainesCursor = db.fetchAllChaines();
+				if (chainesCursor != null)
+				{
+					startManagingCursor(chainesCursor);
+					chainesCursor.moveToFirst();
+					FBMHttpConnection.FBMLog("CHAINES : "+chainesCursor.getCount()+" "+spinner);
+					String [] chaines = new String [] {ChainesDbAdapter.KEY_NAME};
+					int [] to = new int[] {android.R.id.text1};
+					chainesSpinnerAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_spinner_item, chainesCursor, chaines, to);
+					chainesSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+					spinner.setAdapter(chainesSpinnerAdapter);
 				}
 				break;
 				
 			case R.id.pvrPrgDisque:
 				disquesCursor = db.getListeDisques(mBoitierHDName);
-				startManagingCursor(disquesCursor);
 		        if (disquesCursor.moveToFirst())
 		        {
+					startManagingCursor(disquesCursor);
 		            int disqueNameIndex = disquesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_DISQUE_LABEL);
 		            int disqueFreeIndex = disquesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_DISQUE_FREE_SIZE);
 		            int disqueTotalIndex = disquesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_DISQUE_TOTAL_SIZE);
@@ -1069,27 +1091,51 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 		        	}
 		       		while (disquesCursor.moveToNext());
 		        }
-				afficherInfosDisque(0);
+				afficherInfosDisque();
 				break;
 
 			case R.id.pvrPrgQualite:
-				int idChaine = chainesSpinner.getSelectedItemPosition();
-				List<Chaine.Service> services = mChaines.get(idChaine).getServices();
-				size = services.size();
-				String serviceName;
-				for (i = 0; i < size; i++) {
-					if (i == 0 && idChaine == 0) {
-						liste.add(getString(R.string.pvrNonEnregistrable));
-					} else {
-						serviceName = services.get(i).getDesc();
-						if (serviceName.length() == 0) {
-							serviceName = getString(R.string.pvrTxtQualiteParDefaut);
+				servicesCursor = db.fetchServicesChaine(mChaineID);
+				if (servicesCursor.moveToFirst())
+				{
+					startManagingCursor(servicesCursor);
+					String serviceName;
+					int serviceDescIndex = servicesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_SERVICE_DESC);
+					int servicePvrModeIndex = servicesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PVR_MODE);
+					do
+					{
+						if (mChaineID == 0)
+						{
+							liste.add(getString(R.string.pvrNonEnregistrable));
 						}
-						if (services.get(i).getPvrMode() != PVR_MODE_PUBLIC) {
-							serviceName += " *";
+						else
+						{
+							serviceName = servicesCursor.getString(serviceDescIndex);
+							if (serviceName.length() == 0) {
+								serviceName = getString(R.string.pvrTxtQualiteParDefaut);
+							}
+							if (servicesCursor.getInt(servicePvrModeIndex) != PVR_MODE_PUBLIC) {
+								serviceName += " *";
+							}
+							liste.add(serviceName);
+						}						
+					} while (servicesCursor.moveToNext());
+/*
+					for (i = 0; i < size; i++) {
+						if (i == 0 && idChaine == 0) {
+							liste.add(getString(R.string.pvrNonEnregistrable));
+						} else {
+							serviceName = services.get(i).getDesc();
+							if (serviceName.length() == 0) {
+								serviceName = getString(R.string.pvrTxtQualiteParDefaut);
+							}
+							if (services.get(i).getPvrMode() != PVR_MODE_PUBLIC) {
+								serviceName += " *";
+							}
+							liste.add(serviceName);
 						}
-						liste.add(serviceName);
 					}
+					*/
 				}
 			break;
 			
@@ -1112,25 +1158,34 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 			break;
 		}
 		
-		ArrayAdapter<String> adapter= new ArrayAdapter<String>(
-				this, android.R.layout.simple_spinner_item, liste);
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		spinner.setAdapter(adapter);
+		if (id != R.id.pvrPrgChaine)
+		{
+			ArrayAdapter<String> adapter= new ArrayAdapter<String>(
+					this, android.R.layout.simple_spinner_item, liste);
+			adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+			spinner.setAdapter(adapter);
+		}
 		db.close();
     }
 	
     // Fonctions pour récupérer la position d'une chaine/disque dans un spinner
 	private int getChaineSpinnerId(String chaine) {
-		int i, size = mChaines.size();
+		int i = 0;
 
-		for (i = 0; i < size; i++) {
-			if (mChaines.get(i).getName().equals(chaine)) {
-				return i;
-			}
-		}
-		
+		if (chainesCursor.moveToFirst())
+		{
+            int chaineNameIndex = chainesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_NAME);
+        	do
+        	{
+        		if (chainesCursor.getString(chaineNameIndex).equals(chaine))
+        			return i;
+        		i++;
+        	}
+       		while (chainesCursor.moveToNext());
+        }
 		return -1;
 	}
+
 	private int getDisqueSpinnerId(String disque) {
 		int i = 0;
         if (disquesCursor.moveToFirst())
@@ -1144,24 +1199,13 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
         	}
        		while (disquesCursor.moveToNext());
         }
-/*
-		for (i = 0; i < size; i++) {
-			if (mDisques.get(i).getLabel().equals(disque)) {
-				return i;
-			}
-		}
-	*/	
 		return -1;
 	}
 
 	private void getListeChainesFromDb() {
 		getListeFromDb();
 	}
-	/*
-	private getListeDisques(String strDisques) {
-		getListe(strDisques, "}", 1);
-	}
-*/
+
 	/**
 	 * Crée la liste des chaines ou des disques (selon le boolean)
 	 * @param strSource:	l'array de JSON (commence par { sinon crash)
@@ -1175,61 +1219,18 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 		FBMHttpConnection.FBMLog("getListeFromDb START");
 		// Init
 		db.open();
-		mChaines = new ArrayList<Chaine>();
+		//mChaines = new ArrayList<Chaine>();
 
 		Cursor c = db.fetchAllChaines();
         if (c.moveToFirst())
         {
         	do
         	{
-        		mChaines.add(new Chaine(c, db));
+        	//	mChaines.add(new Chaine(c, db));
         	} while (c.moveToNext());
         }
         c.close();
 		db.close();
 		FBMHttpConnection.FBMLog("getListeFromDb END");
     }
-
-	/**
-	 * Crée la liste des disques (selon le boolean)
-	 * @param strSource:	l'array de JSON (commence par { sinon crash)
-	 * @param sep:			ce qui sépare deux objets JSON
-	 * @param shift:		le nombre d'octets inutiles entre deux objets JSON
-	 */
-	/*
-	private void getListe(String strSource, String sep, int shift) {
-		String str;
-		int pos;
-		
-		// Init
-		mDisques = new ArrayList<Disque>();
-
-		// Loop
-		do {
-			// pos contient la position de la fin du string JSON
-			pos = strSource.indexOf(sep) + shift;
-			if (pos <= 10) {
-				pos = strSource.lastIndexOf("}") + 1;
-				
-				if (pos <= 10) {
-					break;
-				}
-			}
-
-			// Récupération du string JSON
-			str = strSource.substring(0, pos);
-
-			// Ajout à la liste
-			mDisques.add(new Disque(str));
-
-			// Préparation du prochain item JSON
-			if (strSource.length() > pos+1) {
-				strSource = strSource.substring(pos+1);
-			}
-			else {
-				break;
-			}
-		} while(true);
-    }
-    */
 }
