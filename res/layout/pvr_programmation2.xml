@@ -23,7 +23,12 @@
 				<TableRow android:id="@+id/TableRow03" android:layout_height="wrap_content" android:layout_width="fill_parent">
 					<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="15sp" android:layout_weight="1" android:layout_gravity="center_vertical" android:id="@+id/TxtDebut" android:text="@string/pvrTxtDebut"></TextView>
 					
-				<LinearLayout android:id="@+id/LinearLayout02" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="2" android:orientation="horizontal"><Button android:text="@+id/Button01" android:layout_height="wrap_content" android:id="@+id/ButtonDate" android:layout_width="wrap_content"></Button><Button android:text="@+id/Button01" android:layout_height="wrap_content" android:id="@+id/ButtonTime" android:layout_width="wrap_content"></Button></LinearLayout>
+				<LinearLayout android:id="@+id/LinearLayout02" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="2" android:orientation="horizontal"><Button android:text="@+id/Button01" android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/ButtonDateDeb"></Button><Button android:text="@+id/Button01" android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/ButtonTimeDeb"></Button></LinearLayout>
+
+</TableRow><TableRow android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/TableRow04">
+					<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="15sp" android:layout_weight="1" android:layout_gravity="center_vertical" android:id="@+id/TxtFin" android:text="@string/pvrTxtFin"></TextView>
+					
+				<LinearLayout android:id="@+id/LinearLayout02" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="2" android:orientation="horizontal"><Button android:text="@+id/Button01" android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/ButtonDateFin"></Button><Button android:text="@+id/Button01" android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/ButtonTimeFin"></Button></LinearLayout>
 
 </TableRow>
 				
