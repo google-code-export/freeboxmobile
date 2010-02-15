@@ -754,14 +754,14 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
     				// Modification
         			if (enr != null) {
         				int rowId = enr.getInt(enr.getColumnIndex(EnregistrementsDbAdapter.KEY_ROWID));
-        				dbenr.modifyEnregistrement(rowId, mChaineName, date, heure+"h"+minutes, duree.toString(),
-        			    		emission, ide.toString(), mChaineID.toString(), service.toString(), heure, minutes,
+        				dbenr.modifyEnregistrement(rowId, mChaineName, mBoitierHDName, date, heure+"h"+minutes, duree.toString(),
+        			    		emission, ide.toString(), mChaineID.toString(), service.toString(), mBoitierHD, heure, minutes,
         			    		duree.toString(), emission, where_id.toString(), repeat_a);
         			}
         			// Ajout
         			else {
-        				dbenr.createEnregistrement(mChaineName, date, heure+"h"+minutes, duree.toString(),
-        			    		emission, ide.toString(), mChaineID.toString(), service.toString(), heure, minutes,
+        				dbenr.createEnregistrement(mChaineName, mBoitierHDName, date, heure+"h"+minutes, duree.toString(),
+        			    		emission, ide.toString(), mChaineID.toString(), service.toString(), mBoitierHD, heure, minutes,
         			    		duree.toString(), emission, where_id.toString(), repeat_a);
         			}
         			
