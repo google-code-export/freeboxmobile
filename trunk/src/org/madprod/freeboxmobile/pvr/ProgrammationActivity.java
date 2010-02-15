@@ -97,7 +97,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 	private int selectedLayout = LAYOUT_OLIVIER;
 
 	// identifiant du dernier user à être entré dans l'activité
-	public static String lastUser;
+	public static String lastUser = "";
 	boolean orientationPortrait = false;
 	int positionEcran = 0;
 	int nbEcrans = 3;
@@ -907,7 +907,8 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
     	if (disqueId < 0)
     		disqueId = 0;
 		disquesCursor.moveToPosition(disqueId);
-		disqueId = disquesCursor.getInt(disquesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_DISQUE_ID));
+    	int t1 = disquesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_DISQUE_ID);
+		disqueId = disquesCursor.getInt(t1);
 
     	ChainesDbAdapter db = new ChainesDbAdapter(this);
     	db.open();
