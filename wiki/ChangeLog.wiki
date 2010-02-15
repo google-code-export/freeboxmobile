@@ -75,6 +75,8 @@ Release : 17
  * PVR : accessible en Freebox Optique
  * PVR : support de plusieurs boitiers
  * PVR : plus de chargement systématique lors de la création d'un nouvel enregistrement
+ * PVR : nouvelles options de rafraichissement
+ * SERVICES : accès réseaux asynchrones un peu partout pour une meilleure expérience utilisateur
 
 == 0.20rc7 ==
 Sortie le 01/02/2010<br>
