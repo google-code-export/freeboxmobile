@@ -1,6 +1,8 @@
 #summary Historique des versions de FreeboxMobile.
 #labels Featured
 
+<wiki:toc max_depth="2" />
+
 = Lexique =
 HOME : La page d'accueil<br>
 MEVO : Messagerie Vocale Visuelle = Module "Téléphone"<br>
