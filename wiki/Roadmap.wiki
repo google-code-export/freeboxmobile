@@ -5,8 +5,6 @@ Prédiction des versions / fonctionnalités. Mais rien n'est figé, ca ne se fer
 
 Pour les fonctionnalités déjà implémentées, voir le ChangeLog.
 
- * 0.20 : Suivre l'état de sa connexion ADSL
- * 0.22 : Etre notifié d'un problème réseau sur sa connexion fixe (ADSL / FTTH) et suivre le problème
  * 0.30 : Programmer ses enregistrements FreeboxTV à distance à partir du guide des programmes
  * 0.35 : Séparer l'application en modules différents (l'utilisateur ne sera pas obligé d'installer toutes les fonctionnalités)
  * 0.40 : Lire l'actualité Freenautes à partir de son mobile ([http://www.universfreebox.com Univers Freebox], [http://freephonie.org/ Freephonie], ...) via l'application !FreeboxMobile
