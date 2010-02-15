@@ -175,12 +175,16 @@ public class ChainesDbAdapter {
         mDb.execSQL(DATABASE_CREATE_BOITIERSDISQUESTEMP);    	
     }
 
-    public void cleanTempTables()
+    public void cleanTempChaines()
     {
         mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_SERVICESTEMP);
         mDb.execSQL(DATABASE_CREATE_SERVICESTEMP);
         mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_CHAINESTEMP);
         mDb.execSQL(DATABASE_CREATE_CHAINESTEMP);
+    }
+
+    public void cleanTempBoitiersDisques()
+    {
         mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_BOITIERSDISQUESTEMP);
         mDb.execSQL(DATABASE_CREATE_BOITIERSDISQUESTEMP);    	
     }

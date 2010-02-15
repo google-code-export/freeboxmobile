@@ -26,7 +26,7 @@ public class ManageCompte extends AsyncTask<ComptePayload, Void, ComptePayload> 
 	{
 		payload[0].result = FBMHttpConnection.connectFreeCheck(payload[0].login, payload[0].password);
 		if ((payload[0].result != null) && (payload[0].refresh))
-			new PvrNetwork(activity, false);
+			new PvrNetwork(activity, true, true).getData();
 		return payload[0];
 	}
 

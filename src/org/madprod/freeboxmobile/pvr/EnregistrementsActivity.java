@@ -179,13 +179,6 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 
         protected void onPreExecute() {
     		setProgressBarIndeterminateVisibility(true);
-        	if (updateFromConsole) {
-/*        		progressDialog = new ProgressDialog(enrAct);
-        		progressDialog.setIcon(R.drawable.fm_magnetoscope);
-        		progressDialog.setTitle("Enregistrements");
-        		progressDialog.setMessage("Mise à jour...");
-        		progressDialog.show();
- */       	}
         }
     	
         protected Boolean doInBackground(Void... arg0) {
@@ -196,6 +189,7 @@ public class EnregistrementsActivity extends ExpandableListActivity {
         	}
             
         	if (updateFromConsole) {
+        		listeEnregistrements.vider();
         		return updateEnregistrementsFromConsole();
         	}
         	
@@ -329,7 +323,7 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 
 		if (listCursor != null && listCursor.moveToFirst()) {
 			succesChargement = true;
-			
+			listeEnregistrements.vider();
             do {
      			String item = listCursor.getString(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_NOM))+
      			" [" + listCursor.getString(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_DATE)) +
@@ -343,9 +337,9 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 //     			details.add("Heure");
 //     			details.add(listCursor.getString(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_HEURE)));
      			details.add("Durée");
-//     			details.add(listCursor.getString(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_DUREE)));
+     			details.add(listCursor.getString(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_DUREE)));
 //     			details.add("Nom");
-     			details.add(listCursor.getString(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_NOM)));
+//     			details.add(listCursor.getString(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_NOM)));
      			details.add("Boitier");
      			details.add("Boitier "+(listCursor.getInt(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_BOITIER_ID))+1));
      			
@@ -518,19 +512,27 @@ public class EnregistrementsActivity extends ExpandableListActivity {
     }
     
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    	if (requestCode == ACTIVITY_ENREGISTREMENT) {
-    		updaterEnregistrements(false);
-    		
-    		if (resultCode == RESULT_SUPPRESSION_OK) {
-    			Toast.makeText(this, getString(R.string.pvrModificationsEnregistrees),
-    					Toast.LENGTH_LONG).show();
-    		}
+    	switch (requestCode)
+    	{
+	    	case ACTIVITY_ENREGISTREMENT:
+	    		updaterEnregistrements(false);
+	    		
+	    		if (resultCode == RESULT_SUPPRESSION_OK) {
+	    			new UpdateEnregistrementsTask(true).execute();
+	    			Toast.makeText(this, getString(R.string.pvrModificationsEnregistrees),
+	    					Toast.LENGTH_LONG).show();
+	    		}
+	    	break;
+	    	case ACTIVITY_PROGRAMMATION:
+	    		if (resultCode != 0)
+	    			updaterEnregistrements(true);
+	    	break;
     	}
     }
     
     /* Creates the menu items */
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, MENU_UPDATE, 0, "Mettre à jour").setIcon(android.R.drawable.ic_menu_rotate);
+        menu.add(0, MENU_UPDATE, 0, "Mettre à jour la liste").setIcon(android.R.drawable.ic_menu_rotate);
         menu.add(0, MENU_ADD, 1, "Ajouter").setIcon(android.R.drawable.ic_menu_add);
         return true;
     }
@@ -551,7 +553,7 @@ public class EnregistrementsActivity extends ExpandableListActivity {
     void ajouterNouvelEnregistrement() {
     	Intent i = new Intent();
     	i.setClassName("org.madprod.freeboxmobile", "org.madprod.freeboxmobile.pvr.ProgrammationActivity");
-    	startActivity(i);
+    	startActivityForResult(i, ACTIVITY_PROGRAMMATION);
     }
 
     /**

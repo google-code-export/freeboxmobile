@@ -9,6 +9,7 @@ import org.apache.http.message.BasicNameValuePair;
 
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
+import org.madprod.freeboxmobile.pvr.PvrNetwork;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -22,8 +23,11 @@ import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.GestureDetector;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.View.OnClickListener;
 import android.view.animation.Animation;
@@ -52,6 +56,10 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
  *
  */
 public class ProgrammationActivity extends Activity implements PvrConstants {
+	static final int MENU_UPDATE_HD = 0;
+	static final int MENU_UPDATE_CHAINES = 1;
+	static final int MENU_UPDATE_ALL = 2;
+
 	// Id du boitier séléctionné
 	private static int mBoitierHD = 0;
 	// Nom du boitier sélectionné
@@ -117,6 +125,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.pvr_programmation2);
         FBMHttpConnection.initVars(this, null);
         resetJours();
@@ -163,7 +172,6 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
         gromanche = (CheckBox) findViewById(R.id.pvrPrgJour6);
         viewFlipper = (ViewFlipper) findViewById(R.id.pvrFlipper);
         
-        dureeSpinner.setSelection(8);// 8 == 2H
         
         if (selectedLayout == LAYOUT_OLIVIER) {
         	orientationPortrait = false;
@@ -303,6 +311,8 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
     		preparerActivite();
     	}
     	else {
+    		lastUser = FBMHttpConnection.getIdentifiant();
+        	new ProgNetwork(false, true).execute((Void[])null);
     		preparerActivite();
     	}
     }
@@ -332,6 +342,29 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 		// le récupérer quand on revient sur l'activité
 	}
     
+    /* Creates the menu items */
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add(0, MENU_UPDATE_HD, 1, "Mettre à jour disques").setIcon(android.R.drawable.ic_menu_rotate);
+        menu.add(0, MENU_UPDATE_CHAINES, 2, "Mettre à jour chaînes").setIcon(android.R.drawable.ic_menu_rotate);
+        menu.add(0, MENU_UPDATE_CHAINES, 0, "Tout mettre à jour").setIcon(android.R.drawable.ic_menu_rotate);
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case MENU_UPDATE_HD:
+        	new ProgNetwork(false, true).execute((Void[])null);
+            return true;
+        case MENU_UPDATE_CHAINES:
+        	new ProgNetwork(true, false).execute((Void[])null);
+            return true;
+        case MENU_UPDATE_ALL:
+        	new ProgNetwork(true, true).execute((Void[])null);
+            return true;
+        }
+        return false;
+    }
+
 	@Override    
     protected Dialog onCreateDialog(int id) 
     {
@@ -515,12 +548,21 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 		d.show();
     }
     
-    public static void showPatientez(Activity a)
+    public static void showPatientezChaines(Activity a)
     {
 		progressDialog = new ProgressDialog(a);
 		progressDialog.setIcon(R.drawable.fm_magnetoscope);
 		progressDialog.setTitle(a.getString(R.string.pvrPatientez));
 		progressDialog.setMessage(a.getString(R.string.pvrTelechargementChaines));
+		progressDialog.show();
+    }
+
+    public static void showPatientezDonnees(Activity a)
+    {
+		progressDialog = new ProgressDialog(a);
+		progressDialog.setIcon(R.drawable.fm_magnetoscope);
+		progressDialog.setTitle(a.getString(R.string.pvrPatientez));
+		progressDialog.setMessage(a.getString(R.string.pvrTelechargementDonnees));
 		progressDialog.show();
     }
 
@@ -566,8 +608,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
     	final Cursor enr = remplirFiche();
     	
     	// Durées avec le spinner
-    	final Spinner s = (Spinner) findViewById(R.id.pvrPrgDurees);
-    	s.setOnItemSelectedListener(new OnItemSelectedListener() {
+    	dureeSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				String duree = (String) getResources().getTextArray(R.array.pvrValeursDurees)[position];
@@ -578,10 +619,19 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 			public void onNothingSelected(AdapterView<?> arg0) {
 			}
     	});
+    	int lastPos = dureeSpinner.getSelectedItemPosition();
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.pvrListeDurees,
         		android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        s.setAdapter(adapter);
+        dureeSpinner.setAdapter(adapter);
+        if (lastPos != -1)
+        {
+        	dureeSpinner.setSelection(lastPos, true);
+        }
+        else
+        {
+            dureeSpinner.setSelection(8, true);
+        }
 
         // Activation d'un listener sur le bouton OK
         final Button button = (Button) findViewById(R.id.pvrPrgBtnOK);
@@ -748,7 +798,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
         		}
         		// Pas d'erreur, on MAJ la db
         		else {
-    				EnregistrementsDbAdapter dbenr = new EnregistrementsDbAdapter(progAct);
+/*    				EnregistrementsDbAdapter dbenr = new EnregistrementsDbAdapter(progAct);
     				dbenr.open();
 
     				// Modification
@@ -766,7 +816,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
         			}
         			
     				dbenr.close();
-        		}
+  */      		}
         		db.close();
         		return null;
             }
@@ -911,6 +961,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 		ChainesDbAdapter db = new ChainesDbAdapter(this);
 		db.open();
 		
+		int selection = spinner.getSelectedItemPosition();
 		switch (id) {
 			case R.id.pvrPrgChaine:
 				chainesCursor = db.fetchAllChaines(mBoitierHD);
@@ -1004,6 +1055,10 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 			adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 			spinner.setAdapter(adapter);
 		}
+		if (selection != -1)
+		{
+			spinner.setSelection(selection, true);
+		}
 		db.close();
     }
 	
@@ -1039,5 +1094,40 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
        		while (disquesCursor.moveToNext());
         }
 		return -1;
+	}
+	
+	private class ProgNetwork extends AsyncTask<Void, Integer, Boolean>
+	{
+		private boolean getChaines;
+		private boolean getDisques;
+
+	        protected void onPreExecute() {
+        		if (!getDisques)
+        			ProgrammationActivity.showPatientezDonnees(progAct);
+        		else
+            		setProgressBarIndeterminateVisibility(true);
+	        }
+
+	        protected Boolean doInBackground(Void... arg0) {
+	        	return new PvrNetwork(progAct, getChaines, getDisques).getData();
+	        }
+	        
+	        protected void onPostExecute(Boolean telechargementOk) {
+	        	if (telechargementOk == Boolean.TRUE) {
+	        	}
+	        	else {
+        			ProgrammationActivity.afficherMsgErreur(progAct.getString(R.string.pvrErreurTelechargementDonnees), progAct);
+	        	}
+	        	preparerActivite();
+	        	if (ProgrammationActivity.progressDialog != null)
+	        		ProgrammationActivity.dismissPd();
+	    		setProgressBarIndeterminateVisibility(false);
+	        }
+	        
+	        public ProgNetwork(boolean getChaines, boolean getDisques)
+	        {
+	        	this.getChaines = getChaines;
+	        	this.getDisques = getDisques;
+	        }
 	}
 }

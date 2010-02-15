@@ -13,7 +13,7 @@
 		<activity android:theme="@android:style/Theme.Light.NoTitleBar" android:name=".home.ComptesEditActivity"></activity>
 		<activity android:theme="@android:style/Theme.Light" android:name=".home.SendlogActivity"></activity>
 		<activity android:theme="@android:style/Theme.Light" android:name=".fax.FaxActivity">
-			<intent-filter android:label="Fax">
+			<intent-filter android:label="Fax (Freebox Mobile)">
 				<action android:name="android.intent.action.SEND"></action>
      			<category android:name="android.intent.category.DEFAULT" />
      			<data android:mimeType="application/pdf" />
