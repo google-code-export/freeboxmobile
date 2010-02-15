@@ -1,6 +1,7 @@
 package org.madprod.freeboxmobile.fax;
 
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -17,13 +18,16 @@ import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ContentProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
 import android.provider.Contacts.Phones;
+import android.provider.MediaStore.Images;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -71,7 +75,14 @@ public class FaxActivity extends Activity implements FaxConstants {
 		if(getIntent()!=null && getIntent().getAction() != null){
 			if(getIntent().getAction().equals(Intent.ACTION_SEND)){
 				final Uri uri = (Uri)getIntent().getExtras().get(Intent.EXTRA_STREAM);
-				selectFile(new File(uri.getPath()));
+				if("org.openintents.filemanager".equals(uri.getAuthority())){
+					//OI File Manager send action
+					Cursor openIntentFileCursor = getContentResolver().query(uri, null, null, null, null);
+					if (openIntentFileCursor.moveToFirst()) {
+						String filePath = openIntentFileCursor.getString(openIntentFileCursor.getColumnIndex(Images.Media.DATA));
+						selectFile(new File(filePath));
+					}
+				}
 			}
 		}
 		
