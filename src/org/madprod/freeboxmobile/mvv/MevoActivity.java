@@ -34,6 +34,7 @@ import android.provider.Contacts.Intents.Insert;
 import android.util.Log;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SeekBar;
@@ -64,7 +65,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
     Cursor mCursor;
     int audioManagerModeAtStart;
 
-    Button speakerButton;
+    ImageView speakerButton;
     static Button callbackButton;
     static Button deleteButton;
 
@@ -81,14 +82,16 @@ public class MevoActivity extends ListActivity implements MevoConstants
         setListAdapter(mAdapter);
         mevoActivity = this;        
 		mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        speakerButton = (Button) findViewById(R.id.MevoButtonSpeaker);
+        speakerButton = (ImageView) findViewById(R.id.MevoButtonHP);
         callbackButton = (Button) findViewById(R.id.MevoButtonCallback);
         deleteButton = (Button) findViewById(R.id.MevoButtonDelete);
         audioManagerModeAtStart = mAudioManager.getMode(); 
 		if (mAudioManager.getMode() != AudioManager.MODE_IN_CALL)
-			speakerButton.setTextColor(Color.GREEN);
+			speakerButton.setImageResource(R.drawable.mevo_hp_vert);
+//			speakerButton.setTextColor(Color.GREEN);
 		else
-			speakerButton.setTextColor(Color.WHITE);
+			speakerButton.setImageResource(R.drawable.mevo_hp_rouge);
+//			speakerButton.setTextColor(Color.WHITE);
         speakerButton.setOnClickListener(
 				new View.OnClickListener()
 				{
@@ -98,13 +101,15 @@ public class MevoActivity extends ListActivity implements MevoConstants
 						{
 							mAudioManager.setMode(AudioManager.MODE_IN_CALL);
 							mAudioManager.setSpeakerphoneOn(false);
-							speakerButton.setTextColor(Color.WHITE);
+//							speakerButton.setTextColor(Color.WHITE);
+							speakerButton.setImageResource(R.drawable.mevo_hp_rouge);
 						}
 						else
 						{
 							mAudioManager.setMode(AudioManager.MODE_NORMAL);
 							mAudioManager.setSpeakerphoneOn(true);
-							speakerButton.setTextColor(Color.GREEN);
+//							speakerButton.setTextColor(Color.GREEN);
+							speakerButton.setImageResource(R.drawable.mevo_hp_vert);
 						}
 				    }
 				}
