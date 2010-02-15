@@ -13,12 +13,14 @@ import android.util.Log;
 /**
  * 
  * @author bduffez
- * $Id: $
+ * $Id$
  */
+
 public class ChainesDbAdapter {
 
     public static final String KEY_NAME = "name";
     public static final String KEY_CHAINE_ID = "chaine_id";
+    public static final String KEY_CHAINE_BOITIER = "chaine_boitier";
     public static final String KEY_SERVICE_DESC = "service_desc";
     public static final String KEY_SERVICE_ID = "service_id";
     public static final String KEY_PVR_MODE = "pvr_mode";
@@ -45,10 +47,12 @@ public class ChainesDbAdapter {
     
     private static final String TABLE_CHAINES = " (_id integer primary key autoincrement, "
 	        + KEY_NAME+" text not null,"
-	        + KEY_CHAINE_ID+" integer not null);";
+	        + KEY_CHAINE_ID+" integer not null,"
+	        + KEY_CHAINE_BOITIER+" integer not null);";
 
     private static final String TABLE_SERVICES = " (_id integer primary key autoincrement, "
     	+ KEY_CHAINE_ID+" integer not null,"
+    	+ KEY_CHAINE_BOITIER+" integer not null,"
         + KEY_SERVICE_DESC+" text not null,"
         + KEY_SERVICE_ID+" integer not null,"
         + KEY_PVR_MODE+" integer not null);";
@@ -74,7 +78,7 @@ public class ChainesDbAdapter {
     private static final String DATABASE_TABLE_BOITIERSDISQUES = "boitiersdisques";
     private static final String DATABASE_TABLE_BOITIERSDISQUESTEMP = "boitiersdisquestemp";
     
-    private static final int DATABASE_VERSION = 14;
+    private static final int DATABASE_VERSION = 16;
 
     private static final String DATABASE_CREATE_CHAINES =
         "create table "+DATABASE_TABLE_CHAINES+TABLE_CHAINES;
@@ -190,17 +194,19 @@ public class ChainesDbAdapter {
      * @param body the body of the Chaine
      * @return rowId or -1 if failed
      */
-    public long createChaine(String name, int chaine_id) {
+    public long createChaine(String name, int chaine_id, int boitier_id) {
         ContentValues initialValues = new ContentValues();
         initialValues.put(KEY_NAME, name);
         initialValues.put(KEY_CHAINE_ID, chaine_id);
+        initialValues.put(KEY_CHAINE_BOITIER, boitier_id);
         return mDb.insert(DATABASE_TABLE_CHAINESTEMP, null, initialValues);
     }
     
-    public long createService(int chaine_id, String service_desc, int service_id, int pvr_mode)
+    public long createService(int chaine_id, int boitier_id, String service_desc, int service_id, int pvr_mode)
     {
     	ContentValues initialValues = new ContentValues();
         initialValues.put(KEY_CHAINE_ID, chaine_id);
+        initialValues.put(KEY_CHAINE_BOITIER, boitier_id);
         initialValues.put(KEY_SERVICE_DESC, service_desc);
         initialValues.put(KEY_SERVICE_ID, service_id);
         initialValues.put(KEY_PVR_MODE, pvr_mode);        
@@ -299,7 +305,7 @@ public class ChainesDbAdapter {
      * @param body the body of the Chaine
      * @return rowId or -1 if failed
      */
-    public long modifyChaine(int rowId, String name, int chaine_id, String service_desc,
+    public long modifyChaine_unused(int rowId, String name, int chaine_id, String service_desc,
     		int service_id, int pvr_mode) {
         ContentValues newValues = new ContentValues();
 
@@ -322,12 +328,12 @@ public class ChainesDbAdapter {
      * @param rowId id of Chaine to delete
      * @return true if deleted, false otherwise
      */
-    public boolean deleteChaine(long rowId) {
+    public boolean deleteChaine_unused(long rowId) {
 
         return mDb.delete(DATABASE_TABLE_CHAINES, KEY_ROWID + "=" + rowId, null) > 0;
     }
     
-    public boolean deleteAllChaines() {
+    public boolean deleteAllChaines_unused() {
     	
     	return mDb.delete(DATABASE_TABLE_CHAINES, "1", null) > 0;
     }
@@ -337,16 +343,16 @@ public class ChainesDbAdapter {
      * 
      * @return Cursor over all Chaines
      */
-    public Cursor fetchAllChaines() {
+    public Cursor fetchAllChaines(int boitier_id) {
 		return mDb.query(DATABASE_TABLE_CHAINES, new String[] {KEY_ROWID, KEY_NAME,
 	        KEY_CHAINE_ID},
-	        null, null, null, null, null);
+	        KEY_CHAINE_BOITIER + "=" + boitier_id, null, null, null, null);
     }
 
-    public Cursor fetchServicesChaine(int chaineId) {
+    public Cursor fetchServicesChaine(int chaineId, int boitier_id) {
 		return mDb.query(DATABASE_TABLE_SERVICES, new String[] {KEY_ROWID, KEY_SERVICE_DESC,
 	        KEY_SERVICE_ID, KEY_PVR_MODE},
-	        KEY_CHAINE_ID + "=" + chaineId,
+	        KEY_CHAINE_ID + "=" + chaineId + " AND " + KEY_CHAINE_BOITIER + "=" + boitier_id,
 	        null, null, null, null, null);
     }
 
@@ -357,7 +363,7 @@ public class ChainesDbAdapter {
      * @return Cursor positioned to matching Chaine, if found
      * @throws SQLException if Chaine could not be found/retrieved
      */
-    public Cursor fetchChaine(long rowId) throws SQLException {
+    public Cursor fetchChaine_unused(long rowId) throws SQLException {
         Cursor mCursor =
                 mDb.query(true, DATABASE_TABLE_CHAINES,
                 		new String[] {
@@ -382,7 +388,7 @@ public class ChainesDbAdapter {
      * @param body value to set Chaine body to
      * @return true if the Chaine was successfully updated, false otherwise
      */
-    public boolean updateChaine(long rowId, String name, String chaine_id, String service_desc,
+    public boolean updateChaine_unused(long rowId, String name, String chaine_id, String service_desc,
     		String service_id, String pvr_mode) {
         ContentValues args = new ContentValues();
 
