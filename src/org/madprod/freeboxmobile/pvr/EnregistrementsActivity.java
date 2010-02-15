@@ -227,29 +227,85 @@ public class EnregistrementsActivity extends ExpandableListActivity {
      */
     private boolean updateEnregistrementsFromConsole() {		
 		String url;
+		int boitier = 0;
+		int nbBoitiers = 0;
+		int bNum;
+//		String bName = "";
 		
         // Recup if tv
         String contenu = null;
     	url = "http://adsl.free.fr/admin/magneto.pl";
-    	List<NameValuePair> param = new ArrayList<NameValuePair>();
-    	param.add(new BasicNameValuePair("sommaire","television"));
-    	contenu = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequestISR(url, param, true, true));
-    	if (contenu == null) {
-    		return false;
-    	}
+    	List<NameValuePair> param;
+    	do
+    	{
+	    	param = new ArrayList<NameValuePair>();
+	    	param.add(new BasicNameValuePair("sommaire","television"));
+	    	param.add(new BasicNameValuePair("box", ""+boitier));
+	    	contenu = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequestISR(url, param, true, true));
+	    	if (contenu == null) {
+	    		return false;
+	    	}
+	
+			if (boitier == 0)
+			{
+	        	// Plusieurs boitiers HD ?
+	        	int posDebut = contenu.indexOf("box=");
+	        	if (posDebut > 0)
+	        	{
+	        		int d, f;
+	        		String boitiers;
+	        		boitiers = contenu.substring(posDebut);
+	        		// On compte le nombre de boitiers
+	        		do {
+	        			d = boitiers.indexOf("box=");
+	        			if (d == -1) {
+		        			break;
+	        			}
+			        	boitiers = boitiers.substring(d);
+			        	f = boitiers.indexOf("\"");
+			        	FBMHttpConnection.FBMLog("Boitier parse : "+boitiers.substring(4, f));
+			        	bNum = Integer.parseInt(boitiers.substring(4, f));
+			        	d = boitiers.indexOf("Boitier HD");
+			        	boitiers = boitiers.substring(d);
 
-    	int debut = contenu.indexOf("<div class=\"table block\">") + 25;
-    	int fin = contenu.indexOf("<div class=\"clearer\"></div>");
-
-    	if (debut > 25 && fin > 0) {
-    		tableEnregistrements = contenu.substring(debut, fin);
-    		succesChargement = true;
-    		return recupererEnregistrements();
-    	}
-    	
-    	return false;
+	        			f = boitiers.indexOf("</");
+//	        			bName = boitiers.substring(0, f);
+	        			boitiers = boitiers.substring(f);
+	        			nbBoitiers++;
+	        			FBMHttpConnection.FBMLog("Boitier : "+bNum);
+	        		} while (true);
+	        	}
+	        	else
+	        	{
+//	        		bName = "Freebox HD";
+	        		bNum = 0;
+	        	}
+			}
+			// Pour chaque boitier, on récupère la liste des enregistrements
+	    	int debut = contenu.indexOf("<div class=\"table block\">") + 25;
+	    	int fin = contenu.indexOf("<div class=\"clearer\"></div>");
+	
+	    	if (debut > 25 && fin > 0) {
+	    		tableEnregistrements = contenu.substring(debut, fin);
+	    		succesChargement = true;
+	    		recupererEnregistrements(boitier);
+	    	}
+	    	boitier++;
+    	} while (boitier < nbBoitiers);	
+		doSwap();
+    	return true;
     }
     
+	private void doSwap()
+	{
+		EnregistrementsDbAdapter db;
+
+		db = new EnregistrementsDbAdapter(this);
+		db.open();
+		db.swapEnr();
+		db.close();
+	}
+
     /**
      * DB --> RAM
      * Se connecte à sqlite, récupère le contenu et stocke ça dans l'objet listeEnregistrements
@@ -264,7 +320,8 @@ public class EnregistrementsActivity extends ExpandableListActivity {
         		EnregistrementsDbAdapter.KEY_DATE,
         		EnregistrementsDbAdapter.KEY_HEURE,
         		EnregistrementsDbAdapter.KEY_DUREE,
-        		EnregistrementsDbAdapter.KEY_NOM
+        		EnregistrementsDbAdapter.KEY_NOM,
+        		EnregistrementsDbAdapter.KEY_BOITIER_ID,
         		},
         		EnregistrementsDbAdapter.KEY_DATE + " ASC, "
         		+ EnregistrementsDbAdapter.KEY_HEURE + " ASC, "
@@ -274,22 +331,23 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 			succesChargement = true;
 			
             do {
-     			int colChaine = listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_CHAINE);
-     			int colDate = listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_DATE);
-     			String item = listCursor.getString(colChaine);
-     			item += " (" + listCursor.getString(colDate) + ")";
+     			String item = listCursor.getString(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_NOM))+
+     			" [" + listCursor.getString(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_DATE)) +
+     			" "+ listCursor.getString(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_HEURE)) + "]";
      			
      			List<String> details = new ArrayList<String>();
      			details.add("Chaîne");
      			details.add(listCursor.getString(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_CHAINE)));
-     			details.add("Date");
-     			details.add(listCursor.getString(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_DATE)));
-     			details.add("Heure");
-     			details.add(listCursor.getString(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_HEURE)));
+//     			details.add("Date");
+//     			details.add(listCursor.getString(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_DATE)));
+//     			details.add("Heure");
+//     			details.add(listCursor.getString(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_HEURE)));
      			details.add("Durée");
-     			details.add(listCursor.getString(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_DUREE)));
-     			details.add("Nom");
+//     			details.add(listCursor.getString(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_DUREE)));
+//     			details.add("Nom");
      			details.add(listCursor.getString(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_NOM)));
+     			details.add("Boitier");
+     			details.add("Boitier "+(listCursor.getInt(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_BOITIER_ID))+1));
      			
      			listeEnregistrements.ajouter(item, details);
      			
@@ -329,7 +387,7 @@ public class EnregistrementsActivity extends ExpandableListActivity {
      * à la liste des enregistrements programmés
      * Stocke cette liste dans la base sqlite
      */
-    private boolean recupererEnregistrements() {
+    private boolean recupererEnregistrements(int bId) {
     	int debut;
     	String chaine, date, heure, duree, nom, ide, chaine_id, service_id;
     	String h, min, dur, name, where_id, repeat_a;
@@ -337,7 +395,6 @@ public class EnregistrementsActivity extends ExpandableListActivity {
         // SQLite
         EnregistrementsDbAdapter db = new EnregistrementsDbAdapter(this);
         db.open();
-//        db.deleteAllEnregistrements();
     	
 		do {
 			debut = tableEnregistrements.indexOf(" <form id=\"");
@@ -363,8 +420,8 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 				repeat_a =		recupererChamp("value=\"", "\"") + " ";
 				
 				// EnregistrementActivity
-				db.createEnregistrement(chaine, date, heure, duree, nom, ide,
-						chaine_id, service_id, h, min, dur, name, where_id, repeat_a);
+				db.createEnregistrement(chaine, "", date, heure, duree, nom, ide,
+						chaine_id, service_id, bId, h, min, dur, name, where_id, repeat_a);
 				
 				debut = tableEnregistrements.indexOf(" <form id=");
 			}
@@ -372,7 +429,6 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 				break;
 			}
 		} while (true);
-		db.swapEnr();
 		db.close();
 		
 		return true;

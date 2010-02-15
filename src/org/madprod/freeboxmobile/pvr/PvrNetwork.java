@@ -83,7 +83,6 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Con
 		    		FBMHttpConnection.FBMLog("telechargerEtParser posChaines > 0 && posDisques > 0");
 		    		if (boitier == 0)
 		    		{
-	
 			        	// Plusieurs boitiers HD ?
 			        	int posDebut = resultat.indexOf("box=");
 			        	if (posDebut > 0)
@@ -170,7 +169,7 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Con
 	private void getListeDisques(String strDisques, String bName, int bNumber) {
 		getListe(strDisques, "}", 1, bName, bNumber);
 	}
-	
+
 	private void doSwap(boolean ok)
 	{
 		ChainesDbAdapter db;

@@ -13,6 +13,7 @@ import android.util.Log;
 public class EnregistrementsDbAdapter {
 
     public static final String KEY_CHAINE = "chaine";
+    public static final String KEY_BOITIER = "boitier";
     public static final String KEY_DATE = "date";
     public static final String KEY_HEURE = "heure";
     public static final String KEY_DUREE = "duree";
@@ -20,6 +21,7 @@ public class EnregistrementsDbAdapter {
     public static final String KEY_IDE = "ide";
     public static final String KEY_CHAINE_ID = "chaine_id";
     public static final String KEY_SERVICE_ID = "service_id";
+    public static final String KEY_BOITIER_ID = "boitier_id";
     public static final String KEY_H = "h";
     public static final String KEY_MIN = "min";
     public static final String KEY_DUR = "dur";
@@ -38,6 +40,7 @@ public class EnregistrementsDbAdapter {
     private static final String TABLE_ENREGISTREMENTS =
             "(" + KEY_ROWID + " integer primary key autoincrement, "
 			        + KEY_CHAINE + " text not null,"
+			        + KEY_BOITIER + " text not null,"
 			        + KEY_DATE + " text not null,"
 			        + KEY_HEURE + " text not null,"
 			        + KEY_DUREE + " integer not null,"
@@ -45,6 +48,7 @@ public class EnregistrementsDbAdapter {
 			        + KEY_IDE + " integer not null,"
 			        + KEY_CHAINE_ID + " integer not null,"
 			        + KEY_SERVICE_ID + " integer not null,"
+			        + KEY_BOITIER_ID + " integer not null,"
 			        + KEY_H + " integer not null,"
 			        + KEY_MIN + " integer not null,"
 			        + KEY_DUR + " integer not null,"
@@ -55,7 +59,9 @@ public class EnregistrementsDbAdapter {
     static final String DATABASE_NAME = "pvr";
     private static final String DATABASE_TABLE_ENR = "enregistrements";
     private static final String DATABASE_TABLE_ENR_TEMP = "enregistrementstemp";
-    private static final int DATABASE_VERSION = 5;
+
+    private static final int DATABASE_VERSION = 6;
+    
     private static final String DATABASE_CREATE_ENR =
         "create table " + DATABASE_TABLE_ENR + TABLE_ENREGISTREMENTS;
     private static final String DATABASE_CREATE_ENR_TEMP =
@@ -133,12 +139,13 @@ public class EnregistrementsDbAdapter {
      * @param body the body of the enregistrement
      * @return rowId or -1 if failed
      */
-    public long createEnregistrement(String chaine, String date, String heure, String duree,
-    		String nom, String ide, String chaine_id, String service_id, String h, String min,
+    public long createEnregistrement(String chaine, String boitier, String date, String heure, String duree,
+    		String nom, String ide, String chaine_id, String service_id, int boitier_id, String h, String min,
     		String dur, String name, String where_id, String repeat_a) {
         ContentValues initialValues = new ContentValues();
         
         initialValues.put(KEY_CHAINE, chaine);
+        initialValues.put(KEY_BOITIER, boitier);
         initialValues.put(KEY_DATE, date);
         initialValues.put(KEY_HEURE, heure);
         initialValues.put(KEY_DUREE, duree);
@@ -146,6 +153,7 @@ public class EnregistrementsDbAdapter {
         initialValues.put(KEY_IDE, ide);
         initialValues.put(KEY_CHAINE_ID, chaine_id);
         initialValues.put(KEY_SERVICE_ID, service_id);
+        initialValues.put(KEY_BOITIER_ID, boitier_id);
         initialValues.put(KEY_H, h);
         initialValues.put(KEY_MIN, min);
         initialValues.put(KEY_DUR, dur);
@@ -165,12 +173,13 @@ public class EnregistrementsDbAdapter {
      * @param body the body of the enregistrement
      * @return rowId or -1 if failed
      */
-    public long modifyEnregistrement(int rowId, String chaine, String date, String heure, String duree,
-    		String nom, String ide, String chaine_id, String service_id, String h, String min,
+    public long modifyEnregistrement(int rowId, String chaine, String boitier, String date, String heure, String duree,
+    		String nom, String ide, String chaine_id, String service_id, int boitier_id, String h, String min,
     		String dur, String name, String where_id, String repeat_a) {
         ContentValues newValues = new ContentValues();
         
         newValues.put(KEY_CHAINE, chaine);
+        newValues.put(KEY_BOITIER, boitier);
         newValues.put(KEY_DATE, date);
         newValues.put(KEY_HEURE, heure);
         newValues.put(KEY_DUREE, duree);
@@ -178,6 +187,7 @@ public class EnregistrementsDbAdapter {
         newValues.put(KEY_IDE, ide);
         newValues.put(KEY_CHAINE_ID, chaine_id);
         newValues.put(KEY_SERVICE_ID, service_id);
+        newValues.put(KEY_BOITIER_ID, boitier_id);
         newValues.put(KEY_H, h);
         newValues.put(KEY_MIN, min);
         newValues.put(KEY_DUR, dur);
@@ -216,6 +226,7 @@ public class EnregistrementsDbAdapter {
     public Cursor fetchAllEnregistrements(String[] colonnes) {
     	return fetchAllEnregistrements(colonnes, null);
     }
+
     public Cursor fetchAllEnregistrements(String[] colonnes, String sort) {
 
         return mDb.query(DATABASE_TABLE_ENR, colonnes, null, null, null, null, sort);
@@ -236,6 +247,7 @@ public class EnregistrementsDbAdapter {
                 		new String[] {
                 		KEY_ROWID,
                 		KEY_CHAINE,
+                		KEY_BOITIER,
                 		KEY_DATE,
                 		KEY_HEURE,
                 		KEY_DUREE,
@@ -243,6 +255,7 @@ public class EnregistrementsDbAdapter {
                 		KEY_IDE,
                 		KEY_CHAINE_ID,
                 		KEY_SERVICE_ID,
+                		KEY_BOITIER_ID,
                 		KEY_H,
                 		KEY_MIN,
                 		KEY_DUR,
@@ -275,7 +288,7 @@ public class EnregistrementsDbAdapter {
      * @param body value to set enregistrement body to
      * @return true if the enregistrement was successfully updated, false otherwise
      */
-    public boolean updateEnregistrement(long rowId, String chaine, String date, String heure,
+    public boolean updateEnregistrement_unused(long rowId, String chaine, String date, String heure,
     		String duree, String nom, String ide, String chaine_id, String service_id, String h,
     		String min, String dur, String name, String where_id, String repeat_a) {
         ContentValues args = new ContentValues();
