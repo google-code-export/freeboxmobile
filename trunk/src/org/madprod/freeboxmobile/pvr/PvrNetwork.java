@@ -23,14 +23,19 @@ import android.os.AsyncTask;
 public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Constants
 {
 	private Activity activity;
+	private boolean getChaines;
+	private boolean getDisques;
 	
         protected void onPreExecute() {
         	if (activity != null)
-        		ProgrammationActivity.showPatientez(activity);
+        		if (!getDisques)
+        			ProgrammationActivity.showPatientezChaines(activity);
+        		else
+        			ProgrammationActivity.showPatientezDonnees(activity);
         }
 
         protected Boolean doInBackground(Void... arg0) {
-        	return telechargerEtParser();
+        	return getData();
         }
         
         protected void onPostExecute(Boolean telechargementOk) {
@@ -43,18 +48,18 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Con
         		ProgrammationActivity.dismissPd();
         }
     
-    public PvrNetwork(Activity a, boolean async)
+    public PvrNetwork(Activity a, boolean getChaines, boolean getDisques)
     {
     	activity = a;
+    	this.getChaines = getChaines;
+    	this.getDisques = getDisques;
     	FBMHttpConnection.FBMLog("PVRNETWORK START");
-    	if (!async)
-    		telechargerEtParser();
     }
     /**
      * 
      * @return true en cas de succès, false sinon
      */
-    private boolean telechargerEtParser() {
+    public boolean getData() {
     	int boitier = 0;
     	int nbBoitiers = 0;
     	int bNum = 0;
@@ -119,18 +124,24 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Con
 			        	}
 		    		}
 		        	// Pour chaque boitier, récupération du javascript correspondant à la liste des chaines
-		        	String strChaines = resultat.substring(posChaines+14, posDisques);
-		        	int finChaines = strChaines.lastIndexOf("}");
-		        	strChaines = strChaines.substring(0, finChaines+1);
 		        	
 		        	// Conversion JSON -> objet
-		        	getListeChaines(strChaines, mBoitiersNb.get(boitier));
+		        	if (getChaines)
+		        	{
+			        	String strChaines = resultat.substring(posChaines+14, posDisques);
+//			        	int finChaines = strChaines.lastIndexOf("}");
+			        	strChaines = strChaines.substring(0, strChaines.lastIndexOf("}")+1);
+		        		getListeChaines(strChaines, mBoitiersNb.get(boitier));
+		        	}
 
-		        	// Pour chaque boitier, on récupère la liste des disques
-		        	String strDisques = resultat.substring(posDisques+14);
-		        	int fin = strDisques.lastIndexOf("}];")+1;
-		        	strDisques = strDisques.substring(0, fin);
-		        	getListeDisques(strDisques, mBoitiersName.get(boitier), mBoitiersNb.get(boitier));
+		        	if (getDisques)
+		        	{
+			        	// Pour chaque boitier, on récupère la liste des disques
+			        	String strDisques = resultat.substring(posDisques+14);
+//			        	int fin = strDisques.lastIndexOf("}];")+1;
+			        	strDisques = strDisques.substring(0, strDisques.lastIndexOf("}];")+1);
+			        	getListeDisques(strDisques, mBoitiersName.get(boitier), mBoitiersNb.get(boitier));
+		        	}
 		        }
 		        else {
 		    		FBMHttpConnection.FBMLog("telechargerEtParser impossible de trouver le json dans le html");
@@ -178,12 +189,17 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Con
 		db.open();
 		if (ok)
 		{
-			db.swapChaines();
-			db.swapBoitiersDisques();
+			if (getChaines)
+				db.swapChaines();
+			if (getDisques)
+				db.swapBoitiersDisques();
 		}
 		else
 		{
-			db.cleanTempTables();
+			if (getChaines)
+				db.cleanTempChaines();
+			if (getDisques)
+				db.cleanTempBoitiersDisques();
 		}
 		db.close();
 	}

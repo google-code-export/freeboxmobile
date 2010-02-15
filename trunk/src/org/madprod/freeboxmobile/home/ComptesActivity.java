@@ -202,7 +202,7 @@ public class ComptesActivity extends ListActivity implements HomeConstants
         		liste.add(mComptesCursor.getString(titleColumnIndex));
         		if (mComptesCursor.getString(loginColumnIndex).equals(selected))
         		{
-        			s.setSelection(pos);
+        			s.setSelection(pos, true);
         		}
         		pos++;
         	}
@@ -226,7 +226,7 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 						{
 							updatePrefs(mgr.edit(), c);
 							FBMHttpConnection.initCompte(ComptesActivity.this);
-							new PvrNetwork(ComptesActivity.this, true).execute((Void[])null);
+							new PvrNetwork(ComptesActivity.this, true, true).execute((Void[])null);
 						}
 						else
 						{
