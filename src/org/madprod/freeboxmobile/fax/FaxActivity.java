@@ -1,8 +1,8 @@
 package org.madprod.freeboxmobile.fax;
 
 import java.io.File;
-import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
@@ -18,14 +18,12 @@ import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.ContentProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.ParcelFileDescriptor;
 import android.provider.Contacts.Phones;
 import android.provider.MediaStore.Images;
 import android.util.Log;
@@ -49,7 +47,8 @@ public class FaxActivity extends Activity implements FaxConstants {
 	private EditText filePathText;
 
 	private File selectedFile = null;
-
+	
+	
 	/**
 	 * Création de l'activité d'envoi d'un fax via le compte Free actuellement utilisé
 	 */
@@ -72,19 +71,7 @@ public class FaxActivity extends Activity implements FaxConstants {
 			}
 		});
 		
-		if(getIntent()!=null && getIntent().getAction() != null){
-			if(getIntent().getAction().equals(Intent.ACTION_SEND)){
-				final Uri uri = (Uri)getIntent().getExtras().get(Intent.EXTRA_STREAM);
-				if("org.openintents.filemanager".equals(uri.getAuthority())){
-					//OI File Manager send action
-					Cursor openIntentFileCursor = getContentResolver().query(uri, null, null, null, null);
-					if (openIntentFileCursor.moveToFirst()) {
-						String filePath = openIntentFileCursor.getString(openIntentFileCursor.getColumnIndex(Images.Media.DATA));
-						selectFile(new File(filePath));
-					}
-				}
-			}
-		}
+		filterIntent();
 		
 		final ImageButton chooseFileButton = (ImageButton) findViewById(R.id.chooseFileButton);
 		chooseFileButton.setOnClickListener(new OnClickListener(){
@@ -100,6 +87,50 @@ public class FaxActivity extends Activity implements FaxConstants {
 				send();
 			}
 		});
+	}
+
+	/**
+	 * Filtre l'action demandée par une autre application si elle existe
+	 */
+	private final void filterIntent(){
+		if(getIntent()!=null && getIntent().getAction() != null){
+			if(getIntent().getAction().equals(Intent.ACTION_SEND)){
+				if("text/plain".equals(getIntent().getType())){
+					//Cas de l'envoi d'un texte saisi par l'utilisateur ou copié depuis une application
+					final String text = (String) getIntent().getExtras().get(Intent.EXTRA_TEXT);
+					FBMHttpConnection.FBMLog("Fax du texte : "+text);
+					try {
+						final File tempFile = File.createTempFile("fax", "txt");
+						final FileWriter writer = new FileWriter(tempFile);
+						writer.write(text);
+						writer.close();
+						selectFile(tempFile);
+					} catch (IOException e) {
+						FBMHttpConnection.FBMLog("Erreur pendant le fax de "+text+" ["+e.getLocalizedMessage()+"]");
+						Log.e(DEBUGTAG, "Erreur pendant le fax de "+text,e);
+					}
+				}else{
+					final Uri uri = (Uri)getIntent().getExtras().get(Intent.EXTRA_STREAM);
+					if(uri!=null){
+						filterUriIntent(uri);
+					}
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Traitement d'une URI fournie avec dans l'EXTRA_STREAM d'un Intent SEND 
+	 * (pointeur vers un fichier à faxer)
+	 * @param uri
+	 */
+	private void filterUriIntent(Uri uri){
+		//OI File Manager send action || media Image 
+		Cursor openIntentFileCursor = getContentResolver().query(uri, null, null, null, null);
+		if (openIntentFileCursor.moveToFirst()) {
+			String filePath = openIntentFileCursor.getString(openIntentFileCursor.getColumnIndex(Images.Media.DATA));
+			selectFile(new File(filePath));
+		}
 	}
 	
 	@Override
