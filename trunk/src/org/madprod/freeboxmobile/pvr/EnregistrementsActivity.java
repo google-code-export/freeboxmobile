@@ -17,6 +17,7 @@ import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ExpandableListView;
@@ -36,7 +37,7 @@ import org.madprod.freeboxmobile.R;
  * Sous-classe: ListeEnregistrements
  * 
  * @author bduffez
- * *$Id: $
+ * *$Id$
  * 
  */
 
@@ -70,6 +71,7 @@ public class EnregistrementsActivity extends ExpandableListActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.pvr);
         FBMHttpConnection.initVars(this, null);
         FBMHttpConnection.FBMLog("ENREGISTREMENTSACTIVITY CREATE");
@@ -78,12 +80,11 @@ public class EnregistrementsActivity extends ExpandableListActivity {
         if (old_db.exists()) {
         	FBMHttpConnection.FBMLog("PVR: Ancien nom de bdd sqlite, renommage en pvr_");
         	if (old_db.renameTo(getDatabasePath(EnregistrementsDbAdapter.DATABASE_NAME))) {
-        		FBMHttpConnection.FBMLog("OK");
+        		FBMHttpConnection.FBMLog("OK ");
         	} else {
         		FBMHttpConnection.FBMLog("KO");
         	}
         }
-        
         if (!curId.equals(FBMHttpConnection.getIdentifiant())) {
         	curId = FBMHttpConnection.getIdentifiant();
         	reset();
@@ -125,7 +126,18 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 	@Override
 	protected void onStart() {
 		super.onStart();
-		updaterEnregistrements(listeEnregistrements == null);
+		if (listeEnregistrements != null)
+		{
+			updateEnregistrementsFromDb();
+			afficherEnregistrements();
+		}
+		else
+		{
+			listeEnregistrements = new ListeEnregistrements();
+			updateEnregistrementsFromDb();
+			afficherEnregistrements();
+			updaterEnregistrements(true);
+		}
 	}
 	
     private void erreur(String msgErreur) {
@@ -166,13 +178,14 @@ public class EnregistrementsActivity extends ExpandableListActivity {
     	}
 
         protected void onPreExecute() {
+    		setProgressBarIndeterminateVisibility(true);
         	if (updateFromConsole) {
-        		progressDialog = new ProgressDialog(enrAct);
+/*        		progressDialog = new ProgressDialog(enrAct);
         		progressDialog.setIcon(R.drawable.fm_magnetoscope);
         		progressDialog.setTitle("Enregistrements");
         		progressDialog.setMessage("Mise à jour...");
         		progressDialog.show();
-        	}
+ */       	}
         }
     	
         protected Boolean doInBackground(Void... arg0) {
@@ -198,6 +211,7 @@ public class EnregistrementsActivity extends ExpandableListActivity {
             	erreur("Impossible de se connecter à la console Free\n");
         	}
         	
+    		setProgressBarIndeterminateVisibility(false);
         	if (updateFromConsole && progressDialog != null) {
         		progressDialog.dismiss();
         	}
@@ -323,7 +337,7 @@ public class EnregistrementsActivity extends ExpandableListActivity {
         // SQLite
         EnregistrementsDbAdapter db = new EnregistrementsDbAdapter(this);
         db.open();
-        db.deleteAllEnregistrements();
+//        db.deleteAllEnregistrements();
     	
 		do {
 			debut = tableEnregistrements.indexOf(" <form id=\"");
@@ -358,7 +372,7 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 				break;
 			}
 		} while (true);
-		
+		db.swapEnr();
 		db.close();
 		
 		return true;

@@ -12,13 +12,12 @@ import org.madprod.freeboxmobile.R;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.os.AsyncTask;
 
 /**
  * télécharge la liste des chaines et disques
  * @author 
- * $Id :
+ * $Id$
  */
 
 public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Constants
@@ -82,16 +81,8 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Con
 
 		        if (posChaines > 0 && posDisques > 0) {
 		    		FBMHttpConnection.FBMLog("telechargerEtParser posChaines > 0 && posDisques > 0");
-		        	// Récupération du javascript correspondant à la liste des chaines
-		    		// On ne récupère la liste des chaînes que pour le premier boitier
 		    		if (boitier == 0)
 		    		{
-			        	String strChaines = resultat.substring(posChaines+14, posDisques);
-			        	int finChaines = strChaines.lastIndexOf("}");
-			        	strChaines = strChaines.substring(0, finChaines+1);
-			        	
-			        	// Conversion JSON -> objet
-			        	getListeChaines(strChaines);
 	
 			        	// Plusieurs boitiers HD ?
 			        	int posDebut = resultat.indexOf("box=");
@@ -128,6 +119,14 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Con
 			        		mBoitiersNb.add(0);
 			        	}
 		    		}
+		        	// Pour chaque boitier, récupération du javascript correspondant à la liste des chaines
+		        	String strChaines = resultat.substring(posChaines+14, posDisques);
+		        	int finChaines = strChaines.lastIndexOf("}");
+		        	strChaines = strChaines.substring(0, finChaines+1);
+		        	
+		        	// Conversion JSON -> objet
+		        	getListeChaines(strChaines, mBoitiersNb.get(boitier));
+
 		        	// Pour chaque boitier, on récupère la liste des disques
 		        	String strDisques = resultat.substring(posDisques+14);
 		        	int fin = strDisques.lastIndexOf("}];")+1;
@@ -164,8 +163,8 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Con
     }
     
 	// Fonctions pour parser le javascript listant les chaines et les disques durs
-	private void getListeChaines(String strChaines) {
-		getListe(strChaines, "}]},{\"name\"", 3, null, 0);
+	private void getListeChaines(String strChaines, int bNumber) {
+		getListe(strChaines, "}]},{\"name\"", 3, null, bNumber);
 	}
 
 	private void getListeDisques(String strDisques, String bName, int bNumber) {
@@ -221,7 +220,7 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Con
 			
 			if (bName == null)
 			{
-				Chaine chaine = new Chaine(str);
+				Chaine chaine = new Chaine(str, bNumber);
 				chaine.storeDb(db);
 			}
 			else

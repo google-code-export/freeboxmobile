@@ -12,6 +12,7 @@ import android.database.Cursor;
 /**
  *  conteneur correspondant au JSON d'une chaine
  * @author bduffez
+ * $Id$
  *
  * Exemple:
  * {
@@ -75,30 +76,16 @@ public class Chaine implements PvrConstants {
 	
 	private String mName;
 	private int mId;
+	private int mBoitierId;
 	private List<Service> mServices;
 	
-	public Chaine(Cursor c, ChainesDbAdapter db)
-	{
-		this.mName = c.getString(c.getColumnIndex(ChainesDbAdapter.KEY_NAME));
-		this.mId = c.getInt(c.getColumnIndex(ChainesDbAdapter.KEY_CHAINE_ID));
-		this.mServices = new ArrayList<Service>();
-		Cursor cs = db.fetchServicesChaine(this.mId);
-		if (cs.moveToFirst())
-        {
-        	do
-        	{
-        		this.mServices.add(new Service(cs));
-        	} while (cs.moveToNext());
-        }
-        cs.close();
-	}
-
-	public Chaine(String json) {
+	public Chaine(String json, int boitier_id) {
 		try {
 			JSONObject o = new JSONObject(json);
 			
 			this.mName = o.getString("name");
 			this.mId = o.getInt("id");
+			this.mBoitierId = boitier_id;
 			this.mServices = new ArrayList<Service>();
 			
 			String servicesJson = o.getString("service");
@@ -125,12 +112,12 @@ public class Chaine implements PvrConstants {
 	
 	public void storeDb(ChainesDbAdapter db)
 	{
-		if (db.createChaine(this.mName, this.mId) == -1)
+		if (db.createChaine(this.mName, this.mId, this.mBoitierId) == -1)
 			FBMHttpConnection.FBMLog("CHAINE STOREDB : Chaine non insérée "+this.mName);
 		int size = mServices.size();
 		
 		for (int i = 0; i < size; i++) {
-			if (db.createService(this.mId, mServices.get(i).getDesc(), mServices.get(i).getServiceId(), mServices.get(i).getPvrMode()) == -1)
+			if (db.createService(this.mId, this.mBoitierId, mServices.get(i).getDesc(), mServices.get(i).getServiceId(), mServices.get(i).getPvrMode()) == -1)
 				FBMHttpConnection.FBMLog("CHAINE STOREDB :Service non inséré "+this.mName);
 		}
 	}

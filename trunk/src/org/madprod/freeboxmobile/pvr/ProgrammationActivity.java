@@ -48,6 +48,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 /**
  * 
  * @author bduffez
+ * $Id$
  *
  */
 public class ProgrammationActivity extends Activity implements PvrConstants {
@@ -172,7 +173,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
         }
         
         Calendar c = Calendar.getInstance();
-        if (choosen_year == 0)
+//        if (choosen_year == 0)
         {
 	        choosen_year = c.get(Calendar.YEAR);
 	        choosen_month = c.get(Calendar.MONTH);
@@ -189,7 +190,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 					}
 				}
 			);
-        if (choosen_hour == -1)
+//        if (choosen_hour == -1)
         {
 	        choosen_hour = c.get(Calendar.HOUR_OF_DAY);
 	        choosen_minute = c.get(Calendar.MINUTE);
@@ -232,7 +233,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 			public void onNothingSelected(AdapterView<?> arg0) {
 			}
         });
-        
+
         // Récurrence
         if (buttonRecur != null) {
 	        buttonRecur.setOnClickListener(new OnClickListener() {
@@ -283,6 +284,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 	        		mBoitierHDName = boitiersCursor.getString(boitiersCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_BOITIER_NAME));
 //	        		FBMHttpConnection.FBMLog("BOITIER : "+mBoitierHD+" "+mBoitierHDName);
 	        		remplirSpinner(R.id.pvrPrgDisque);
+	        		remplirSpinner(R.id.pvrPrgChaine);
 					afficherInfosDisque();
 				}
 			}
@@ -911,7 +913,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 		
 		switch (id) {
 			case R.id.pvrPrgChaine:
-				chainesCursor = db.fetchAllChaines();
+				chainesCursor = db.fetchAllChaines(mBoitierHD);
 				if (chainesCursor != null)
 				{
 					startManagingCursor(chainesCursor);
@@ -947,7 +949,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 				break;
 
 			case R.id.pvrPrgQualite:
-				servicesCursor = db.fetchServicesChaine(mChaineID);
+				servicesCursor = db.fetchServicesChaine(mChaineID, mBoitierHD);
 				if (servicesCursor.moveToFirst())
 				{
 					startManagingCursor(servicesCursor);
@@ -982,7 +984,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 		        {
 		        	startManagingCursor(boitiersCursor);
 		            int boitierNameIndex = boitiersCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_BOITIER_NAME);
-					mBoitierHD = 0;
+					mBoitierHD = boitiersCursor.getInt(boitiersCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_BOITIER_ID));
 					mBoitierHDName = boitiersCursor.getString(boitierNameIndex);
 		        	do
 		        	{

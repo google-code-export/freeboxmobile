@@ -7,6 +7,7 @@ import org.madprod.freeboxmobile.FBMHttpConnection;
 /**
  *  conteneur correspondant au JSON d'un disque
  * @author bduffez
+ * $Id$
  *
  * Exemple:
  * [

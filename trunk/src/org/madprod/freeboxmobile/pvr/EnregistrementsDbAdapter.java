@@ -35,47 +35,53 @@ public class EnregistrementsDbAdapter {
     /**
      * Database creation sql statement
      */
-    private static final String DATABASE_CREATE =
-            "create table enregistrements (_id integer primary key autoincrement, "
-			        + "chaine text not null,"
-			        + "date text not null,"
-			        + "heure text not null,"
-			        + "duree integer not null,"
-			        + "nom text not null,"
-			        + "ide integer not null,"
-			        + "chaine_id integer not null,"
-			        + "service_id integer not null,"
-			        + "h integer not null,"
-			        + "min integer not null,"
-			        + "dur integer not null,"
-			        + "name text not null,"
-			        + "where_id integer not null,"
-			        + "repeat_a text);";
+    private static final String TABLE_ENREGISTREMENTS =
+            "(" + KEY_ROWID + " integer primary key autoincrement, "
+			        + KEY_CHAINE + " text not null,"
+			        + KEY_DATE + " text not null,"
+			        + KEY_HEURE + " text not null,"
+			        + KEY_DUREE + " integer not null,"
+			        + KEY_NOM + " text not null,"
+			        + KEY_IDE + " integer not null,"
+			        + KEY_CHAINE_ID + " integer not null,"
+			        + KEY_SERVICE_ID + " integer not null,"
+			        + KEY_H + " integer not null,"
+			        + KEY_MIN + " integer not null,"
+			        + KEY_DUR + " integer not null,"
+			        + KEY_NAME + " text not null,"
+			        + KEY_WHERE_ID + " integer not null,"
+			        + KEY_REPEAT_A + " text);";
 
-    static final String DATABASE_NAME = "pvr_" + FBMHttpConnection.getIdentifiant();
-    private static final String DATABASE_TABLE = "enregistrements";
-    private static final int DATABASE_VERSION = 4;
+    static final String DATABASE_NAME = "pvr";
+    private static final String DATABASE_TABLE_ENR = "enregistrements";
+    private static final String DATABASE_TABLE_ENR_TEMP = "enregistrementstemp";
+    private static final int DATABASE_VERSION = 5;
+    private static final String DATABASE_CREATE_ENR =
+        "create table " + DATABASE_TABLE_ENR + TABLE_ENREGISTREMENTS;
+    private static final String DATABASE_CREATE_ENR_TEMP =
+        "create table " + DATABASE_TABLE_ENR_TEMP + TABLE_ENREGISTREMENTS;
 
     private final Context mCtx;
 
     private static class DatabaseHelper extends SQLiteOpenHelper {
 
         DatabaseHelper(Context context) {
-            super(context, DATABASE_NAME, null, DATABASE_VERSION);
+			super(context, DATABASE_NAME+"_"+FBMHttpConnection.getIdentifiant(), null, DATABASE_VERSION);
         }
 
         @Override
         public void onCreate(SQLiteDatabase db) {
             Log.d(TAG, "DatabaseHelper onCreate called");
-
-            db.execSQL(DATABASE_CREATE);
+            db.execSQL(DATABASE_CREATE_ENR);
+            db.execSQL(DATABASE_CREATE_ENR_TEMP);
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
                     + newVersion + ", which will destroy all old data");
-            db.execSQL("DROP TABLE IF EXISTS enregistrements");
+            db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE_ENR);
+            db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE_ENR_TEMP);
             onCreate(db);
         }
     }
@@ -111,8 +117,10 @@ public class EnregistrementsDbAdapter {
     
     public void detruire() {
 
-    	mDb.rawQuery("drop table enregistrements", null);
-    	mDb.rawQuery(DATABASE_CREATE, null);
+    	mDb.rawQuery("drop table "+DATABASE_TABLE_ENR, null);
+    	mDb.rawQuery("drop table "+DATABASE_TABLE_ENR_TEMP, null);
+    	mDb.rawQuery(DATABASE_CREATE_ENR, null);
+    	mDb.rawQuery(DATABASE_CREATE_ENR_TEMP, null);
     }
 
 
@@ -145,7 +153,7 @@ public class EnregistrementsDbAdapter {
         initialValues.put(KEY_WHERE_ID, where_id);
         initialValues.put(KEY_REPEAT_A, repeat_a);
 
-        return mDb.insert(DATABASE_TABLE, null, initialValues);
+        return mDb.insert(DATABASE_TABLE_ENR_TEMP, null, initialValues);
     }
     
     /**
@@ -181,7 +189,7 @@ public class EnregistrementsDbAdapter {
         
         Log.d(TAG, "MODIF = "+newValues.toString());
 
-        return mDb.update(DATABASE_TABLE, newValues, KEY_ROWID+" = ?", strRowId);
+        return mDb.update(DATABASE_TABLE_ENR, newValues, KEY_ROWID+" = ?", strRowId);
     }
 
     /**
@@ -192,12 +200,12 @@ public class EnregistrementsDbAdapter {
      */
     public boolean deleteEnregistrement(long rowId) {
 
-        return mDb.delete(DATABASE_TABLE, KEY_ROWID + "=" + rowId, null) > 0;
+        return mDb.delete(DATABASE_TABLE_ENR, KEY_ROWID + "=" + rowId, null) > 0;
     }
     
     public boolean deleteAllEnregistrements() {
     	
-    	return mDb.delete(DATABASE_TABLE, "1", null) > 0;
+    	return mDb.delete(DATABASE_TABLE_ENR, "1", null) > 0;
     }
 
     /**
@@ -210,7 +218,7 @@ public class EnregistrementsDbAdapter {
     }
     public Cursor fetchAllEnregistrements(String[] colonnes, String sort) {
 
-        return mDb.query(DATABASE_TABLE, colonnes, null, null, null, null, sort);
+        return mDb.query(DATABASE_TABLE_ENR, colonnes, null, null, null, null, sort);
     }
 
     /**
@@ -224,7 +232,7 @@ public class EnregistrementsDbAdapter {
 
         Cursor mCursor =
 
-                mDb.query(true, DATABASE_TABLE,
+                mDb.query(true, DATABASE_TABLE_ENR,
                 		new String[] {
                 		KEY_ROWID,
                 		KEY_CHAINE,
@@ -248,6 +256,13 @@ public class EnregistrementsDbAdapter {
         }
         return mCursor;
 
+    }
+
+    public void swapEnr()
+    {
+        mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_ENR);
+    	mDb.execSQL("ALTER TABLE "+DATABASE_TABLE_ENR_TEMP+" RENAME TO "+DATABASE_TABLE_ENR);
+        mDb.execSQL(DATABASE_CREATE_ENR_TEMP);
     }
 
     /**
@@ -280,6 +295,6 @@ public class EnregistrementsDbAdapter {
         args.put(KEY_WHERE_ID, where_id);
         args.put(KEY_REPEAT_A, repeat_a);
 
-        return mDb.update(DATABASE_TABLE, args, KEY_ROWID + "=" + rowId, null) > 0;
+        return mDb.update(DATABASE_TABLE_ENR, args, KEY_ROWID + "=" + rowId, null) > 0;
     }
 }
