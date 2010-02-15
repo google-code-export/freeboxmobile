@@ -266,9 +266,9 @@ public class HomeListActivity extends ListActivity implements HomeConstants
         menu.add(0, HOME_OPTION_COMPTES, 0, R.string.home_option_comptes).setIcon(android.R.drawable.ic_menu_myplaces);
         menu.add(0, HOME_OPTION_CONFIG, 1, R.string.home_option_config).setIcon(android.R.drawable.ic_menu_preferences);
         menu.add(0, HOME_OPTION_SHARE, 4, R.string.home_option_share).setIcon(android.R.drawable.ic_menu_share);
-        menu.add(0, HOME_OPTION_VOTE, 8, R.string.home_option_vote).setIcon(android.R.drawable.ic_menu_add);
+        menu.add(0, HOME_OPTION_VOTE, 3, R.string.home_option_vote).setIcon(android.R.drawable.ic_menu_add);
         menu.add(0, HOME_OPTION_ABOUT, 9, R.string.home_option_about).setIcon(android.R.drawable.ic_menu_info_details);
-        menu.add(0, HOME_OPTION_LOG, 3, R.string.home_option_log).setIcon(android.R.drawable.ic_menu_send);
+        menu.add(0, HOME_OPTION_LOG, 8, R.string.home_option_log).setIcon(android.R.drawable.ic_menu_send);
         menu.add(0, HOME_OPTION_REFRESH, 2, R.string.home_option_refresh).setIcon(android.R.drawable.ic_menu_rotate);
         return true;
     }
@@ -405,7 +405,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     	t.setAutoLinkMask(Linkify.ALL);
     	t.setText("Freebox Mobile est une application indépendante de Free.\n\n"+
 			"Site web :\nhttp://freeboxmobile.googlecode.com\n\n"+
-			"Contact :\nfreeboxmobile@free.fr\n\n"+
+			"Contact :\nfreeboxmobile-developpement@googlegroups.com\n\n"+
 			"Version : "+getString(R.string.app_version)+"\n\n"+
 			"Facebook (devenez fan !) :\nhttp://www.facebook.com/search/?q=freeboxmobile\n\n"+
 			"Auteurs :\n"+
