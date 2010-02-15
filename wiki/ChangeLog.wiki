@@ -63,7 +63,7 @@ Release : 1
  * SERVICES : Notification de nouveaux messages
 
 = Versions beta de !FreeboxMobile =
-== 0.20.indéterminé ==
+== 0.25.0rc1 ==
 Sortie le <pas encore><br>
 Release : 17
  * RESEAU : Optimisations
