@@ -19,6 +19,7 @@
 					<TextView android:text="@string/pvrTxtQualite" android:id="@+id/TxtQualite" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="15sp" android:layout_weight="1" android:layout_gravity="center_vertical"></TextView>
 					<Spinner android:id="@+id/pvrPrgQualite" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_weight="2"></Spinner>
 				</TableRow>
+				
 				<TableRow android:id="@+id/TableRow03" android:layout_height="wrap_content" android:layout_width="fill_parent">
 					<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="15sp" android:layout_weight="1" android:layout_gravity="center_vertical" android:id="@+id/TxtDebut" android:text="@string/pvrTxtDebut"></TextView>
 					
@@ -49,13 +50,13 @@
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"></ProgressBar>
 				
-			<TextView android:id="@+id/pvrPrgInfosDisque1" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+			<TextView android:id="@+id/pvrPrgInfosDisque1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:visibility="gone"></TextView>
 			<TextView android:id="@+id/pvrPrgInfosDisque2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:visibility="gone"></TextView>
 			<TextView android:id="@+id/pvrPrgInfosDisque3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:visibility="gone"></TextView>
 			<TextView android:id="@+id/pvrPrgInfosDisque4" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
-			<TextView android:id="@+id/pvrPrgInfosDisqueEspaceFaible" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+			<TextView android:id="@+id/pvrPrgInfosDisqueEspaceFaible" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView><TextView android:text="@string/pvrTxtQualiteDisque" android:id="@+id/TxtQualiteDisque" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="12px" android:paddingBottom="5px" android:layout_gravity="center"></TextView>
 			
-			<LinearLayout android:id="@+id/LinearLayout01" android:layout_height="wrap_content" android:layout_width="fill_parent"><TextView android:text="@string/pvrTxtRecurrence" android:id="@+id/TxtDisque" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="15sp"></TextView><Button android:text="@string/pvrTxtPrgBtnRecur" android:id="@+id/pvrPrgBtnRecur" android:layout_height="wrap_content" android:clickable="true" android:layout_width="fill_parent"></Button></LinearLayout>
+			<LinearLayout android:id="@+id/LinearLayout01" android:layout_height="wrap_content" android:layout_width="fill_parent"><TextView android:text="@string/pvrTxtRecurrence" android:id="@+id/TxtDisque" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="15sp" android:layout_marginRight="10dip"></TextView><Button android:text="@string/pvrTxtPrgBtnRecur" android:id="@+id/pvrPrgBtnRecur" android:layout_height="wrap_content" android:clickable="true" android:layout_width="fill_parent"></Button></LinearLayout>
 			
 			<TextView android:text="@string/pvrTxtRecurrenceInfo" android:id="@+id/TxtDisque" android:layout_width="wrap_content" android:layout_height="wrap_content" android:visibility="gone"></TextView>
 			 
