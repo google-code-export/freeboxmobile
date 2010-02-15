@@ -671,7 +671,11 @@ public class MevoActivity extends ListActivity implements MevoConstants
 			holder.qui.setKeyListener(null);
 			if (!curMsg.isMPInit())
 			{
-					curMsg.setMsgSource(Environment.getExternalStorageDirectory().toString()+DIR_FBM+FBMHttpConnection.getIdentifiant()+DIR_MEVO+curMsg.getStringValue(KEY_NAME));
+					if (!curMsg.setMsgSource(Environment.getExternalStorageDirectory().toString()+DIR_FBM+FBMHttpConnection.getIdentifiant()+DIR_MEVO+curMsg.getStringValue(KEY_NAME)))
+					{
+						Toast t = Toast.makeText(MevoActivity.mevoActivity, "Problème avec le fichier du message !", Toast.LENGTH_LONG);
+						t.show();
+					}
 			}
 			return convertView;
 		}
