@@ -87,6 +87,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 	private boolean[] joursChoisis = { false, false, false, false, false, false, false };
 	static ProgressDialog progressDialog = null;
 	TextView nomEmission = null;
+	TextView dureeEmission = null;
 	Spinner chainesSpinner = null;
 	Spinner dureeSpinner = null;
 	Spinner boitierHDSpinner = null;
@@ -101,7 +102,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 	boolean orientationPortrait = false;
 	int positionEcran = 0;
 	int nbEcrans = 3;
-    private Button suivant, precedent, boutonOK, buttonRecur, ButtonDate, ButtonTime;
+    private Button suivant, precedent, boutonOK, buttonRecur, ButtonDateDeb, ButtonTimeDeb, ButtonDateFin, ButtonTimeFin;
 	private GestureDetector gestureDetector;
 	private Animation slideLeftIn;
 	private Animation slideLeftOut;
@@ -109,15 +110,35 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
     private Animation slideRightOut;
     CheckBox lendi, mordi, credi, joudi, dredi, sadi, gromanche;
     ViewFlipper viewFlipper;
-    
-    private static int choosen_year = 0;
-    private static int choosen_month = 0;
-    private static int choosen_day = 0;
-    private static int choosen_hour = -1;
-    private static int choosen_minute = -1;
-    
-    private static final int DIALOG_DATE = 0;
-    private static final int DIALOG_TIME = 1;
+    /*
+    private static int choosen_year_deb = 0;
+    private static int choosen_month_deb = 0;
+    private static int choosen_day_deb = 0;
+    private static int choosen_hour_deb = -1;
+    private static int choosen_minute_deb = -1;
+
+    private static int choosen_year_fin = 0;
+    private static int choosen_month_fin = 0;
+    private static int choosen_day_fin = 0;
+    private static int choosen_hour_fin = -1;
+    private static int choosen_minute_fin = -1;
+*/
+    private  int choosen_year_deb = 0;
+    private  int choosen_month_deb = 0;
+    private  int choosen_day_deb = 0;
+    private  int choosen_hour_deb = -1;
+    private  int choosen_minute_deb = -1;
+
+    private  int choosen_year_fin = 0;
+    private  int choosen_month_fin = 0;
+    private  int choosen_day_fin = 0;
+    private  int choosen_hour_fin = -1;
+    private  int choosen_minute_fin = -1;
+
+    private  final int DIALOG_DATE_DEB = 0;
+    private  final int DIALOG_TIME_DEB = 1;
+    private  final int DIALOG_DATE_FIN = 2;
+    private  final int DIALOG_TIME_FIN = 3;
 	
     /** Called when the activity is first created. */
     @Override
@@ -146,13 +167,16 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
         progAct = this;
         
         // Chargement des ressources
-        ButtonDate = (Button) findViewById(R.id.ButtonDate);
-        ButtonTime = (Button) findViewById(R.id.ButtonTime);
+        ButtonDateDeb = (Button) findViewById(R.id.ButtonDateDeb);
+        ButtonTimeDeb = (Button) findViewById(R.id.ButtonTimeDeb);
+        ButtonDateFin = (Button) findViewById(R.id.ButtonDateFin);
+        ButtonTimeFin = (Button) findViewById(R.id.ButtonTimeFin);
         boutonOK = (Button) findViewById(R.id.pvrPrgBtnOK);
         suivant = (Button) findViewById(R.id.pvrPrgBtnSuivant);
         precedent = (Button) findViewById(R.id.pvrPrgBtnPrecedent);
         buttonRecur = (Button) findViewById(R.id.pvrPrgBtnRecur);
         nomEmission = (TextView) findViewById(R.id.pvrPrgNom);
+        dureeEmission = (TextView) findViewById(R.id.pvrPrgDuree);
         chainesSpinner = (Spinner) findViewById(R.id.pvrPrgChaine);
         dureeSpinner = (Spinner) findViewById(R.id.pvrPrgDurees);
         boitierHDSpinner = (Spinner) findViewById(R.id.pvrPrgBoitier);
@@ -179,36 +203,59 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
         }
         
         Calendar c = Calendar.getInstance();
-//        if (choosen_year == 0)
-        {
-	        choosen_year = c.get(Calendar.YEAR);
-	        choosen_month = c.get(Calendar.MONTH);
-	        choosen_day = c.get(Calendar.DAY_OF_MONTH);
-        }
-        ButtonDate.setText(makeDate(choosen_year, choosen_month, choosen_day));
-        ButtonDate.setOnClickListener(
+        c.add(Calendar.MINUTE, 5);
+        choosen_year_deb = c.get(Calendar.YEAR);
+        choosen_month_deb = c.get(Calendar.MONTH);
+        choosen_day_deb = c.get(Calendar.DAY_OF_MONTH);
+        ButtonDateDeb.setText(makeDate(choosen_year_deb, choosen_month_deb, choosen_day_deb));
+        ButtonDateDeb.setOnClickListener(
 				new View.OnClickListener()
 				{
 					@Override
 					public void onClick(View arg0)
 					{
-						showDialog(DIALOG_DATE);
+						showDialog(DIALOG_DATE_DEB);
 					}
 				}
 			);
-//        if (choosen_hour == -1)
-        {
-	        choosen_hour = c.get(Calendar.HOUR_OF_DAY);
-	        choosen_minute = c.get(Calendar.MINUTE);
-        }
-        ButtonTime.setText(makeTime(choosen_hour,choosen_minute));
-        ButtonTime.setOnClickListener(
+        choosen_hour_deb = c.get(Calendar.HOUR_OF_DAY);
+        choosen_minute_deb = c.get(Calendar.MINUTE);
+        ButtonTimeDeb.setText(makeTime(choosen_hour_deb,choosen_minute_deb));
+        ButtonTimeDeb.setOnClickListener(
 				new View.OnClickListener()
 				{
 					@Override
 					public void onClick(View arg0)
 					{
-						showDialog(DIALOG_TIME);
+						showDialog(DIALOG_TIME_DEB);
+					}
+				}
+			);
+        c.add(Calendar.MINUTE, 120); // parceque par defaut dans le spinner on choisit une duree de 120 minutes
+        choosen_year_fin = c.get(Calendar.YEAR);
+        choosen_month_fin = c.get(Calendar.MONTH);
+        choosen_day_fin = c.get(Calendar.DAY_OF_MONTH);
+        ButtonDateFin.setText(makeDate(choosen_year_fin, choosen_month_fin, choosen_day_fin));
+        ButtonDateFin.setOnClickListener(
+				new View.OnClickListener()
+				{
+					@Override
+					public void onClick(View arg0)
+					{
+						showDialog(DIALOG_DATE_FIN);
+					}
+				}
+			);
+        choosen_hour_fin = c.get(Calendar.HOUR_OF_DAY);
+        choosen_minute_fin = c.get(Calendar.MINUTE);
+        ButtonTimeFin.setText(makeTime(choosen_hour_fin,choosen_minute_fin));
+        ButtonTimeFin.setOnClickListener(
+				new View.OnClickListener()
+				{
+					@Override
+					public void onClick(View arg0)
+					{
+						showDialog(DIALOG_TIME_FIN);
 					}
 				}
 			);
@@ -224,7 +271,15 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
             	}
             }
         });
-        
+
+        dureeEmission.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            public void onFocusChange(View v, boolean b) {
+            	if (b == false) {
+            		setFin();
+            	}
+            }
+        });
+
         // Qualité
         chainesSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
@@ -365,36 +420,65 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 	@Override    
     protected Dialog onCreateDialog(int id) 
     {
+		FBMHttpConnection.FBMLog("ON CREATE FIN : "+choosen_year_fin+" "+choosen_month_fin+" "+choosen_day_fin+" "+choosen_hour_fin+" "+choosen_minute_fin);
+
         switch (id) {
-            case DIALOG_DATE: 
-            	DatePickerDialog dpd = new DatePickerDialog(this, mDateSetListener, choosen_year, choosen_month, choosen_day);
-            	dpd.setIcon(R.drawable.fm_magnetoscope);
+            case DIALOG_DATE_DEB: 
+            	DatePickerDialog dpdd = new DatePickerDialog(this, mDateSetListenerDeb, choosen_year_deb, choosen_month_deb, choosen_day_deb);
+            	dpdd.setIcon(R.drawable.fm_magnetoscope);
             	// TODO : Migrer dans strings.xml
-            	dpd.setTitle("Date de l'enregistrement");
-            	return dpd;
-		    case DIALOG_TIME:
-	    		TimePickerDialog tpd = new TimePickerDialog(this, mTimeSetListener, choosen_hour, choosen_minute, true);
-	    		tpd.setIcon(R.drawable.fm_magnetoscope);
+            	dpdd.setTitle("Date de début de l'enregistrement");
+            	return dpdd;
+		    case DIALOG_TIME_DEB:
+	    		TimePickerDialog tpdd = new TimePickerDialog(this, mTimeSetListenerDeb, choosen_hour_deb, choosen_minute_deb, true);
+	    		tpdd.setIcon(R.drawable.fm_magnetoscope);
             	// TODO : Migrer dans strings.xml
-	    		tpd.setTitle("Heure de début de l'enregistrement");
-		        return tpd;
+	    		tpdd.setTitle("Heure de début de l'enregistrement");
+		        return tpdd;
+            case DIALOG_DATE_FIN: 
+            	DatePickerDialog dpdf = new DatePickerDialog(this, mDateSetListenerFin, choosen_year_fin, choosen_month_fin, choosen_day_fin);
+            	dpdf.setIcon(R.drawable.fm_magnetoscope);
+            	// TODO : Migrer dans strings.xml
+            	dpdf.setTitle("Date de fin de l'enregistrement");
+            	return dpdf;
+		    case DIALOG_TIME_FIN:
+	    		TimePickerDialog tpdf = new TimePickerDialog(this, mTimeSetListenerFin, choosen_hour_fin, choosen_minute_fin, true);
+	    		tpdf.setIcon(R.drawable.fm_magnetoscope);
+            	// TODO : Migrer dans strings.xml
+	    		tpdf.setTitle("Heure de fin de l'enregistrement");
+		        return tpdf;
 		}
         return null;    
     }
 
-	private DatePickerDialog.OnDateSetListener mDateSetListener =
+	private DatePickerDialog.OnDateSetListener mDateSetListenerDeb =
 	    new DatePickerDialog.OnDateSetListener() 
 	    {        
 	        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) 
 	        {
-	        	choosen_year = year;
-	        	choosen_month = monthOfYear;
-	        	choosen_day = dayOfMonth;
-        		
-        		ButtonDate.setText(makeDate(year, monthOfYear, dayOfMonth));
+	        	choosen_year_deb = year;
+	        	choosen_month_deb = monthOfYear;
+	        	choosen_day_deb = dayOfMonth;        		
+        		ButtonDateDeb.setText(makeDate(year, monthOfYear, dayOfMonth));
+
+        		setFin();
 	        }
 	    };
-	    
+
+		private DatePickerDialog.OnDateSetListener mDateSetListenerFin =
+		    new DatePickerDialog.OnDateSetListener() 
+		    {        
+		        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) 
+		        {
+		        	choosen_year_fin = year;
+		        	choosen_month_fin = monthOfYear;
+		        	choosen_day_fin = dayOfMonth;
+	        		ButtonDateDeb.setText(makeDate(year, monthOfYear, dayOfMonth));
+	        		
+	        		setDuree();
+		        }
+		    };
+
 	private String makeDate(int y, int m, int d)
 	{
 		String cdate;
@@ -409,16 +493,61 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 		return cdate;
 	}
 
-    private TimePickerDialog.OnTimeSetListener mTimeSetListener =
+	private TimePickerDialog.OnTimeSetListener mTimeSetListenerDeb =
         new TimePickerDialog.OnTimeSetListener() 
         {        
             public void onTimeSet(TimePicker view, int h, int m) 
             {
-            	choosen_hour = h;
-            	choosen_minute = m;
-        		ButtonTime.setText(makeTime(h,m));
+            	choosen_hour_deb = h;
+            	choosen_minute_deb = m;
+        		ButtonTimeDeb.setText(makeTime(h,m));
+
+        		setFin();
             }
         };
+
+    private TimePickerDialog.OnTimeSetListener mTimeSetListenerFin =
+        new TimePickerDialog.OnTimeSetListener() 
+        {        
+            public void onTimeSet(TimePicker view, int h, int m) 
+            {
+            	choosen_hour_fin = h;
+            	choosen_minute_fin = m;
+        		ButtonTimeFin.setText(makeTime(h,m));
+
+        		setDuree();
+            }
+        };
+
+    void setFin()
+    {
+        Calendar c = Calendar.getInstance();
+        c.set(choosen_year_deb, choosen_month_deb, choosen_day_deb, choosen_hour_deb, choosen_minute_deb);
+        c.add(Calendar.MINUTE, getDuree());
+        choosen_year_fin = c.get(Calendar.YEAR);
+        choosen_month_fin = c.get(Calendar.MONTH);
+        choosen_day_fin = c.get(Calendar.DAY_OF_MONTH);
+        choosen_hour_fin = c.get(Calendar.HOUR_OF_DAY);
+        choosen_minute_fin = c.get(Calendar.MINUTE);
+		ButtonDateFin.setText(makeDate(choosen_year_fin, choosen_month_fin, choosen_day_fin));
+		ButtonTimeFin.setText(makeTime(choosen_hour_fin, choosen_minute_fin));
+		FBMHttpConnection.FBMLog("FIN : "+choosen_year_fin+" "+choosen_month_fin+" "+choosen_day_fin+" "+choosen_hour_fin+" "+choosen_minute_fin);
+    }
+
+    int getDuree()
+    {
+    	return Integer.decode(dureeEmission.getText().toString());
+    }
+
+    void setDuree()
+    {
+        Calendar cd = Calendar.getInstance();
+        cd.set(choosen_year_deb, choosen_month_deb, choosen_day_deb, choosen_hour_deb, choosen_minute_deb);
+        Calendar cf = Calendar.getInstance();
+        cf.set(choosen_year_fin, choosen_month_fin, choosen_day_fin, choosen_hour_fin, choosen_minute_fin);
+		Long duree = (long) ((cf.getTime().getTime() - cd.getTime().getTime())/(1000*60));
+    	dureeEmission.setText(duree.toString());
+    }
 
     private String makeTime(int h, int m)
     {
@@ -608,8 +737,10 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
     	dureeSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				
 				String duree = (String) getResources().getTextArray(R.array.pvrValeursDurees)[position];
-				((TextView) findViewById(R.id.pvrPrgDuree)).setText(duree);
+				dureeEmission.setText(duree);
+				setFin();
 			}
 
 			@Override
@@ -691,7 +822,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
         		db.open();
 
         		// Duree, emission, nom
-        		duree = Integer.parseInt((((TextView) findViewById(R.id.pvrPrgDuree)).getText().toString()));
+        		duree = Integer.parseInt(dureeEmission.getText().toString());
         		emission = ((TextView) findViewById(R.id.pvrPrgNom)).getText().toString();
         		
         		if (emission.length() == 0) {
@@ -718,9 +849,9 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 	        		m = timePicker.getCurrentMinute();
      	       	}
        	       	else {
-       	       		date = makeDate(choosen_year, choosen_month, choosen_day);
-            		h = choosen_hour;
-            		m = choosen_minute;
+       	       		date = makeDate(choosen_year_deb, choosen_month_deb, choosen_day_deb);
+            		h = choosen_hour_deb;
+            		m = choosen_minute_deb;
        	       	}
         		
         		if (h < 10) {	heure = "0" + h; }
@@ -862,6 +993,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 	        }
 	        
 	        // Views
+	        // TODO : ces widgets sont déjà en variable de classe
 	        Spinner chaines = (Spinner) findViewById(R.id.pvrPrgChaine);
 	        DatePicker date = (DatePicker) findViewById(R.id.pvrPrgDate);
 	        TimePicker heure = (TimePicker) findViewById(R.id.pvrPrgHeure);
