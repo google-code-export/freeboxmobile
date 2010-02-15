@@ -2,6 +2,7 @@ package org.madprod.freeboxmobile.mvv;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -214,10 +215,13 @@ public class MevoMessage implements MevoConstants
 		return this.mp;
 	}
 
-	public void setMsgSource(String src)
+	public boolean setMsgSource(String src)
 	{
 		if (mp != null)
+		{
 			mp.release();
+			mp = null;
+		}
 
 		this.mp = new MediaPlayer();
 		try
@@ -232,22 +236,25 @@ public class MevoMessage implements MevoConstants
 			mp.prepare();
 			mp.setScreenOnWhilePlaying(true);
 			mp.setVolume(1000,1000);
+			return true;
 		}
 		catch (IllegalArgumentException e)
 		{
-			FBMHttpConnection.FBMLog("setMsgSource : "+e.getMessage()+" "+FBMHttpConnection.getStackTrace(e));
-			e.printStackTrace();
+			FBMHttpConnection.FBMLog("setMsgSource IllegalArgumentException : "+e.getMessage()+" "+FBMHttpConnection.getStackTrace(e));
 		}
 		catch (IllegalStateException e)
 		{
-			FBMHttpConnection.FBMLog("setMsgSource : "+e.getMessage()+" "+FBMHttpConnection.getStackTrace(e));
-			e.printStackTrace();
+			FBMHttpConnection.FBMLog("setMsgSource IllegalStateException : "+e.getMessage()+" "+FBMHttpConnection.getStackTrace(e));
+		}
+		catch (FileNotFoundException e)
+		{
+			FBMHttpConnection.FBMLog("setMsgSource FileNotFoundException : "+e.getMessage()+" "+FBMHttpConnection.getStackTrace(e));
 		}
 		catch (IOException e)
 		{
-			FBMHttpConnection.FBMLog("setMsgSource : "+e.getMessage()+" "+FBMHttpConnection.getStackTrace(e));
-			e.printStackTrace();
+			FBMHttpConnection.FBMLog("setMsgSource IOException : "+e.getMessage()+" "+FBMHttpConnection.getStackTrace(e));
 		}
+		return false;
 	}
 
 	public String getStringValue(String k)

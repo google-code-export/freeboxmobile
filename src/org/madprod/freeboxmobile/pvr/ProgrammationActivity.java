@@ -74,8 +74,6 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 	SimpleCursorAdapter chainesSpinnerAdapter = null;
 	// id de la chaine selectionnée
 	private static Integer mChaineID = 0;
-	// nom de la chaine selectionnée
-	private static String mChaineName = null;
 
 	// Curseur sur les disques
 	private static Cursor disquesCursor = null;
@@ -99,7 +97,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 	private int selectedLayout = LAYOUT_OLIVIER;
 
 	// identifiant du dernier user à être entré dans l'activité
-	public static String lastUser = "";
+	public static String lastUser;
 	boolean orientationPortrait = false;
 	int positionEcran = 0;
 	int nbEcrans = 3;
@@ -233,7 +231,6 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
         		chainesCursor.moveToPosition(arg2);
         		mChaineID = chainesCursor.getInt(chainesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_CHAINE_ID));
-        		mChaineName = chainesCursor.getString(chainesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_NAME));
 				remplirSpinner(R.id.pvrPrgQualite);
 			}
 
@@ -793,7 +790,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
         			if (msgErreur.indexOf("Erreur interne 1") >= 0) {
         				msgErreur += "\n" + getString(R.string.pvrErreurInterne1);
         			}
-        			
+        			db.close();
         			return getString(R.string.pvrErreurConsole) + "\n" + msgErreur;
         		}
         		// Pas d'erreur, on MAJ la db

@@ -214,7 +214,7 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 			public void onItemSelected(AdapterView<?> parent, View v, int i, long l)
 			{
 				Cursor c = mDbHelper.fetchFromTitle(parent.getSelectedItem().toString());
-				if (!c.getString(c.getColumnIndexOrThrow(KEY_USER)).equals(FBMHttpConnection.getIdentifiant()))
+				if ((c.getCount() > 0) && !c.getString(c.getColumnIndexOrThrow(KEY_USER)).equals(FBMHttpConnection.getIdentifiant()))
 				{
 					if (c.getCount() > 0)
 					{

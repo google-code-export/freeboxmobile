@@ -454,9 +454,10 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 	
 				    	    // Get the mevo file and store it on sdcard
 					        file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+FBMHttpConnection.getIdentifiant()+DIR_MEVO,name);
+					        boolean ok = false;
 					        if (file.exists() == false)
 					        {
-								FBMHttpConnection.getFile(file, mevoUrl+link, null, false);
+								ok = FBMHttpConnection.getFile(file, mevoUrl+link, null, false);
 					        }
 					        presence = 4;
 					        curs = mDbHelper.fetchMessage(name);
