@@ -13,10 +13,13 @@
 		<activity android:theme="@android:style/Theme.Light.NoTitleBar" android:name=".home.ComptesEditActivity"></activity>
 		<activity android:theme="@android:style/Theme.Light" android:name=".home.SendlogActivity"></activity>
 		<activity android:theme="@android:style/Theme.Light" android:name=".fax.FaxActivity">
-			<intent-filter android:label="Fax (Freebox Mobile)">
+			<intent-filter android:label="Fax (Freebox)">
 				<action android:name="android.intent.action.SEND"></action>
-     			<category android:name="android.intent.category.DEFAULT" />
+     			<category android:name="android.intent.category.DEFAULT"/>
      			<data android:mimeType="application/pdf" />
+     			<data android:mimeType="image/jpg" />
+     			<data android:mimeType="image/jpeg" />
+     			<data android:mimeType="text/plain" />
 			</intent-filter>
 		</activity>
 		<activity android:theme="@android:style/Theme.Light" android:name=".fax.FileChooserActivity"></activity>
