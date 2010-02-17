@@ -2,6 +2,7 @@ package org.madprod.freeboxmobile.home;
 
 import org.madprod.freeboxmobile.Constants;
 import org.madprod.freeboxmobile.FBMHttpConnection;
+import org.madprod.freeboxmobile.pvr.ProgrammationActivity;
 import org.madprod.freeboxmobile.pvr.PvrNetwork;
 
 import android.app.Activity;
@@ -26,7 +27,10 @@ public class ManageCompte extends AsyncTask<ComptePayload, Void, ComptePayload> 
 	{
 		payload[0].result = FBMHttpConnection.connectFreeCheck(payload[0].login, payload[0].password);
 		if ((payload[0].result != null) && (payload[0].refresh))
+		{
 			new PvrNetwork(activity, true, true).getData();
+	    	ProgrammationActivity.lastUser = "";
+		}
 		return payload[0];
 	}
 

@@ -165,7 +165,6 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Con
 	    	editor.putLong(KEY_LAST_REFRESH+FBMHttpConnection.getIdentifiant(), (new Date()).getTime());
 	    	editor.commit();
 	    	// On met à jour une variable du PVR pour que le PVR rafraichisse son affichage
-	    	ProgrammationActivity.lastUser = "";
 	    	return true;
     	}
         FBMHttpConnection.FBMLog("==> Impossible de télécharger le json des chaines/disques");
