@@ -1,0 +1,6 @@
+<bitmap xmlns:android="http://schemas.android.com/apk/res/android"
+    android:src="@drawable/freebox_big_claire"
+    android:tileMode="clamp"
+    android:gravity="center"
+    android:layout_centerInParent="true"
+    />

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Freebox Mobile</string>
+	<string name="app_version">0.25</string>
+	<string name="buttonTv">Télévision</string>
+	<string name="Identifiant">Identifiant</string>
+	<string name="MotDePasse">Mot de passe</string>
+	<string name="unknown">Inconnu</string>
+	
+	<string name="oui">Yes</string>
+	<string name="non">No</string>
+	<string name="OK">OK</string>
+	<string name="Annuler">Cancel</string>
+</resources>

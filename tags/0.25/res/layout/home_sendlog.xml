@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView 
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="fill_parent" android:layout_width="fill_parent" android:id="@+id/ScrollView01">
+	<LinearLayout
+		android:layout_height="fill_parent" android:layout_width="fill_parent" android:orientation="vertical" android:padding="10dip" android:focusable="true" android:focusableInTouchMode="true">
+		<ImageView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:id="@+id/LogoFreeboxMobile"
+			android:src="@drawable/freebox_mobile"
+			android:layout_gravity="center" android:layout_marginTop="10dip">
+		</ImageView>
+		<TextView android:id="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Pour envoyer le rapport d'erreur, veuillez renseigner les champs suivants :" android:layout_marginTop="5dip"></TextView><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="5dip" android:textStyle="bold" android:text="Description du problème :" android:id="@+id/TextView03"></TextView>
+		<EditText android:layout_height="wrap_content" android:id="@+id/EditTextInfolog" android:text="@string/sendlog_pbdesc" android:maxLines="8" android:minLines="8" android:textSize="14dip" android:layout_width="fill_parent" android:scrollbars="vertical"></EditText><TextView android:id="@+id/TextView02" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="5dip" android:textStyle="bold" android:text="@string/sendlog_3GWifi"></TextView>
+		<Spinner android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/Spinner3GWifi" android:prompt="@string/sendlog_3GWifi" android:layout_marginLeft="10dip" android:layout_marginRight="10dip" android:entries="@+array/GGGWifi"></Spinner>	
+		<Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="bottom|right" android:id="@+id/ButtonSendlogValider" android:text="@string/button_valider"></Button>
+	</LinearLayout>
+</ScrollView>

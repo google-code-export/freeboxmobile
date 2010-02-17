@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:id="@+id/LinearLayout01" android:background="@drawable/freebox_big_claire" android:padding="10dip">
+	
+	
+<ImageView
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:id="@+id/LogoFreeboxMobile"
+	android:src="@drawable/freebox_mobile"
+	android:layout_gravity="center" android:layout_marginTop="10dip">
+</ImageView>
+	
+<LinearLayout android:id="@+id/LinearLayout03" android:layout_height="wrap_content"
+	android:orientation="horizontal" android:layout_width="fill_parent"
+	android:layout_marginTop="10px">
+	
+	<Button android:id="@+id/Button01" android:layout_width="wrap_content"
+		android:layout_weight="1" android:layout_height="fill_parent"
+		android:text="@string/buttonTv" android:width="1.0dp" android:textColor="#888888"
+		android:clickable="false" android:focusable="false" android:textSize="19dip"></Button>
+		
+		
+	<Button android:layout_width="wrap_content" android:layout_weight="1"
+		android:layout_height="fill_parent" android:width="1.0dp"
+		android:text="@string/buttonPvr" android:id="@+id/magneto" android:textSize="19dip"></Button>
+
+</LinearLayout>
+
+<LinearLayout android:id="@+id/LinearLayout02" android:orientation="horizontal"
+	android:layout_width="fill_parent" android:layout_height="wrap_content"><Button android:layout_width="wrap_content" android:layout_weight="1" android:layout_height="fill_parent" android:width="1.0dp" android:text="@string/buttonGuide" android:id="@+id/guide" android:clickable="false" android:focusable="false" android:textColor="#888888" android:textSize="19dip"></Button>
+	
+	<Button android:layout_width="wrap_content" android:layout_weight="1"
+		android:layout_height="fill_parent" android:width="1.0dp"
+		android:text="@string/buttonMevo" android:id="@+id/phone" android:textSize="19dip"></Button>
+		
+	
+
+</LinearLayout>
+<LinearLayout android:layout_height="wrap_content" android:orientation="horizontal" android:layout_width="fill_parent" android:id="@+id/LinearLayout04"><Button android:id="@+id/Button04" android:layout_width="wrap_content" android:layout_weight="1" android:layout_height="fill_parent" android:text="@string/buttonMusic" android:width="1.0dp" android:textColor="#888888" android:clickable="false" android:focusable="false" android:textSize="19dip"></Button>
+<Button android:layout_width="wrap_content" android:layout_weight="1" android:layout_height="fill_parent" android:width="1.0dp" android:id="@+id/fax" android:text="@string/buttonFax" android:clickable="true" android:focusable="true" android:textSize="19dip"></Button>
+
+</LinearLayout><LinearLayout android:layout_height="wrap_content" android:orientation="horizontal" android:layout_width="fill_parent" android:id="@+id/LinearLayout05">
+<Button android:layout_width="wrap_content" android:layout_weight="1" android:layout_height="fill_parent" android:width="1.0dp" android:textSize="19dip" android:id="@+id/ligne" android:text="@string/buttonLigne"></Button><Button android:layout_width="wrap_content" android:layout_weight="1" android:layout_height="fill_parent" android:width="1.0dp" android:id="@+id/actu" android:text="@string/buttonActu" android:textColor="#888888" android:clickable="false" android:focusable="false" android:textSize="17dip"></Button>
+</LinearLayout>
+
+
+<TextView android:text="@string/app_version" android:textSize="8px" android:id="@+id/TextViewVersion" android:layout_width="fill_parent" android:layout_height="fill_parent" android:gravity="right|bottom" android:paddingRight="3px"></TextView>
+
+</LinearLayout>
