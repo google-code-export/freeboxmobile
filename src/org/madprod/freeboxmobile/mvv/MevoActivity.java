@@ -34,7 +34,6 @@ import android.provider.Contacts.Intents.Insert;
 import android.util.Log;
 import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SeekBar;
@@ -88,10 +87,8 @@ public class MevoActivity extends ListActivity implements MevoConstants
         audioManagerModeAtStart = mAudioManager.getMode(); 
 		if (mAudioManager.getMode() != AudioManager.MODE_IN_CALL)
 			speakerButton.setImageResource(R.drawable.mevo_hp_vert);
-//			speakerButton.setTextColor(Color.GREEN);
 		else
 			speakerButton.setImageResource(R.drawable.mevo_hp_rouge);
-//			speakerButton.setTextColor(Color.WHITE);
         speakerButton.setOnClickListener(
 				new View.OnClickListener()
 				{
@@ -99,17 +96,11 @@ public class MevoActivity extends ListActivity implements MevoConstants
 					{
 						if (mAudioManager.getMode() != AudioManager.MODE_IN_CALL)
 						{
-							mAudioManager.setMode(AudioManager.MODE_IN_CALL);
-							mAudioManager.setSpeakerphoneOn(false);
-//							speakerButton.setTextColor(Color.WHITE);
-							speakerButton.setImageResource(R.drawable.mevo_hp_rouge);
+							setHpOff();
 						}
 						else
 						{
-							mAudioManager.setMode(AudioManager.MODE_NORMAL);
-							mAudioManager.setSpeakerphoneOn(true);
-//							speakerButton.setTextColor(Color.GREEN);
-							speakerButton.setImageResource(R.drawable.mevo_hp_vert);
+							setHpOn();
 						}
 				    }
 				}
@@ -191,6 +182,29 @@ public class MevoActivity extends ListActivity implements MevoConstants
     	super.onDestroy();
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState)
+    {
+    	super.onSaveInstanceState(outState);
+    	outState.putString("hpBoutton", (mAudioManager.getMode()!=AudioManager.MODE_IN_CALL)?"1":"0");
+    	FBMHttpConnection.FBMLog("onSaveInstanceState called");
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState)
+    {
+            super.onRestoreInstanceState(savedInstanceState);
+            FBMHttpConnection.FBMLog("onRestoreInstanceState called");
+            if (savedInstanceState.getString("hpBoutton").equals("1"))
+            {
+            	setHpOn();
+            }
+            else
+            {
+            	setHpOff();
+            }
+    }
+    
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View view, ContextMenuInfo menuInfo)
 	{
@@ -343,6 +357,20 @@ public class MevoActivity extends ListActivity implements MevoConstants
 		mAdapter.releaseMP();
 		MevoSync.setActivity(null);
 		FBMHttpConnection.closeDisplay();
+	}
+
+	private void setHpOff()
+	{
+		mAudioManager.setMode(AudioManager.MODE_IN_CALL);
+		mAudioManager.setSpeakerphoneOn(false);
+		speakerButton.setImageResource(R.drawable.mevo_hp_rouge);
+	}
+	
+	private void setHpOn()
+	{
+		mAudioManager.setMode(AudioManager.MODE_NORMAL);
+		mAudioManager.setSpeakerphoneOn(true);
+		speakerButton.setImageResource(R.drawable.mevo_hp_vert);
 	}
 
 	private void displayAboutMevo()
