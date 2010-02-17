@@ -2,7 +2,7 @@
 <resources>
 	<!-- Valeur affichées dans l'écrans de fax -->
 	<string name="faxNumberLabel">Destinataire</string>
-	<string name="faxNumberHint">saisir un numéro</string>
+	<string name="faxNumberHint">numéro de fax</string>
 	<string name="faxMailConfirmation">Mail de confirmation</string>
 	<string name="faxAnonymousNumber">Masquer mon numéro</string>
 	<string name="faxChooseAFile">Choisir</string>
