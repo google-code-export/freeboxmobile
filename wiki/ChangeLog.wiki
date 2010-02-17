@@ -14,6 +14,20 @@ RESEAU : les connexions réseau / authentifications sur la console Free...
 
 = Versions publiques de !FreeboxMobile =
 
+== 0.25 ==
+Sortie le 17/02/2010
+Release : 18
+ * RESEAU : Optimisations
+ * HOME : Infolog amélioré
+ * HOME : Nouvelle option "rafraichir compte"
+ * INFO ADSL : Fonctionne maintenant pour les non dégroupés
+ * SERVICES : Alerte en cas de ligne ADSL coupée
+ * PVR : accessible en Freebox Optique
+ * PVR : support de plusieurs boitiers
+ * PVR : plus de chargement systématique lors de la création d'un nouvel enregistrement
+ * PVR : nouvelles options de rafraichissement
+ * SERVICES : accès réseaux asynchrones un peu partout pour une meilleure expérience utilisateur
+
 == 0.20.1 ==
 Sortie le 02/02/2010<br>
 Release : 16
@@ -66,7 +80,7 @@ Release : 1
 
 = Versions beta de !FreeboxMobile =
 == 0.25.0rc1 ==
-Sortie le <pas encore><br>
+Sortie le 15/02/2010
 Release : 17
  * RESEAU : Optimisations
  * HOME : Infolog amélioré
