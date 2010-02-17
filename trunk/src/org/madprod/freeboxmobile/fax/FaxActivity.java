@@ -18,13 +18,17 @@ import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.Contacts;
+import android.provider.Contacts.People;
 import android.provider.Contacts.Phones;
+import android.provider.Contacts.Intents.Insert;
 import android.provider.MediaStore.Images;
 import android.util.Log;
 import android.view.View;
@@ -164,7 +168,7 @@ public class FaxActivity extends Activity implements FaxConstants {
 	}
 	
 	private void faxNumberSelection(){
-		final Intent i = new Intent(Intent.ACTION_PICK,Phones.CONTENT_URI);
+		Intent i = new Intent(Intent.ACTION_PICK,Phones.CONTENT_URI);
     	startActivityForResult(i, PICK_CONTACT);
 	}
 	
