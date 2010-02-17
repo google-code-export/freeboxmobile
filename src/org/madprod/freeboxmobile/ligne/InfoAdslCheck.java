@@ -11,7 +11,7 @@ import org.madprod.freeboxmobile.Constants;
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.WakefullIntentService;
-import org.madprod.freeboxmobile.home.HomeActivity;
+import org.madprod.freeboxmobile.home.HomeListActivity;
 import org.xmlrpc.android.XMLRPCClient;
 
 import android.app.Activity;
@@ -149,7 +149,7 @@ public class InfoAdslCheck extends WakefullIntentService implements Constants
 	 */
 	public static void changeTimer(int ms, Activity a)
 	{
-		AlarmManager amgr = (AlarmManager) a.getSystemService(HomeActivity.ALARM_SERVICE);
+		AlarmManager amgr = (AlarmManager) a.getSystemService(HomeListActivity.ALARM_SERVICE);
 		Intent i = new Intent(a, OnInfoAdslAlarmReceiver.class);
 		PendingIntent pi = PendingIntent.getBroadcast(a, 0, i, 0);
 		if (ms != 0)

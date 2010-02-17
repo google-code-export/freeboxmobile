@@ -86,6 +86,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 	private boolean nomEmissionSaisi = false;
 	private boolean[] joursChoisis = { false, false, false, false, false, false, false };
 	static ProgressDialog progressDialog = null;
+	static AlertDialog alertDialog = null;
 	TextView nomEmission = null;
 	TextView dureeEmission = null;
 	Spinner chainesSpinner = null;
@@ -111,6 +112,8 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
     CheckBox lendi, mordi, credi, joudi, dredi, sadi, gromanche;
     ViewFlipper viewFlipper;
 
+    private AsyncTask<Void, Integer, Boolean> progNetwork = null;
+    
     /*
     private static int choosen_year_deb = 0;
     private static int choosen_month_deb = 0;
@@ -368,8 +371,48 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 			}
 			else // Sinon on met quand même à jour la liste des disques
 			{
-				new ProgNetwork(false, true).execute((Void[])null);
+				runProgNetwork(false, true);
 			}
+    	}
+    }
+    
+    private boolean runProgNetwork(final boolean chaines, final boolean disques)
+    {
+    	if (
+    			((progNetwork != null) && (progNetwork.getStatus() == AsyncTask.Status.FINISHED)) ||
+    			(progNetwork == null)
+    		)
+    	{
+    		progNetwork = new ProgNetwork(chaines, disques).execute((Void[])null);
+    		return true;
+    	}
+    	else
+    	{
+	    	alertDialog = new AlertDialog.Builder(this).create();
+	    	alertDialog.setTitle("Rafraichissement en cours");
+	    	alertDialog.setIcon(R.drawable.icon_fbm_reverse);
+	    	alertDialog.setMessage(
+				"Un rafraichissement est déjà en cours.\n\n"+
+				"Réessayez lorsqu'il sera terminé."
+			);
+	    	alertDialog.setButton(DialogInterface.BUTTON_NEUTRAL, "Réessayer", new DialogInterface.OnClickListener()
+			{
+				public void onClick(DialogInterface dialog, int which)
+				{
+					dismissAd();
+					runProgNetwork(chaines, disques);
+				}
+			});
+			
+	    	alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
+				{
+					public void onClick(DialogInterface dialog, int which)
+					{
+						dismissAd();
+					}
+				});
+	    	alertDialog.show();
+    		return false;
     	}
     }
     
@@ -388,11 +431,26 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
     }
 	
 	@Override
+	protected void onResume() {
+		super.onResume();
+
+		if (progressDialog != null) {
+			progressDialog.show();
+		}
+		if (alertDialog != null) {
+			alertDialog.show();
+		}
+	}
+
+	@Override
 	protected void onPause() {
 		super.onPause();
     	
 		if (progressDialog != null) {
 			progressDialog.dismiss();
+		}
+		if (alertDialog != null) {
+			alertDialog.dismiss();
 		}
 		// TODO: enregistrer l'état du formulaire qqpart pour
 		// le récupérer quand on revient sur l'activité
@@ -409,13 +467,16 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case MENU_UPDATE_HD:
-        	new ProgNetwork(false, true).execute((Void[])null);
+        	runProgNetwork(false, true);
+//        	new ProgNetwork(false, true).execute((Void[])null);
             return true;
         case MENU_UPDATE_CHAINES:
-        	new ProgNetwork(true, false).execute((Void[])null);
+        	runProgNetwork(true, false);
+//        	new ProgNetwork(true, false).execute((Void[])null);
             return true;
         case MENU_UPDATE_ALL:
-        	new ProgNetwork(true, true).execute((Void[])null);
+        	runProgNetwork(true, true);
+//        	new ProgNetwork(true, true).execute((Void[])null);
             return true;
         }
         return false;
@@ -662,15 +723,15 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 				getString(R.string.pvrMercredi), getString(R.string.pvrJeudi), getString(R.string.pvrVendredi),
 				getString(R.string.pvrSamedi), getString(R.string.pvrDimanche) };
 
-    	AlertDialog d = new AlertDialog.Builder(this).create();
-		d.setTitle("Récurrence");
-		d.setIcon(R.drawable.fm_magnetoscope);
-		d.setMessage(getString(R.string.pvrTxtRecurrenceInfo));
-		d.setButton("Continuer", new DialogInterface.OnClickListener() {
+    	alertDialog = new AlertDialog.Builder(this).create();
+    	alertDialog.setTitle("Récurrence");
+    	alertDialog.setIcon(R.drawable.fm_magnetoscope);
+		alertDialog.setMessage(getString(R.string.pvrTxtRecurrenceInfo));
+		alertDialog.setButton("Continuer", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
-				dialog.dismiss();
+				dismissAd();
 				setTheme(android.R.style.Theme_Black);
-				AlertDialog alert = new AlertDialog.Builder(progAct)
+				alertDialog = new AlertDialog.Builder(progAct)
 					.setMultiChoiceItems(jours,
 							null,
 							new DialogInterface.OnMultiChoiceClickListener() {
@@ -683,6 +744,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog, int whichButton) {
 									progAct.setTheme(android.R.style.Theme_Light);
+									dismissAd();
 								}
 							}) 
 		            .setNegativeButton(getString(R.string.Annuler),
@@ -691,44 +753,46 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 									progAct.setTheme(android.R.style.Theme_Light);
 		            				resetJours();
 		            				dialog.cancel();
+									dismissAd();
 		            			} 
 		            		})
 		        	.setTitle(getString(R.string.pvrChoixJours))
 		            .setIcon(R.drawable.pvr_date)
 		            .create();
-				alert.show();
+				alertDialog.show();
 			}
 		});
-		d.show();
+		alertDialog.show();
     }
     
     public void showPasDeChaine()
     {
-    	AlertDialog d = new AlertDialog.Builder(this).create();
-		d.setTitle("La liste des chaînes est vide");
-		d.setIcon(R.drawable.icon_fbm_reverse);
-    	d.setMessage(
+    	alertDialog = new AlertDialog.Builder(this).create();
+    	alertDialog.setTitle("La liste des chaînes est vide");
+    	alertDialog.setIcon(R.drawable.icon_fbm_reverse);
+    	alertDialog.setMessage(
 			"La liste des chaînes est vide.\n"+
-			"Ceci est sûrement dû à un problème réseau lors du téléchargement.\n"+
+			"Ceci est peut être dû à un problème réseau lors du téléchargement.\n"+
 			"Vous pouvez rafraichir la liste des chaînes en utilisant le bouton MENU de votre téléphone "+
 			"ou en cliquant ci-dessous."
 		);
-		d.setButton(DialogInterface.BUTTON_POSITIVE, "Rafraichir", new DialogInterface.OnClickListener()
+    	alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Rafraichir", new DialogInterface.OnClickListener()
 			{
 				public void onClick(DialogInterface dialog, int which)
 				{
-					dialog.dismiss();
-		        	new ProgNetwork(true, true).execute((Void[])null);
+					dismissAd();
+					runProgNetwork(true, true);
+//		        	new ProgNetwork(true, true).execute((Void[])null);
 				}
 			}); 
-		d.setButton(DialogInterface.BUTTON_NEGATIVE, "Plus tard", new DialogInterface.OnClickListener()
+    	alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Plus tard", new DialogInterface.OnClickListener()
 		{
 			public void onClick(DialogInterface dialog, int which)
 			{
 				dialog.dismiss();
 			}
 		});
-		d.show();
+    	alertDialog.show();
     }
 
     public static void showPatientezChaines(Activity a)
@@ -747,6 +811,15 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 		progressDialog.setTitle(a.getString(R.string.pvrPatientez));
 		progressDialog.setMessage(a.getString(R.string.pvrTelechargementDonnees));
 		progressDialog.show();
+    }
+
+    private static void dismissAd()
+    {
+    	if (alertDialog != null)
+    	{
+    		alertDialog.dismiss();
+    		alertDialog = null;
+    	}
     }
 
     public static void dismissPd()
@@ -853,7 +926,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
     	        	return doAction();
                 }
                 
-                protected void onPostExecute(String errMsg) {                    
+                protected void onPostExecute(String errMsg) {
                     progressDialog.dismiss();
                     progressDialog = null;
 
@@ -1021,16 +1094,16 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
     }
 	
 	static void afficherMsgErreur(String msg, Activity a) {	
-    	AlertDialog d = new AlertDialog.Builder(a).create();
-		d.setTitle("Erreur!");
-		d.setIcon(R.drawable.fm_magnetoscope);
-		d.setMessage(msg);
-		d.setButton("Ok", new DialogInterface.OnClickListener() {
+    	alertDialog = new AlertDialog.Builder(a).create();
+    	alertDialog.setTitle("Erreur!");
+    	alertDialog.setIcon(R.drawable.fm_magnetoscope);
+    	alertDialog.setMessage(msg);
+    	alertDialog.setButton("Ok", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
-				dialog.dismiss();
+				dismissAd();
 			}
 		});
-		d.show();
+		alertDialog.show();
     }
     
 	/**
@@ -1103,54 +1176,57 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
     }
     
     private void afficherInfosDisque() {
-    	int disqueId = disqueSpinner.getSelectedItemPosition();
-    	// Au démarrage de l'activity, rien n'est encore selectionné
-    	if (disqueId < 0)
-    		disqueId = 0;
-		disquesCursor.moveToPosition(disqueId);
-    	int t1 = disquesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_DISQUE_ID);
-		disqueId = disquesCursor.getInt(t1);
-
-    	ChainesDbAdapter db = new ChainesDbAdapter(this);
-    	db.open();
-//    	FBMHttpConnection.FBMLog("afficherInfosDisque : "+disqueId + " "+mBoitierHDName);
-    	Cursor c = db.fetchDisque(disqueId, mBoitierHDName);
-    	startManagingCursor(c);
-        if (c.moveToFirst()) {
-        	int gigaFree = getGiga(c.getInt(c.getColumnIndex(ChainesDbAdapter.KEY_DISQUE_FREE_SIZE)));
-        	int gigaTotal = getGiga(c.getInt(c.getColumnIndex(ChainesDbAdapter.KEY_DISQUE_TOTAL_SIZE)));
-
-        	((TextView) findViewById(R.id.pvrPrgInfosDisque1))
-    			.setText(getString(R.string.pvrInfosDisque1).replace("#nom", c.getString(c.getColumnIndex(ChainesDbAdapter.KEY_DISQUE_LABEL))));
-        	((TextView) findViewById(R.id.pvrPrgInfosDisque2))
-    			.setText(getString(R.string.pvrInfosDisque2).replace("#libre", ""+gigaFree));
-        	((TextView) findViewById(R.id.pvrPrgInfosDisque3))
-    			.setText(getString(R.string.pvrInfosDisque3).replace("#total", ""+gigaTotal));
-        	switch (selectedLayout)	{
-        		case LAYOUT_BENOIT:
-                	((TextView) findViewById(R.id.pvrPrgInfosDisque4))
-        			.setText(getString(R.string.pvrInfosDisque4).replace("#mount", c.getString(c.getColumnIndex(ChainesDbAdapter.KEY_DISQUE_MOUNT))));
-        		break;
-        		case LAYOUT_OLIVIER:
-                	((TextView) findViewById(R.id.pvrPrgInfosDisque4))
-        			.setText(getString(R.string.pvrInfosDisque4_2).replace("#mount", c.getString(c.getColumnIndex(ChainesDbAdapter.KEY_DISQUE_MOUNT))));
-                break;
-        	}
-        	if (gigaFree < 4) {
-        		((TextView) findViewById(R.id.pvrPrgInfosDisqueEspaceFaible))
-        			.setText(getString(R.string.pvrInfosDisqueEspaceFaible));
-        	}
-        	else
-        	{
-        		((TextView) findViewById(R.id.pvrPrgInfosDisqueEspaceFaible))
-    			.setText("");        		
-        	}
-
-        	ProgressBar pb = (ProgressBar) findViewById(R.id.pvrPrgDisquePB);
-        	pb.setMax(gigaTotal);
-        	pb.setProgress(gigaTotal-gigaFree);
-        }
-        db.close();
+    	if ((disquesCursor != null) && (disquesCursor.getCount() > 0))
+    	{
+	    	int disqueId = disqueSpinner.getSelectedItemPosition();
+	    	// Au démarrage de l'activity, rien n'est encore selectionné
+	    	if (disqueId < 0)
+	    		disqueId = 0;
+			disquesCursor.moveToPosition(disqueId);
+	    	int t1 = disquesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_DISQUE_ID);
+			disqueId = disquesCursor.getInt(t1);
+	
+	    	ChainesDbAdapter db = new ChainesDbAdapter(this);
+	    	db.open();
+	//    	FBMHttpConnection.FBMLog("afficherInfosDisque : "+disqueId + " "+mBoitierHDName);
+	    	Cursor c = db.fetchDisque(disqueId, mBoitierHDName);
+	    	startManagingCursor(c);
+	        if (c.moveToFirst()) {
+	        	int gigaFree = getGiga(c.getInt(c.getColumnIndex(ChainesDbAdapter.KEY_DISQUE_FREE_SIZE)));
+	        	int gigaTotal = getGiga(c.getInt(c.getColumnIndex(ChainesDbAdapter.KEY_DISQUE_TOTAL_SIZE)));
+	
+	        	((TextView) findViewById(R.id.pvrPrgInfosDisque1))
+	    			.setText(getString(R.string.pvrInfosDisque1).replace("#nom", c.getString(c.getColumnIndex(ChainesDbAdapter.KEY_DISQUE_LABEL))));
+	        	((TextView) findViewById(R.id.pvrPrgInfosDisque2))
+	    			.setText(getString(R.string.pvrInfosDisque2).replace("#libre", ""+gigaFree));
+	        	((TextView) findViewById(R.id.pvrPrgInfosDisque3))
+	    			.setText(getString(R.string.pvrInfosDisque3).replace("#total", ""+gigaTotal));
+	        	switch (selectedLayout)	{
+	        		case LAYOUT_BENOIT:
+	                	((TextView) findViewById(R.id.pvrPrgInfosDisque4))
+	        			.setText(getString(R.string.pvrInfosDisque4).replace("#mount", c.getString(c.getColumnIndex(ChainesDbAdapter.KEY_DISQUE_MOUNT))));
+	        		break;
+	        		case LAYOUT_OLIVIER:
+	                	((TextView) findViewById(R.id.pvrPrgInfosDisque4))
+	        			.setText(getString(R.string.pvrInfosDisque4_2).replace("#mount", c.getString(c.getColumnIndex(ChainesDbAdapter.KEY_DISQUE_MOUNT))));
+	                break;
+	        	}
+	        	if (gigaFree < 4) {
+	        		((TextView) findViewById(R.id.pvrPrgInfosDisqueEspaceFaible))
+	        			.setText(getString(R.string.pvrInfosDisqueEspaceFaible));
+	        	}
+	        	else
+	        	{
+	        		((TextView) findViewById(R.id.pvrPrgInfosDisqueEspaceFaible))
+	    			.setText("");        		
+	        	}
+	
+	        	ProgressBar pb = (ProgressBar) findViewById(R.id.pvrPrgDisquePB);
+	        	pb.setMax(gigaTotal);
+	        	pb.setProgress(gigaTotal-gigaFree);
+	        }
+	        db.close();
+    	}
     }
     
     private void remplirSpinner(int id) {
@@ -1302,7 +1378,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 
 	        protected void onPreExecute() {
         		if (getChaines)
-        			ProgrammationActivity.showPatientezDonnees(progAct);
+        			showPatientezDonnees(progAct);
         		else
             		setProgressBarIndeterminateVisibility(true);
 	        }
@@ -1315,11 +1391,10 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 	        	if (telechargementOk == Boolean.TRUE) {
 	        	}
 	        	else {
-        			ProgrammationActivity.afficherMsgErreur(progAct.getString(R.string.pvrErreurTelechargementDonnees), progAct);
+        			afficherMsgErreur(progAct.getString(R.string.pvrErreurTelechargementDonnees), progAct);
 	        	}
 	        	preparerActivite();
-	        	if (ProgrammationActivity.progressDialog != null)
-	        		ProgrammationActivity.dismissPd();
+	        	dismissPd();
 	    		setProgressBarIndeterminateVisibility(false);
 	        }
 	        

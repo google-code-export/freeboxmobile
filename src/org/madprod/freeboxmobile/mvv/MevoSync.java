@@ -11,7 +11,7 @@ import java.util.List;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-import org.madprod.freeboxmobile.home.HomeActivity;
+import org.madprod.freeboxmobile.home.HomeListActivity;
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.ServiceUpdateUIListener;
@@ -278,7 +278,7 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 	 */
 	public static void changeTimer(int ms, Activity a)
 	{
-		AlarmManager amgr = (AlarmManager) a.getSystemService(HomeActivity.ALARM_SERVICE);
+		AlarmManager amgr = (AlarmManager) a.getSystemService(HomeListActivity.ALARM_SERVICE);
 		Intent i = new Intent(a, OnMevoAlarmReceiver.class);
 		PendingIntent pi = PendingIntent.getBroadcast(a, 0, i, 0);
 		if (ms != 0)

@@ -69,28 +69,6 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		e = mgr.edit();
 */
 		
-		// Si on est sur un premier lancement de la nouvelle version :
-		if (!mgr.getString(KEY_SPLASH, "0").equals(getString(R.string.app_version)))
-		{
-			Editor editor = mgr.edit();
-			editor.putString(KEY_SPLASH, getString(R.string.app_version));
-			editor.commit();
-			displayAbout();
-			File log = new File(Environment.getExternalStorageDirectory()+DIR_FBM, file_log);
-			log.delete();
-
-			// On reinstalle les timers de notif si nécessaire
-			String ms = mgr.getString(KEY_MEVO_PREFS_FREQ, "0");
-			if (!ms.equals("0"))
-			{
-				MevoSync.changeTimer(Integer.decode(ms), this);
-			}
-			ms = mgr.getString(KEY_INFOADSL_PREFS_FREQ, "0");
-			if (!ms.equals("0"))
-			{
-				InfoAdslCheck.changeTimer(Integer.decode(ms), this);
-			}
-		}
 
         homeActivity = this;
         if (Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED) == false)
@@ -123,6 +101,30 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 				editor.commit();
         	}
         }
+        
+		// Si on est sur un premier lancement de la nouvelle version :
+		if (!mgr.getString(KEY_SPLASH, "0").equals(getString(R.string.app_version)))
+		{
+			Editor editor = mgr.edit();
+			editor.putString(KEY_SPLASH, getString(R.string.app_version));
+			editor.commit();
+			displayAbout();
+			File log = new File(Environment.getExternalStorageDirectory()+DIR_FBM, file_log);
+			log.delete();
+
+			// On reinstalle les timers de notif si nécessaire
+			String ms = mgr.getString(KEY_MEVO_PREFS_FREQ, "0");
+			if (!ms.equals("0"))
+			{
+				MevoSync.changeTimer(Integer.decode(ms), this);
+			}
+			ms = mgr.getString(KEY_INFOADSL_PREFS_FREQ, "0");
+			if (!ms.equals("0"))
+			{
+				InfoAdslCheck.changeTimer(Integer.decode(ms), this);
+			}
+		}
+
         FBMHttpConnection.FBMLog("type:"+mgr.getString(KEY_LINETYPE, ""));
 
 		setTitle(getString(R.string.app_name)+" "+FBMHttpConnection.getTitle());
@@ -244,6 +246,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		}
         else
         {
+        	FBMHttpConnection.FBMLog("LINE TYPE:"+mgr.getString(KEY_LINETYPE, "-1"));
 	    	if (moduleName.equals(getString(R.string.buttonLigne)) &&
     			!mgr.getString(KEY_LINETYPE, "1").equals("0") &&
     			!mgr.getString(KEY_LINETYPE, "1").equals("1"))
