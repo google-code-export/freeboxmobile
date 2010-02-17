@@ -15,20 +15,20 @@ import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.ContentUris;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.Contacts;
-import android.provider.Contacts.People;
 import android.provider.Contacts.Phones;
-import android.provider.Contacts.Intents.Insert;
 import android.provider.MediaStore.Images;
 import android.util.Log;
 import android.view.View;
@@ -91,6 +91,15 @@ public class FaxActivity extends Activity implements FaxConstants {
 				send();
 			}
 		});
+		
+		SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
+		if (!mgr.getString(KEY_SPLASH_FAX, "0").equals(this.getString(R.string.app_version)))
+		{
+			Editor editor = mgr.edit();
+			editor.putString(KEY_SPLASH_FAX, this.getString(R.string.app_version));
+			editor.commit();
+			displayInfos();
+		}
 	}
 
 	/**
@@ -171,7 +180,35 @@ public class FaxActivity extends Activity implements FaxConstants {
 		Intent i = new Intent(Intent.ACTION_PICK,Phones.CONTENT_URI);
     	startActivityForResult(i, PICK_CONTACT);
 	}
-	
+
+    private void displayInfos()
+    {
+    	AlertDialog d = new AlertDialog.Builder(this).create();
+		d.setTitle(getString(R.string.app_name)+" Fax");
+		d.setIcon(R.drawable.icon_fbm_reverse);
+    	d.setMessage(
+			"Le module Fax de Freebox Mobile vous permet d'envoyer des Fax en utilisant votre compte Freebox (donc gratuit vers les numéros de fixe).\n\n"+
+			"Vous devez choisir ou saisir un numéro de fax ainsi qu'un fichier présent sur votre carte mémoire. Les formats supportés sont :\n"+
+			"- pdf\n"+
+			"- jpeg / jpg\n"+
+			"- txt\n\n"+
+			"Grâce à Freebox Mobile vous pouvez aussi envoyer des fax directement à partir d'autres applications comme :\n"+
+			"- OI File Manage\n"+
+			"- Chrome (Navigateur)\n"+
+			"- K9 Mail\n"+
+			"- Astro... \n"+
+			"Consultez www.freeboxmobile.org pour plus d'informations.\n "
+		);
+		d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
+			{
+				public void onClick(DialogInterface dialog, int which)
+				{
+					dialog.dismiss();
+				}
+			});
+		d.show();
+    }
+    
 	/*
 	 * Traitement du retour de l'activité de selection d'un fichier sur la carte SD
 	 * (non-Javadoc)

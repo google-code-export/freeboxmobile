@@ -3,7 +3,7 @@ package org.madprod.freeboxmobile.fax;
 import org.madprod.freeboxmobile.Constants;
 
 public interface FaxConstants extends Constants {
-	
+	static final String KEY_SPLASH_FAX		= "splashscreen_fax";
 	public static final String END 			= "\r\n";
 	public static final String TWO_HYPHENS 	= "--";
 	public static final String BOUNDARY 	= "*****++++++************++++++++++++";
