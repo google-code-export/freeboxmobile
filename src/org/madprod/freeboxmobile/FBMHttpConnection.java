@@ -217,7 +217,7 @@ public class FBMHttpConnection implements Constants
 			return false;
 	}
 	
-	private static int checkConnected(int defValue)
+	public static int checkConnected(int defValue)
 	{
 		if ((id == null) || (idt == null))
 		{

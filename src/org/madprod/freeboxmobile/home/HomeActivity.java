@@ -209,7 +209,6 @@ public class HomeActivity extends Activity implements HomeConstants
 	{
     	FBMHttpConnection.FBMLog("MainActivity Stop");
 		super.onStop();
-//		this.mDbHelper.close();
 	}
 
     @Override
