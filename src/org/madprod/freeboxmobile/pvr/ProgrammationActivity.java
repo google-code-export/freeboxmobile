@@ -357,7 +357,6 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
     protected void onStart() {
     	super.onStart();
     	
-    	FBMHttpConnection.FBMLog("PVR ONSTART : last["+lastUser+"] id:"+ FBMHttpConnection.getIdentifiant());
     	if (lastUser.equals(FBMHttpConnection.getIdentifiant())) {
     		preparerActivite();
     	}
@@ -1244,7 +1243,6 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 				{
 					startManagingCursor(chainesCursor);
 					chainesCursor.moveToFirst();
-					FBMHttpConnection.FBMLog("CHAINES : "+chainesCursor.getCount()+" "+spinner);
 					String [] chaines = new String [] {ChainesDbAdapter.KEY_NAME};
 					int [] to = new int[] {android.R.id.text1};
 					chainesSpinnerAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_spinner_item, chainesCursor, chaines, to);
