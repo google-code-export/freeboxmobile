@@ -111,7 +111,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
     private Animation slideRightOut;
     CheckBox lendi, mordi, credi, joudi, dredi, sadi, gromanche;
     ViewFlipper viewFlipper;
-
+    public static String progressText = ""; // Text des progressDialog avec bar
     private AsyncTask<Void, Integer, Boolean> progNetwork = null;
     
     /*
@@ -794,12 +794,33 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
     	alertDialog.show();
     }
 
+    public static void showProgress(Activity a, int progress)
+    {
+    	if (progressDialog == null)
+    	{
+    		progressDialog = new ProgressDialog(a);
+    		progressDialog.setIcon(R.drawable.fm_magnetoscope);
+    		progressDialog.setTitle("Importation");
+    		progressDialog.setMessage(progressText);
+    		progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+    		progressDialog.show();
+        }
+        progressDialog.setProgress(progress);
+    }
+
+    public static void setPdMax(int max)
+    {
+    	FBMHttpConnection.FBMLog("setPdMax "+max);
+    	progressDialog.setMax(max);
+    }
+
     public static void showPatientezChaines(Activity a)
     {
 		progressDialog = new ProgressDialog(a);
 		progressDialog.setIcon(R.drawable.fm_magnetoscope);
 		progressDialog.setTitle(a.getString(R.string.pvrPatientez));
 		progressDialog.setMessage(a.getString(R.string.pvrTelechargementChaines));
+		progressDialog.setCancelable(false);
 		progressDialog.show();
     }
 
@@ -1142,7 +1163,8 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 	        EditText nom = (EditText) findViewById(R.id.pvrPrgNom);
 	        
 	        // Remplissage
-	        chaines.setSelection(getChaineSpinnerId(c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_CHAINE))));
+//	        chaines.setSelection(getChaineSpinnerId(c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_CHAINE))));
+	        chaines.setSelection(c.getInt(c.getColumnIndex(EnregistrementsDbAdapter.KEY_CHAINE_ID)));
 	        disqueSpinner.setSelection(getDisqueSpinnerId(c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_WHERE_ID))));
 	        
 	        String strDate = c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_DATE));
@@ -1248,6 +1270,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 					chainesSpinnerAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_spinner_item, chainesCursor, chaines, to);
 					chainesSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 					spinner.setAdapter(chainesSpinnerAdapter);
+					// TODO : Modifier pour ajouter le numéro de chaîne + le logo
 				}
 				break;
 				
@@ -1374,33 +1397,39 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
 		private boolean getChaines;
 		private boolean getDisques;
 
-	        protected void onPreExecute() {
-        		if (getChaines)
-        			showPatientezDonnees(progAct);
-        		else
-            		setProgressBarIndeterminateVisibility(true);
-	        }
+        protected void onPreExecute()
+        {
+//    		if (!getChaines)
+        		setProgressBarIndeterminateVisibility(true);
+//        		else
+//        			showPatientezDonnees(progAct);
+        }
 
-	        protected Boolean doInBackground(Void... arg0) {
-	        	return new PvrNetwork(progAct, getChaines, getDisques).getData();
-	        }
-	        
-	        protected void onPostExecute(Boolean telechargementOk) {
-	        	if (telechargementOk == Boolean.TRUE) {
-	        	}
-	        	else {
-        			afficherMsgErreur(progAct.getString(R.string.pvrErreurTelechargementDonnees), progAct);
-	        	}
-	        	preparerActivite();
-	        	dismissPd();
-	    		setProgressBarIndeterminateVisibility(false);
-	        }
-	        
-	        public ProgNetwork(boolean getChaines, boolean getDisques)
-	        {
-	        	FBMHttpConnection.FBMLog("ProgNetwork START "+getChaines + " "+getDisques);
-	        	this.getChaines = getChaines;
-	        	this.getDisques = getDisques;
-	        }
+        protected Boolean doInBackground(Void... arg0) {
+        	return new PvrNetwork(progAct, getChaines, getDisques).getData();
+        }
+
+        protected void onProgressUpdate(Integer... progress)
+        {
+            showProgress(progAct, progress[0]);
+        }	        
+
+        protected void onPostExecute(Boolean telechargementOk) {
+        	if (telechargementOk == Boolean.TRUE) {
+        	}
+        	else {
+    			afficherMsgErreur(progAct.getString(R.string.pvrErreurTelechargementDonnees), progAct);
+        	}
+        	preparerActivite();
+        	dismissPd();
+    		setProgressBarIndeterminateVisibility(false);
+        }
+        
+        public ProgNetwork(boolean getChaines, boolean getDisques)
+        {
+        	FBMHttpConnection.FBMLog("ProgNetwork START "+getChaines + " "+getDisques);
+        	this.getChaines = getChaines;
+        	this.getDisques = getDisques;
+        }
 	}
 }

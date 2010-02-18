@@ -223,7 +223,9 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 						Long duree = (new Date()).getTime() - getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getLong(KEY_LAST_REFRESH+c.getString(c.getColumnIndexOrThrow(KEY_USER)), 0);
 						FBMHttpConnection.FBMLog("TEMPS : "+c.getString(c.getColumnIndexOrThrow(KEY_USER))+" - "+getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getLong(KEY_LAST_REFRESH+c.getString(c.getColumnIndexOrThrow(KEY_USER)), 0)+" "+duree);
 						// Si ca fait + de 24 heures, on met à jour
-						if (duree > 86400000L)
+						// Si ca fait + de 30 jours on met à jour (2592000000 )
+						if (duree > 2592000000L)
+//						if (duree > 86400000L)
 						{
 							updatePrefs(mgr.edit(), c);
 							FBMHttpConnection.initCompte(ComptesActivity.this);

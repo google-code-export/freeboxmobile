@@ -199,7 +199,7 @@ public class ChainesDbAdapter {
      * @return rowId or -1 if failed
      */
     public long createChaine(String name, int chaine_id, int boitier_id) {
-        ContentValues initialValues = new ContentValues();
+        ContentValues initialValues = new ContentValues(3);
         initialValues.put(KEY_NAME, name);
         initialValues.put(KEY_CHAINE_ID, chaine_id);
         initialValues.put(KEY_CHAINE_BOITIER, boitier_id);
@@ -208,7 +208,7 @@ public class ChainesDbAdapter {
     
     public long createService(int chaine_id, int boitier_id, String service_desc, int service_id, int pvr_mode)
     {
-    	ContentValues initialValues = new ContentValues();
+    	ContentValues initialValues = new ContentValues(5);
         initialValues.put(KEY_CHAINE_ID, chaine_id);
         initialValues.put(KEY_CHAINE_BOITIER, boitier_id);
         initialValues.put(KEY_SERVICE_DESC, service_desc);
