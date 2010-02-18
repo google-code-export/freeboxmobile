@@ -8,6 +8,10 @@ import org.madprod.freeboxmobile.pvr.PvrNetwork;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.Context;
+import android.content.SharedPreferences.Editor;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -105,12 +109,32 @@ public class ManageCompte extends AsyncTask<ComptePayload, Void, ComptePayload> 
     	{
             bundle.putLong(ComptesDbAdapter.KEY_ROWID, 0);
     	}
-    	mDbHelper.close();
     	if (!p.refresh)
     	{
             Intent mIntent = new Intent();
 	        mIntent.putExtras(bundle);
 	        activity.setResult(p.exit, mIntent);
     	}
+    	else // On met à jour les parametres de conf avec les nouvelles données
+    	{
+    		Cursor c = mDbHelper.fetchCompte(p.rowid);
+    		activity.startManagingCursor(c);
+    		SharedPreferences mgr = activity.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE);
+    		Editor editor = mgr.edit();
+    		editor.putString(KEY_USER, c.getString(c.getColumnIndexOrThrow(KEY_USER)));
+    		editor.putString(KEY_PASSWORD, c.getString(c.getColumnIndexOrThrow(KEY_PASSWORD)));
+    		editor.putString(KEY_TITLE, c.getString(c.getColumnIndexOrThrow(KEY_TITLE)));
+    		editor.putString(KEY_NRA, c.getString(c.getColumnIndexOrThrow(KEY_NRA)));
+    		editor.putString(KEY_DSLAM, c.getString(c.getColumnIndexOrThrow(KEY_DSLAM)));
+    		editor.putString(KEY_IP, c.getString(c.getColumnIndexOrThrow(KEY_IP)));
+    		editor.putString(KEY_TEL, c.getString(c.getColumnIndexOrThrow(KEY_TEL)));
+    		editor.putString(KEY_LINELENGTH, c.getString(c.getColumnIndexOrThrow(KEY_LINELENGTH)));
+    		editor.putString(KEY_ATTN, c.getString(c.getColumnIndexOrThrow(KEY_ATTN)));
+    		editor.putString(KEY_LINETYPE, c.getString(c.getColumnIndexOrThrow(KEY_LINETYPE)));
+    		editor.putString(KEY_FBMVERSION, c.getString(c.getColumnIndexOrThrow(KEY_FBMVERSION)));
+    		editor.commit();
+    		c.close();
+    	}
+    	mDbHelper.close();
     }
 }
