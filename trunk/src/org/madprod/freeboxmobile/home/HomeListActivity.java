@@ -408,7 +408,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     	t.setAutoLinkMask(Linkify.ALL);
     	t.setText("Freebox Mobile est une application indépendante de Free.\n\n"+
 			"Site web :\nhttp://www.freeboxmobile.org\n\n"+
-			"Contact :\nfreeboxmobile-developpement@googlegroups.com\n\n"+
+			"Contact :\ncontact@freeboxmobile.org\n\n"+
 			"Version : "+getString(R.string.app_version)+"\n\n"+
 			"Facebook (devenez fan !) :\nhttp://www.facebook.com/search/?q=freeboxmobile\n\n"+
 			"Auteurs :\n"+
