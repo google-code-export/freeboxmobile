@@ -6,7 +6,9 @@ import java.util.List;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-import org.madprod.freeboxmobile.Constants;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
 import android.content.SharedPreferences;
@@ -20,25 +22,32 @@ import android.os.AsyncTask;
  * $Id$
  */
 
-public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Constants
+public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements PvrConstants
 {
 	private Activity activity;
 	private boolean getChaines;
 	private boolean getDisques;
 	
         protected void onPreExecute() {
-        	if (activity != null)
-        		if (!getDisques)
-        			ProgrammationActivity.showPatientezChaines(activity);
-        		else
-        			ProgrammationActivity.showPatientezDonnees(activity);
+//        	if (activity != null)
+//        		if (!getDisques)
+//        			ProgrammationActivity.showPatientezChaines(activity);
+//        			ProgrammationActivity.showProgress(activity, "test","chargement des chaines",0);
+//        		else
+//        			ProgrammationActivity.showPatientezDonnees(activity);
         }
 
         protected Boolean doInBackground(Void... arg0) {
         	return getData();
         }
         
+        protected void onProgressUpdate(Integer... progress)
+        {
+            ProgrammationActivity.showProgress(activity, progress[0]);
+        }
+        
         protected void onPostExecute(Boolean telechargementOk) {
+        	FBMHttpConnection.FBMLog("onPostExecute : "+activity);
         	if (telechargementOk == Boolean.TRUE) {
         	}
         	else {
@@ -55,20 +64,187 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Con
     	this.getDisques = getDisques;
     	FBMHttpConnection.FBMLog("PVRNETWORK START");
     }
+    
+	private int getBoolean(JSONObject o, String key)
+	{
+		if (o.has(key))
+		{
+			try
+			{
+				return (o.getBoolean(key)?1:0);
+			}
+			catch (JSONException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return 0;
+	}
+
+    public boolean getData()
+    {
+    	JSONObject jObject;
+    	JSONObject jDiskObject;
+    	JSONObject jChaineObject;
+    	JSONObject jServiceObject;
+    	JSONArray jServicesArray;
+    	JSONArray jChainesArray;
+    	JSONArray jDisksArray;
+    	String mode;
+    	int pvrmode;
+    	int boitier = 0;
+    	int nbBoitiers = 0;
+    	int i,j;
+    	int chaineId;
+    	long id;
+		ChainesDbAdapter db;
+		int courant=0;
+		int max = 0;
+		boolean ok = true;
+
+		db = new ChainesDbAdapter(activity);
+		db.open();
+
+    	String url = "http://adsl.free.fr/admin/magneto.pl";
+    		//?id=2536851&idt=ffabaa06377c9a2a&ajax=listes
+    	do
+    	{
+	        List<NameValuePair> param = new ArrayList<NameValuePair>();
+	        param.add(new BasicNameValuePair("ajax","listes"));
+	        param.add(new BasicNameValuePair("box", ""+boitier));
+	
+	        String resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequestISR(url, param, true, true));
+	        if (resultat != null)
+	        {
+	        	try
+	        	{
+					jObject = new JSONObject(resultat);
+					// ON RECUPERE LE NB DE BOITIERS (UNE FOIS)
+					if (nbBoitiers == 0)
+					{
+						nbBoitiers = jObject.getInt("boxes");
+					}
+					if (getDisques)
+					{
+						// ON RECUPERE LES DISQUES
+						jDisksArray = jObject.getJSONArray("disks");
+						for (i=0 ; i < jDisksArray.length() ; i++)
+						{
+							jDiskObject = jDisksArray.getJSONObject(i);
+					    	db.createBoitierDisque(
+					    			"Freebox HD "+(boitier+1),
+					    			boitier,
+					    			jDiskObject.getInt("free_size"),
+					    			jDiskObject.getInt("total_size"),
+					    			jDiskObject.getInt("id"),
+					    			getBoolean(jDiskObject,"nomedia"),
+					    			getBoolean(jDiskObject,"dirty"),
+					    			getBoolean(jDiskObject,"readonly"),
+					    			getBoolean(jDiskObject,"busy"),
+					    			jDiskObject.getString("mount_point"),
+					    			jDiskObject.getString("label")
+					    			);
+	//						FBMHttpConnection.FBMLog("GET DATA DIRECT BOITIER "+boitier+" DISQUE SAVED : "+id);
+						}
+					}
+					if (getChaines)
+					{
+						// ON RECUPERE LA LISTE DES CHAINES DE CE BOITIER
+						jChainesArray = jObject.getJSONArray("services");
+						if (boitier == 0)
+						{
+							ProgrammationActivity.progressText = "Actualisation de la liste des chaînes pour "+nbBoitiers+" boitier"+(nbBoitiers >1?"s...":"...");
+							publishProgress(0);
+							max = nbBoitiers * jChainesArray.length();
+							ProgrammationActivity.setPdMax(max);
+						}
+	
+						for (i=0 ; i < jChainesArray.length() ; i++)
+						{
+							courant ++;
+							publishProgress(courant);
+							jChaineObject = jChainesArray.getJSONObject(i);
+							chaineId = jChaineObject.getInt("id");
+							db.createChaine(
+									jChaineObject.getString("name"),
+									chaineId,
+									boitier
+									);
+		//			    	FBMHttpConnection.FBMLog("GET DATA DIRECT CHAINE "+id);
+							jServicesArray = jChaineObject.getJSONArray("service");
+							for (j=0 ; j < jServicesArray.length() ; j++)
+							{
+								jServiceObject = jServicesArray.getJSONObject(j);
+								mode = jServiceObject.getString("pvr_mode");
+								if (mode.equals("public"))
+								{
+									pvrmode = PVR_MODE_PUBLIC;
+								} else if (mode.equals("private"))
+								{
+									pvrmode = PVR_MODE_PRIVATE;
+								} else
+								{
+									pvrmode = PVR_MODE_DISABLED;
+								}
+								db.createService(
+										chaineId,
+										boitier,
+										jServiceObject.getString("desc"),
+										jServiceObject.getInt("id"),
+										pvrmode);
+	//					    	FBMHttpConnection.FBMLog("GET DATA DIRECT SERVICE "+id);
+							}
+						}
+					}
+				}
+	        	catch (JSONException e)
+	        	{
+					FBMHttpConnection.FBMLog("JSONException ! "+e.getMessage());
+					e.printStackTrace();
+					ok = false;
+					break;
+				}
+	        }
+	        else
+	        {
+	        	ok = false;
+	        	break;
+	        }
+	        boitier++;
+    	} while (boitier < nbBoitiers);
+    	if (getChaines)
+    		publishProgress(max);
+    	db.close();
+    	doSwap(ok);
+    	if (ok)
+    	{
+	    	// On met à jour le timestamp du dernier refresh
+			SharedPreferences mgr = activity.getSharedPreferences(KEY_PREFS, activity.MODE_PRIVATE);
+	    	Editor editor = mgr.edit();
+	    	editor.putLong(KEY_LAST_REFRESH+FBMHttpConnection.getIdentifiant(), (new Date()).getTime());
+	    	editor.commit();
+	    	return true;
+    	}
+        FBMHttpConnection.FBMLog("==> Impossible de télécharger le json des chaines/disques");
+        return false;
+    }
+
     /**
      * 
      * @return true en cas de succès, false sinon
      */
-    public boolean getData() {
+    public boolean getData2() {
     	int boitier = 0;
     	int nbBoitiers = 0;
     	int bNum = 0;
     	boolean ok = true;
     	List<String> mBoitiersName;
     	List<Integer> mBoitiersNb;
-    	
-        // Récupérer chaines et disques durs et boitiers
+
         String url = "http://adsl.free.fr/admin/magneto.pl";
+
+    	// Récupérer chaines et disques durs et boitiers
 		mBoitiersName = new ArrayList<String>();
 		mBoitiersNb = new ArrayList<Integer>();
     	do
@@ -129,7 +305,6 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Con
 		        	if (getChaines)
 		        	{
 			        	String strChaines = resultat.substring(posChaines+14, posDisques);
-//			        	int finChaines = strChaines.lastIndexOf("}");
 			        	strChaines = strChaines.substring(0, strChaines.lastIndexOf("}")+1);
 		        		getListeChaines(strChaines, mBoitiersNb.get(boitier));
 		        	}
@@ -138,7 +313,6 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Con
 		        	{
 			        	// Pour chaque boitier, on récupère la liste des disques
 			        	String strDisques = resultat.substring(posDisques+14);
-//			        	int fin = strDisques.lastIndexOf("}];")+1;
 			        	strDisques = strDisques.substring(0, strDisques.lastIndexOf("}];")+1);
 			        	getListeDisques(strDisques, mBoitiersName.get(boitier), mBoitiersNb.get(boitier));
 		        	}

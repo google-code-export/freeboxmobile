@@ -48,6 +48,7 @@ public class ManageCompte extends AsyncTask<ComptePayload, Void, ComptePayload> 
 	protected void onPostExecute(ComptePayload payload)
 	{
 		FBMHttpConnection.dismissPd();
+		ProgrammationActivity.dismissPd();
 		if (payload.result != null)
 		{
 				payload.exit = Activity.RESULT_OK;
