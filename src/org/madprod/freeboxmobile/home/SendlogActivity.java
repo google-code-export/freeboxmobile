@@ -1,6 +1,8 @@
 package org.madprod.freeboxmobile.home;
 
 import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import android.os.Build;
 import org.madprod.freeboxmobile.FBMHttpConnection;
@@ -19,6 +21,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemSelectedListener;
 
 /**
@@ -73,14 +76,14 @@ public class SendlogActivity extends Activity implements HomeConstants
 			    			myLog+"\n"+
 			    			"Description :\n----------\n" + description + "\n----------\n"+
 			    			FBMHttpConnection.fbmlog);
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 			    	Intent i = new Intent(Intent.ACTION_SEND)
-			    		.putExtra(Intent.EXTRA_EMAIL, new String[]{"freeboxmobile-developpement@googlegroups.com"})
+			    		.putExtra(Intent.EXTRA_EMAIL, new String[]{"bugs@freeboxmobile.org"})
 			    		.putExtra(Intent.EXTRA_TEXT, ssb)
 			    		.putExtra(Intent.EXTRA_SUBJECT, 
-			    				getString(R.string.mail_subject)) 
+			    				getString(R.string.mail_subject)+" "+sdf.format(new Date())) 
 			    				.setType("message/rfc822");
-			    	// TODO : faire un startactivity for result et fermer cette activity au retour
-			    	startActivity(Intent.createChooser(i,  "Choisissez votre logiciel de mail")); 
+			    	startActivityForResult(Intent.createChooser(i,  "Choisissez votre logiciel de mail"),0); 
         		}
         		else
         		{
@@ -120,6 +123,13 @@ public class SendlogActivity extends Activity implements HomeConstants
 
     }
 	   
+	protected void onActivityResult(int requestCode, int resultCode, Intent data)
+	{
+    	Toast.makeText(this, "Merci de nous aider à améliorer Freebox Mobile !",
+    			Toast.LENGTH_LONG).show();
+    	finish();
+	}
+
    // Code from enh project (enh.googlecode.com)
    static String getBuildDetailsAsString()
    {
