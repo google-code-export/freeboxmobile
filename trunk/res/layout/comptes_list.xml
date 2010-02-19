@@ -8,7 +8,7 @@
 			android:layout_gravity="center"
 			android:layout_marginBottom="5dip" android:layout_marginTop="5dip">
 		</ImageView>
-		<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent" android:paddingLeft="10dip" android:paddingTop="10dip" android:paddingBottom="10dip" android:paddingRight="10dip" android:background="@drawable/freebox_background">
+		<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent" android:paddingLeft="10dip" android:paddingTop="10dip" android:paddingBottom="10dip" android:paddingRight="10dip">
 			<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/compte_actif" android:id="@+id/Compte_Actif" android:textSize="16dip"></TextView>
 			<Spinner android:id="@+id/Spinner01" android:layout_height="wrap_content" android:prompt="@string/compte_choose" android:layout_width="fill_parent" android:layout_marginLeft="10dip" android:layout_marginRight="10dip"></Spinner>
 			<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/comptes_liste" android:layout_marginTop="5dip" android:id="@+id/Compte_Liste" android:textSize="16dip"></TextView>
