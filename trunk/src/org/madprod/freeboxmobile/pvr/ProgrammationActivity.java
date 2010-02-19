@@ -17,6 +17,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.database.Cursor;
@@ -943,7 +944,12 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
                 }
             	
                 protected String doInBackground(Void... arg0) {
-    	        	return doAction();
+                	String res = doAction();
+                	if (res == null)
+                	{
+                		EnregistrementsNetwork.updateEnregistrementsFromConsole(progAct);
+                	}
+    	        	return res;
                 }
                 
                 protected void onPostExecute(String errMsg) {
@@ -1069,7 +1075,6 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
         		FBMHttpConnection.FBMLog("Programmation sur le serveur de Free");
         		String resultat = FBMHttpConnection.getPage(FBMHttpConnection.postAuthRequest(url, postVars, true, true));
 
-        		FBMHttpConnection.FBMLog("Page resultat :\n"+resultat);
         		int erreurPos = resultat.indexOf("erreurs");
         		if (erreurPos > 0) {
         			int debutErr, finErr;
@@ -1086,27 +1091,6 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
         			db.close();
         			return getString(R.string.pvrErreurConsole) + "\n" + msgErreur;
         		}
-        		// Pas d'erreur, on MAJ la db
-        		else {
-/*    				EnregistrementsDbAdapter dbenr = new EnregistrementsDbAdapter(progAct);
-    				dbenr.open();
-
-    				// Modification
-        			if (enr != null) {
-        				int rowId = enr.getInt(enr.getColumnIndex(EnregistrementsDbAdapter.KEY_ROWID));
-        				dbenr.modifyEnregistrement(rowId, mChaineName, mBoitierHDName, date, heure+"h"+minutes, duree.toString(),
-        			    		emission, ide.toString(), mChaineID.toString(), service.toString(), mBoitierHD, heure, minutes,
-        			    		duree.toString(), emission, where_id.toString(), repeat_a);
-        			}
-        			// Ajout
-        			else {
-        				dbenr.createEnregistrement(mChaineName, mBoitierHDName, date, heure+"h"+minutes, duree.toString(),
-        			    		emission, ide.toString(), mChaineID.toString(), service.toString(), mBoitierHD, heure, minutes,
-        			    		duree.toString(), emission, where_id.toString(), repeat_a);
-        			}
-        			
-    				dbenr.close();
-  */      		}
         		db.close();
         		return null;
             }
