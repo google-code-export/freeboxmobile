@@ -80,6 +80,14 @@ Release : 1
  * SERVICES : Notification de nouveaux messages
 
 = Versions beta de !FreeboxMobile =
+== 0.25.1rc1 ==
+Sortie le <pas encore>
+Release : 19
+ * PVR : Optimisation du chargement des chaînes (+ rapide)
+ * PVR : Progress Bar durant le chargement des chaînes
+ * HOME : délais de rafraichissement des chaînes en cas de changement de compte passé de 1 à 30 jours
+ * PVR : Après la validation d'un enregistrement, il apparait immédiatement dans la liste (comme au temps de la 0.20)
+
 == 0.25.0rc1 ==
 Sortie le 15/02/2010
 Release : 17
