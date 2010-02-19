@@ -82,8 +82,9 @@ Release : 1
 
 = Versions beta de !FreeboxMobile =
 == 0.25.1rc1 ==
-Sortie le 19/02/2010
-Release : 19
+Sortie le 19/02/2010<br>
+Release : 19<br>
+Revision : 397
  * PVR : Optimisation du chargement des chaînes (+ rapide)
  * PVR : Progress Bar durant le chargement des chaînes
  * HOME : délais de rafraichissement des chaînes en cas de changement de compte passé de 1 à 30 jours
@@ -91,7 +92,7 @@ Release : 19
  * Plus de crash sur Motorola Milestone
 
 == 0.25.0rc1 ==
-Sortie le 15/02/2010
+Sortie le 15/02/2010<br>
 Release : 17
  * RESEAU : Optimisations
  * HOME : Infolog amélioré
