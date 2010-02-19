@@ -82,7 +82,7 @@ Release : 1
 
 = Versions beta de !FreeboxMobile =
 == 0.25.1rc1 ==
-Sortie le <pas encore>
+Sortie le 19/02/2010
 Release : 19
  * PVR : Optimisation du chargement des chaînes (+ rapide)
  * PVR : Progress Bar durant le chargement des chaînes
