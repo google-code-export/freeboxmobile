@@ -25,8 +25,6 @@ import android.widget.SimpleExpandableListAdapter;
 import android.widget.Toast;
 import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
 
@@ -42,7 +40,6 @@ import org.madprod.freeboxmobile.R;
  */
 
 public class EnregistrementsActivity extends ExpandableListActivity {
-	private String tableEnregistrements;
 	private boolean succesChargement;
     private static ListeEnregistrements listeEnregistrements = null;
     public static EnregistrementsActivity enrAct = null;
@@ -190,9 +187,10 @@ public class EnregistrementsActivity extends ExpandableListActivity {
             
         	if (updateFromConsole) {
         		listeEnregistrements.vider();
-        		return updateEnregistrementsFromConsole();
+        		succesChargement = EnregistrementsNetwork.updateEnregistrementsFromConsole(enrAct);
+        		return succesChargement;
         	}
-        	
+
 			return Boolean.TRUE;
         }
         
@@ -214,92 +212,6 @@ public class EnregistrementsActivity extends ExpandableListActivity {
         }
     }
     
-    /**
-     * HTML --> DB
-     * Télécharge la page HTML de l'interface, et stocke la liste des enregistrements dans
-     * la base sqlite (via la fonction recupererEnregistrements)
-     */
-    private boolean updateEnregistrementsFromConsole() {		
-		String url;
-		int boitier = 0;
-		int nbBoitiers = 0;
-		int bNum;
-//		String bName = "";
-		
-        // Recup if tv
-        String contenu = null;
-    	url = "http://adsl.free.fr/admin/magneto.pl";
-    	List<NameValuePair> param;
-    	do
-    	{
-	    	param = new ArrayList<NameValuePair>();
-	    	param.add(new BasicNameValuePair("sommaire","television"));
-	    	param.add(new BasicNameValuePair("box", ""+boitier));
-	    	contenu = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequestISR(url, param, true, true));
-	    	if (contenu == null) {
-	    		return false;
-	    	}
-	
-			if (boitier == 0)
-			{
-	        	// Plusieurs boitiers HD ?
-	        	int posDebut = contenu.indexOf("box=");
-	        	if (posDebut > 0)
-	        	{
-	        		int d, f;
-	        		String boitiers;
-	        		boitiers = contenu.substring(posDebut);
-	        		// On compte le nombre de boitiers
-	        		do {
-	        			d = boitiers.indexOf("box=");
-	        			if (d == -1) {
-		        			break;
-	        			}
-			        	boitiers = boitiers.substring(d);
-			        	f = boitiers.indexOf("\"");
-			        	FBMHttpConnection.FBMLog("Boitier parse : "+boitiers.substring(4, f));
-			        	bNum = Integer.parseInt(boitiers.substring(4, f));
-			        	d = boitiers.indexOf("Boitier HD");
-			        	boitiers = boitiers.substring(d);
-
-	        			f = boitiers.indexOf("</");
-//	        			bName = boitiers.substring(0, f);
-	        			boitiers = boitiers.substring(f);
-	        			nbBoitiers++;
-	        			FBMHttpConnection.FBMLog("Boitier : "+bNum);
-	        		} while (true);
-	        	}
-	        	else
-	        	{
-//	        		bName = "Freebox HD";
-	        		bNum = 0;
-	        	}
-			}
-			// Pour chaque boitier, on récupère la liste des enregistrements
-	    	int debut = contenu.indexOf("<div class=\"table block\">") + 25;
-	    	int fin = contenu.indexOf("<div class=\"clearer\"></div>");
-	
-	    	if (debut > 25 && fin > 0) {
-	    		tableEnregistrements = contenu.substring(debut, fin);
-	    		succesChargement = true;
-	    		recupererEnregistrements(boitier);
-	    	}
-	    	boitier++;
-    	} while (boitier < nbBoitiers);	
-		doSwap();
-    	return true;
-    }
-    
-	private void doSwap()
-	{
-		EnregistrementsDbAdapter db;
-
-		db = new EnregistrementsDbAdapter(this);
-		db.open();
-		db.swapEnr();
-		db.close();
-	}
-
     /**
      * DB --> RAM
      * Se connecte à sqlite, récupère le contenu et stocke ça dans l'objet listeEnregistrements
@@ -376,87 +288,6 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 		setListAdapter(expListAdapter);
     }
     
-    /**
-     * Récupère les enregistrements depuis la table HTML de la console correspondant
-     * à la liste des enregistrements programmés
-     * Stocke cette liste dans la base sqlite
-     */
-    private boolean recupererEnregistrements(int bId) {
-    	int debut;
-    	String chaine, date, heure, duree, nom, ide, chaine_id, service_id;
-    	String h, min, dur, name, where_id, repeat_a;
-        
-        // SQLite
-        EnregistrementsDbAdapter db = new EnregistrementsDbAdapter(this);
-        db.open();
-    	
-		do {
-			debut = tableEnregistrements.indexOf(" <form id=\"");
-			
-			if (debut > 0) {
-				tableEnregistrements = tableEnregistrements.substring(debut);
-	        	
-	        	// Récupération des infos
-				chaine =		recupererChamp("<strong>", "<");
-				date =			recupererChamp("<strong>", "<");
-				heure =			recupererChamp("<strong>", "<");
-				duree =			recupererChamp("<strong>", "<");
-				nom =			recupererChamp("<strong>", "<");
-				ide =			recupererChamp("value=\"", "\"");
-				chaine_id =		recupererChamp("value=\"", "\"");
-				service_id =	recupererChamp("value=\"", "\"");
-				date =			recupererChamp("value=\"", "\"");
-				h =				recupererChamp("value=\"", "\"");
-				min =			recupererChamp("value=\"", "\"");
-				dur =			recupererChamp("value=\"", "\"");
-				name =			recupererChamp("value=\"", "\"");
-				where_id =		recupererChamp("value=\"", "\"");
-				repeat_a =		recupererChamp("value=\"", "\"") + " ";
-				
-				// EnregistrementActivity
-				db.createEnregistrement(chaine, "", date, heure, duree, nom, ide,
-						chaine_id, service_id, bId, h, min, dur, name, where_id, repeat_a);
-				
-				debut = tableEnregistrements.indexOf(" <form id=");
-			}
-			else {
-				break;
-			}
-		} while (true);
-		db.close();
-		
-		return true;
-    }
-    
-    /**
-     * Récupère un "champ" (date, chaine...) pour un enregistrement programmé
-     * @param debut	identificateur du début du champ
-     * @param fin	identificateur de fin du champ
-     * @return		le texte compris entre "debut" et "fin"
-     */
-    private String recupererChamp(String debut, String fin) {
-    	String champ;
-    	int pos;
-    	
-    	// On se place au début
-    	pos = tableEnregistrements.indexOf(debut);    	
-    	if (pos <= 0 || pos + debut.length() > tableEnregistrements.length()) {
-    		return null;
-    	}
-    	champ = tableEnregistrements.substring(pos + debut.length());
-    	tableEnregistrements = tableEnregistrements.substring(pos + debut.length());
-    	
-    	// On coupe après la fin
-    	pos = champ.indexOf(fin);
-    	if (pos <= 0 || pos > champ.length() || pos > tableEnregistrements.length()) {
-    		return null;
-    	}
-    	champ = champ.substring(0, pos);
-    	tableEnregistrements = tableEnregistrements.substring(pos);
-    	
-    	return champ;
-    }
-    
     @Override
     public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
     	super.onChildClick(parent, v, groupPosition, childPosition, id);
@@ -525,7 +356,7 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 	    	break;
 	    	case ACTIVITY_PROGRAMMATION:
 	    		if (resultCode != 0)
-	    			updaterEnregistrements(true);
+	    			updaterEnregistrements(false);
 	    	break;
     	}
     }
