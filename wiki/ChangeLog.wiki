@@ -4,7 +4,8 @@
 <wiki:toc max_depth="2" />
 
 = Lexique =
-HOME : La page d'accueil<br>
+HOME : La page d'accueil, et les écrans accessible par le menu de la page d'accueil (Comptes, Erreur Log...)<br>
+FAX : Le module Fax<br>
 MEVO : Messagerie Vocale Visuelle = Module "Téléphone"<br>
 PVR : La programmation d'enregistrements à distance = Module "Magnétoscope"<br>
 INFOLIGNE : Le module "Info Adsl"
