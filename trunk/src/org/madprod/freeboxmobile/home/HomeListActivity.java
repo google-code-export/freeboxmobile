@@ -58,12 +58,12 @@ public class HomeListActivity extends ListActivity implements HomeConstants
         super.onCreate(savedInstanceState);
 
 		// On teste si on est dans le cas d'un premier lancement pour cette version de l'appli
-		SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
        	modulesList = new ArrayList< Map<String,Object> >();
        	setModules();
 
 		// Simulate first launch (for test only, these lines have to be commented for release)
-/*		Editor e = mgr.edit();
+/*		SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
+		Editor e = mgr.edit();
 		e.remove(KEY_NRA);
 		e.commit();
 		e = mgr.edit();

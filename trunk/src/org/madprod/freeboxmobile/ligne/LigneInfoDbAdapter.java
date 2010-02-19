@@ -1,6 +1,5 @@
 package org.madprod.freeboxmobile.ligne;
 
-import org.madprod.freeboxmobile.Constants;
 import org.madprod.freeboxmobile.FBMHttpConnection;
 
 import android.content.ContentValues;

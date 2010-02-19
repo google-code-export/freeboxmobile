@@ -1342,7 +1342,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
     }
 	
     // Fonctions pour récupérer la position d'une chaine/disque dans un spinner
-	private int getChaineSpinnerId(String chaine) {
+/*	private int getChaineSpinnerId_old(String chaine) {
 		int i = 0;
 
 		if (chainesCursor.moveToFirst())
@@ -1358,7 +1358,8 @@ public class ProgrammationActivity extends Activity implements PvrConstants {
         }
 		return -1;
 	}
-
+*/
+    
 	private int getDisqueSpinnerId(String disque) {
 		int i = 0;
         if (disquesCursor.moveToFirst())
