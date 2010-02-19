@@ -29,6 +29,7 @@ import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
  
@@ -74,7 +75,7 @@ public class FBMHttpConnection implements Constants
 		{
 			c = a.getBaseContext();
 		}
-		USER_AGENT = c.getString(R.string.app_name)+"/"+c.getString(R.string.app_version)+" (Linux; U; Android; fr-fr;)";
+		USER_AGENT = c.getString(R.string.app_name)+"/"+c.getString(R.string.app_version)+" (Linux; U; Android "+Build.VERSION.RELEASE+"; fr-fr;)";
 		// On teste pour si on entre ici suite
         if (httpProgressDialog != null)
         {
