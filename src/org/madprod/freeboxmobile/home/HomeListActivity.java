@@ -54,6 +54,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
+//		setTheme();
 		FBMHttpConnection.FBMLog("MainActivity Create "+getString(R.string.app_version)+"\n"+new Date().toString());
         super.onCreate(savedInstanceState);
 
@@ -68,8 +69,6 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		e.commit();
 		e = mgr.edit();
 */
-		
-
         homeActivity = this;
         if (Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED) == false)
         	showSdCardError();

@@ -14,7 +14,7 @@
 		android:layout_gravity="center" android:layout_marginTop="5dp">
 	</ImageView>
         
-	<LinearLayout android:id="@+id/LinearLayout01" android:layout_height="wrap_content" android:layout_width="fill_parent" android:background="@drawable/freebox_background" android:orientation="vertical"><LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="100dip">
+	<LinearLayout android:id="@+id/LinearLayout01" android:layout_height="wrap_content" android:layout_width="fill_parent" android:orientation="vertical"><LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="100dip">
 
 		<LinearLayout android:gravity="center" android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content">
 	        

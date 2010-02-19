@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.FreeboxMobile.NoTitleBar" parent="android:Theme.Light.NoTitleBar">
+        <item name="android:windowBackground">@drawable/freebox_background</item>
+    </style>
+    <style name="Theme.FreeboxMobile.TitleBar" parent="android:Theme.Light">
+        <item name="android:windowBackground">@drawable/freebox_background</item>
+    </style>
+    <style name="Theme.FreeboxMobile2.0.NoTitleBar" parent="android:Theme.Light.NoTitleBar">
+        <item name="android:windowBackground">@drawable/freebox_big_claire</item>
+    </style>
+    <style name="Theme.FreeboxMobile2.0.TitleBar" parent="android:Theme.Light">
+        <item name="android:windowBackground">@drawable/freebox_big_claire</item>
+    </style>
+</resources>
