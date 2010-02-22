@@ -41,7 +41,7 @@ public class EnregistrementsNetwork
 	    	param = new ArrayList<NameValuePair>();
 	    	param.add(new BasicNameValuePair("sommaire","television"));
 	    	param.add(new BasicNameValuePair("box", ""+boitier));
-	    	contenu = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequestISR(url, param, true, true));
+	    	contenu = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(url, param, true, true, "ISO8859_1"));
 	    	if (contenu == null) {
 	    		return false;
 	    	}

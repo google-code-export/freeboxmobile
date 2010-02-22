@@ -384,7 +384,7 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 		int newmsg = -1;
 		try
 		{
-	    	BufferedReader br = new BufferedReader(FBMHttpConnection.getAuthRequestISR(mevoUrl+mevoListPage, null, true, true));
+	    	BufferedReader br = new BufferedReader(FBMHttpConnection.getAuthRequest(mevoUrl+mevoListPage, null, true, true, "ISO8859_1"));
 			String s = " ";
 			String status = null;
 			String from = null;

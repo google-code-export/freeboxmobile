@@ -193,7 +193,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		map.put(M_ICON, R.drawable.fm_guide_tv);
 		map.put(M_TITRE, getString(R.string.buttonGuide));
 		map.put(M_DESC, "Consultez le guide TV, programmez des enregistrements, regardez la télévision\n\nCette fonctionnalité sera bientot disponible");
-		map.put(M_CLASS, null);
+		map.put(M_CLASS, org.madprod.freeboxmobile.guide.GuideActivity.class);
 		modulesList.add(map);    	
 		map = new HashMap<String,Object>();
 		map.put(M_ICON, R.drawable.fm_actus_freenautes);
@@ -411,7 +411,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 			"Version : "+getString(R.string.app_version)+"\n\n"+
 			"Facebook (devenez fan !) :\nhttp://www.facebook.com/search/?q=freeboxmobile\n\n"+
 			"Auteurs :\n"+
-			"- Olivier Rosello : Architecture / Réseau / Home / Info ADSL / Téléphone\n"+
+			"- Olivier Rosello : Architecture / Réseau / Home / Info ADSL / Téléphone / Guide des Programmes\n"+
 			"- Benoit Duffez : Magnétosocope\n"+
 			"- Ludovic Meurillon : Fax\n"+
 			"- Alban Pelé : Icônes de la page d'accueil\n"+

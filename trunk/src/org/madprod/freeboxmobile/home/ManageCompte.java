@@ -1,7 +1,11 @@
 package org.madprod.freeboxmobile.home;
 
+import java.util.Date;
+
 import org.madprod.freeboxmobile.Constants;
 import org.madprod.freeboxmobile.FBMHttpConnection;
+import org.madprod.freeboxmobile.guide.GuideActivity;
+import org.madprod.freeboxmobile.guide.GuideNetwork;
 import org.madprod.freeboxmobile.pvr.ProgrammationActivity;
 import org.madprod.freeboxmobile.pvr.PvrNetwork;
 
@@ -34,6 +38,9 @@ public class ManageCompte extends AsyncTask<ComptePayload, Void, ComptePayload> 
 		{
 			new PvrNetwork(activity, true, true).getData();
 	    	ProgrammationActivity.lastUser = "";
+	    	ProgrammationActivity.dismissPd();
+			new GuideNetwork(activity,null, true, false).getData();
+			GuideActivity.dismissPd();
 		}
 		return payload[0];
 	}
@@ -48,7 +55,6 @@ public class ManageCompte extends AsyncTask<ComptePayload, Void, ComptePayload> 
 	protected void onPostExecute(ComptePayload payload)
 	{
 		FBMHttpConnection.dismissPd();
-		ProgrammationActivity.dismissPd();
 		if (payload.result != null)
 		{
 				payload.exit = Activity.RESULT_OK;
