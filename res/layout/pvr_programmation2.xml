@@ -35,9 +35,10 @@
 				<TableRow android:id="@+id/TableRow05" android:layout_height="wrap_content" android:layout_width="fill_parent">
 					<TextView android:text="@string/pvrTxtDuree" android:id="@+id/TxtDuree" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="15sp" android:layout_gravity="center_vertical" android:layout_weight="1"></TextView>
 					<LinearLayout android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_weight="2">
-						<EditText android:text="120" android:id="@+id/pvrPrgDuree" android:layout_width="50dp" android:layout_height="wrap_content" android:inputType="phone" android:maxLength="3" android:textSize="15sp"></EditText>
-						<Spinner android:id="@+id/pvrPrgDurees" android:layout_height="wrap_content" android:layout_width="wrap_content"></Spinner>
-					</LinearLayout>
+						<EditText android:text="120" android:id="@+id/pvrPrgDuree" android:layout_height="wrap_content" android:inputType="phone" android:maxLength="3" android:textSize="15sp" android:layout_width="70dp" android:gravity="center"></EditText>
+						<Spinner android:id="@+id/pvrPrgDurees" android:layout_height="wrap_content" android:layout_width="wrap_content" android:visibility="gone"></Spinner>
+					<TextView android:id="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="minutes" android:layout_marginLeft="10dip"></TextView>
+</LinearLayout>
 				</TableRow>
 			<TableRow android:id="@+id/TableRow06" android:layout_height="wrap_content" android:layout_width="fill_parent"><TextView android:text="@string/pvrTxtNom" android:id="@+id/TxtNom" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="15sp" android:layout_gravity="center_vertical" android:layout_weight="1"></TextView><EditText android:id="@+id/pvrPrgNom" android:layout_height="wrap_content" android:textSize="15sp" android:layout_width="fill_parent" android:text="@string/pvrNomDefaut" android:layout_weight="2" android:gravity="center" android:inputType="text"></EditText></TableRow>
 <TableRow android:id="@+id/TableRow07" android:layout_width="wrap_content" android:layout_height="wrap_content"><TextView android:text="@string/pvrTxtDisque" android:id="@+id/TxtDisque" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center_vertical" android:textSize="15sp" android:layout_weight="1"></TextView><Spinner android:id="@+id/pvrPrgDisque" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_weight="2"></Spinner></TableRow>

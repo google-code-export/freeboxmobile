@@ -67,6 +67,14 @@ public class ComptesActivity extends ListActivity implements HomeConstants
         		createCompte();
         	}
         });
+        Button backButton = (Button) findViewById(R.id.comptes_button_retour);
+        backButton.setOnClickListener(new Button.OnClickListener()
+        {
+        	public void onClick(View view)
+        	{
+        		finish();
+        	}
+        });
     }
 
     @Override
@@ -228,7 +236,13 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 						{
 							updatePrefs(mgr.edit(), c);
 							FBMHttpConnection.initCompte(ComptesActivity.this);
-							new PvrNetwork(ComptesActivity.this, true, true).execute((Void[])null);
+//							SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
+					        new ManageCompte(ComptesActivity.this).execute(new ComptePayload(
+					        		mgr.getString(KEY_TITLE, ""),
+					        		mgr.getString(KEY_USER, ""),
+					        		mgr.getString(KEY_PASSWORD, ""),
+					        		null, true));
+//							new PvrNetwork(ComptesActivity.this, true, true).execute((Void[])null);
 						}
 						else
 						{

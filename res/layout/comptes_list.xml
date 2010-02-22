@@ -19,7 +19,9 @@
 			<LinearLayout android:id="@+id/LinearLayout01" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_width="fill_parent" android:layout_marginTop="5dip" android:gravity="right">
 				
 				
-				<Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/comptes_button_new" android:id="@+id/comptes_button_new" android:textSize="16dip"></Button>
-			</LinearLayout>
+				<Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Retour" android:id="@+id/comptes_button_retour"></Button><Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/comptes_button_new" android:id="@+id/comptes_button_new" android:textSize="16dip" android:drawableLeft="@drawable/pvr_ajouter"></Button>
+			
+
+</LinearLayout>
 		</LinearLayout>
 	</LinearLayout>	

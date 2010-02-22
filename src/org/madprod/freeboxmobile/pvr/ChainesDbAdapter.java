@@ -8,7 +8,6 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 /**
  * 
@@ -18,13 +17,22 @@ import android.util.Log;
 
 public class ChainesDbAdapter {
 
-    public static final String KEY_NAME = "name";
-    public static final String KEY_CHAINE_ID = "chaine_id";
+    public static final String KEY_CHAINE_NAME = "name";
+    public static final String KEY_CHAINE_ID = "chaine_id"; // = gc_canal (KEY_GUIDECHAINE_CANAL)
     public static final String KEY_CHAINE_BOITIER = "chaine_boitier";
+    
+    public static final String KEY_GUIDECHAINE_FBXID = "gc_fbxid";
+    public static final String KEY_GUIDECHAINE_IMAGE = "gc_image";
+    public static final String KEY_GUIDECHAINE_ID = "gc_id"; // = channel_id (KEY_PROG_CHANNEL_ID)
+    public static final String KEY_GUIDECHAINE_NAME = "gc_name";
+    public static final String KEY_GUIDECHAINE_CANAL = "gc_canal"; // = chaine_id (KEY_CHAINE_ID)
+    
     public static final String KEY_SERVICE_DESC = "service_desc";
     public static final String KEY_SERVICE_ID = "service_id";
     public static final String KEY_PVR_MODE = "pvr_mode";
+    
     public static final String KEY_ROWID = "_id";
+    
     public static final String KEY_BOITIER_NAME = "b_name";
     public static final String KEY_BOITIER_ID = "b_id";
     public static final String KEY_DISQUE_FREE_SIZE = "d_free_size";
@@ -37,7 +45,16 @@ public class ChainesDbAdapter {
     public static final String KEY_DISQUE_MOUNT = "d_mount";
     public static final String KEY_DISQUE_LABEL = "d_label";
 
-    private static final String TAG = "ChainesDbAdapter";
+    public static final String KEY_PROG_NAME = "name";
+    public static final String KEY_PROG_GENRE_ID = "genre_id";
+    public static final String KEY_PROG_CHANNEL_ID = "channel_id"; // = gc_id (KEY_GUIDECHAINE_ID)
+    public static final String KEY_PROG_RESUM_S = "resum_s";
+    public static final String KEY_PROG_RESUM_L = "resum_l";
+    public static final String KEY_PROG_DATETIME_DEB = "datetime_deb";
+    public static final String KEY_PROG_DATETIME_FIN = "datetime_fin";
+    public static final String KEY_PROG_DUREE = "duree";
+    public static final String KEY_PROG_TITLE = "title";
+
     private DatabaseHelper mDbHelper;
     private SQLiteDatabase mDb;
     
@@ -45,10 +62,30 @@ public class ChainesDbAdapter {
      * Database creation sql statement
      */
     
-    private static final String TABLE_CHAINES = " (_id integer primary key autoincrement, "
-	        + KEY_NAME+" text not null,"
-	        + KEY_CHAINE_ID+" integer not null,"
-	        + KEY_CHAINE_BOITIER+" integer not null);";
+    private static final String TABLE_PROGRAMMES = " ("
+    	+ KEY_ROWID+" integer primary key autoincrement, "
+    	+ KEY_PROG_GENRE_ID+" integer not null,"
+    	+ KEY_PROG_CHANNEL_ID+" integer not null,"
+        + KEY_PROG_RESUM_S+" text not null,"
+        + KEY_PROG_RESUM_L+" text not null,"
+        + KEY_PROG_TITLE+" text not null,"
+        + KEY_PROG_DUREE+" int not null,"
+        + KEY_PROG_DATETIME_DEB+" datetime not null,"
+        + KEY_PROG_DATETIME_FIN+" datetime not null);";
+    
+    private static final String TABLE_GUIDECHAINES = " ("
+    	+ KEY_ROWID+" integer primary key autoincrement, "
+        + KEY_GUIDECHAINE_NAME+" text not null,"
+        + KEY_GUIDECHAINE_IMAGE+" text not null,"
+        + KEY_GUIDECHAINE_CANAL+" integer not null,"
+        + KEY_GUIDECHAINE_ID+" integer not null,"
+        + KEY_GUIDECHAINE_FBXID+" integer not null);";
+
+    private static final String TABLE_CHAINES = " ("
+    	+ KEY_ROWID+" integer primary key autoincrement, "
+        + KEY_CHAINE_NAME+" text not null,"
+        + KEY_CHAINE_ID+" integer not null,"
+        + KEY_CHAINE_BOITIER+" integer not null);";
 
     private static final String TABLE_SERVICES = " (_id integer primary key autoincrement, "
     	+ KEY_CHAINE_ID+" integer not null,"
@@ -72,13 +109,15 @@ public class ChainesDbAdapter {
 
     private static final String DATABASE_NAME = "pvrchaines";
     private static final String DATABASE_TABLE_CHAINES = "chaines";
-    private static final String DATABASE_TABLE_CHAINESTEMP = "chainestemp";
+    public static final String DATABASE_TABLE_CHAINESTEMP = "chainestemp";
     private static final String DATABASE_TABLE_SERVICES = "services";
-    private static final String DATABASE_TABLE_SERVICESTEMP = "servicestemp";
+    public static final String DATABASE_TABLE_SERVICESTEMP = "servicestemp";
     private static final String DATABASE_TABLE_BOITIERSDISQUES = "boitiersdisques";
     private static final String DATABASE_TABLE_BOITIERSDISQUESTEMP = "boitiersdisquestemp";
-    
-    private static final int DATABASE_VERSION = 16;
+    private static final String DATABASE_TABLE_PROGRAMMES = "programmes";
+    private static final String DATABASE_TABLE_GUIDECHAINES = "guidechaines";
+
+    private static final int DATABASE_VERSION = 24;
 
     private static final String DATABASE_CREATE_CHAINES =
         "create table "+DATABASE_TABLE_CHAINES+TABLE_CHAINES;
@@ -95,6 +134,12 @@ public class ChainesDbAdapter {
     private static final String DATABASE_CREATE_BOITIERSDISQUESTEMP =
         "create table "+DATABASE_TABLE_BOITIERSDISQUESTEMP+TABLE_BOITIERSDISQUES;
 
+    private static final String DATABASE_CREATE_PROGRAMMES =
+        "create table "+DATABASE_TABLE_PROGRAMMES+TABLE_PROGRAMMES;
+
+    private static final String DATABASE_CREATE_GUIDECHAINES =
+        "create table "+DATABASE_TABLE_GUIDECHAINES+TABLE_GUIDECHAINES;
+
     private final Context mCtx;
 
     private static class DatabaseHelper extends SQLiteOpenHelper {
@@ -105,7 +150,7 @@ public class ChainesDbAdapter {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-            Log.d(TAG, "DatabaseHelper onCreate called");
+            FBMHttpConnection.FBMLog("DatabaseHelper onCreate called");
 
             db.execSQL(DATABASE_CREATE_CHAINES);
             db.execSQL(DATABASE_CREATE_CHAINESTEMP);
@@ -113,11 +158,13 @@ public class ChainesDbAdapter {
             db.execSQL(DATABASE_CREATE_SERVICESTEMP);
             db.execSQL(DATABASE_CREATE_BOITIERSDISQUES);
             db.execSQL(DATABASE_CREATE_BOITIERSDISQUESTEMP);
+            db.execSQL(DATABASE_CREATE_PROGRAMMES);
+            db.execSQL(DATABASE_CREATE_GUIDECHAINES);
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
+            FBMHttpConnection.FBMLog("Upgrading database from version " + oldVersion + " to "
                     + newVersion + ", which will destroy all old data");
             db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_CHAINES);
             db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_CHAINESTEMP);
@@ -125,6 +172,8 @@ public class ChainesDbAdapter {
             db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_SERVICESTEMP);
             db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_BOITIERSDISQUES);
             db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_BOITIERSDISQUESTEMP);
+            db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_PROGRAMMES);
+            db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_GUIDECHAINES);
             onCreate(db);
         }
     }
@@ -159,6 +208,96 @@ public class ChainesDbAdapter {
         mDbHelper.close();
     }
 
+    /*
+     * METHODES POUR LES CHAINES DU GUIDE
+     */
+    public long createGuideChaine(int fbxid, int id, int canal, String name, String image)
+    {
+    	ContentValues initialValues = new ContentValues();
+        initialValues.put(KEY_GUIDECHAINE_FBXID, fbxid);
+        initialValues.put(KEY_GUIDECHAINE_ID, id);
+        initialValues.put(KEY_GUIDECHAINE_CANAL, canal);
+        initialValues.put(KEY_GUIDECHAINE_NAME, name);
+        initialValues.put(KEY_GUIDECHAINE_IMAGE, image);
+        return mDb.insert(DATABASE_TABLE_GUIDECHAINES, null, initialValues);
+    }
+
+	public long isGuideChainePresent(int id)
+	{
+		return mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE_GUIDECHAINES + " WHERE "+KEY_GUIDECHAINE_ID+" = "+id).simpleQueryForLong();
+	}
+
+    public Cursor getGuideChaine(int id)
+    {
+		return mDb.query(DATABASE_TABLE_GUIDECHAINES, new String[] {KEY_ROWID, KEY_GUIDECHAINE_FBXID,
+				KEY_GUIDECHAINE_ID, KEY_GUIDECHAINE_CANAL, KEY_GUIDECHAINE_NAME, KEY_GUIDECHAINE_IMAGE},
+		        KEY_GUIDECHAINE_ID+" = "+id, null, null, null, null);    	
+    }
+
+    public Cursor getAllGuideChaines2_unused()
+    {
+		return mDb.rawQuery("SELECT "+
+					KEY_GUIDECHAINE_ID+","+
+					KEY_GUIDECHAINE_CANAL+","+
+					KEY_GUIDECHAINE_NAME+","+
+					KEY_GUIDECHAINE_IMAGE+","+
+					KEY_PROG_CHANNEL_ID+
+				" FROM "+DATABASE_TABLE_GUIDECHAINES+" INNER JOIN "+ DATABASE_TABLE_PROGRAMMES+
+				" ON "+DATABASE_TABLE_GUIDECHAINES+"."+KEY_GUIDECHAINE_ID+" = "+
+					DATABASE_TABLE_PROGRAMMES+"."+KEY_PROG_CHANNEL_ID,null);
+/*		return mDb.query(DATABASE_TABLE_GUIDECHAINES, new String[] {KEY_ROWID, KEY_GUIDECHAINE_FBXID,
+				KEY_GUIDECHAINE_ID, KEY_GUIDECHAINE_CANAL, KEY_GUIDECHAINE_NAME, KEY_GUIDECHAINE_IMAGE},
+		        null, null, null, null, KEY_GUIDECHAINE_CANAL);
+		        */
+    }
+
+	/*
+     * METHODES POUR LES PROGRAMMES
+     */
+    
+    public long createProgramme(int genre_id, int channel_id, String resum_s, String resum_l, String title, int duree, String datetime_deb, String datetime_fin)
+    {
+    	ContentValues initialValues = new ContentValues();
+        initialValues.put(KEY_PROG_GENRE_ID, genre_id);
+        initialValues.put(KEY_PROG_CHANNEL_ID, channel_id);
+        initialValues.put(KEY_PROG_RESUM_S, resum_s);
+        initialValues.put(KEY_PROG_RESUM_L, resum_l);
+        initialValues.put(KEY_PROG_TITLE, title);
+        initialValues.put(KEY_PROG_DUREE, duree);
+        initialValues.put(KEY_PROG_DATETIME_DEB, datetime_deb);
+        initialValues.put(KEY_PROG_DATETIME_FIN, datetime_fin);
+        return mDb.insert(DATABASE_TABLE_PROGRAMMES, null, initialValues);
+    }
+    
+    public Cursor getProgrammes(int chaineId, String deb, String fin)
+    {
+		return mDb.query(DATABASE_TABLE_PROGRAMMES, new String[] {KEY_ROWID, KEY_PROG_GENRE_ID,
+		        KEY_PROG_CHANNEL_ID, KEY_PROG_RESUM_S, KEY_PROG_TITLE, KEY_PROG_DUREE, KEY_PROG_DATETIME_DEB},
+		        KEY_PROG_CHANNEL_ID+" = "+chaineId+" AND "+
+		        KEY_PROG_DATETIME_FIN+" > '"+deb+"' AND "+
+		        KEY_PROG_DATETIME_DEB+" < '"+fin+"'"
+		        , null, null, null, KEY_PROG_DATETIME_DEB);
+    }
+
+	public long isProgrammePresent(int channelId, String horaire_deb)
+	{
+		return mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE_PROGRAMMES + " WHERE "+KEY_PROG_CHANNEL_ID+" = "+channelId+" AND "+KEY_PROG_DATETIME_DEB+" = '"+horaire_deb+"'").simpleQueryForLong();
+	}
+	
+	public Cursor getChainesProg()
+	{
+        return mDb.query(true, DATABASE_TABLE_PROGRAMMES,
+        		new String[] {
+        		KEY_PROG_CHANNEL_ID,
+        		},
+        		null,
+        		null, null, null, KEY_PROG_CHANNEL_ID, null);
+	}
+
+    /*
+     * METHODES POUR LES CHAINES
+     */
+
     public void swapChaines() {
         mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_SERVICES);
     	mDb.execSQL("ALTER TABLE "+DATABASE_TABLE_SERVICESTEMP+" RENAME TO "+DATABASE_TABLE_SERVICES);
@@ -167,13 +306,6 @@ public class ChainesDbAdapter {
         mDb.execSQL(DATABASE_CREATE_CHAINESTEMP);
         mDb.execSQL(DATABASE_CREATE_SERVICESTEMP);
     }
-    
-    public void swapBoitiersDisques()
-    {
-        mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_BOITIERSDISQUES);
-    	mDb.execSQL("ALTER TABLE "+DATABASE_TABLE_BOITIERSDISQUESTEMP+" RENAME TO "+DATABASE_TABLE_BOITIERSDISQUES);
-        mDb.execSQL(DATABASE_CREATE_BOITIERSDISQUESTEMP);    	
-    }
 
     public void cleanTempChaines()
     {
@@ -181,12 +313,6 @@ public class ChainesDbAdapter {
         mDb.execSQL(DATABASE_CREATE_SERVICESTEMP);
         mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_CHAINESTEMP);
         mDb.execSQL(DATABASE_CREATE_CHAINESTEMP);
-    }
-
-    public void cleanTempBoitiersDisques()
-    {
-        mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_BOITIERSDISQUESTEMP);
-        mDb.execSQL(DATABASE_CREATE_BOITIERSDISQUESTEMP);    	
     }
 
     /**
@@ -200,12 +326,33 @@ public class ChainesDbAdapter {
      */
     public long createChaine(String name, int chaine_id, int boitier_id) {
         ContentValues initialValues = new ContentValues(3);
-        initialValues.put(KEY_NAME, name);
+        initialValues.put(KEY_CHAINE_NAME, name);
         initialValues.put(KEY_CHAINE_ID, chaine_id);
         initialValues.put(KEY_CHAINE_BOITIER, boitier_id);
         return mDb.insert(DATABASE_TABLE_CHAINESTEMP, null, initialValues);
     }
+
+    public SQLiteDatabase getDb()
+    {
+    	return mDb;
+    }
+
+    /**
+     * Return a Cursor over the list of all Chaines in the database
+     * 
+     * @return Cursor over all Chaines
+     */
+    public Cursor fetchAllChaines(int boitier_id) 
+    {
+		return mDb.query(DATABASE_TABLE_CHAINES, new String[] {KEY_ROWID, KEY_CHAINE_NAME,
+	        KEY_CHAINE_ID},
+	        KEY_CHAINE_BOITIER + "=" + boitier_id, null, null, null, KEY_CHAINE_ID);
+    }    
     
+    /*
+     * METHODES POUR LES SERVICES DE CHAINES (QUALITE) 
+     */
+
     public long createService(int chaine_id, int boitier_id, String service_desc, int service_id, int pvr_mode)
     {
     	ContentValues initialValues = new ContentValues(5);
@@ -215,6 +362,32 @@ public class ChainesDbAdapter {
         initialValues.put(KEY_SERVICE_ID, service_id);
         initialValues.put(KEY_PVR_MODE, pvr_mode);        
         return mDb.insert(DATABASE_TABLE_SERVICESTEMP, null, initialValues);
+    }
+
+    public Cursor fetchServicesChaine(int chaineId, int boitier_id)
+    {
+		return mDb.query(DATABASE_TABLE_SERVICES, new String[] {KEY_ROWID, KEY_SERVICE_DESC,
+	        KEY_SERVICE_ID, KEY_PVR_MODE},
+	        KEY_CHAINE_ID + "=" + chaineId + " AND " + KEY_CHAINE_BOITIER + "=" + boitier_id,
+	        null, null, null, null, null);
+    }
+
+    
+    /*
+     * METHODES POUR LES BOITIERS/DISQUES
+     */
+
+    public void swapBoitiersDisques()
+    {
+        mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_BOITIERSDISQUES);
+    	mDb.execSQL("ALTER TABLE "+DATABASE_TABLE_BOITIERSDISQUESTEMP+" RENAME TO "+DATABASE_TABLE_BOITIERSDISQUES);
+        mDb.execSQL(DATABASE_CREATE_BOITIERSDISQUESTEMP);    	
+    }
+
+    public void cleanTempBoitiersDisques()
+    {
+        mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_BOITIERSDISQUESTEMP);
+        mDb.execSQL(DATABASE_CREATE_BOITIERSDISQUESTEMP);    	
     }
 
 	public long createBoitierDisque(String b_name, int b_id, int d_free_size, int d_total_size, int d_id,
@@ -298,110 +471,5 @@ public class ChainesDbAdapter {
 	        mCursor.moveToFirst();
 	    }
 	    return mCursor;    	
-    }
-
-    /**
-     * Modifies an existing Chaine using the title and body provided. If the Chaine is
-     * successfully created return the new rowId for that Chaine, otherwise return
-     * a -1 to indicate failure.
-     * 
-     * @param title the title of the Chaine
-     * @param body the body of the Chaine
-     * @return rowId or -1 if failed
-     */
-    public long modifyChaine_unused(int rowId, String name, int chaine_id, String service_desc,
-    		int service_id, int pvr_mode) {
-        ContentValues newValues = new ContentValues();
-
-        newValues.put(KEY_NAME, name);
-        newValues.put(KEY_CHAINE_ID, chaine_id);
-        newValues.put(KEY_SERVICE_DESC, service_desc);
-        newValues.put(KEY_SERVICE_ID, service_id);
-        newValues.put(KEY_PVR_MODE, pvr_mode);
-        
-        String[] strRowId = new String[] { new Integer(rowId).toString() };
-        
-        Log.d(TAG, "MODIF = "+newValues.toString());
-
-        return mDb.update(DATABASE_TABLE_CHAINES, newValues, KEY_ROWID+" = ?", strRowId);
-    }
-
-    /**
-     * Delete the Chaine with the given rowId
-     * 
-     * @param rowId id of Chaine to delete
-     * @return true if deleted, false otherwise
-     */
-    public boolean deleteChaine_unused(long rowId) {
-
-        return mDb.delete(DATABASE_TABLE_CHAINES, KEY_ROWID + "=" + rowId, null) > 0;
-    }
-    
-    public boolean deleteAllChaines_unused() {
-    	
-    	return mDb.delete(DATABASE_TABLE_CHAINES, "1", null) > 0;
-    }
-
-    /**
-     * Return a Cursor over the list of all Chaines in the database
-     * 
-     * @return Cursor over all Chaines
-     */
-    public Cursor fetchAllChaines(int boitier_id) {
-		return mDb.query(DATABASE_TABLE_CHAINES, new String[] {KEY_ROWID, KEY_NAME,
-	        KEY_CHAINE_ID},
-	        KEY_CHAINE_BOITIER + "=" + boitier_id, null, null, null, null);
-    }
-
-    public Cursor fetchServicesChaine(int chaineId, int boitier_id) {
-		return mDb.query(DATABASE_TABLE_SERVICES, new String[] {KEY_ROWID, KEY_SERVICE_DESC,
-	        KEY_SERVICE_ID, KEY_PVR_MODE},
-	        KEY_CHAINE_ID + "=" + chaineId + " AND " + KEY_CHAINE_BOITIER + "=" + boitier_id,
-	        null, null, null, null, null);
-    }
-
-    /**
-     * Return a Cursor positioned at the Chaine that matches the given rowId
-     * 
-     * @param rowId id of Chaine to retrieve
-     * @return Cursor positioned to matching Chaine, if found
-     * @throws SQLException if Chaine could not be found/retrieved
-     */
-    public Cursor fetchChaine_unused(long rowId) throws SQLException {
-        Cursor mCursor =
-                mDb.query(true, DATABASE_TABLE_CHAINES,
-                		new String[] {
-                		KEY_ROWID,
-                		KEY_NAME,
-                		KEY_CHAINE_ID},
-                		KEY_ROWID + "=" + rowId, null,
-                        null, null, null, null);
-        if (mCursor != null) {
-            mCursor.moveToFirst();
-        }
-        return mCursor;
-    }
-
-    /**
-     * Update the Chaine using the details provided. The Chaine to be updated is
-     * specified using the rowId, and it is altered to use the title and body
-     * values passed in
-     * 
-     * @param rowId id of Chaine to update
-     * @param title value to set Chaine title to
-     * @param body value to set Chaine body to
-     * @return true if the Chaine was successfully updated, false otherwise
-     */
-    public boolean updateChaine_unused(long rowId, String name, String chaine_id, String service_desc,
-    		String service_id, String pvr_mode) {
-        ContentValues args = new ContentValues();
-
-        args.put(KEY_NAME, name);
-        args.put(KEY_CHAINE_ID, chaine_id);
-        args.put(KEY_SERVICE_DESC, service_desc);
-        args.put(KEY_SERVICE_ID, service_id);
-        args.put(KEY_PVR_MODE, pvr_mode);
-
-        return mDb.update(DATABASE_TABLE_CHAINES, args, KEY_ROWID + "=" + rowId, null) > 0;
     }
 }

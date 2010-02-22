@@ -43,6 +43,7 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 	private boolean succesChargement;
     private static ListeEnregistrements listeEnregistrements = null;
     public static EnregistrementsActivity enrAct = null;
+    private AsyncTask<Void, Integer, Boolean> task = null;
 
 	static final int MENU_UPDATE = 0;
 	static final int MENU_ADD = 1;
@@ -107,9 +108,11 @@ public class EnregistrementsActivity extends ExpandableListActivity {
     }
     
     @Override
-	protected void onDestroy() {
+	protected void onDestroy()
+    {
     	super.onDestroy();
     	FBMHttpConnection.closeDisplay();
+    	enrAct = null;
     }
 	
 	@Override
@@ -137,18 +140,24 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 		}
 	}
 	
-    private void erreur(String msgErreur) {
-    	AlertDialog d = new AlertDialog.Builder(this).create();
-		d.setTitle(getString(R.string.pvrErreur));
-		d.setMessage(msgErreur);
-		d.setIcon(R.drawable.fm_magnetoscope);
-		d.setButton("Ok", new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int which) {
-				dialog.dismiss();
-				finish();
-			}
-		});
-		d.show();
+    private void erreur(String msgErreur)
+    {
+    	if (enrAct != null)
+    	{
+	    	AlertDialog d = new AlertDialog.Builder(this).create();
+			d.setTitle(getString(R.string.pvrErreur));
+			d.setMessage(msgErreur);
+			d.setIcon(R.drawable.fm_magnetoscope);
+			d.setButton("Ok", new DialogInterface.OnClickListener()
+			{
+				public void onClick(DialogInterface dialog, int which)
+				{
+					dialog.dismiss();
+					finish();
+				}
+			});
+			d.show();
+    	}
     }
     
     public static void reset() {
@@ -158,8 +167,9 @@ public class EnregistrementsActivity extends ExpandableListActivity {
     	}
     }
     
-    public void updaterEnregistrements(boolean updateFromConsole) {
-    	new UpdateEnregistrementsTask(updateFromConsole).execute();
+    public void updaterEnregistrements(boolean updateFromConsole)
+    {
+    	task = new UpdateEnregistrementsTask(updateFromConsole).execute();
     }
 
 	/**
@@ -308,7 +318,9 @@ public class EnregistrementsActivity extends ExpandableListActivity {
     	menu.add(0, CMENU_MODIF, 0, getString(R.string.pvrCMenuModif));
     	menu.add(0, CMENU_SUPPR, 0, getString(R.string.pvrCMenuSuppr));
     }
-    public boolean onContextItemSelected(MenuItem item) {
+
+    public boolean onContextItemSelected(MenuItem item)
+    {
     	final ExpandableListContextMenuInfo info = (ExpandableListContextMenuInfo) item.getMenuInfo();
     	int itemId = ExpandableListView.getPackedPositionGroup(info.packedPosition);
 		switch (item.getItemId()) {

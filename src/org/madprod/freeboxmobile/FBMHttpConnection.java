@@ -218,6 +218,11 @@ public class FBMHttpConnection implements Constants
 			return false;
 	}
 	
+	public static int connect()
+	{
+		return (connectionFree(login, password));
+	}
+
 	public static int checkConnected(int defValue)
 	{
 		if ((id == null) || (idt == null))
@@ -329,7 +334,7 @@ public class FBMHttpConnection implements Constants
 		try
 		{
 			ContentValues consoleValues = new ContentValues();
-			String br = getPage(getAuthRequestISR(suiviTechUrl, null, true, true));
+			String br = getPage(getAuthRequest(suiviTechUrl, null, true, true, "ISO8859_1"));
 			String offre = parsePage(br, "Raccordée actuellement en offre", "<font", "</font>");
 			if (offre.contains("Freebox dégroupé"))
 		    	consoleValues.put(KEY_LINETYPE, "1");
@@ -549,6 +554,7 @@ public class FBMHttpConnection implements Constants
         return false;
 	}
 
+	// TODO : Factoriser getAuthRequestIS et getAuthRequestISR
 	/**
 	 * getAuthRequest : perform a GET on an URL with p parameters
 	 * do not provide id or idt in URL
@@ -578,6 +584,7 @@ public class FBMHttpConnection implements Constants
 
 				h.setDoInput(true);
 				FBMLog("HEADERS : "+h.getHeaderFields());
+				// TODO : Tenir compte du getResponseCode()
 				FBMLog("RESPONSE : "+h.getResponseCode()+" "+h.getResponseMessage());
 				if (h.getHeaderFields().get("location") != null)
 				{
@@ -602,6 +609,7 @@ public class FBMHttpConnection implements Constants
 						h = prepareConnection(url+"?"+makeStringForPost(p, auth, null), "HEAD");
 					h.setDoInput(true);
 					FBMLog("HEADERS : "+h.getHeaderFields());
+					// TODO : Tenir compte du getResponseCode()
 					FBMLog("RESPONSE : "+h.getResponseCode()+" "+h.getResponseMessage());
 				}
 			}
@@ -650,13 +658,14 @@ public class FBMHttpConnection implements Constants
 	 * @param p : parameters for the GET request (null if none) (url must not have parameters in not null)
 	 * @param auth : true if you need id & idt added automatically for authentification on Free console (url must not have parameters in this case)
 	 * @param retour : set it to true of you want an InputStream with the page in return
+	 * @param charset : default charset
 	 * @return InputStreamReader HTML Page or null
 	 */
-	public static InputStreamReader getAuthRequestISR(String url, List<NameValuePair> p, boolean auth, boolean retour)
+	public static InputStreamReader getAuthRequest(String url, List<NameValuePair> p, boolean auth, boolean retour, String charset)
 	{
 		int c;
 		HttpURLConnection h = null;
-		String charset = "ISO8859_1";
+//		String charset = "ISO8859_1";
 
 		c = checkConnected(CONNECT_CONNECTED);
 		try
@@ -673,6 +682,7 @@ public class FBMHttpConnection implements Constants
 				charset = getCharset(h.getContentType(), charset);
 
 				FBMLog("HEADERS : "+h.getHeaderFields());
+				// TODO : Tenir compte du getResponseCode()
 				FBMLog("RESPONSE : "+h.getResponseCode()+" "+h.getResponseMessage());
 				if (h.getHeaderFields().get("location") != null)
 				{
@@ -697,6 +707,7 @@ public class FBMHttpConnection implements Constants
 						h = prepareConnection(url+"?"+makeStringForPost(p, auth, charset), "HEAD");
 					h.setDoInput(true);
 					FBMLog("HEADERS : "+h.getHeaderFields());
+					// TODO : Tenir compte du getResponseCode()
 					FBMLog("RESPONSE : "+h.getResponseCode()+" "+h.getResponseMessage());
 				}
 			}
@@ -721,7 +732,6 @@ public class FBMHttpConnection implements Constants
 		return (null);
 	}
 
-	// TODO : From r249 to test (remove)
 	public static InputStreamReader postAuthRequest(String url, List<NameValuePair> p, boolean auth, boolean retour)
 	{
 		HttpURLConnection h = null;
@@ -766,82 +776,6 @@ public class FBMHttpConnection implements Constants
 						h.setDoInput(true);
 					OutputStreamWriter o = new OutputStreamWriter(h.getOutputStream());
 					o.write(makeStringForPost(p, false, null));
-					o.flush();
-					o.close();
-				}
-			}
-			else
-			{
-				FBMLog("POST : AUTHENTIFICATION OK");
-				c = CONNECT_CONNECTED;
-			}
-			if ((c == CONNECT_CONNECTED) && (retour))
-			{
-				FBMLog("POST : LECTURE DONNEES");
-				pagesCharset = getCharset(h.getContentType(), pagesCharset);
-				return (new InputStreamReader(h.getInputStream(), pagesCharset));
-			}
-		}
-		catch (Exception e)
-		{
-			FBMLog("EXCEPTION PostAuthRequest : "+e.getMessage()+" "+getStackTrace(e));
-		}
-		return (null);
-	}
-
-	/**
-	* Sends a POST request
-	* @param  url : url to post
-	* @param  nameValuePairs : a list of NameValuePair with parameters to post
-	* @param auth : true pour ajouter automatiquement id & idt
-	* @retour true pour avec une valeur non nulle en retour (si on veut le contenu de la page ou pas)
-	*/
-	public static InputStreamReader postAuthRequest2(String url, List<NameValuePair> p, boolean auth, boolean retour)
-	{
-		HttpURLConnection h = null;
-		int c;
-		String pagesCharset = "ISO8859_1";
-		
-		FBMLog("-- POST: " + url);
-		try
-		{
-			c = checkConnected(CONNECT_CONNECTED);
-			if (c == CONNECT_CONNECTED)
-			{
-				FBMLog("POST : VERIFICATION DE SESSION");
-				h = prepareConnection(url+(auth ? "?"+makeStringForPost(null, auth, null) : ""), "POST");
-				h.setDoOutput(true);
-				if (retour)
-					h.setDoInput(true);
-				OutputStreamWriter o = new OutputStreamWriter(h.getOutputStream());
-				pagesCharset = getCharset(h.getContentType(), pagesCharset);
-
-				o.write(makeStringForPost(p, false, pagesCharset));
-				if (h.getHeaderFields().get("location") != null)
-				{
-					c = CONNECT_NOT_CONNECTED;
-				}
-				o.flush();
-				o.close();
-			}
-			if (c != CONNECT_CONNECTED)
-			{
-				if (h != null)
-				{
-					h.disconnect();
-					h = null;
-				}
-				FBMLog("POST : PAS AUTHENTIFIE SUR LA CONSOLE - SESSION EXPIREE");
-				c = connectionFree(login, password);
-				if (c == CONNECT_CONNECTED)
-				{
-					FBMLog("POST :  REAUTHENTIFICATION OK");
-					h = prepareConnection(url+(auth ? "?"+makeStringForPost(null, auth, pagesCharset) : ""), "POST");
-					h.setDoOutput(true);
-					if (retour)
-						h.setDoInput(true);
-					OutputStreamWriter o = new OutputStreamWriter(h.getOutputStream());
-					o.write(makeStringForPost(p, false, pagesCharset));
 					o.flush();
 					o.close();
 				}
