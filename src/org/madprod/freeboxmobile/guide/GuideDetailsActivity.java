@@ -7,9 +7,13 @@ import org.madprod.freeboxmobile.pvr.ProgrammationActivity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
@@ -19,7 +23,7 @@ import android.widget.TextView;
 * 
 */
 
-public class GuideDetailsActivity extends Activity
+public class GuideDetailsActivity extends Activity implements GuideConstants
 {
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -39,6 +43,7 @@ public class GuideDetailsActivity extends Activity
 	        TextView nomChaine = (TextView) findViewById(R.id.GuideDetailsNomChaine);
 	        Button enregistrer = (Button) findViewById(R.id.GuideDetailsButtonEnregistrer);
 	        Button regarder = (Button) findViewById(R.id.GuideDetailsButtonRegarder);
+	        ImageView logoChaine = (ImageView) findViewById(R.id.GuideDetailsLogoChaine);
 	        
 	        titreEmission.setText(extras.getString(ChainesDbAdapter.KEY_PROG_TITLE));
 	        descEmission.setText(extras.getString(ChainesDbAdapter.KEY_PROG_RESUM_L));
@@ -66,6 +71,16 @@ public class GuideDetailsActivity extends Activity
 						}
 					}
 				);
+	        String filepath = Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES+extras.getString(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE);
+			Bitmap bmp = BitmapFactory.decodeFile(filepath);
+			if (bmp != null)
+			{
+				logoChaine.setImageBitmap(bmp);
+			}
+			else
+			{
+				logoChaine.setVisibility(View.GONE);
+			}
         }
         else
         {

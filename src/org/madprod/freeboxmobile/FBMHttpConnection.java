@@ -492,12 +492,12 @@ public class FBMHttpConnection implements Constants
         int connected;
 
         connected = checkConnected(CONNECT_CONNECTED);
-		FBMLog("->DOWNLOADING FILE : "+url);
+//		FBMLog("->DOWNLOADING FILE : "+url);
         try
         {
 			if (connected == CONNECT_CONNECTED)
 			{
-				FBMLog("GETFILE : VERIF SI ON EST AUTHENTIFIE");
+//				FBMLog("GETFILE : VERIF SI ON EST AUTHENTIFIE");
 				c = prepareConnection(url+"?"+makeStringForPost(p, auth, null), "GET");
 				c.setDoInput(true);
 				FBMLog("HEADERS : "+c.getHeaderFields());
@@ -527,12 +527,12 @@ public class FBMHttpConnection implements Constants
 			}
 			else
 			{
-				FBMLog("GETFILE : AUTHENTIFICATION OK");
+//				FBMLog("GETFILE : AUTHENTIFICATION OK");
 				connected = CONNECT_CONNECTED;
 			}
 			if (connected == CONNECT_CONNECTED)
 			{
-				FBMLog("GETFILE : LECTURE FICHIER");
+//				FBMLog("GETFILE : LECTURE FICHIER");
 		    	c.connect();
 		        f = new FileOutputStream(file);
 		        InputStream in = c.getInputStream();
@@ -543,7 +543,7 @@ public class FBMHttpConnection implements Constants
 		        }
 		    	f.close();
 		    	in.close();
-		    	FBMLog("->FILE DOWNLOADED");
+//		    	FBMLog("->FILE DOWNLOADED");
 		    	return true;
 			}
         }

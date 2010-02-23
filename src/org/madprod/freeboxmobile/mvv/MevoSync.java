@@ -380,7 +380,6 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 
 	public static int getMessageList()
 	{
-
 		int newmsg = -1;
 		try
 		{

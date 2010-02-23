@@ -298,6 +298,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
 		i.putExtra(ChainesDbAdapter.KEY_PROG_DUREE, p.duree);
 		i.putExtra(ChainesDbAdapter.KEY_PROG_DATETIME_DEB, p.datetime_deb);
 		i.putExtra(ChainesDbAdapter.KEY_GUIDECHAINE_CANAL, p.canal);
+		i.putExtra(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE, p.image);
 		i.putExtra(ChainesDbAdapter.KEY_GUIDECHAINE_NAME, p.chaine_name);
 		i.putExtra(ChainesDbAdapter.KEY_PROG_RESUM_L, p.resum_l);
         startActivity(i);
@@ -448,6 +449,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
 			p.canal = listeChaines.canal;
 			p.chaine_name = listeChaines.name;
 			p.resum_l = listeChaines.programmes.getString(listeChaines.programmes.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_RESUM_L));
+			p.image = listeChaines.image;
 			return p;
 		}
 
@@ -535,7 +537,8 @@ public class GuideActivity extends ListActivity implements GuideConstants
 
     public static class Programme
     {
-    	public int channel_id;
+    	public String image;
+		public int channel_id;
     	public int duree;
     	public String datetime_deb;
     	public String titre;
@@ -568,6 +571,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
     		progressDialog.setTitle("Importation");
     		progressDialog.setMessage(progressText);
     		progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+    		progressDialog.setCancelable(false);
     		progressDialog.show();
         }
 		progressDialog.setMessage(progressText);

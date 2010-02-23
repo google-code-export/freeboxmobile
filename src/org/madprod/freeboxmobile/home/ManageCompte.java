@@ -39,7 +39,7 @@ public class ManageCompte extends AsyncTask<ComptePayload, Void, ComptePayload> 
 			new PvrNetwork(activity, true, true).getData();
 	    	ProgrammationActivity.lastUser = "";
 	    	ProgrammationActivity.dismissPd();
-			new GuideNetwork(activity,null, true, false, false).getData();
+			new GuideNetwork(activity, null, true, true, false).getData();
 			GuideActivity.dismissPd();
 		}
 		return payload[0];
