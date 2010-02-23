@@ -1,6 +1,7 @@
-<TextView	
-	xmlns:android="http://schemas.android.com/apk/res/android"	
-	android:layout_width="fill_parent"	
-	android:layout_height="wrap_content"	
-	android:gravity="center"	
-	style="?android:attr/listSeparatorTextViewStyle" />
+<LinearLayout android:layout_width="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="horizontal" android:layout_height="wrap_content" android:id="@+id/GuideListHeader">
+	<ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/ImageViewHeader"></ImageView><TextView	
+		android:layout_width="fill_parent"	
+		android:id="@+id/TextViewHeader" style="?android:attr/listSeparatorTextViewStyle" android:layout_height="fill_parent" android:gravity="center_vertical" android:textSize="18sp" android:paddingLeft="10sp"/>
+
+
+</LinearLayout>
