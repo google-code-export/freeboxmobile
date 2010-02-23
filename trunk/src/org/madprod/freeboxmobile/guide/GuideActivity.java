@@ -19,8 +19,11 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,6 +35,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -328,15 +333,28 @@ public class GuideActivity extends ListActivity implements GuideConstants
 		FBMHttpConnection.FBMLog("getFromDb");
 	    adapter = new SectionedAdapter()
 	    {
-	    	protected View getHeaderView(String caption, int index, View convertView, ViewGroup parent)
+	    	protected View getHeaderView(String caption, Bitmap bmp, int index, View convertView, ViewGroup parent)
 	    	{
-	    		TextView result = (TextView)convertView;
+	    		LinearLayout header = (LinearLayout) convertView;
+//	    		TextView result = (TextView)convertView;
 	    		if (convertView == null)
 	    		{
-					result = (TextView)getLayoutInflater().inflate(R.layout.guide_list_header, null);
+					header = (LinearLayout)getLayoutInflater().inflate(R.layout.guide_list_header, null);
 	    		}
+	    		TextView result = (TextView)header.findViewById(R.id.TextViewHeader);
+	    		ImageView logo = (ImageView)header.findViewById(R.id.ImageViewHeader); 
+//		        String filepath = Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES+extras.getString(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE);
+//				Bitmap bmp = BitmapFactory.decodeFile(filepath);
+				if (bmp != null)
+				{
+					logo.setImageBitmap(bmp);
+				}
+				else
+				{
+					logo.setVisibility(View.GONE);
+				}
 	    		result.setText(caption);
-	    		return(result);
+	    		return(header);
 	    	}    	
 	    };
 
@@ -381,12 +399,16 @@ public class GuideActivity extends ListActivity implements GuideConstants
 				// Puis on créé les différentes sous-listes (une par chaine)
 				ga = new ArrayList<GuideAdapter>();
 				Iterator<ListeChaines> it = listesChaines.iterator();
+				String filepath;
+				Bitmap bmp;
 				while(it.hasNext())
 				{
 					l = it.next();
 					GuideAdapter g = new GuideAdapter(this, l);
 					ga.add(g);
-					adapter.addSection(((Integer)l.canal).toString()+" - "+l.name+" ("+((Integer)l.chaine_id).toString()+")",g);
+			        filepath = Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES+l.image;
+					bmp = BitmapFactory.decodeFile(filepath);
+					adapter.addSection(l.name+" ("+((Integer)l.canal).toString()+")",bmp,g);
 				}
 			}
 		}

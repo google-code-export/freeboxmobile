@@ -3,6 +3,7 @@ package org.madprod.freeboxmobile.guide;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.graphics.Bitmap;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Adapter;
@@ -17,7 +18,7 @@ import android.widget.BaseAdapter;
 
 abstract public class SectionedAdapter extends BaseAdapter
 {
-	abstract protected View getHeaderView(String caption, int index, View convertView, ViewGroup parent);
+	abstract protected View getHeaderView(String caption, Bitmap image, int index, View convertView, ViewGroup parent);
 	
 	private List<Section> sections = new ArrayList<Section>();
 	private static int TYPE_SECTION_HEADER=0;
@@ -27,9 +28,9 @@ abstract public class SectionedAdapter extends BaseAdapter
 		super();
 	}
 	
-	public void addSection(String caption, Adapter adapter)
+	public void addSection(String caption, Bitmap image, Adapter adapter)
 	{
-		sections.add(new Section(caption, adapter));
+		sections.add(new Section(caption, image, adapter));
 	}
 	
 	public Object getItem(int position)
@@ -115,7 +116,7 @@ abstract public class SectionedAdapter extends BaseAdapter
 		{
 			if (position==0)
 			{
-				return(getHeaderView(section.caption, sectionIndex,	convertView, parent));
+				return(getHeaderView(section.caption, section.image, sectionIndex,	convertView, parent));
 			}
 			int size=section.adapter.getCount()+1;
 			if (position<size)
@@ -137,11 +138,13 @@ abstract public class SectionedAdapter extends BaseAdapter
 	class Section
 	{
 		String caption;
+		Bitmap image;
 		Adapter adapter;
-		Section(String caption, Adapter adapter)
+		Section(String caption, Bitmap image, Adapter adapter)
 		{
 				this.caption = caption;
 				this.adapter = adapter;
+				this.image = image;
 		}
 	}
 }
