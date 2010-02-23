@@ -817,6 +817,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
     		progressDialog.setTitle("Importation");
     		progressDialog.setMessage(progressText);
     		progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+    		progressDialog.setCancelable(false);
     		progressDialog.show();
         }
         progressDialog.setProgress(progress);
@@ -844,6 +845,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 		progressDialog.setIcon(R.drawable.fm_magnetoscope);
 		progressDialog.setTitle(a.getString(R.string.pvrPatientez));
 		progressDialog.setMessage(a.getString(R.string.pvrTelechargementDonnees));
+		progressDialog.setCancelable(false);
 		progressDialog.show();
     }
 

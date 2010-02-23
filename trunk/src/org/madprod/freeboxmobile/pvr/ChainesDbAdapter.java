@@ -152,12 +152,14 @@ public class ChainesDbAdapter {
 
     private static class DatabaseHelper extends SQLiteOpenHelper {
 
-        DatabaseHelper(Context context) {
+        DatabaseHelper(Context context)
+        {
 			super(context, DATABASE_NAME+"_"+FBMHttpConnection.getIdentifiant(), null, DATABASE_VERSION);
         }
 
         @Override
-        public void onCreate(SQLiteDatabase db) {
+        public void onCreate(SQLiteDatabase db)
+        {
             FBMHttpConnection.FBMLog("DatabaseHelper onCreate called");
 
             db.execSQL(DATABASE_CREATE_CHAINES);
@@ -213,7 +215,8 @@ public class ChainesDbAdapter {
         return this;
     }
     
-    public void close() {
+    public void close()
+    {
         mDb.close();
         mDbHelper.close();
     }

@@ -109,7 +109,7 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Pvr
 		
 		db = new ChainesDbAdapter(activity);
 		db.open();
-		SQLiteDatabase mDb = db.getDb();
+//		SQLiteDatabase mDb = db.getDb();
 
     	String url = "http://adsl.free.fr/admin/magneto.pl";
     	
@@ -196,17 +196,16 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Pvr
 							jChaineObject = jChainesArray.getJSONObject(i);
 							chaineId = jChaineObject.getInt("id");
 							
-							chainesValues.put(KEY_NAME, jChaineObject.getString("name"));
+/*							chainesValues.put(KEY_NAME, jChaineObject.getString("name"));
 					        chainesValues.put(KEY_CHAINE_ID, chaineId);
 					        chainesValues.put(KEY_CHAINE_BOITIER, boitier);
 							mDb.insert(DATABASE_TABLE_CHAINESTEMP, null, chainesValues);
-							/*
+*/
 							db.createChaine(
 									jChaineObject.getString("name"),
 									chaineId,
 									boitier
 									);
-									*/
 		//			    	FBMHttpConnection.FBMLog("GET DATA DIRECT CHAINE "+id);
 							jServicesArray = jChaineObject.getJSONArray("service");
 							for (j=0 ; j < jServicesArray.length() ; j++)
@@ -224,20 +223,19 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Pvr
 									pvrmode = PVR_MODE_DISABLED;
 								}
 								
-								servicesValues.put(KEY_CHAINE_ID, chaineId);
+/*								servicesValues.put(KEY_CHAINE_ID, chaineId);
 							    servicesValues.put(KEY_CHAINE_BOITIER, boitier);
 							    servicesValues.put(KEY_SERVICE_DESC, jServiceObject.getString("desc"));
 							    servicesValues.put(KEY_SERVICE_ID, jServiceObject.getInt("id"));
 							    servicesValues.put(KEY_PVR_MODE, pvrmode);        
 							    mDb.insert(DATABASE_TABLE_SERVICESTEMP, null, servicesValues);
-								/*
+*/
 								db.createService(
 										chaineId,
 										boitier,
 										jServiceObject.getString("desc"),
 										jServiceObject.getInt("id"),
 										pvrmode);
-										*/
 	//					    	FBMHttpConnection.FBMLog("GET DATA DIRECT SERVICE "+id);
 							}
 						}

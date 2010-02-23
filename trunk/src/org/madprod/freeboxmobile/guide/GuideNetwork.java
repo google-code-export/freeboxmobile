@@ -1,5 +1,7 @@
 package org.madprod.freeboxmobile.guide;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,20 +13,21 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.madprod.freeboxmobile.Constants;
 import org.madprod.freeboxmobile.FBMHttpConnection;
+import org.madprod.freeboxmobile.Utils;
 import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.app.Activity;
 import android.os.AsyncTask;
+import android.os.Environment;
 
 /**
  * $Id$
  */
 
-public class GuideNetwork extends AsyncTask<Void, Integer, Boolean> implements Constants
+public class GuideNetwork extends AsyncTask<Void, Integer, Boolean> implements GuideConstants
 {
 	private Activity activity;
 	private String datetime;
@@ -52,10 +55,17 @@ public class GuideNetwork extends AsyncTask<Void, Integer, Boolean> implements C
     	else {
 //    		ProgrammationActivity.afficherMsgErreur(activity.getString(R.string.pvrErreurTelechargementChaines), activity);
     	}
-    	if (activity != null)
-    		GuideActivity.dismissPd();
+   		GuideActivity.dismissPd();
     }
     
+    /**
+     * GuideNetwork : refresh data for Guide
+     * @param a : activity used to display progress bars
+     * @param d : datetime to get programmes (if prog == true)
+     * @param chaine : wants to get chaines lits ?
+     * @param prog : wants to get programmes ?
+     * @param force : force refresh programmes event if they are already present in database
+     */
     public GuideNetwork(Activity a, String d, boolean chaine, boolean prog, boolean force)
     {
     	activity = a;
@@ -178,7 +188,7 @@ public class GuideNetwork extends AsyncTask<Void, Integer, Boolean> implements C
 				{
 					jChannelsObject = jObject.getJSONObject("progs");
 					max = jChannelsObject.length();
-					GuideActivity.progressText = "Actualisation des programmes TV";
+					GuideActivity.progressText = "Actualisation des programmes TV pour "+max+" chaînes choisies...";
 					GuideActivity.setPdMax(max);
 					for (Iterator <String> it = jChannelsObject.keys() ; it.hasNext() ;)
 					{
@@ -206,16 +216,21 @@ public class GuideNetwork extends AsyncTask<Void, Integer, Boolean> implements C
 									getString(jHoraireObject,"datetime_fin")
 									);
 							}
+							// TODO : sinon rafraichir ?
 						}
 					}
 					db.createHistoGuide(datetime);
 				}
 				if (getChaines)
 				{
+					File file, filen;
+					String image, canal;
 					courant = 0;
+		        	file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES);
+		        	file.mkdirs();
 					jChannelsObject = jObject.getJSONObject("chaines");
 					max = jChannelsObject.length();
-					GuideActivity.progressText = "Actualisation des chaînes du Guide";
+					GuideActivity.progressText = "Actualisation des "+max+" chaînes du Guide...";
 					publishProgress(0);
 					GuideActivity.setPdMax(max);
 					for (Iterator <String> it = jChannelsObject.keys() ; it.hasNext() ;)
@@ -224,16 +239,39 @@ public class GuideNetwork extends AsyncTask<Void, Integer, Boolean> implements C
 						String channelId = it.next();
 						channel_id = Integer.decode(channelId);
 						jChannelObject = jChannelsObject.getJSONObject(channelId);
+						image = getString(jChannelObject, "image");
+						canal = getString(jChannelObject, "canal");
 						if (db.isGuideChainePresent(channel_id) == 0)
 						{
 							db.createGuideChaine(
 								Integer.decode(getString(jChannelObject, "fbx_id")),
 								channel_id,
-								Integer.decode(getString(jChannelObject, "canal")),
+								Integer.decode(canal),
 								getString(jChannelObject, "name"),
-								getString(jChannelObject, "image")
+								image
 								);
 						}
+						// TODO : si chaine déjà présente -> update
+						
+						// On teste si on a le fichier qui correspond à la chaine
+				        file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES, image);
+				        if (file.exists() == false)
+				        {
+							if (FBMHttpConnection.getFile(file, IMAGES_URL+image, null, false))
+							{
+						        filen = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES, canal+".png");
+								try
+								{
+									FBMHttpConnection.FBMLog("Copy file "+image);
+									Utils.copyFile(file, filen);
+								}
+								catch (IOException e)
+								{
+									FBMHttpConnection.FBMLog("Impossible de copier "+image+" "+canal);
+									e.printStackTrace();
+								}
+							}
+				        }
 					}
 				}
 			}
@@ -249,9 +287,9 @@ public class GuideNetwork extends AsyncTask<Void, Integer, Boolean> implements C
         {
         	ok = false;
         }
-    	FBMHttpConnection.FBMLog("Guide Network end "+new Date());
    		publishProgress(max);
     	db.close();
+    	FBMHttpConnection.FBMLog("Guide Network end "+new Date());
     	if (ok)
     	{
 	    	// On met à jour le timestamp du dernier refresh
