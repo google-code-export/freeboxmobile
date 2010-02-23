@@ -62,7 +62,11 @@ public class ChainesDbAdapter {
      * Database creation sql statement
      */
     
-    private static final String TABLE_PROGRAMMES = " ("
+    private static final String TABLE_HISTOGUIDE = " ("
+    	+ KEY_ROWID+" integer primary key autoincrement, "
+    	+ KEY_PROG_DATETIME_DEB+" datetime not null);";
+
+    	private static final String TABLE_PROGRAMMES = " ("
     	+ KEY_ROWID+" integer primary key autoincrement, "
     	+ KEY_PROG_GENRE_ID+" integer not null,"
     	+ KEY_PROG_CHANNEL_ID+" integer not null,"
@@ -116,8 +120,9 @@ public class ChainesDbAdapter {
     private static final String DATABASE_TABLE_BOITIERSDISQUESTEMP = "boitiersdisquestemp";
     private static final String DATABASE_TABLE_PROGRAMMES = "programmes";
     private static final String DATABASE_TABLE_GUIDECHAINES = "guidechaines";
+    private static final String DATABASE_TABLE_HISTOGUIDE = "histoguide";
 
-    private static final int DATABASE_VERSION = 24;
+    private static final int DATABASE_VERSION = 27;
 
     private static final String DATABASE_CREATE_CHAINES =
         "create table "+DATABASE_TABLE_CHAINES+TABLE_CHAINES;
@@ -140,6 +145,9 @@ public class ChainesDbAdapter {
     private static final String DATABASE_CREATE_GUIDECHAINES =
         "create table "+DATABASE_TABLE_GUIDECHAINES+TABLE_GUIDECHAINES;
 
+    private static final String DATABASE_CREATE_HISTOGUIDE =
+        "create table "+DATABASE_TABLE_HISTOGUIDE+TABLE_HISTOGUIDE;
+
     private final Context mCtx;
 
     private static class DatabaseHelper extends SQLiteOpenHelper {
@@ -160,6 +168,7 @@ public class ChainesDbAdapter {
             db.execSQL(DATABASE_CREATE_BOITIERSDISQUESTEMP);
             db.execSQL(DATABASE_CREATE_PROGRAMMES);
             db.execSQL(DATABASE_CREATE_GUIDECHAINES);
+            db.execSQL(DATABASE_CREATE_HISTOGUIDE);
         }
 
         @Override
@@ -174,6 +183,7 @@ public class ChainesDbAdapter {
             db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_BOITIERSDISQUESTEMP);
             db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_PROGRAMMES);
             db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_GUIDECHAINES);
+            db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_HISTOGUIDE);
             onCreate(db);
         }
     }
@@ -207,6 +217,24 @@ public class ChainesDbAdapter {
         mDb.close();
         mDbHelper.close();
     }
+
+    /*
+     * METHODES POUR L'HISTORIQUE DU GUIDE
+     * Histoguide permet de savoir si on a déjà chargé les programmes pour 
+     * un timestamp donné
+     */
+    
+    public long createHistoGuide(String datetime)
+    {
+    	ContentValues initialValues = new ContentValues();
+    	initialValues.put(KEY_PROG_DATETIME_DEB, datetime);
+        return mDb.insert(DATABASE_TABLE_HISTOGUIDE, null, initialValues);
+    }
+    
+	public long isHistoGuidePresent(String datetime)
+	{
+		return mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE_HISTOGUIDE + " WHERE "+KEY_PROG_DATETIME_DEB+" = '"+datetime+"'").simpleQueryForLong();
+	}
 
     /*
      * METHODES POUR LES CHAINES DU GUIDE
@@ -349,7 +377,12 @@ public class ChainesDbAdapter {
 	        KEY_CHAINE_BOITIER + "=" + boitier_id, null, null, null, KEY_CHAINE_ID);
     }    
     
-    /*
+	public long getChainesNb()
+	{
+		return mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE_CHAINES).simpleQueryForLong();
+	}
+
+	/*
      * METHODES POUR LES SERVICES DE CHAINES (QUALITE) 
      */
 
