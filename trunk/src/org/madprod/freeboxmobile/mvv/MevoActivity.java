@@ -376,7 +376,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
 	private void displayAboutMevo()
     {	
     	AlertDialog d = new AlertDialog.Builder(this).create();
-		d.setTitle(getString(R.string.app_name));
+		d.setTitle(getString(R.string.app_name)+" - Messagerie Vocale");
 		d.setMessage(
 			"Incitez vos correspondants à vous laisser des messages !\n\n"+
 			"Créez une annonce d'accueil en composant **1 sur "+

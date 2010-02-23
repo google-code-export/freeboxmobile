@@ -14,10 +14,14 @@ import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
 import org.madprod.freeboxmobile.pvr.ProgrammationActivity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -177,13 +181,21 @@ public class GuideActivity extends ListActivity implements GuideConstants
     		new GuideActivityNetwork(sdf.format(new Date()), false, true, false).execute((Void[])null);
     	setTitle(getString(R.string.app_name)+" Guide TV - "+FBMHttpConnection.getTitle());
     	setListAdapter(adapter);
+    	
+		SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
+		if (!mgr.getString(KEY_SPLASH_GUIDE, "0").equals(this.getString(R.string.app_version)))
+		{
+			Editor editor = mgr.edit();
+			editor.putString(KEY_SPLASH_GUIDE, this.getString(R.string.app_version));
+			editor.commit();
+			displayAboutGuide();
+		}
     }
 	
     @Override
     public void onStart()
     {
     	super.onStart();
-    	FBMHttpConnection.FBMLog("GuideActivity onStart");
     }
 
     @Override
@@ -222,19 +234,6 @@ public class GuideActivity extends ListActivity implements GuideConstants
 	{
 		super.onListItemClick(l, v, pos, id);
 		launchActivity(GuideDetailsActivity.class, pos);
-/*		Programme p = (Programme) adapter.getItem(pos);
-		Intent i = new Intent(this, GuideDetailsActivity.class);
-//		Intent i = new Intent(this, ProgrammationActivity.class);
-		i.putExtra(ChainesDbAdapter.KEY_PROG_TITLE, p.titre);
-		i.putExtra(ChainesDbAdapter.KEY_PROG_CHANNEL_ID, p.channel_id);
-		i.putExtra(ChainesDbAdapter.KEY_PROG_DUREE, p.duree);
-		i.putExtra(ChainesDbAdapter.KEY_PROG_DATETIME_DEB, p.datetime_deb);
-		i.putExtra(ChainesDbAdapter.KEY_GUIDECHAINE_CANAL, p.canal);
-		i.putExtra(ChainesDbAdapter.KEY_GUIDECHAINE_NAME, p.chaine_name);
-		i.putExtra(ChainesDbAdapter.KEY_PROG_RESUM_L, p.resum_l);
-
-        startActivity(i);
-*/
 	}
 	
 	@Override
@@ -306,6 +305,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
 		i.putExtra(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE, p.image);
 		i.putExtra(ChainesDbAdapter.KEY_GUIDECHAINE_NAME, p.chaine_name);
 		i.putExtra(ChainesDbAdapter.KEY_PROG_RESUM_L, p.resum_l);
+		i.putExtra(ChainesDbAdapter.KEY_GUIDECHAINE_ID, p.guidechaine_id);
         startActivity(i);
     }
     
@@ -325,7 +325,6 @@ public class GuideActivity extends ListActivity implements GuideConstants
 			sdatefin = calDates.get((int) (datefin));
 		}
 		finDateHeure = sdatefin+" "+(heurefin<10?"0"+heurefin:heurefin)+":00:00";
-		FBMHttpConnection.FBMLog("DATEHEUREFIN : "+finDateHeure);
 	}
     
 	public void getFromDb()
@@ -336,15 +335,12 @@ public class GuideActivity extends ListActivity implements GuideConstants
 	    	protected View getHeaderView(String caption, Bitmap bmp, int index, View convertView, ViewGroup parent)
 	    	{
 	    		LinearLayout header = (LinearLayout) convertView;
-//	    		TextView result = (TextView)convertView;
 	    		if (convertView == null)
 	    		{
 					header = (LinearLayout)getLayoutInflater().inflate(R.layout.guide_list_header, null);
 	    		}
 	    		TextView result = (TextView)header.findViewById(R.id.TextViewHeader);
-	    		ImageView logo = (ImageView)header.findViewById(R.id.ImageViewHeader); 
-//		        String filepath = Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES+extras.getString(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE);
-//				Bitmap bmp = BitmapFactory.decodeFile(filepath);
+	    		ImageView logo = (ImageView)header.findViewById(R.id.ImageViewHeader);
 				if (bmp != null)
 				{
 					logo.setImageBitmap(bmp);
@@ -378,6 +374,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
 						l.canal = chaineCursor.getInt(chaineCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_CANAL));
 						l.name = chaineCursor.getString(chaineCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_NAME));
 						l.image = chaineCursor.getString(chaineCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE));
+						l.guidechaine_id = chaineCursor.getInt(chaineCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_ID));
 						chaineCursor.close();
 					}
 					else
@@ -463,7 +460,6 @@ public class GuideActivity extends ListActivity implements GuideConstants
 		{
 			Programme p = new Programme();
 			listeChaines.programmes.moveToPosition(position);
-			FBMHttpConnection.FBMLog("GetItem : "+listeChaines.programmes.getString(titreCI));
 			p.channel_id = listeChaines.programmes.getInt(listeChaines.programmes.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_CHANNEL_ID));
 			p.datetime_deb = listeChaines.programmes.getString(heureCI);
 			p.duree = listeChaines.programmes.getInt(dureeCI);
@@ -472,6 +468,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
 			p.chaine_name = listeChaines.name;
 			p.resum_l = listeChaines.programmes.getString(listeChaines.programmes.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_RESUM_L));
 			p.image = listeChaines.image;
+			p.guidechaine_id = listeChaines.guidechaine_id;
 			return p;
 		}
 
@@ -561,6 +558,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
     {
     	public String image;
 		public int channel_id;
+		public int guidechaine_id;
     	public int duree;
     	public String datetime_deb;
     	public String titre;
@@ -572,6 +570,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
     private class ListeChaines implements Comparable<ListeChaines>
     {
     	public int chaine_id;
+    	public int guidechaine_id;
     	public int canal;
     	public String name;
     	public String image;
@@ -602,7 +601,6 @@ public class GuideActivity extends ListActivity implements GuideConstants
 
     public static void setPdMax(int max)
     {
-    	FBMHttpConnection.FBMLog("setPdMax "+max);
     	progressDialog.setMax(max);
     }
     
@@ -614,36 +612,28 @@ public class GuideActivity extends ListActivity implements GuideConstants
     		progressDialog = null;
     	}
     }
-    /*
-    public static void showPasDeChaine()
-    {
-    	alertDialog = new AlertDialog.Builder(this).create();
-    	alertDialog.setTitle("La liste des chaînes du magnétoscope est vide");
-    	alertDialog.setIcon(R.drawable.icon_fbm_reverse);
-    	alertDialog.setMessage(
-			"La liste des chaînes est vide.\n"+
-			"Ceci est peut être dû à un problème réseau lors du téléchargement.\n"+
-			"Vous pouvez rafraichir la liste des chaînes en utilisant le bouton MENU de votre téléphone "+
-			"ou en cliquant ci-dessous."
-		);
-    	alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Rafraichir", new DialogInterface.OnClickListener()
+    
+	private void displayAboutGuide()
+    {	
+    	AlertDialog d = new AlertDialog.Builder(this).create();
+		d.setTitle(getString(R.string.app_name)+" - Guide TV");
+		d.setMessage(
+			"Le guide est en version beta.\n\n"+
+			"Ses fonctionnalités, son look et ses performances seront améliorés "+
+			"dans les prochaines semaines.\n\n"+
+			"Mais il est déjà pratique comme cela :)"
+			);
+		d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
 			{
 				public void onClick(DialogInterface dialog, int which)
 				{
-					dismissAd();
-					runProgNetwork(true, true);
+					dialog.dismiss();
 				}
-			}); 
-    	alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Plus tard", new DialogInterface.OnClickListener()
-		{
-			public void onClick(DialogInterface dialog, int which)
-			{
-				dialog.dismiss();
 			}
-		});
-    	alertDialog.show();
+			);
+		d.show();
     }
-*/
+
     private class GuideActivityNetwork extends AsyncTask<Void, Integer, Boolean>
     {
     	private String debdatetime;

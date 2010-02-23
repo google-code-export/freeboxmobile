@@ -1140,7 +1140,17 @@ public class ProgrammationActivity extends Activity implements PvrConstants
         {
 			nomEmission.setText(bundle.getString(ChainesDbAdapter.KEY_PROG_TITLE));
 			nomEmissionSaisi = true;
-	        chainesSpinner.setSelection(bundle.getInt(ChainesDbAdapter.KEY_GUIDECHAINE_CANAL));
+			chainesCursor.moveToFirst();
+			int chaine = bundle.getInt(ChainesDbAdapter.KEY_GUIDECHAINE_CANAL/*KEY_PROG_CHANNEL_ID*/);
+			do
+			{
+				if (chainesCursor.getInt(chainesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_CHAINE_ID)) == chaine)
+				{
+					break;
+				}
+			} while (chainesCursor.moveToNext());
+			
+	        chainesSpinner.setSelection(chainesCursor.getPosition());
 	        dureeEmission.setText(((Integer)bundle.getInt(ChainesDbAdapter.KEY_PROG_DUREE)).toString());
 	        String datetime = bundle.getString(ChainesDbAdapter.KEY_PROG_DATETIME_DEB);
 	        String dt[] = datetime.split(" ");
