@@ -60,6 +60,15 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 	static final int MENU_UPDATE_CHAINES = 1;
 	static final int MENU_UPDATE_ALL = 2;
 
+	// id utilisé pour les modifs d'enregistrements
+	private Integer ide = 0;
+	
+	// etat de ProgressBarIndeterminateVisibility
+	static private boolean pbiv = false;
+	
+	static private boolean fromListe = false;
+	static private boolean fromGuide = false;
+	
 	// Id du boitier séléctionné
 	private static int mBoitierHD = 0;
 	// Nom du boitier sélectionné
@@ -148,12 +157,16 @@ public class ProgrammationActivity extends Activity implements PvrConstants
     			savedInstanceState.getLong(EnregistrementsDbAdapter.KEY_ROWID)
     			: -1;
     	
+    	Bundle extras = getIntent().getExtras();
     	if (mRowId < 0)
     	{
-        	Bundle extras = getIntent().getExtras();
     		mRowId = extras != null ? extras.getLong(EnregistrementsDbAdapter.KEY_ROWID) : -1;
+    		if (mRowId != -1)
+    			fromListe = true;
     	}
-
+    	if (extras != null)
+    		fromGuide = extras.getString(ChainesDbAdapter.KEY_PROG_TITLE) != null;
+    	
         // Mode 24h
         ((TimePicker) findViewById(R.id.pvrPrgHeure)).setIs24HourView(true);
         
@@ -347,6 +360,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
     {
     	super.onStart();
     	
+		setProgressBarIndeterminateVisibility(pbiv);
     	if (lastUser.equals(FBMHttpConnection.getIdentifiant()))
     	{
     		preparerActivite();
@@ -365,6 +379,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 				runProgNetwork(false, true);
 			}
     	}
+        FBMHttpConnection.FBMLog("FIN ONSTART");
     }
     
     private boolean runProgNetwork(final boolean chaines, final boolean disques)
@@ -422,13 +437,16 @@ public class ProgrammationActivity extends Activity implements PvrConstants
     }
 	
 	@Override
-	protected void onResume() {
+	protected void onResume()
+	{
 		super.onResume();
 
-		if (progressDialog != null) {
+		if (progressDialog != null)
+		{
 			progressDialog.show();
 		}
-		if (alertDialog != null) {
+		if (alertDialog != null)
+		{
 			alertDialog.show();
 		}
 	}
@@ -437,10 +455,12 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 	protected void onPause() {
 		super.onPause();
     	
-		if (progressDialog != null) {
+		if (progressDialog != null)
+		{
 			progressDialog.dismiss();
 		}
-		if (alertDialog != null) {
+		if (alertDialog != null)
+		{
 			alertDialog.dismiss();
 		}
 		// TODO: enregistrer l'état du formulaire qqpart pour
@@ -636,6 +656,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
             choosen_day_deb = savedInstanceState.getInt("choosen_day_deb");
             choosen_hour_deb = savedInstanceState.getInt("choosen_hour_deb");
             choosen_minute_deb = savedInstanceState.getInt("choosen_minute_deb");
+            
             setFin();
             refreshDateTimeButtons();
     }
@@ -759,7 +780,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
     public void showPasDeChaine()
     {
     	alertDialog = new AlertDialog.Builder(this).create();
-    	alertDialog.setTitle("La liste des chaînes est vide");
+    	alertDialog.setTitle("La liste des chaînes du magnétoscope est vide");
     	alertDialog.setIcon(R.drawable.icon_fbm_reverse);
     	alertDialog.setMessage(
 			"La liste des chaînes est vide.\n"+
@@ -908,24 +929,12 @@ public class ProgrammationActivity extends Activity implements PvrConstants
         dureeSpinner.setAdapter(adapter);
 */
     	// S'il s'agit d'une modification d'un enregistrement existant, remplir le formulaire
-    	final Cursor enr = remplirFicheFromEnr();
-    	if (enr == null)
+    	if (chainesCursor.getCount() > 0)
     	{
-	    	// S'il s'agit d'un enregistrement à partir du guide, remplir le formulaire
-	    	if (remplirFicheFromGuide() == false)
-	    	{
-		//    	String dureeInput = dureeEmission.getText().toString();
-		    	// Durées avec le spinner
-/*		        if (lastPos != -1)
-		        {
-		        	dureeSpinner.setSelection(lastPos, true);
-		        }
-		        else
-		        {
-		            dureeSpinner.setSelection(8, true);
-		        }
-	*/	//        dureeEmission.setText(dureeInput);
-	    	}
+    		if (fromListe)
+    			remplirFicheFromEnr();
+    		if (fromGuide)
+    			remplirFicheFromGuide();
     	}
         setFin();
         refreshDateTimeButtons();
@@ -943,7 +952,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
             		progressDialog = new ProgressDialog(progAct);
             		progressDialog.setIcon(R.drawable.fm_magnetoscope);
             		progressDialog.setTitle(getString(R.string.pvrPatientez));
-            		progressDialog.setMessage(getString(enr == null ? R.string.pvrProgrammationEnCours : R.string.pvrModificationEnCours));
+            		progressDialog.setMessage(getString(fromListe ? R.string.pvrProgrammationEnCours : R.string.pvrModificationEnCours));
             		progressDialog.show();
                 }
             	
@@ -989,7 +998,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
             private String doAction()
             {
         		List<NameValuePair> postVars = new ArrayList<NameValuePair>();
-        		Integer service, duree, where_id, ide = 0;
+        		Integer service, duree, where_id;
         		int h, m;
         		String date, emission, heure, minutes;
         		
@@ -1004,10 +1013,6 @@ public class ProgrammationActivity extends Activity implements PvrConstants
         			return getString(R.string.pvrErreurNomEmission);
         		}
 
-        		if (enr != null) {
-        			ide = enr.getInt(enr.getColumnIndex(EnregistrementsDbAdapter.KEY_IDE));
-        		}
-        		
         		// Service
         		Spinner spinnerQualite = (Spinner) findViewById(R.id.pvrPrgQualite);
         		servicesCursor.moveToPosition(spinnerQualite.getSelectedItemPosition());
@@ -1063,7 +1068,8 @@ public class ProgrammationActivity extends Activity implements PvrConstants
             	// Post vars pour modification:
             	//chaine=12&service=0&date=10%2F01%2F2010&heure=23&minutes=09
             	//&duree=185&emission=pouet&where_id=0&ide=12&submit=MODIFIER+L%27ENREGISTREMENT
-            	if (enr != null) {
+            	if (fromListe)
+            	{
             		postVars.add(new BasicNameValuePair("submit", "MODIFIER+L%27ENREGISTREMENT"));
             		postVars.add(new BasicNameValuePair("ide", ide.toString()));
             	}
@@ -1102,6 +1108,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
         		return null;
             }
         });
+        FBMHttpConnection.FBMLog("FIN LONGUE");
     }
 	
 	static void afficherMsgErreur(String msg, Activity a) {	
@@ -1142,6 +1149,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 	        refreshDateTimeButtons();
 	        afficherInfosDisque();
 	        FBMHttpConnection.FBMLog("REMPLIR FICHE GUIDE DUREE="+dureeEmission.getText().toString());
+	        fromGuide = false;
 	        return true;
         }
         return false;
@@ -1152,29 +1160,32 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 	 * @returnCursor l'enregistrement si c'est une modification d'un enregistrement existant
 	 * null sinon
 	 */
-    private Cursor remplirFicheFromEnr()
+    private boolean remplirFicheFromEnr()
     {
 		// Est-ce un ajout ou une modification d'un enregistrement ?
 		Bundle bundle = getIntent().getExtras();	        
         if (bundle == null)
         {
-        	return null;
+        	return false;
         }
         
         //TODO: faire le remplissage si on vient de l'onglet grille des programmes
         // pour l'instant ça ne remplit la fiche que d'un enregistrement venant
         // de sqlite
         
-        if (mRowId >= 0) {
+        if (mRowId >= 0)
+        {
 	        // Récupération des infos concernant cet enregistrement
 	        EnregistrementsDbAdapter db = new EnregistrementsDbAdapter(this);
 	        db.open();
 	        Cursor c = db.fetchEnregistrement(mRowId);
+	        startManagingCursor(c);
 	        db.close();
 	        
 	        // Y'a qqn ?
-	        if (c.getCount() <= 0 || c.moveToFirst() == false) {
-	        	return null;
+	        if (c.getCount() <= 0 || c.moveToFirst() == false)
+	        {
+	        	return false;
 	        }
 	        
 	        // Views
@@ -1206,14 +1217,14 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 	        nomEmissionSaisi = true;
 	        int disqueId = Integer.parseInt(c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_WHERE_ID)));
 	        disqueSpinner.setSelection(disqueId);
+	        ide = c.getInt(c.getColumnIndex(EnregistrementsDbAdapter.KEY_IDE));
 	        refreshDateTimeButtons();
 	        afficherInfosDisque();
-	        return c;
+	        return true;
         }
         
         afficherInfosDisque();
-        
-        return null;
+        return false;
     }
 
     private int getGiga(int size)
@@ -1428,6 +1439,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
         {
 //    		if (!getChaines)
         		setProgressBarIndeterminateVisibility(true);
+        		pbiv = true;
 //        		else
 //        			showPatientezDonnees(progAct);
         }
@@ -1441,15 +1453,19 @@ public class ProgrammationActivity extends Activity implements PvrConstants
             showProgress(progAct, progress[0]);
         }	        
 
-        protected void onPostExecute(Boolean telechargementOk) {
-        	if (telechargementOk == Boolean.TRUE) {
+        protected void onPostExecute(Boolean telechargementOk)
+        {
+        	if (telechargementOk == Boolean.TRUE)
+        	{
         	}
-        	else {
+        	else
+        	{
     			afficherMsgErreur(progAct.getString(R.string.pvrErreurTelechargementDonnees), progAct);
         	}
         	preparerActivite();
         	dismissPd();
     		setProgressBarIndeterminateVisibility(false);
+    		pbiv = false;
         }
         
         public ProgNetwork(boolean getChaines, boolean getDisques)

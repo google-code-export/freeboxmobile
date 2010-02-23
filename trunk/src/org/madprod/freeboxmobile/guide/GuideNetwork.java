@@ -13,7 +13,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.madprod.freeboxmobile.Constants;
 import org.madprod.freeboxmobile.FBMHttpConnection;
-import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
 
 import android.content.SharedPreferences;
@@ -31,6 +30,7 @@ public class GuideNetwork extends AsyncTask<Void, Integer, Boolean> implements C
 	private String datetime;
 	private boolean getChaines;
 	private boolean getProg;
+	private boolean forceRefresh;
 	
     protected void onPreExecute()
     {
@@ -56,7 +56,7 @@ public class GuideNetwork extends AsyncTask<Void, Integer, Boolean> implements C
     		GuideActivity.dismissPd();
     }
     
-    public GuideNetwork(Activity a, String d, boolean chaine, boolean prog)
+    public GuideNetwork(Activity a, String d, boolean chaine, boolean prog, boolean force)
     {
     	activity = a;
     	if (d != null)
@@ -70,6 +70,7 @@ public class GuideNetwork extends AsyncTask<Void, Integer, Boolean> implements C
     	}
     	getChaines = chaine;
     	getProg = prog;
+    	forceRefresh = force;
     	FBMHttpConnection.FBMLog("GUIDENETWORK START "+d+" "+chaine+" "+prog);
     }
     
@@ -142,6 +143,13 @@ public class GuideNetwork extends AsyncTask<Void, Integer, Boolean> implements C
 		db = new ChainesDbAdapter(activity);
 		db.open();
 
+		if ((forceRefresh == false) && (db.isHistoGuidePresent(datetime) > 0) && (getChaines == false))
+		{
+			// On a déjà les données, on les charge donc pas
+			FBMHttpConnection.FBMLog("ON A DEJA LES DONNEES");
+			db.close();
+			return true;
+		}
     	String url = "http://adsl.free.fr/admin/magneto.pl";
         List<NameValuePair> param = new ArrayList<NameValuePair>();
         param.add(new BasicNameValuePair("ajax","get_chaines"));
@@ -200,6 +208,7 @@ public class GuideNetwork extends AsyncTask<Void, Integer, Boolean> implements C
 							}
 						}
 					}
+					db.createHistoGuide(datetime);
 				}
 				if (getChaines)
 				{

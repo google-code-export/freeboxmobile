@@ -165,6 +165,12 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     {
     	Map<String,Object> map;
 
+		map = new HashMap<String,Object>();
+		map.put(M_ICON, R.drawable.fm_guide_tv);
+		map.put(M_TITRE, getString(R.string.buttonGuide));
+		map.put(M_DESC, "Consultez le guide TV, programmez des enregistrements, regardez la télévision");
+		map.put(M_CLASS, org.madprod.freeboxmobile.guide.GuideActivity.class);
+		modulesList.add(map);    	
     	map = new HashMap<String,Object>();
 		map.put(M_ICON, R.drawable.fm_magnetoscope);
 		map.put(M_TITRE, getString(R.string.buttonPvr));
@@ -189,12 +195,6 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		map.put(M_DESC, "Utilisez votre compte Freebox pour envoyer des Fax à partir de votre mobile\n\nCette fonctionnalité sera bientot disponible");
 		map.put(M_CLASS, null/*FaxActivity.class*/);
 		modulesList.add(map);
-		map = new HashMap<String,Object>();
-		map.put(M_ICON, R.drawable.fm_guide_tv);
-		map.put(M_TITRE, getString(R.string.buttonGuide));
-		map.put(M_DESC, "Consultez le guide TV, programmez des enregistrements, regardez la télévision\n\nCette fonctionnalité sera bientot disponible");
-		map.put(M_CLASS, org.madprod.freeboxmobile.guide.GuideActivity.class);
-		modulesList.add(map);    	
 		map = new HashMap<String,Object>();
 		map.put(M_ICON, R.drawable.fm_actus_freenautes);
 		map.put(M_TITRE, getString(R.string.buttonActu));
