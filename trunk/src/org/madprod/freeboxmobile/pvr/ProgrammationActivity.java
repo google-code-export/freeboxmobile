@@ -155,15 +155,17 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 
     	mRowId = savedInstanceState != null ?
     			savedInstanceState.getLong(EnregistrementsDbAdapter.KEY_ROWID)
-    			: -1;
+    			: 0;
     	
+    	FBMHttpConnection.FBMLog("fromListe : "+fromListe+" "+mRowId);
     	Bundle extras = getIntent().getExtras();
-    	if (mRowId < 0)
+    	if (mRowId == 0)
     	{
-    		mRowId = extras != null ? extras.getLong(EnregistrementsDbAdapter.KEY_ROWID) : -1;
-    		if (mRowId != -1)
-    			fromListe = true;
+    		mRowId = extras != null ? extras.getLong(EnregistrementsDbAdapter.KEY_ROWID) : 0;
     	}
+		if (mRowId != 0)
+			fromListe = true;
+    	FBMHttpConnection.FBMLog("fromListe : "+fromListe+" "+mRowId);
     	if (extras != null)
     		fromGuide = extras.getString(ChainesDbAdapter.KEY_PROG_TITLE) != null;
     	
@@ -1070,6 +1072,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
             	//&duree=185&emission=pouet&where_id=0&ide=12&submit=MODIFIER+L%27ENREGISTREMENT
             	if (fromListe)
             	{
+            		FBMHttpConnection.FBMLog("MODIFIER !!!"+fromListe+" "+ide.toString());
             		postVars.add(new BasicNameValuePair("submit", "MODIFIER+L%27ENREGISTREMENT"));
             		postVars.add(new BasicNameValuePair("ide", ide.toString()));
             	}

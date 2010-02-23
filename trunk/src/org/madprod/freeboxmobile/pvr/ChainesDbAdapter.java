@@ -261,23 +261,7 @@ public class ChainesDbAdapter {
 				KEY_GUIDECHAINE_ID, KEY_GUIDECHAINE_CANAL, KEY_GUIDECHAINE_NAME, KEY_GUIDECHAINE_IMAGE},
 		        KEY_GUIDECHAINE_ID+" = "+id, null, null, null, null);    	
     }
-
-    public Cursor getAllGuideChaines2_unused()
-    {
-		return mDb.rawQuery("SELECT "+
-					KEY_GUIDECHAINE_ID+","+
-					KEY_GUIDECHAINE_CANAL+","+
-					KEY_GUIDECHAINE_NAME+","+
-					KEY_GUIDECHAINE_IMAGE+","+
-					KEY_PROG_CHANNEL_ID+
-				" FROM "+DATABASE_TABLE_GUIDECHAINES+" INNER JOIN "+ DATABASE_TABLE_PROGRAMMES+
-				" ON "+DATABASE_TABLE_GUIDECHAINES+"."+KEY_GUIDECHAINE_ID+" = "+
-					DATABASE_TABLE_PROGRAMMES+"."+KEY_PROG_CHANNEL_ID,null);
-/*		return mDb.query(DATABASE_TABLE_GUIDECHAINES, new String[] {KEY_ROWID, KEY_GUIDECHAINE_FBXID,
-				KEY_GUIDECHAINE_ID, KEY_GUIDECHAINE_CANAL, KEY_GUIDECHAINE_NAME, KEY_GUIDECHAINE_IMAGE},
-		        null, null, null, null, KEY_GUIDECHAINE_CANAL);
-		        */
-    }
+    
 
 	/*
      * METHODES POUR LES PROGRAMMES
@@ -300,7 +284,7 @@ public class ChainesDbAdapter {
     public Cursor getProgrammes(int chaineId, String deb, String fin)
     {
 		return mDb.query(DATABASE_TABLE_PROGRAMMES, new String[] {KEY_ROWID, KEY_PROG_GENRE_ID,
-		        KEY_PROG_CHANNEL_ID, KEY_PROG_RESUM_S, KEY_PROG_TITLE, KEY_PROG_DUREE, KEY_PROG_DATETIME_DEB},
+		        KEY_PROG_CHANNEL_ID, KEY_PROG_RESUM_S, KEY_PROG_RESUM_L, KEY_PROG_TITLE, KEY_PROG_DUREE, KEY_PROG_DATETIME_DEB},
 		        KEY_PROG_CHANNEL_ID+" = "+chaineId+" AND "+
 		        KEY_PROG_DATETIME_FIN+" > '"+deb+"' AND "+
 		        KEY_PROG_DATETIME_DEB+" < '"+fin+"'"
