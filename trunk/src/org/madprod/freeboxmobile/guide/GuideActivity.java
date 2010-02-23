@@ -11,6 +11,7 @@ import java.util.List;
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
+import org.madprod.freeboxmobile.pvr.ProgrammationActivity;
 
 import android.app.Activity;
 import android.app.ListActivity;
@@ -25,6 +26,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
@@ -32,6 +35,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 
 /**
 *
@@ -72,7 +76,8 @@ public class GuideActivity extends ListActivity implements GuideConstants
         FBMHttpConnection.FBMLog("GUIDE CREATE");
         
         setContentView(R.layout.guide);
-        
+        registerForContextMenu(getListView());
+
         mDbHelper = new ChainesDbAdapter(this);
         mDbHelper.open();
 
@@ -211,8 +216,8 @@ public class GuideActivity extends ListActivity implements GuideConstants
 	public void onListItemClick(ListView l, View v, int pos, long id)
 	{
 		super.onListItemClick(l, v, pos, id);
-		
-		Programme p = (Programme) adapter.getItem(pos);
+		launchActivity(GuideDetailsActivity.class, pos);
+/*		Programme p = (Programme) adapter.getItem(pos);
 		Intent i = new Intent(this, GuideDetailsActivity.class);
 //		Intent i = new Intent(this, ProgrammationActivity.class);
 		i.putExtra(ChainesDbAdapter.KEY_PROG_TITLE, p.titre);
@@ -224,8 +229,39 @@ public class GuideActivity extends ListActivity implements GuideConstants
 		i.putExtra(ChainesDbAdapter.KEY_PROG_RESUM_L, p.resum_l);
 
         startActivity(i);
+*/
 	}
 	
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View view, ContextMenuInfo menuInfo)
+	{
+		AdapterContextMenuInfo info;
+
+		super.onCreateContextMenu(menu, view, menuInfo);
+		info = (AdapterContextMenuInfo) menuInfo;
+		Programme p = (Programme) adapter.getItem((int)info.id);
+	    menu.setHeaderTitle(p.titre);
+	    menu.add(0, GUIDE_CONTEXT_ENREGISTRER, 0, "Enregistrer");
+	    menu.add(0, GUIDE_CONTEXT_DETAILS, 1, "Détails");
+	}
+	
+
+	@Override
+	public boolean onContextItemSelected(MenuItem item)
+	{
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+    	switch (item.getItemId())
+    	{
+			case GUIDE_CONTEXT_ENREGISTRER:
+				launchActivity(ProgrammationActivity.class, (int)info.id);
+			break;
+			case GUIDE_CONTEXT_DETAILS:
+				launchActivity(GuideDetailsActivity.class, (int)info.id);
+			break;
+    	}
+    	return super.onContextItemSelected(item);
+	}
+
 	@Override
     protected void onSaveInstanceState(Bundle outState)
 	{
@@ -253,6 +289,20 @@ public class GuideActivity extends ListActivity implements GuideConstants
             choosen_minute_deb = savedInstanceState.getInt("choosen_minute_deb");
 */    }
 
+    private void launchActivity(Class<?> cls, int pos)
+    {
+		Programme p = (Programme) adapter.getItem(pos);
+		Intent i = new Intent(this, cls);
+		i.putExtra(ChainesDbAdapter.KEY_PROG_TITLE, p.titre);
+		i.putExtra(ChainesDbAdapter.KEY_PROG_CHANNEL_ID, p.channel_id);
+		i.putExtra(ChainesDbAdapter.KEY_PROG_DUREE, p.duree);
+		i.putExtra(ChainesDbAdapter.KEY_PROG_DATETIME_DEB, p.datetime_deb);
+		i.putExtra(ChainesDbAdapter.KEY_GUIDECHAINE_CANAL, p.canal);
+		i.putExtra(ChainesDbAdapter.KEY_GUIDECHAINE_NAME, p.chaine_name);
+		i.putExtra(ChainesDbAdapter.KEY_PROG_RESUM_L, p.resum_l);
+        startActivity(i);
+    }
+    
 	private void setFinDateHeure()
 	{
 		// TODO : code cleaning ici
