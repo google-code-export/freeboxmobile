@@ -42,7 +42,8 @@ public class EnregistrementsNetwork
 	    	param.add(new BasicNameValuePair("sommaire","television"));
 	    	param.add(new BasicNameValuePair("box", ""+boitier));
 	    	contenu = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(url, param, true, true, "ISO8859_1"));
-	    	if (contenu == null) {
+	    	if (contenu == null)
+	    	{
 	    		return false;
 	    	}
 	
@@ -85,33 +86,24 @@ public class EnregistrementsNetwork
 	    	int debut = contenu.indexOf("<div class=\"table block\">") + 25;
 	    	int fin = contenu.indexOf("<div class=\"clearer\"></div>");
 	
-	    	if (debut > 25 && fin > 0) {
+	    	if (debut > 25 && fin > 0)
+	    	{
 	    		tableEnregistrements = contenu.substring(debut, fin);
 	    		succesChargement = true;
 	    		recupererEnregistrements(c, boitier);
 	    	}
 	    	boitier++;
     	} while (boitier < nbBoitiers);	
-		doSwap(c);
     	return succesChargement;
     }
-    
-	private static void doSwap(Context c)
-	{
-		EnregistrementsDbAdapter db;
 
-		db = new EnregistrementsDbAdapter(c);
-		db.open();
-		db.swapEnr();
-		db.close();
-	}
-	
     /**
      * Récupère les enregistrements depuis la table HTML de la console correspondant
      * à la liste des enregistrements programmés
      * Stocke cette liste dans la base sqlite
      */
-    private static boolean recupererEnregistrements(Context c, int bId) {
+    private static boolean recupererEnregistrements(Context c, int bId)
+    {
     	int debut;
     	String chaine, date, heure, duree, nom, ide, chaine_id, service_id;
     	String h, min, dur, name, where_id, repeat_a;
@@ -119,11 +111,13 @@ public class EnregistrementsNetwork
         // SQLite
         EnregistrementsDbAdapter db = new EnregistrementsDbAdapter(c);
         db.open();
-    	
-		do {
+        db.cleanEnregistrements(bId);
+		do
+		{
 			debut = tableEnregistrements.indexOf(" <form id=\"");
 			
-			if (debut > 0) {
+			if (debut > 0)
+			{
 				tableEnregistrements = tableEnregistrements.substring(debut);
 	        	
 	        	// Récupération des infos
@@ -143,13 +137,20 @@ public class EnregistrementsNetwork
 				where_id =		recupererChamp("value=\"", "\"");
 				repeat_a =		recupererChamp("value=\"", "\"") + " ";
 				
-				// EnregistrementActivity
+				if (db.isEnregistrementPresent(Integer.decode(ide)) > 0)
+				{
+					db.updateEnregistrement(chaine, "", date, heure, duree, nom, ide,
+							chaine_id, service_id, h, min, dur, name, where_id, repeat_a);	
+				}
+				else
+				{
 				db.createEnregistrement(chaine, "", date, heure, duree, nom, ide,
 						chaine_id, service_id, bId, h, min, dur, name, where_id, repeat_a);
-				
+				}
 				debut = tableEnregistrements.indexOf(" <form id=");
 			}
-			else {
+			else
+			{
 				break;
 			}
 		} while (true);
@@ -164,13 +165,15 @@ public class EnregistrementsNetwork
      * @param fin	identificateur de fin du champ
      * @return		le texte compris entre "debut" et "fin"
      */
-    private static String recupererChamp(String debut, String fin) {
+    private static String recupererChamp(String debut, String fin)
+    {
     	String champ;
     	int pos;
     	
     	// On se place au début
     	pos = tableEnregistrements.indexOf(debut);    	
-    	if (pos <= 0 || pos + debut.length() > tableEnregistrements.length()) {
+    	if (pos <= 0 || pos + debut.length() > tableEnregistrements.length())
+    	{
     		return null;
     	}
     	champ = tableEnregistrements.substring(pos + debut.length());
@@ -178,7 +181,8 @@ public class EnregistrementsNetwork
     	
     	// On coupe après la fin
     	pos = champ.indexOf(fin);
-    	if (pos <= 0 || pos > champ.length() || pos > tableEnregistrements.length()) {
+    	if (pos <= 0 || pos > champ.length() || pos > tableEnregistrements.length())
+    	{
     		return null;
     	}
     	champ = champ.substring(0, pos);

@@ -136,6 +136,19 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Pvr
 	        	try
 	        	{
 					jObject = new JSONObject(resultat);
+					if (jObject.has("redirect"))
+					{
+						if (FBMHttpConnection.connect() == CONNECT_CONNECTED)
+						{
+							resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(url, param, true, true, "ISO8859_1"));
+						}
+						else
+						{
+							db.close();
+							return (false);
+						}
+					}
+
 					// ON RECUPERE LE NB DE BOITIERS (UNE FOIS)
 					if (nbBoitiers == 0)
 					{

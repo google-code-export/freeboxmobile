@@ -29,6 +29,7 @@ public class EnregistrementsDbAdapter {
     public static final String KEY_WHERE_ID = "where_id";
     public static final String KEY_REPEAT_A = "repeat_a";
     public static final String KEY_ROWID = "_id";
+    public static final String KEY_STATUS = "status"; // 0:pas présent sur la console - 1:présent sur la console - 2:effacé par l'utilisateur
 
     private static final String TAG = "EnregistrementsDbAdapter";
     private DatabaseHelper mDbHelper;
@@ -38,34 +39,33 @@ public class EnregistrementsDbAdapter {
      * Database creation sql statement
      */
     private static final String TABLE_ENREGISTREMENTS =
-            "(" + KEY_ROWID + " integer primary key autoincrement, "
-			        + KEY_CHAINE + " text not null,"
-			        + KEY_BOITIER + " text not null,"
-			        + KEY_DATE + " text not null,"
-			        + KEY_HEURE + " text not null,"
-			        + KEY_DUREE + " integer not null,"
-			        + KEY_NOM + " text not null,"
-			        + KEY_IDE + " integer not null,"
-			        + KEY_CHAINE_ID + " integer not null,"
-			        + KEY_SERVICE_ID + " integer not null,"
-			        + KEY_BOITIER_ID + " integer not null,"
-			        + KEY_H + " integer not null,"
-			        + KEY_MIN + " integer not null,"
-			        + KEY_DUR + " integer not null,"
-			        + KEY_NAME + " text not null,"
-			        + KEY_WHERE_ID + " integer not null,"
-			        + KEY_REPEAT_A + " text);";
+    	"(" + KEY_ROWID + " integer primary key autoincrement, "
+		+ KEY_CHAINE + " text not null,"
+		+ KEY_BOITIER + " text not null,"
+		+ KEY_DATE + " text not null,"
+		+ KEY_HEURE + " text not null,"
+		+ KEY_DUREE + " integer not null,"
+		+ KEY_NOM + " text not null,"
+		+ KEY_IDE + " integer not null,"
+		+ KEY_CHAINE_ID + " integer not null,"
+		+ KEY_SERVICE_ID + " integer not null,"
+		+ KEY_BOITIER_ID + " integer not null,"
+		+ KEY_H + " integer not null,"
+		+ KEY_MIN + " integer not null,"
+		+ KEY_DUR + " integer not null,"
+		+ KEY_NAME + " text not null,"
+		+ KEY_WHERE_ID + " integer not null,"
+		+ KEY_REPEAT_A + " text,"
+		+ KEY_STATUS + " integer not null"
+		+ ");";
 
     static final String DATABASE_NAME = "pvr";
     private static final String DATABASE_TABLE_ENR = "enregistrements";
-    private static final String DATABASE_TABLE_ENR_TEMP = "enregistrementstemp";
 
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 10;
     
     private static final String DATABASE_CREATE_ENR =
         "create table " + DATABASE_TABLE_ENR + TABLE_ENREGISTREMENTS;
-    private static final String DATABASE_CREATE_ENR_TEMP =
-        "create table " + DATABASE_TABLE_ENR_TEMP + TABLE_ENREGISTREMENTS;
 
     private final Context mCtx;
 
@@ -79,7 +79,6 @@ public class EnregistrementsDbAdapter {
         public void onCreate(SQLiteDatabase db) {
             Log.d(TAG, "DatabaseHelper onCreate called");
             db.execSQL(DATABASE_CREATE_ENR);
-            db.execSQL(DATABASE_CREATE_ENR_TEMP);
         }
 
         @Override
@@ -87,7 +86,6 @@ public class EnregistrementsDbAdapter {
             Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
                     + newVersion + ", which will destroy all old data");
             db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE_ENR);
-            db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE_ENR_TEMP);
             onCreate(db);
         }
     }
@@ -121,15 +119,6 @@ public class EnregistrementsDbAdapter {
         mDbHelper.close();
     }
     
-    public void detruire() {
-
-    	mDb.rawQuery("drop table "+DATABASE_TABLE_ENR, null);
-    	mDb.rawQuery("drop table "+DATABASE_TABLE_ENR_TEMP, null);
-    	mDb.rawQuery(DATABASE_CREATE_ENR, null);
-    	mDb.rawQuery(DATABASE_CREATE_ENR_TEMP, null);
-    }
-
-
     /**
      * Create a new enregistrement using the title and body provided. If the enregistrement is
      * successfully created return the new rowId for that enregistrement, otherwise return
@@ -141,7 +130,9 @@ public class EnregistrementsDbAdapter {
      */
     public long createEnregistrement(String chaine, String boitier, String date, String heure, String duree,
     		String nom, String ide, String chaine_id, String service_id, int boitier_id, String h, String min,
-    		String dur, String name, String where_id, String repeat_a) {
+    		String dur, String name, String where_id, String repeat_a)
+    {
+    	FBMHttpConnection.FBMLog("CREATE ENREGISTREMENT");
         ContentValues initialValues = new ContentValues();
         
         initialValues.put(KEY_CHAINE, chaine);
@@ -160,8 +151,9 @@ public class EnregistrementsDbAdapter {
         initialValues.put(KEY_NAME, name);
         initialValues.put(KEY_WHERE_ID, where_id);
         initialValues.put(KEY_REPEAT_A, repeat_a);
+        initialValues.put(KEY_STATUS, 1);
 
-        return mDb.insert(DATABASE_TABLE_ENR_TEMP, null, initialValues);
+        return mDb.insert(DATABASE_TABLE_ENR, null, initialValues);
     }
     
     /**
@@ -173,7 +165,7 @@ public class EnregistrementsDbAdapter {
      * @param body the body of the enregistrement
      * @return rowId or -1 if failed
      */
-    public long modifyEnregistrement(int rowId, String chaine, String boitier, String date, String heure, String duree,
+    public long modifyEnregistrement_unused(int rowId, String chaine, String boitier, String date, String heure, String duree,
     		String nom, String ide, String chaine_id, String service_id, int boitier_id, String h, String min,
     		String dur, String name, String where_id, String repeat_a) {
         ContentValues newValues = new ContentValues();
@@ -204,32 +196,27 @@ public class EnregistrementsDbAdapter {
 
     /**
      * Delete the enregistrement with the given rowId
+     * En pratique, l'enregistrement voit juste son statut passer à 2
+     * ca peut permettre un jour d'afficher l'historique
      * 
      * @param rowId id of enregistrement to delete
      * @return true if deleted, false otherwise
      */
-    public boolean deleteEnregistrement(long rowId) {
-
-        return mDb.delete(DATABASE_TABLE_ENR, KEY_ROWID + "=" + rowId, null) > 0;
+    public boolean deleteEnregistrement(long rowId)
+    {
+    	ContentValues args = new ContentValues();
+        args.put(KEY_STATUS, 2);
+        return mDb.update(DATABASE_TABLE_ENR, args, KEY_ROWID + "=" + rowId, null) > 0;
     }
     
-    public boolean deleteAllEnregistrements() {
+    public boolean deleteAllEnregistrements_unused() {
     	
     	return mDb.delete(DATABASE_TABLE_ENR, "1", null) > 0;
     }
 
-    /**
-     * Return a Cursor over the list of all enregistrements in the database
-     * 
-     * @return Cursor over all enregistrements
-     */
-    public Cursor fetchAllEnregistrements(String[] colonnes) {
-    	return fetchAllEnregistrements(colonnes, null);
-    }
-
-    public Cursor fetchAllEnregistrements(String[] colonnes, String sort) {
-
-        return mDb.query(DATABASE_TABLE_ENR, colonnes, null, null, null, null, sort);
+    public Cursor fetchAllEnregistrements(String[] colonnes, String sort)
+    {
+        return mDb.query(DATABASE_TABLE_ENR, colonnes, KEY_STATUS+" = 1", null, null, null, sort);
     }
 
     /**
@@ -242,7 +229,6 @@ public class EnregistrementsDbAdapter {
     public Cursor fetchEnregistrement(long rowId) throws SQLException {
 
         Cursor mCursor =
-
                 mDb.query(true, DATABASE_TABLE_ENR,
                 		new String[] {
                 		KEY_ROWID,
@@ -271,29 +257,38 @@ public class EnregistrementsDbAdapter {
 
     }
 
+    /*
     public void swapEnr()
     {
         mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_ENR);
     	mDb.execSQL("ALTER TABLE "+DATABASE_TABLE_ENR_TEMP+" RENAME TO "+DATABASE_TABLE_ENR);
         mDb.execSQL(DATABASE_CREATE_ENR_TEMP);
     }
+*/
+    public boolean cleanEnregistrements(int bId)
+    {
+        ContentValues args = new ContentValues();
+        args.put(KEY_STATUS, 0);
+    	return mDb.update(DATABASE_TABLE_ENR, args, KEY_BOITIER_ID + " = "+bId, null) > 0;
+    }
+
+	public long isEnregistrementPresent(int ide)
+	{
+		return mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE_ENR + " WHERE "+KEY_IDE+" = "+ide).simpleQueryForLong();
+	}
 
     /**
      * Update the enregistrement using the details provided. The enregistrement to be updated is
-     * specified using the rowId, and it is altered to use the title and body
+     * specified using the ide, and it is altered to use the title and body
      * values passed in
-     * 
-     * @param rowId id of enregistrement to update
-     * @param title value to set enregistrement title to
-     * @param body value to set enregistrement body to
      * @return true if the enregistrement was successfully updated, false otherwise
      */
-    public boolean updateEnregistrement_unused(long rowId, String chaine, String date, String heure,
+    public boolean updateEnregistrement(String chaine, String boitier, String date, String heure,
     		String duree, String nom, String ide, String chaine_id, String service_id, String h,
     		String min, String dur, String name, String where_id, String repeat_a) {
         ContentValues args = new ContentValues();
-        
         args.put(KEY_CHAINE, chaine);
+        args.put(KEY_BOITIER, boitier);
         args.put(KEY_DATE, date);
         args.put(KEY_HEURE, heure);
         args.put(KEY_DUREE, duree);
@@ -307,7 +302,8 @@ public class EnregistrementsDbAdapter {
         args.put(KEY_NAME, name);
         args.put(KEY_WHERE_ID, where_id);
         args.put(KEY_REPEAT_A, repeat_a);
+        args.put(KEY_STATUS, 1);
 
-        return mDb.update(DATABASE_TABLE_ENR, args, KEY_ROWID + "=" + rowId, null) > 0;
+        return mDb.update(DATABASE_TABLE_ENR, args, KEY_IDE + "=" + ide, null) > 0;
     }
 }

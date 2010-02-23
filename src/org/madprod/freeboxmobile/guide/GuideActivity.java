@@ -11,7 +11,6 @@ import java.util.List;
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
-import org.madprod.freeboxmobile.pvr.ProgrammationActivity;
 
 import android.app.Activity;
 import android.app.ListActivity;
@@ -77,7 +76,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
         mDbHelper = new ChainesDbAdapter(this);
         mDbHelper.open();
 
-        // On rempli les spinner
+        // On rempli les spinners
         List<String> heures = new ArrayList<String>();
         for (Integer i=0; i < 24; i++)
         {
@@ -166,7 +165,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
     	}
     	else
     		new GuideActivityNetwork(sdf.format(new Date()), false, true, false).execute((Void[])null);
-    	setTitle(getString(R.string.app_name)+" - Guide TV");
+    	setTitle(getString(R.string.app_name)+" Guide TV - "+FBMHttpConnection.getTitle());
     	setListAdapter(adapter);
     }
 	
@@ -212,15 +211,18 @@ public class GuideActivity extends ListActivity implements GuideConstants
 	public void onListItemClick(ListView l, View v, int pos, long id)
 	{
 		super.onListItemClick(l, v, pos, id);
-		FBMHttpConnection.FBMLog("On List Item Click : "+l+" "+v+" "+pos + " "+id);
 		
 		Programme p = (Programme) adapter.getItem(pos);
-		Intent i = new Intent(this, ProgrammationActivity.class);
+		Intent i = new Intent(this, GuideDetailsActivity.class);
+//		Intent i = new Intent(this, ProgrammationActivity.class);
 		i.putExtra(ChainesDbAdapter.KEY_PROG_TITLE, p.titre);
 		i.putExtra(ChainesDbAdapter.KEY_PROG_CHANNEL_ID, p.channel_id);
 		i.putExtra(ChainesDbAdapter.KEY_PROG_DUREE, p.duree);
 		i.putExtra(ChainesDbAdapter.KEY_PROG_DATETIME_DEB, p.datetime_deb);
 		i.putExtra(ChainesDbAdapter.KEY_GUIDECHAINE_CANAL, p.canal);
+		i.putExtra(ChainesDbAdapter.KEY_GUIDECHAINE_NAME, p.chaine_name);
+		i.putExtra(ChainesDbAdapter.KEY_PROG_RESUM_L, p.resum_l);
+
         startActivity(i);
 	}
 	
@@ -394,6 +396,8 @@ public class GuideActivity extends ListActivity implements GuideConstants
 			p.duree = listeChaines.programmes.getInt(dureeCI);
 			p.titre = listeChaines.programmes.getString(titreCI);
 			p.canal = listeChaines.canal;
+			p.chaine_name = listeChaines.name;
+			p.resum_l = listeChaines.programmes.getString(listeChaines.programmes.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_RESUM_L));
 			return p;
 		}
 
@@ -486,6 +490,8 @@ public class GuideActivity extends ListActivity implements GuideConstants
     	public String datetime_deb;
     	public String titre;
     	public int canal;
+    	public String chaine_name;
+    	public String resum_l;
     }
     
     private class ListeChaines implements Comparable<ListeChaines>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical" android:layout_height="fill_parent" android:layout_width="fill_parent">
+		<ImageView 
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:id="@+id/LogoFreeboxMobile"
+			android:src="@drawable/freebox_mobile"
+			android:layout_gravity="center"
+			android:layout_marginBottom="5dip" android:layout_marginTop="5dip">
+		</ImageView>
+<ScrollView android:layout_width="fill_parent" android:id="@+id/GuideDetailsScrollView" android:layout_height="wrap_content" android:layout_weight="1">
+	<LinearLayout android:orientation="vertical" android:layout_height="fill_parent" android:layout_width="fill_parent" android:paddingLeft="10dip" android:paddingBottom="10dip" android:paddingRight="10dip" android:id="@+id/GuideDetailsLinearLayout">
+		<LinearLayout android:id="@+id/LinearLayout01" android:layout_height="wrap_content" android:layout_width="fill_parent" android:orientation="horizontal"><ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/LogoChaine" android:src="@drawable/pvr_duree"></ImageView><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:textStyle="bold" android:layout_gravity="center_vertical" android:layout_marginLeft="10dip" android:id="@+id/GuideDetailsNomChaine" android:text="Chaine ()" android:textSize="16sp"></TextView>
+</LinearLayout><TextView android:layout_height="wrap_content" android:textStyle="bold" android:text="Titre" android:layout_gravity="center_vertical" android:id="@+id/GuideDetailsTitre" android:gravity="center" android:layout_width="fill_parent" android:layout_marginTop="5dip" android:textSize="16sp"></TextView><TextView android:layout_height="wrap_content" android:layout_marginTop="5dip" android:textStyle="bold" android:id="@+id/GuideDetailsTV01" android:text="Informations" android:layout_width="fill_parent" style="?android:attr/listSeparatorTextViewStyle" android:textSize="16sp"></TextView><TextView android:layout_height="wrap_content" android:text="23/02/2010" android:layout_width="wrap_content" android:layout_weight="1" android:gravity="center" android:id="@+id/GuideDetailsDateHeure"></TextView><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/GuideDetailsDuree" android:text="45 minutes" android:layout_weight="1" android:gravity="right"></TextView><TextView android:layout_height="wrap_content" android:layout_marginTop="5dip" android:textStyle="bold" android:layout_width="fill_parent" style="?android:attr/listSeparatorTextViewStyle" android:textSize="16sp" android:id="@+id/GuideDetailsTV02" android:text="Résumé"></TextView><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/GuideDetailsDesc" android:text="Description"></TextView>
+		
+		
+		
+		
+	
+
+
+
+
+
+
+
+</LinearLayout>
+</ScrollView>
+
+<LinearLayout android:id="@+id/LinearLayout03" android:layout_height="wrap_content" android:layout_width="fill_parent" android:orientation="horizontal" android:layout_marginRight="10dip" android:layout_marginLeft="10dip" android:layout_marginBottom="5dip"><Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="bottom" android:text="Regarder" android:textColor="#888888" android:clickable="false" android:focusable="false" android:id="@+id/GuideDetailsButtonRegarder"></Button><LinearLayout android:id="@+id/LinearLayout04" android:layout_height="wrap_content" android:layout_width="fill_parent" android:layout_weight="1"></LinearLayout><Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="bottom" android:id="@+id/GuideDetailsButtonEnregistrer" android:text="Enregistrer"></Button>
+</LinearLayout>
+</LinearLayout>

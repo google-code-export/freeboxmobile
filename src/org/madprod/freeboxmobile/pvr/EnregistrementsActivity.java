@@ -67,7 +67,8 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 
     /** Called when the activity is first created. */
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.pvr);
@@ -75,19 +76,24 @@ public class EnregistrementsActivity extends ExpandableListActivity {
         FBMHttpConnection.FBMLog("ENREGISTREMENTSACTIVITY CREATE");
 
         File old_db = getDatabasePath("freeboxmobile"+FBMHttpConnection.getIdentifiant());
-        if (old_db.exists()) {
+        if (old_db.exists())
+        {
         	FBMHttpConnection.FBMLog("PVR: Ancien nom de bdd sqlite, renommage en pvr_");
-        	if (old_db.renameTo(getDatabasePath(EnregistrementsDbAdapter.DATABASE_NAME))) {
+        	if (old_db.renameTo(getDatabasePath(EnregistrementsDbAdapter.DATABASE_NAME)))
+        	{
         		FBMHttpConnection.FBMLog("OK ");
-        	} else {
+        	} else
+        	{
         		FBMHttpConnection.FBMLog("KO");
         	}
         }
-        if (!curId.equals(FBMHttpConnection.getIdentifiant())) {
+        if (!curId.equals(FBMHttpConnection.getIdentifiant()))
+        {
         	curId = FBMHttpConnection.getIdentifiant();
         	reset();
         }
-        else {
+        else
+        {
         	listeEnregistrements = new ListeEnregistrements();
         }
         succesChargement = false;
@@ -99,9 +105,11 @@ public class EnregistrementsActivity extends ExpandableListActivity {
         setTitle(getString(R.string.app_name) + " " + getString(R.string.pvrPVR)
         		+ " - "+FBMHttpConnection.getTitle());
         
-        ((Button) findViewById(R.id.pvrBtnProg)).setOnClickListener(new OnClickListener() {
+        ((Button) findViewById(R.id.pvrBtnProg)).setOnClickListener(new OnClickListener()
+        {
 			@Override
-			public void onClick(View v) {
+			public void onClick(View v)
+			{
         		ajouterNouvelEnregistrement();
         	}
         });
@@ -116,7 +124,8 @@ public class EnregistrementsActivity extends ExpandableListActivity {
     }
 	
 	@Override
-	protected void onPause() {
+	protected void onPause()
+	{
 		if (progressDialog != null) {
 			progressDialog.dismiss();
 		}
@@ -124,7 +133,8 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 	}
     
 	@Override
-	protected void onStart() {
+	protected void onStart()
+	{
 		super.onStart();
 		if (listeEnregistrements != null)
 		{
@@ -161,7 +171,8 @@ public class EnregistrementsActivity extends ExpandableListActivity {
     }
     
     public static void reset() {
-    	if (listeEnregistrements != null) {
+    	if (listeEnregistrements != null)
+    	{
     		listeEnregistrements.vider();
     		listeEnregistrements = null;
     	}
@@ -189,23 +200,26 @@ public class EnregistrementsActivity extends ExpandableListActivity {
         }
     	
         protected Boolean doInBackground(Void... arg0) {
-        	if (listeEnregistrements != null) {
+        	if (listeEnregistrements != null)
+        	{
         		listeEnregistrements.vider();
-        	} else {
+        	} else
+        	{
         		listeEnregistrements = new ListeEnregistrements();
         	}
             
-        	if (updateFromConsole) {
+        	if (updateFromConsole)
+        	{
         		listeEnregistrements.vider();
         		succesChargement = EnregistrementsNetwork.updateEnregistrementsFromConsole(enrAct);
         		return succesChargement;
         	}
-
 			return Boolean.TRUE;
         }
         
         protected void onPostExecute(Boolean succes) {
-        	if (succes == Boolean.TRUE) {
+        	if (succes == Boolean.TRUE)
+        	{
 	            updateEnregistrementsFromDb();
 	            afficherEnregistrements();
         	}
@@ -243,7 +257,8 @@ public class EnregistrementsActivity extends ExpandableListActivity {
         		+ EnregistrementsDbAdapter.KEY_HEURE + " ASC, "
         		+ EnregistrementsDbAdapter.KEY_MIN + " ASC");
 
-		if (listCursor != null && listCursor.moveToFirst()) {
+		if (listCursor != null && listCursor.moveToFirst())
+		{
 			succesChargement = true;
 			listeEnregistrements.vider();
             do {
@@ -279,7 +294,8 @@ public class EnregistrementsActivity extends ExpandableListActivity {
      * RAM --> ECRAN
      * Affiche la liste des enregistrements depuis l'objet ListeEnregistrements
      */
-    private void afficherEnregistrements() {
+    private void afficherEnregistrements()
+    {
 		SimpleExpandableListAdapter expListAdapter =
 			new SimpleExpandableListAdapter(
 				this,
@@ -337,18 +353,27 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 				return super.onContextItemSelected(item);
 		}
     }
-    private long getRowIdFromItemId(int itemId) {
+    private long getRowIdFromItemId(int itemId)
+    {
     	// Récupération de l'id
         EnregistrementsDbAdapter db = new EnregistrementsDbAdapter(this);
         db.open();
-        Cursor c = db.fetchAllEnregistrements(new String[] { EnregistrementsDbAdapter.KEY_ROWID });
+        Cursor c = db.fetchAllEnregistrements(new String[] { EnregistrementsDbAdapter.KEY_ROWID , EnregistrementsDbAdapter.KEY_IDE},
+        		EnregistrementsDbAdapter.KEY_DATE + " ASC, "
+        		+ EnregistrementsDbAdapter.KEY_HEURE + " ASC, "
+        		+ EnregistrementsDbAdapter.KEY_MIN + " ASC");
         c.moveToPosition(itemId);
         long rowId = c.getLong(c.getColumnIndex(EnregistrementsDbAdapter.KEY_ROWID));
+        FBMHttpConnection.FBMLog("ROWID : "+rowId+" ITEMID:"+itemId+
+        "IDE : "+c.getLong(c.getColumnIndex(EnregistrementsDbAdapter.KEY_IDE))
+        );
         c.close();
         db.close();
         return rowId;
     }
-    private void afficherEnregistrementActivity(Intent i, int itemId, int action) {        
+
+    private void afficherEnregistrementActivity(Intent i, int itemId, int action)
+    {
         // Lancement de l'activité
         i.putExtra(EnregistrementsDbAdapter.KEY_ROWID, getRowIdFromItemId(itemId));
         startActivityForResult(i, action);
@@ -406,49 +431,59 @@ public class EnregistrementsActivity extends ExpandableListActivity {
      * @author bduffez
      *
      */
-	private class ListeEnregistrements {
+	private class ListeEnregistrements
+	{
 		private List<String> listeEnregistrements = null;
 		private List<List<String>> detailsEnregistrements = null;
 		
-		ListeEnregistrements() {
+		ListeEnregistrements()
+		{
 			listeEnregistrements = new ArrayList<String>();
 			detailsEnregistrements = new ArrayList<List<String>>();
 		}
 		
-	    public void vider() {
+	    public void vider()
+	    {
 	    	listeEnregistrements.clear();
 	    	detailsEnregistrements.clear();
 	    }
 	    
 	    // Ajout d'un enregistrement à la liste, avec détails
-	    public void ajouter(String nom, List<String> details) {
+	    public void ajouter(String nom, List<String> details)
+	    {
 	    	listeEnregistrements.add(nom);
 	    	detailsEnregistrements.add(details);
 	    }
 	    
 	    // Crée la liste des enregistrements
-		public List<HashMap<String, String>> createGroupList() {
+		public List<HashMap<String, String>> createGroupList()
+		{
 			ArrayList<HashMap<String, String>> result = new ArrayList<HashMap<String, String>>();
-			for( int i = 0 ; i < listeEnregistrements.size() ; ++i ) {
+			for( int i = 0 ; i < listeEnregistrements.size() ; ++i )
+			{
 				HashMap<String, String> map = new HashMap<String, String>();
 				map.put("enregistrement", listeEnregistrements.get(i));
 				result.add(map);
 			}
 			return result;
 		}
+		
 		// Crée la liste des détails pour chaque enregistrement
-		public List<ArrayList<HashMap<String, String>>> createChildList() {
+		public List<ArrayList<HashMap<String, String>>> createChildList()
+		{
 			ArrayList<ArrayList<HashMap<String, String>>> result = new ArrayList<ArrayList<HashMap<String, String>>>();
 
-			for( int i = 0 ; i < detailsEnregistrements.size() ; ++i ) {
+			for( int i = 0 ; i < detailsEnregistrements.size() ; ++i )
+			{
 				ArrayList<HashMap<String, String>> secList = new ArrayList<HashMap<String, String>>();
-				
 				for( int n = 0 ;
-						detailsEnregistrements.get(i) != null && n < detailsEnregistrements.get(i).size();
-						n += 2) {
+					detailsEnregistrements.get(i) != null && n < detailsEnregistrements.get(i).size();
+					n += 2)
+				{
 					HashMap<String, String> detail = new HashMap<String, String>();
 					detail.put("key", detailsEnregistrements.get(i).get(n));
-					if (detailsEnregistrements.get(i).size() > n+1) {
+					if (detailsEnregistrements.get(i).size() > n+1)
+					{
 						detail.put("value", detailsEnregistrements.get(i).get(n+1));
 					}
 					secList.add(detail);

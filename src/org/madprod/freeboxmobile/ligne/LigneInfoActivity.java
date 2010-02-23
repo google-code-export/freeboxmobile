@@ -154,6 +154,7 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
 	        if (DSLAM_ok)
 	        {
 	        	text1_2 += "fonctionnent correctement.";
+	        	t1_2.setTextColor(0xff000000);
 	        }
 	        else
 	        {

@@ -24,7 +24,7 @@ public class OnBootReceiver extends BroadcastReceiver implements Constants
 	public void onReceive(Context context, Intent intent)
 	{
 		String ms = context.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_MEVO_PREFS_FREQ, "0");
-		Log.d(DEBUGTAG, "On Boot Receiver mevo ! "+ms);
+//		Log.d(DEBUGTAG, "On Boot Receiver mevo ! "+ms);
 		if (!ms.equals("0"))
 		{
 			AlarmManager mgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
@@ -33,7 +33,7 @@ public class OnBootReceiver extends BroadcastReceiver implements Constants
 			mgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), Integer.decode(ms), pi);
 		}
 		ms = context.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_INFOADSL_PREFS_FREQ, "0");
-		Log.d(DEBUGTAG, "On Boot Receiver infoadsl ! "+ms);
+//		Log.d(DEBUGTAG, "On Boot Receiver infoadsl ! "+ms);
 		if (!ms.equals("0"))
 		{
 			AlarmManager mgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
