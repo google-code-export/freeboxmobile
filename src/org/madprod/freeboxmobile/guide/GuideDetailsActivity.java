@@ -3,7 +3,6 @@ package org.madprod.freeboxmobile.guide;
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
-import org.madprod.freeboxmobile.pvr.EnregistrementsDbAdapter;
 import org.madprod.freeboxmobile.pvr.ProgrammationActivity;
 
 import android.app.Activity;
@@ -39,6 +38,7 @@ public class GuideDetailsActivity extends Activity
 	        TextView descEmission = (TextView) findViewById(R.id.GuideDetailsDesc);
 	        TextView nomChaine = (TextView) findViewById(R.id.GuideDetailsNomChaine);
 	        Button enregistrer = (Button) findViewById(R.id.GuideDetailsButtonEnregistrer);
+	        Button regarder = (Button) findViewById(R.id.GuideDetailsButtonRegarder);
 	        
 	        titreEmission.setText(extras.getString(ChainesDbAdapter.KEY_PROG_TITLE));
 	        descEmission.setText(extras.getString(ChainesDbAdapter.KEY_PROG_RESUM_L));
@@ -53,6 +53,7 @@ public class GuideDetailsActivity extends Activity
 	        
 	        nomChaine.setText(extras.getString(ChainesDbAdapter.KEY_GUIDECHAINE_NAME)+" (canal "+
 	        		((Integer)extras.getInt(ChainesDbAdapter.KEY_GUIDECHAINE_CANAL)).toString()+")");
+	        regarder.setText("Regarder "+extras.getString(ChainesDbAdapter.KEY_GUIDECHAINE_NAME));
 	        enregistrer.setOnClickListener(
 					new View.OnClickListener()
 					{
@@ -60,17 +61,8 @@ public class GuideDetailsActivity extends Activity
 						public void onClick(View arg0)
 						{
 							Intent i = new Intent(GuideDetailsActivity.this, ProgrammationActivity.class);
-/*							i.putExtra(ChainesDbAdapter.KEY_PROG_TITLE, p.titre);
-							i.putExtra(ChainesDbAdapter.KEY_PROG_CHANNEL_ID, p.channel_id);
-							i.putExtra(ChainesDbAdapter.KEY_PROG_DUREE, p.duree);
-							i.putExtra(ChainesDbAdapter.KEY_PROG_DATETIME_DEB, p.datetime_deb);
-							i.putExtra(ChainesDbAdapter.KEY_GUIDECHAINE_CANAL, p.canal);
-							i.putExtra(ChainesDbAdapter.KEY_GUIDECHAINE_NAME, p.chaine_name);
-							i.putExtra(ChainesDbAdapter.KEY_PROG_RESUM_L, p.resum_l);
-*/
 							i.putExtras(extras);
 					        startActivity(i);
-
 						}
 					}
 				);
@@ -79,12 +71,6 @@ public class GuideDetailsActivity extends Activity
         {
         	FBMHttpConnection.FBMLog("GUIDEDETAILS ouvert sans données");
         }
-/*		i.putExtra(ChainesDbAdapter.KEY_PROG_CHANNEL_ID, p.channel_id);
-		i.putExtra(ChainesDbAdapter.KEY_PROG_DUREE, p.duree);
-		i.putExtra(ChainesDbAdapter.KEY_PROG_DATETIME_DEB, p.datetime_deb);
-		i.putExtra(ChainesDbAdapter.KEY_GUIDECHAINE_CANAL, p.canal);
-		i.putExtra(ChainesDbAdapter.KEY_GUIDECHAINE_NAME, p.chaine_name);
-*/
         setTitle(getString(R.string.app_name)+" - Détails du programme");
     }
     
