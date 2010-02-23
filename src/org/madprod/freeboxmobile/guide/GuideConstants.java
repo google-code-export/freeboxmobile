@@ -13,6 +13,8 @@ import android.view.Menu;
 
 public interface GuideConstants extends Constants
 {
+	static final String KEY_SPLASH_GUIDE = "splashscreen_guide";
+	
     static final int GUIDE_OPTION_REFRESH = Menu.FIRST;
     static final int GUIDE_OPTION_SELECT = Menu.FIRST + 1;
     
