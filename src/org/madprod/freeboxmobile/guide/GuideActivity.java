@@ -70,7 +70,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
 	// Cette liste sert à récupérer la date correspondant à l'indice du spinner
 	private List<String> calDates = new ArrayList<String>();
 	private ArrayList<GuideAdapter> ga = null;
-	private ArrayList<ListeChaines> listesChaines = new ArrayList<ListeChaines>();
+	private ArrayList<ListeChaines> listesChaines;
 
 	String jours[] = {"", "Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"};
 	@Override
@@ -152,7 +152,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
     	else
     		new GuideActivityNetwork(sdf.format(new Date()), false, true, false).execute((Void[])null);
     	setTitle(getString(R.string.app_name)+" Guide TV - "+FBMHttpConnection.getTitle());
-    	setListAdapter(adapter);
+//    	setListAdapter(adapter);
     	
 		SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 		if (!mgr.getString(KEY_SPLASH_GUIDE, "0").equals(this.getString(R.string.app_version)))
@@ -269,7 +269,6 @@ public class GuideActivity extends ListActivity implements GuideConstants
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
     	getFromDb();
-    	refresh();
     }
     
     private void launchActivity(Class<?> cls, int pos)
@@ -338,7 +337,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
 	    		return(header);
 	    	}    	
 	    };
-
+	    listesChaines = new ArrayList<ListeChaines>();
     	Cursor chainesIds = mDbHelper.getChainesProg();
     	startManagingCursor (chainesIds);
         if (chainesIds != null)
@@ -400,6 +399,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
 				}
 			}
 		}
+        setListAdapter(adapter);
         return nochaine;
 	}
 	
@@ -626,7 +626,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
 		d.show();
     }
 
-    private class GuideActivityNetwork extends AsyncTask<Void, Integer, Boolean>
+    private class GuideActivityNetwork extends AsyncTask<Void, Integer, Integer>
     {
     	private String debdatetime;
     	private boolean getChaines;
@@ -637,10 +637,10 @@ public class GuideActivity extends ListActivity implements GuideConstants
         {
         }
 
-        protected Boolean doInBackground(Void... arg0)
+        protected Integer doInBackground(Void... arg0)
         {
-        	boolean res = new GuideNetwork(GuideActivity.this, debdatetime, getChaines, getProg, forceRefresh).getData();
-        	if ((res) && (getChaines))
+        	Integer res = new GuideNetwork(GuideActivity.this, debdatetime, getChaines, getProg, forceRefresh).getData();
+        	if ((res != DATA_NOT_DOWNLOADED) && (getChaines))
         	{
         		getFromDb();
         	}
@@ -652,17 +652,20 @@ public class GuideActivity extends ListActivity implements GuideConstants
             showProgress(GuideActivity.this, progress[0]);
         }
 
-        protected void onPostExecute(Boolean telechargementOk) {
-        	if (telechargementOk == Boolean.TRUE) {
+        protected void onPostExecute(Integer result)
+        {
+        	if (result != DATA_NOT_DOWNLOADED)
+        	{
         	}
         	else {
         		// TODO : afficher erreur si il y a erreur
 //        		ProgrammationActivity.afficherMsgErreur(activity.getString(R.string.pvrErreurTelechargementChaines), activity);
         	}
-//        	if (forceRefresh == true)
-//        		setListAdapter(adapter);
        		dismissPd();
-        	refresh();
+       		if ((!getChaines) && (result == DATA_NEW_DATA))
+       		{
+       			refresh();
+       		}
         }
         
         public GuideActivityNetwork(String d, boolean chaine, boolean prog, boolean force)
