@@ -2,8 +2,10 @@ package org.madprod.freeboxmobile.guide;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -13,8 +15,8 @@ import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
 
-import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.database.Cursor;
@@ -27,6 +29,9 @@ import android.os.Environment;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
 
 /**
@@ -36,11 +41,12 @@ import android.widget.LinearLayout.LayoutParams;
 * 
 */
 
-public class GuideChoixChainesActivity extends Activity implements GuideConstants
+public class GuideChoixChainesActivity extends ListActivity implements GuideConstants
 {
 	private static ChainesDbAdapter mDbHelper;
 	private ArrayList<Favoris> listeFavoris = new ArrayList<Favoris>();
 	private ProgressDialog progressDialog = null;
+	private List< Map<String,Object> > chainesToSelect;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -69,6 +75,14 @@ public class GuideChoixChainesActivity extends Activity implements GuideConstant
     	super.onDestroy();
     }
 
+	@Override
+	public void onListItemClick(ListView l, View v, int pos, long id)
+	{
+		super.onListItemClick(l, v, pos, id);
+		TextView chaine_id = (TextView) v.findViewById(R.id.HiddenTextView); 
+		displayAdd(Integer.decode((String)chaine_id.getText()));
+	}
+
     private void refresh()
     {
     	getFavoris();
@@ -88,11 +102,12 @@ public class GuideChoixChainesActivity extends Activity implements GuideConstant
 				Cursor chaineCursor;
 				Favoris f;
 				boolean nochaine = false;
-				int columnIndex = chainesIds.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_CHANNEL_ID);
+				
+				int CI_progchannel_id = chainesIds.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_CHANNEL_ID);
 				do
 				{
 					f = new Favoris();
-					f.guidechaine_id = chainesIds.getInt(columnIndex);
+					f.guidechaine_id = chainesIds.getInt(CI_progchannel_id);
 					chaineCursor = mDbHelper.getGuideChaine(f.guidechaine_id);
 					if ((chaineCursor != null) && (chaineCursor.moveToFirst()))
 					{
@@ -111,10 +126,50 @@ public class GuideChoixChainesActivity extends Activity implements GuideConstant
 				{
 					FBMHttpConnection.FBMLog("IL MANQUE AU MOINS UNE CHAINE");
 				}
+
 				// Ici on trie pour avoir les listes de programmes dans l'ordre des numéros de chaine
 				Collections.sort(listeFavoris);
-				
-				// Puis on créé les différentes sous-listes (une par chaine)
+
+				// Ici on récupère la liste des chaines disponibles pour le guide auxquelles ont enlève celles
+				// déjà sélectionnées
+				chainesToSelect = new ArrayList< Map<String,Object> >();
+				Cursor allChaines = mDbHelper.getListChaines();
+				if (allChaines != null)
+				{
+					if (allChaines.moveToFirst())
+					{
+						final int CI_image = allChaines.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE);
+						final int CI_canal = allChaines.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_CANAL);
+						final int CI_name = allChaines.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_NAME);
+						final int CI_id = allChaines.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_ID);
+						Iterator<Favoris> it = listeFavoris.iterator();
+						Map<String,Object> map;
+						while(it.hasNext())
+						{
+							f = it.next();
+							while ((!allChaines.isAfterLast()) &&
+									(allChaines.getInt(allChaines.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_CANAL)) != f.canal))
+							{
+								map = new HashMap<String,Object>();
+					        	map.put(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE, Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES+allChaines.getString(CI_image));
+								map.put(ChainesDbAdapter.KEY_GUIDECHAINE_CANAL, allChaines.getInt(CI_canal));
+								map.put(ChainesDbAdapter.KEY_GUIDECHAINE_NAME, allChaines.getString(CI_name));
+								map.put(ChainesDbAdapter.KEY_GUIDECHAINE_ID, allChaines.getInt(CI_id));
+								chainesToSelect.add(map);
+								allChaines.moveToNext();
+							}
+							allChaines.moveToNext();
+						}
+				        SimpleAdapter mList = new SimpleAdapter(
+				        		this, chainesToSelect, R.layout.guide_favoris_row, 
+				        		new String[] {ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE, ChainesDbAdapter.KEY_GUIDECHAINE_NAME, ChainesDbAdapter.KEY_GUIDECHAINE_ID},
+				        		new int[] {R.id.ImageViewFavoris, R.id.TextViewFavoris, R.id.HiddenTextView});
+				        setListAdapter(mList);
+					}
+					allChaines.close();
+				}
+
+				// On créé l'horizontal scrollview en haut avec la liste des chaines favorites
 				Iterator<Favoris> it = listeFavoris.iterator();
 				String filepath;
 				Bitmap bmp;
@@ -122,8 +177,6 @@ public class GuideChoixChainesActivity extends Activity implements GuideConstant
 		    	csly.removeAllViews();
 		    	LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 		    	params.setMargins(5,5,5,5);
-	        	//cellDate.setLayoutParams(cellDateParams);
-
 				while(it.hasNext())
 				{
 					f = it.next();
@@ -148,9 +201,19 @@ public class GuideChoixChainesActivity extends Activity implements GuideConstant
 		}
     }
     
+    private void displayAdd(final Integer id)
+    {
+    	displayDialog(id, FAVORIS_COMMAND_ADD, "Ajouter cette chaîne aux favoris ?");
+    }
+
     private void displaySuppr(final Integer id)
     {
-    	FBMHttpConnection.FBMLog("displaySuppr : "+id);
+    	displayDialog(id, FAVORIS_COMMAND_SUPPR, "Supprimer cette chaîne des favoris ?");
+    }
+    
+    private void displayDialog(final Integer id, final int command, String msg)
+    {
+    	FBMHttpConnection.FBMLog("displayDialog : "+id);
 		Cursor chaineCursor = mDbHelper.getGuideChaine(id);
 		chaineCursor.moveToFirst();
 		String image = chaineCursor.getString(chaineCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE));
@@ -162,12 +225,12 @@ public class GuideChoixChainesActivity extends Activity implements GuideConstant
     	AlertDialog d = new AlertDialog.Builder(this).create();
 		d.setTitle(name);
 		d.setIcon(draw);
-    	d.setMessage("Supprimer cette chaîne des favoris ? ");
+    	d.setMessage(msg);
 		d.setButton(DialogInterface.BUTTON_POSITIVE, "Oui", new DialogInterface.OnClickListener()
 			{
 				public void onClick(DialogInterface dialog, int which)
 				{
-					new GuideFavorisActivityNetwork(FAVORIS_COMMAND_SUPPR, id).execute();
+					new GuideFavorisActivityNetwork(command, id).execute();
 					dialog.dismiss();
 				}
 			});
@@ -258,19 +321,20 @@ public class GuideChoixChainesActivity extends Activity implements GuideConstant
 	        	case FAVORIS_COMMAND_RESET:
 	            	break;
 	        	case FAVORIS_COMMAND_ADD:
+	                mDbHelper.clearHistorique();
+	                new GuideNetwork(GuideChoixChainesActivity.this, null, false, true, true).getData();
 	            	break;
 	        	case FAVORIS_COMMAND_SUPPR:
 	                mDbHelper.deleteProgsChaine(param);
 	            	break;
         	}
-            // TODO : télécharger la nouvelle liste de favoris
-//            new GuideNetwork(GuideChoixChainesActivity.this, null, true, false, true).getData();
         	return true;
         }
         
         protected void onPostExecute(Boolean telechargementOk)
         {
         	// TODO : Rafraichir affichage
+        	GuideActivity.dismissPd();
        		dismissPd();
         	refresh();
         }
