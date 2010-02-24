@@ -53,7 +53,8 @@ public class GuideNetwork extends AsyncTask<Void, Integer, Integer> implements G
     	if (statut != DATA_NOT_DOWNLOADED)
     	{
     	}
-    	else {
+    	else
+    	{
 //    		ProgrammationActivity.afficherMsgErreur(activity.getString(R.string.pvrErreurTelechargementChaines), activity);
     	}
    		GuideActivity.dismissPd();
