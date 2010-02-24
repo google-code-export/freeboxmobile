@@ -29,4 +29,8 @@ public interface GuideConstants extends Constants
     static final int FAVORIS_COMMAND_RESET = 1;
     static final int FAVORIS_COMMAND_ADD = 2;
     static final int FAVORIS_COMMAND_SUPPR = 3;
+    
+    static final int DATA_NOT_DOWNLOADED = 0;
+    static final int DATA_NEW_DATA = 1;
+    static final int DATA_FROM_CACHE = 2;
 }

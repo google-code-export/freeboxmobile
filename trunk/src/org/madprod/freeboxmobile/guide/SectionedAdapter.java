@@ -20,12 +20,13 @@ abstract public class SectionedAdapter extends BaseAdapter
 {
 	abstract protected View getHeaderView(String caption, Bitmap image, int index, View convertView, ViewGroup parent);
 	
-	private List<Section> sections = new ArrayList<Section>();
+	private List<Section> sections;
 	private static int TYPE_SECTION_HEADER=0;
 
 	public SectionedAdapter()
 	{
 		super();
+		sections = new ArrayList<Section>();
 	}
 	
 	public void addSection(String caption, Bitmap image, Adapter adapter)

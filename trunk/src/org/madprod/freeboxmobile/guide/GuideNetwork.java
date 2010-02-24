@@ -26,7 +26,7 @@ import android.os.Environment;
  * $Id$
  */
 
-public class GuideNetwork extends AsyncTask<Void, Integer, Boolean> implements GuideConstants
+public class GuideNetwork extends AsyncTask<Void, Integer, Integer> implements GuideConstants
 {
 	private Activity activity;
 	private String datetime;
@@ -38,7 +38,7 @@ public class GuideNetwork extends AsyncTask<Void, Integer, Boolean> implements G
     {
     }
 
-    protected Boolean doInBackground(Void... arg0)
+    protected Integer doInBackground(Void... arg0)
     {
     	return getData();
     }
@@ -48,8 +48,10 @@ public class GuideNetwork extends AsyncTask<Void, Integer, Boolean> implements G
         GuideActivity.showProgress(activity, progress[0]);
     }
 
-    protected void onPostExecute(Boolean telechargementOk) {
-    	if (telechargementOk == Boolean.TRUE) {
+    protected void onPostExecute(Integer statut)
+    {
+    	if (statut != DATA_NOT_DOWNLOADED)
+    	{
     	}
     	else {
 //    		ProgrammationActivity.afficherMsgErreur(activity.getString(R.string.pvrErreurTelechargementChaines), activity);
@@ -134,7 +136,7 @@ public class GuideNetwork extends AsyncTask<Void, Integer, Boolean> implements G
 		return "";
 	}
 
-    public boolean getData()
+    public int getData()
     {
     	JSONObject jObject;
     	JSONObject jChannelsObject;
@@ -157,7 +159,7 @@ public class GuideNetwork extends AsyncTask<Void, Integer, Boolean> implements G
 			// On a déjà les données, on les charge donc pas
 			FBMHttpConnection.FBMLog("ON A DEJA LES DONNEES");
 			db.close();
-			return true;
+			return DATA_FROM_CACHE;
 		}
         List<NameValuePair> param = new ArrayList<NameValuePair>();
         param.add(new BasicNameValuePair("ajax","get_chaines"));
@@ -179,7 +181,7 @@ public class GuideNetwork extends AsyncTask<Void, Integer, Boolean> implements G
 					else
 					{
 						db.close();
-						return (false);
+						return (DATA_NOT_DOWNLOADED);
 					}
 				}
 				if (getProg)
@@ -297,9 +299,9 @@ public class GuideNetwork extends AsyncTask<Void, Integer, Boolean> implements G
 	    	editor.putLong(KEY_LAST_REFRESH+FBMHttpConnection.getIdentifiant(), (new Date()).getTime());
 	    	editor.commit();
 */
-	    	return true;
+	    	return DATA_NEW_DATA;
     	}
         FBMHttpConnection.FBMLog("==> Impossible de télécharger les programmes");
-        return false;
+        return DATA_NOT_DOWNLOADED;
     }
 }
