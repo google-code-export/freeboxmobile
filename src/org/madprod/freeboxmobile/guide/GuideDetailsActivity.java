@@ -88,10 +88,4 @@ public class GuideDetailsActivity extends Activity implements GuideConstants
         }
         setTitle(getString(R.string.app_name)+" - Détails du programme");
     }
-    
-    @Override
-    public void onStart()
-    {
-    	super.onStart();
-    }
 }

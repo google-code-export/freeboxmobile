@@ -10,7 +10,6 @@ import java.util.List;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.madprod.freeboxmobile.FBMHttpConnection;
@@ -160,12 +159,11 @@ public class GuideNetwork extends AsyncTask<Void, Integer, Boolean> implements G
 			db.close();
 			return true;
 		}
-    	String url = "http://adsl.free.fr/admin/magneto.pl";
         List<NameValuePair> param = new ArrayList<NameValuePair>();
         param.add(new BasicNameValuePair("ajax","get_chaines"));
         param.add(new BasicNameValuePair("date", datetime));
 
-        String resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(url, param, true, true, "UTF8"));
+        String resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(MAGNETO_URL, param, true, true, "UTF8"));
         if (resultat != null)
         {
         	FBMHttpConnection.FBMLog("Guide Network start "+new Date());
@@ -176,7 +174,7 @@ public class GuideNetwork extends AsyncTask<Void, Integer, Boolean> implements G
 				{
 					if (FBMHttpConnection.connect() == CONNECT_CONNECTED)
 					{
-						resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(url, param, true, true, "UTF8"));
+						resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(MAGNETO_URL, param, true, true, "UTF8"));
 					}
 					else
 					{

@@ -35,7 +35,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -129,33 +128,6 @@ public class GuideActivity extends ListActivity implements GuideConstants
 		spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, dates);
 		spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		datesSpinner.setAdapter(spinnerAdapter);
-		
-		datesSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
-        {
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View v, int i, long l)
-			{
-//				selectedDate = calDates.get(i);
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> arg0)
-			{
-			}
-        });
-		heuresSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
-        {
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View v, int i, long l)
-			{
-//				selectedHeure = (i<10?"0"+i:i)+":00:00";
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> arg0)
-			{
-			}
-        });
 
 		buttonOk = (Button) findViewById(R.id.GuideButtonOk);
         buttonOk.setOnClickListener(
@@ -171,9 +143,9 @@ public class GuideActivity extends ListActivity implements GuideConstants
         		}
         	}
         );
-        getFromDb();
+        boolean nochaine = getFromDb();
     	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:00:00");
-    	if ((ga == null) || (ga.size() == 0))
+    	if ((ga == null) || (ga.size() == 0) || (nochaine))
     	{
     		new GuideActivityNetwork(sdf.format(new Date()), true, true, false).execute((Void[])null);    		
     	}
@@ -221,6 +193,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
     	switch (item.getItemId())
     	{
     		case GUIDE_OPTION_SELECT:
+    			startActivityForResult(new Intent(this, GuideChoixChainesActivity.class),0);
     			return true;
     		case GUIDE_OPTION_REFRESH:
     			new GuideActivityNetwork(selectedDate+" "+selectedHeure, false, true, true).execute((Void[])null);
@@ -249,7 +222,6 @@ public class GuideActivity extends ListActivity implements GuideConstants
 	    menu.add(0, GUIDE_CONTEXT_DETAILS, 1, "Détails");
 	}
 	
-
 	@Override
 	public boolean onContextItemSelected(MenuItem item)
 	{
@@ -293,6 +265,13 @@ public class GuideActivity extends ListActivity implements GuideConstants
             choosen_minute_deb = savedInstanceState.getInt("choosen_minute_deb");
 */    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+    	getFromDb();
+    	refresh();
+    }
+    
     private void launchActivity(Class<?> cls, int pos)
     {
 		Programme p = (Programme) adapter.getItem(pos);
@@ -327,8 +306,14 @@ public class GuideActivity extends ListActivity implements GuideConstants
 		finDateHeure = sdatefin+" "+(heurefin<10?"0"+heurefin:heurefin)+":00:00";
 	}
     
-	public void getFromDb()
+	/**
+	 * getFromDb
+	 * @return true if there is no chaine in db
+	 */
+	public boolean getFromDb()
 	{
+		boolean nochaine = false;
+
 		FBMHttpConnection.FBMLog("getFromDb");
 	    adapter = new SectionedAdapter()
 	    {
@@ -362,20 +347,26 @@ public class GuideActivity extends ListActivity implements GuideConstants
 			{
 				Cursor chaineCursor;
 				ListeChaines l;
-				boolean nochaine = false;
 				int columnIndex = chainesIds.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_CHANNEL_ID);
 				do
 				{
 					l = new ListeChaines();
 					l.chaine_id = chainesIds.getInt(columnIndex);
 					chaineCursor = mDbHelper.getGuideChaine(l.chaine_id);
-					if ((chaineCursor != null) && (chaineCursor.moveToFirst()))
+					if ((chaineCursor != null))
 					{
-						l.canal = chaineCursor.getInt(chaineCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_CANAL));
-						l.name = chaineCursor.getString(chaineCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_NAME));
-						l.image = chaineCursor.getString(chaineCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE));
-						l.guidechaine_id = chaineCursor.getInt(chaineCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_ID));
-						chaineCursor.close();
+						if (chaineCursor.moveToFirst())
+						{
+							l.canal = chaineCursor.getInt(chaineCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_CANAL));
+							l.name = chaineCursor.getString(chaineCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_NAME));
+							l.image = chaineCursor.getString(chaineCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE));
+							l.guidechaine_id = chaineCursor.getInt(chaineCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_ID));
+							chaineCursor.close();
+						}
+						else
+						{
+							nochaine = true;
+						}
 					}
 					else
 						nochaine = true;
@@ -409,6 +400,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
 				}
 			}
 		}
+        return nochaine;
 	}
 	
     public void refresh()
@@ -422,6 +414,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
 			g.changeDateTime(selectedDate+" "+selectedHeure, finDateHeure);
 		}
 		adapter.notifyDataSetChanged();
+		adapter.notifyDataSetInvalidated();
     }
     
     public static class GuideAdapter extends BaseAdapter
@@ -553,7 +546,6 @@ public class GuideActivity extends ListActivity implements GuideConstants
 
     }
 
-
     public static class Programme
     {
     	public String image;
@@ -667,6 +659,8 @@ public class GuideActivity extends ListActivity implements GuideConstants
         		// TODO : afficher erreur si il y a erreur
 //        		ProgrammationActivity.afficherMsgErreur(activity.getString(R.string.pvrErreurTelechargementChaines), activity);
         	}
+//        	if (forceRefresh == true)
+//        		setListAdapter(adapter);
        		dismissPd();
         	refresh();
         }
