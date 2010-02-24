@@ -49,7 +49,7 @@ import android.widget.TextView;
 public class HomeListActivity extends ListActivity implements HomeConstants
 {
 	private Activity homeActivity;
-	List< Map<String,Object> > modulesList;
+	private List< Map<String,Object> > modulesList;
 	
     @Override
     public void onCreate(Bundle savedInstanceState)

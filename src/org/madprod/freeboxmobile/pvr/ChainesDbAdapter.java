@@ -238,6 +238,13 @@ public class ChainesDbAdapter {
 	{
 		return mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE_HISTOGUIDE + " WHERE "+KEY_PROG_DATETIME_DEB+" = '"+datetime+"'").simpleQueryForLong();
 	}
+	
+	// Utilisé en cas d'ajout de nouvelles chaines aux favoris, 
+	// comme la nouvelle chaine ne sera pas dans l'historique...
+	public long clearHistorique()
+	{
+		return mDb.delete(DATABASE_TABLE_HISTOGUIDE, null, null);
+	}
 
     /*
      * METHODES POUR LES CHAINES DU GUIDE
@@ -262,9 +269,19 @@ public class ChainesDbAdapter {
     {
 		return mDb.query(DATABASE_TABLE_GUIDECHAINES, new String[] {KEY_ROWID, KEY_GUIDECHAINE_FBXID,
 				KEY_GUIDECHAINE_ID, KEY_GUIDECHAINE_CANAL, KEY_GUIDECHAINE_NAME, KEY_GUIDECHAINE_IMAGE},
-		        KEY_GUIDECHAINE_ID+" = "+id, null, null, null, null);    	
+		        KEY_GUIDECHAINE_ID+" = "+id, null, null, null, KEY_GUIDECHAINE_ID);    	
     }
     
+    public Cursor getListChaines()
+    {
+    	return mDb.query(DATABASE_TABLE_GUIDECHAINES, new String[] {
+    			KEY_GUIDECHAINE_ID,
+    			KEY_GUIDECHAINE_CANAL,
+    			KEY_GUIDECHAINE_NAME,
+    			KEY_GUIDECHAINE_IMAGE
+    			},
+		        null, null, null, null, KEY_GUIDECHAINE_CANAL);
+    }
 
 	/*
      * METHODES POUR LES PROGRAMMES
