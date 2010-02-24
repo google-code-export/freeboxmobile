@@ -170,6 +170,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		map.put(M_TITRE, getString(R.string.buttonGuide));
 		map.put(M_DESC, "Consultez le guide TV, programmez des enregistrements, regardez la télévision");
 		map.put(M_CLASS, org.madprod.freeboxmobile.guide.GuideActivity.class);
+//		map.put(M_CLASS, org.madprod.freeboxmobile.guide.GuideChoixChainesActivity.class);
 		modulesList.add(map);    	
     	map = new HashMap<String,Object>();
 		map.put(M_ICON, R.drawable.fm_magnetoscope);

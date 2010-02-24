@@ -308,6 +308,11 @@ public class ChainesDbAdapter {
         		null,
         		null, null, null, KEY_PROG_CHANNEL_ID, null);
 	}
+	
+	public int deleteProgsChaine(int id)
+	{
+		return mDb.delete(DATABASE_TABLE_PROGRAMMES, KEY_PROG_CHANNEL_ID+" = "+id, null);
+	}
 
     /*
      * METHODES POUR LES CHAINES

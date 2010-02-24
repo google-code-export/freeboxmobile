@@ -130,6 +130,7 @@ public class FBMHttpConnection implements Constants
 		httpProgressDialog = new ProgressDialog(a);
 		httpProgressDialog.setIcon(R.drawable.icon_fbm_reverse);
 		httpProgressDialog.setTitle("Mon compte Freebox");
+		httpProgressDialog.setCancelable(false);
 		httpProgressDialog.setMessage("Veuillez patienter,\n\nChargement / rafraichissement des données en cours... (ca peut être long)");
 		httpProgressDialog.show();
 
