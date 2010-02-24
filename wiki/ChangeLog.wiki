@@ -94,7 +94,7 @@ Release : 1
 == 0.30rc1 ==
 Sortie le 24/02/2010<br>
 Release : 21<br>
-Revision : 413
+Revision : 415
  * GUIDE : Première version
 
 == 0.25.1rc1 ==
