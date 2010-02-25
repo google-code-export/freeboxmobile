@@ -189,11 +189,11 @@ public class GuideActivity extends ListActivity implements GuideConstants
     	menu.removeItem(GUIDE_OPTION_MODE);
         if (mode_reduit)
         {
-        	menu.add(0, GUIDE_OPTION_MODE, 2, "Passer en mode étendu").setIcon(android.R.drawable.ic_menu_view);
+        	menu.add(0, GUIDE_OPTION_MODE, 2, R.string.guide_option_mode_etendu).setIcon(android.R.drawable.ic_menu_view);
         }
         else
         {
-        	menu.add(0, GUIDE_OPTION_MODE, 2, "Passer en mode réduit").setIcon(android.R.drawable.ic_menu_view);
+        	menu.add(0, GUIDE_OPTION_MODE, 2, R.string.guide_option_mode_reduit).setIcon(android.R.drawable.ic_menu_view);
         }
         return true;
     }
@@ -206,9 +206,9 @@ public class GuideActivity extends ListActivity implements GuideConstants
         menu.add(0, GUIDE_OPTION_REFRESH, 0, R.string.guide_option_refresh).setIcon(android.R.drawable.ic_menu_rotate);
         menu.add(0, GUIDE_OPTION_SELECT, 1, R.string.guide_option_select).setIcon(android.R.drawable.ic_menu_add);
         if (mode_reduit)
-        	menu.add(0, GUIDE_OPTION_MODE, 2, "Passer en mode étendu").setIcon(android.R.drawable.ic_menu_view);
+        	menu.add(0, GUIDE_OPTION_MODE, 2, R.string.guide_option_mode_etendu).setIcon(android.R.drawable.ic_menu_view);
         else
-        	menu.add(0, GUIDE_OPTION_MODE, 2, "Passer en mode réduit").setIcon(android.R.drawable.ic_menu_view);
+        	menu.add(0, GUIDE_OPTION_MODE, 2, R.string.guide_option_mode_reduit).setIcon(android.R.drawable.ic_menu_view);
         return true;
     }
 

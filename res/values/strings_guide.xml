@@ -2,5 +2,6 @@
 <resources>
 	<string name="guide_option_refresh">Rafraichir</string>
 	<string name="guide_option_select">Gérer les favoris</string>
-	<string name="guide_option_mode">Mode réduit / étendu</string>
+	<string name="guide_option_mode_reduit">Passer en mode réduit</string>
+	<string name="guide_option_mode_etendu">Passer en mode étendu</string>
 </resources>
