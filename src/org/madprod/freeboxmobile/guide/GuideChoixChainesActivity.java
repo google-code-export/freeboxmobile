@@ -47,6 +47,10 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
 	private ArrayList<Favoris> listeFavoris = new ArrayList<Favoris>();
 	private ProgressDialog progressDialog = null;
 	private List< Map<String,Object> > chainesToSelect;
+	// -1 si une chaine a été enlevée / 1 si une chaine a été ajoutée / 0 si pas bougé
+	// si suppression et ajout : 1
+	private int activityResult = 0; 
+	private int itemSelected = 0;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -79,6 +83,8 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
 	public void onListItemClick(ListView l, View v, int pos, long id)
 	{
 		super.onListItemClick(l, v, pos, id);
+		itemSelected = pos;
+		FBMHttpConnection.FBMLog("ITEM SELECTED : "+itemSelected);
 		TextView chaine_id = (TextView) v.findViewById(R.id.HiddenTextView); 
 		displayAdd(Integer.decode((String)chaine_id.getText()));
 	}
@@ -93,14 +99,15 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
 		FBMHttpConnection.FBMLog("getFavoris");
 
 		listeFavoris.clear();
+		// On commence par récupérer la liste des chaines favorites
     	Cursor chainesIds = mDbHelper.getChainesProg();
     	startManagingCursor (chainesIds);
         if (chainesIds != null)
 		{
+			Favoris f;
 			if (chainesIds.moveToFirst())
 			{
 				Cursor chaineCursor;
-				Favoris f;
 				boolean nochaine = false;
 				
 				int CI_progchannel_id = chainesIds.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_CHANNEL_ID);
@@ -120,83 +127,108 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
 						nochaine = true;
 					listeFavoris.add(f);
 				} while (chainesIds.moveToNext());
+			}
+			// Ici on trie pour avoir les listes de programmes dans l'ordre des numéros de chaine
+			Collections.sort(listeFavoris);
 
-				// TODO : si nochaine == true, il manque une chaine, lancer un téléchargement des chaines du guide
-				if (nochaine == true)
+			// Ici on récupère la liste des chaines disponibles pour le guide auxquelles ont enlève celles
+			// déjà sélectionnées
+			chainesToSelect = new ArrayList< Map<String,Object> >();
+			Cursor allChaines = mDbHelper.getListChaines();
+			if (allChaines != null)
+			{
+				if (allChaines.moveToFirst())
 				{
-					FBMHttpConnection.FBMLog("IL MANQUE AU MOINS UNE CHAINE");
-				}
-
-				// Ici on trie pour avoir les listes de programmes dans l'ordre des numéros de chaine
-				Collections.sort(listeFavoris);
-
-				// Ici on récupère la liste des chaines disponibles pour le guide auxquelles ont enlève celles
-				// déjà sélectionnées
-				chainesToSelect = new ArrayList< Map<String,Object> >();
-				Cursor allChaines = mDbHelper.getListChaines();
-				if (allChaines != null)
-				{
-					if (allChaines.moveToFirst())
+					final int CI_image = allChaines.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE);
+					final int CI_canal = allChaines.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_CANAL);
+					final int CI_name = allChaines.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_NAME);
+					final int CI_id = allChaines.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_ID);
+					String image;
+					Map<String,Object> map;
+					for (Iterator<Favoris> it = listeFavoris.iterator(); it.hasNext();)
 					{
-						final int CI_image = allChaines.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE);
-						final int CI_canal = allChaines.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_CANAL);
-						final int CI_name = allChaines.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_NAME);
-						final int CI_id = allChaines.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_ID);
-						Iterator<Favoris> it = listeFavoris.iterator();
-						Map<String,Object> map;
-						while(it.hasNext())
+						f = it.next();
+						while ((!allChaines.isAfterLast()) &&
+								(allChaines.getInt(CI_canal) != f.canal))
 						{
-							f = it.next();
-							while ((!allChaines.isAfterLast()) &&
-									(allChaines.getInt(allChaines.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_CANAL)) != f.canal))
+							image = allChaines.getString(CI_image);
+							map = new HashMap<String,Object>();
+							if (image.length() > 0)
 							{
-								map = new HashMap<String,Object>();
-					        	map.put(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE, Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES+allChaines.getString(CI_image));
-								map.put(ChainesDbAdapter.KEY_GUIDECHAINE_CANAL, allChaines.getInt(CI_canal));
-								map.put(ChainesDbAdapter.KEY_GUIDECHAINE_NAME, allChaines.getString(CI_name));
-								map.put(ChainesDbAdapter.KEY_GUIDECHAINE_ID, allChaines.getInt(CI_id));
-								chainesToSelect.add(map);
-								allChaines.moveToNext();
+								map.put(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE, Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES+image);
 							}
+							else
+							{
+								map.put(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE, R.drawable.chaine_vide);
+							}
+							map.put(ChainesDbAdapter.KEY_GUIDECHAINE_CANAL, allChaines.getInt(CI_canal));
+							map.put(ChainesDbAdapter.KEY_GUIDECHAINE_NAME, allChaines.getString(CI_name));
+							map.put(ChainesDbAdapter.KEY_GUIDECHAINE_ID, allChaines.getInt(CI_id));
+							chainesToSelect.add(map);
 							allChaines.moveToNext();
 						}
-				        SimpleAdapter mList = new SimpleAdapter(
-				        		this, chainesToSelect, R.layout.guide_favoris_row, 
-				        		new String[] {ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE, ChainesDbAdapter.KEY_GUIDECHAINE_NAME, ChainesDbAdapter.KEY_GUIDECHAINE_ID},
-				        		new int[] {R.id.ImageViewFavoris, R.id.TextViewFavoris, R.id.HiddenTextView});
-				        setListAdapter(mList);
+						allChaines.moveToNext();
 					}
-					allChaines.close();
+					// On doit refaire un tour pour les chaines non sélectionnées
+					// dont le numéro est > au numéro de la dernière chaine des favoris
+					while (!allChaines.isAfterLast())
+					{
+						image = allChaines.getString(CI_image);
+						map = new HashMap<String,Object>();
+						if (image.length() > 0)
+						{
+							map.put(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE, Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES+image);
+						}
+						else
+						{
+							map.put(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE, R.drawable.chaine_vide);
+						}
+						map.put(ChainesDbAdapter.KEY_GUIDECHAINE_CANAL, allChaines.getInt(CI_canal));
+						map.put(ChainesDbAdapter.KEY_GUIDECHAINE_NAME, allChaines.getString(CI_name));
+						map.put(ChainesDbAdapter.KEY_GUIDECHAINE_ID, allChaines.getInt(CI_id));
+						chainesToSelect.add(map);
+						allChaines.moveToNext();							
+					}
+			        SimpleAdapter mList = new SimpleAdapter(
+			        		this, chainesToSelect, R.layout.guide_favoris_row, 
+			        		new String[] {ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE, ChainesDbAdapter.KEY_GUIDECHAINE_NAME, ChainesDbAdapter.KEY_GUIDECHAINE_ID},
+			        		new int[] {R.id.ImageViewFavoris, R.id.TextViewFavoris, R.id.HiddenTextView});
+			        setListAdapter(mList);
+			        if (itemSelected > 0)
+			        {
+			        	setSelection(itemSelected);
+			        }
 				}
+				allChaines.close();
+			}
 
-				// On créé l'horizontal scrollview en haut avec la liste des chaines favorites
-				Iterator<Favoris> it = listeFavoris.iterator();
-				String filepath;
-				Bitmap bmp;
-		    	LinearLayout csly = (LinearLayout) findViewById(R.id.ChoixSelectedLinearLayout);
-		    	csly.removeAllViews();
-		    	LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-		    	params.setMargins(5,5,5,5);
-				while(it.hasNext())
-				{
-					f = it.next();
-			        filepath = Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES+f.image;
-					bmp = BitmapFactory.decodeFile(filepath);
-					ImageView i = new ImageView(this);
-					i.setImageBitmap(bmp);
-					i.setLayoutParams(params);
-					i.setTag((Integer)f.guidechaine_id);
-			        i.setOnClickListener(
-			            	new View.OnClickListener()
-			            	{
-			            		public void onClick(View view)
-			            		{
-			            			displaySuppr((Integer)view.getTag());
-			            		}
-			            	}
-			            );
-					csly.addView(i);
-				}
+			// On créé l'horizontal scrollview en haut avec la liste des chaines favorites
+			Iterator<Favoris> it = listeFavoris.iterator();
+			String filepath;
+			Bitmap bmp;
+	    	LinearLayout csly = (LinearLayout) findViewById(R.id.ChoixSelectedLinearLayout);
+	    	csly.removeAllViews();
+	    	LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+	    	params.setMargins(5,5,5,5);
+			while(it.hasNext())
+			{
+				f = it.next();
+		        filepath = Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES+f.image;
+				bmp = BitmapFactory.decodeFile(filepath);
+				ImageView i = new ImageView(this);
+				i.setImageBitmap(bmp);
+				i.setLayoutParams(params);
+				i.setTag((Integer)f.guidechaine_id);
+		        i.setOnClickListener(
+		            	new View.OnClickListener()
+		            	{
+		            		public void onClick(View view)
+		            		{
+		            			displaySuppr((Integer)view.getTag());
+		            		}
+		            	}
+		            );
+				csly.addView(i);
 			}
 		}
     }
@@ -241,6 +273,22 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
 				dialog.dismiss();
 			}
 		});
+		d.show();
+    }
+    
+    public void showError()
+    {
+    	AlertDialog d = new AlertDialog.Builder(this).create();
+    	d.setIcon(R.drawable.fm_guide_tv);
+		d.setTitle("Erreur");
+    	d.setMessage("Problème réseau, essayez à nouveau.");
+		d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
+			{
+				public void onClick(DialogInterface dialog, int which)
+				{
+					dialog.dismiss();
+				}
+			});
 		d.show();
     }
     
@@ -300,7 +348,7 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
 
         protected Boolean doInBackground(Void... arg0)
         {
-
+        	Boolean result = false;
             ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
         	switch (command)
         	{
@@ -315,28 +363,53 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
 	            	break;
         	}
             params.add(new BasicNameValuePair("chaine", ((Integer)param).toString()));
-        	Action(params);
-        	switch (command)
+        	result = Action(params);
+        	if (result)
         	{
-	        	case FAVORIS_COMMAND_RESET:
-	            	break;
-	        	case FAVORIS_COMMAND_ADD:
-	                mDbHelper.clearHistorique();
-	                new GuideNetwork(GuideChoixChainesActivity.this, null, false, true, true).getData();
-	            	break;
-	        	case FAVORIS_COMMAND_SUPPR:
-	                mDbHelper.deleteProgsChaine(param);
-	            	break;
+	        	switch (command)
+	        	{
+		        	case FAVORIS_COMMAND_RESET:
+		            	break;
+		        	case FAVORIS_COMMAND_ADD:
+		                mDbHelper.clearHistorique();
+		                new GuideNetwork(GuideChoixChainesActivity.this, null, false, true, param, true).getData();
+		            	break;
+		        	case FAVORIS_COMMAND_SUPPR:
+		                mDbHelper.deleteProgsChaine(param);
+		            	break;
+	        	}
         	}
-        	return true;
+        	return result;
         }
         
-        protected void onPostExecute(Boolean telechargementOk)
+        protected void onPostExecute(Boolean result)
         {
-        	// TODO : Rafraichir affichage
         	GuideActivity.dismissPd();
        		dismissPd();
-        	refresh();
+       		if (result)
+       		{
+       			refresh();
+	        	switch (command)
+	        	{
+		        	case FAVORIS_COMMAND_RESET:
+		        		activityResult = 1;
+		            	break;
+		        	case FAVORIS_COMMAND_ADD:
+		        		activityResult = 1;
+		            	break;
+		        	case FAVORIS_COMMAND_SUPPR:
+		        		if (activityResult == 0)
+		        		{
+		        			activityResult = -1;
+		        		}
+		            	break;
+	        	}
+	            setResult(activityResult);
+       		}
+       		else
+       		{
+       			showError();
+       		}
         }
         
         public GuideFavorisActivityNetwork(int command, int param)
@@ -359,13 +432,30 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
     					if (FBMHttpConnection.connect() == CONNECT_CONNECTED)
     					{
     						res = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(MAGNETO_URL, params, true, true, "UTF8"));
+    						if (res != null)
+    						{
+	    						try
+	    						{
+	    							jObject = new JSONObject(res);
+	    		    				if (jObject.has("redirect"))
+	    		    					return (false);
+	    						}
+	    		            	catch (JSONException e)
+	    		            	{
+	    		    				FBMHttpConnection.FBMLog("JSONException ! "+e.getMessage());
+	    		    				FBMHttpConnection.FBMLog(res);
+	    		    				e.printStackTrace();
+	    		    				return false;
+	    		    			}    						
+    						}
+    						else
+    							return false;
     					}
     					else
     					{
     						return (false);
     					}
     				}
-    	            FBMHttpConnection.FBMLog("ACTION : "+res);
             	}
             	catch (JSONException e)
             	{
@@ -374,8 +464,10 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
     				e.printStackTrace();
     				return false;
     			}
+            	FBMHttpConnection.FBMLog("ACTION : "+res);
+                return true;
             }
-            return true;
+            return false;
         }
     }
 }

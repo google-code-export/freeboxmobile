@@ -33,21 +33,23 @@ public class GuideNetwork extends AsyncTask<Void, Integer, Integer> implements G
 	private boolean getChaines;
 	private boolean getProg;
 	private boolean forceRefresh;
-	
+	private static int pnb;
+
     protected void onPreExecute()
     {
     }
 
     protected Integer doInBackground(Void... arg0)
     {
-    	return getData();
+//    	return getData();
+    	return 0;
     }
-    
+
     protected void onProgressUpdate(Integer... progress)
     {
         GuideActivity.showProgress(activity, progress[0]);
     }
-
+/*
     protected void onPostExecute(Integer statut)
     {
     	if (statut != DATA_NOT_DOWNLOADED)
@@ -59,16 +61,18 @@ public class GuideNetwork extends AsyncTask<Void, Integer, Integer> implements G
     	}
    		GuideActivity.dismissPd();
     }
+  */
     
     /**
      * GuideNetwork : refresh data for Guide
      * @param a : activity used to display progress bars
      * @param d : datetime to get programmes (if prog == true)
      * @param chaine : wants to get chaines lits ?
-     * @param prog : wants to get programmes ?
-     * @param force : force refresh programmes event if they are already present in database
+     * @param prog : wants to get programs ?
+     * @param pnb : wants to get this particular program ?
+     * @param force : force refresh programs event if they are already present in database
      */
-    public GuideNetwork(Activity a, String d, boolean chaine, boolean prog, boolean force)
+    public GuideNetwork(Activity a, String d, boolean chaine, boolean prog, int pnb, boolean force)
     {
     	activity = a;
     	if (d != null)
@@ -83,7 +87,8 @@ public class GuideNetwork extends AsyncTask<Void, Integer, Integer> implements G
     	getChaines = chaine;
     	getProg = prog;
     	forceRefresh = force;
-    	FBMHttpConnection.FBMLog("GUIDENETWORK START "+d+" "+chaine+" "+prog);
+    	this.pnb = pnb;
+    	FBMHttpConnection.FBMLog("GUIDENETWORK START "+d+" "+chaine+" "+prog+" "+force);
     }
     
 	private int getBoolean(JSONObject o, String key)
@@ -150,12 +155,18 @@ public class GuideNetwork extends AsyncTask<Void, Integer, Integer> implements G
 		int max = 0;
 		boolean ok = true;
 
-		GuideActivity.progressText = "Actualisation des données du guide";
-		publishProgress(0);
+		if (pnb == 0)
+		{
+			GuideActivity.progressText = "Actualisation des données du guide";
+			publishProgress(0);
+		}
 		db = new ChainesDbAdapter(activity);
 		db.open();
 
-		if ((forceRefresh == false) && (db.isHistoGuidePresent(datetime) > 0) && (getChaines == false))
+		if ((pnb == 0) &&
+			(forceRefresh == false) &&
+			(db.isHistoGuidePresent(datetime) > 0) &&
+			(getChaines == false))
 		{
 			// On a déjà les données, on les charge donc pas
 			FBMHttpConnection.FBMLog("ON A DEJA LES DONNEES");
@@ -189,12 +200,23 @@ public class GuideNetwork extends AsyncTask<Void, Integer, Integer> implements G
 				{
 					jChannelsObject = jObject.getJSONObject("progs");
 					max = jChannelsObject.length();
-					GuideActivity.progressText = "Actualisation des programmes TV pour "+max+" chaînes choisies...";
-					GuideActivity.setPdMax(max);
+					if (pnb == 0)
+					{
+						GuideActivity.progressText = "Actualisation des programmes TV pour "+max+" chaînes favorites...";
+						GuideActivity.setPdMax(max);
+					}
+					String channelId;
 					for (Iterator <String> it = jChannelsObject.keys() ; it.hasNext() ;)
 					{
-						publishProgress(courant++);
-						String channelId = it.next();
+						if (pnb != 0)
+						{
+							channelId = ((Integer)pnb).toString();
+						}
+						else
+						{
+							publishProgress(courant++);
+							channelId = it.next();
+						}
 						jHorairesObject = jChannelsObject.getJSONObject(channelId);
 						for (Iterator <String> jt = jHorairesObject.keys(); jt.hasNext() ;)
 						{
@@ -219,8 +241,15 @@ public class GuideNetwork extends AsyncTask<Void, Integer, Integer> implements G
 							}
 							// TODO : sinon rafraichir ?
 						}
+						if (pnb != 0)
+						{
+							break;
+						}
 					}
-					db.createHistoGuide(datetime);
+					if (pnb == 0)
+					{
+						db.createHistoGuide(datetime);
+					}
 				}
 				if (getChaines)
 				{
@@ -231,7 +260,7 @@ public class GuideNetwork extends AsyncTask<Void, Integer, Integer> implements G
 		        	file.mkdirs();
 					jChannelsObject = jObject.getJSONObject("chaines");
 					max = jChannelsObject.length();
-					GuideActivity.progressText = "Actualisation des "+max+" chaînes du Guide...";
+					GuideActivity.progressText = "Actualisation de la liste des "+max+" chaînes disponibles pour le Guide...";
 					publishProgress(0);
 					GuideActivity.setPdMax(max);
 					for (Iterator <String> it = jChannelsObject.keys() ; it.hasNext() ;)
@@ -242,16 +271,6 @@ public class GuideNetwork extends AsyncTask<Void, Integer, Integer> implements G
 						jChannelObject = jChannelsObject.getJSONObject(channelId);
 						image = getString(jChannelObject, "image");
 						canal = getString(jChannelObject, "canal");
-						if (db.isGuideChainePresent(channel_id) == 0)
-						{
-							db.createGuideChaine(
-								Integer.decode(getString(jChannelObject, "fbx_id")),
-								channel_id,
-								Integer.decode(canal),
-								getString(jChannelObject, "name"),
-								image
-								);
-						}
 						// TODO : si chaine déjà présente -> update
 						
 						// On teste si on a le fichier qui correspond à la chaine
@@ -273,6 +292,17 @@ public class GuideNetwork extends AsyncTask<Void, Integer, Integer> implements G
 								}
 							}
 				        }
+				        
+						if (db.isGuideChainePresent(channel_id) == 0)
+						{
+							db.createGuideChaine(
+								Integer.decode(getString(jChannelObject, "fbx_id")),
+								channel_id,
+								Integer.decode(canal),
+								getString(jChannelObject, "name"),
+								image
+								);
+						}				        
 					}
 				}
 			}
@@ -288,18 +318,11 @@ public class GuideNetwork extends AsyncTask<Void, Integer, Integer> implements G
         {
         	ok = false;
         }
-   		publishProgress(max);
-    	db.close();
+//   		publishProgress(max);
     	FBMHttpConnection.FBMLog("Guide Network end "+new Date());
+    	db.close();
     	if (ok)
     	{
-	    	// On met à jour le timestamp du dernier refresh
-/*
-			SharedPreferences mgr = activity.getSharedPreferences(KEY_PREFS, activity.MODE_PRIVATE);
-	    	Editor editor = mgr.edit();
-	    	editor.putLong(KEY_LAST_REFRESH+FBMHttpConnection.getIdentifiant(), (new Date()).getTime());
-	    	editor.commit();
-*/
 	    	return DATA_NEW_DATA;
     	}
         FBMHttpConnection.FBMLog("==> Impossible de télécharger les programmes");

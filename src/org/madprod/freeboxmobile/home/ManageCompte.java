@@ -38,9 +38,7 @@ public class ManageCompte extends AsyncTask<ComptePayload, Void, ComptePayload> 
 		{
 			new PvrNetwork(activity, true, true).getData();
 	    	ProgrammationActivity.lastUser = "";
-	    	ProgrammationActivity.dismissPd();
-			new GuideNetwork(activity, null, true, true, false).getData();
-			GuideActivity.dismissPd();
+			new GuideNetwork(activity, null, true, true, 0, false).getData();
 		}
 		return payload[0];
 	}
@@ -54,6 +52,8 @@ public class ManageCompte extends AsyncTask<ComptePayload, Void, ComptePayload> 
 	@Override
 	protected void onPostExecute(ComptePayload payload)
 	{
+    	ProgrammationActivity.dismissPd();
+		GuideActivity.dismissPd();
 		FBMHttpConnection.dismissPd();
 		if (payload.result != null)
 		{

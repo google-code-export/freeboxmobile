@@ -153,7 +153,7 @@ public class ComptesDbAdapter implements Constants
     public void close()
     {
     	mDb.close();
-        mDbHelper.close();
+//        mDbHelper.close();
     }
 
     /**

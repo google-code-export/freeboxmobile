@@ -18,6 +18,8 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.AsyncTask;
@@ -425,9 +427,11 @@ public class ProgrammationActivity extends Activity implements PvrConstants
     }
     
     @Override
-	protected void onDestroy() {
-    	super.onDestroy();
+	protected void onDestroy()
+    {
     	FBMHttpConnection.closeDisplay();
+    	progAct = null;
+    	super.onDestroy();
     }
     
     @Override
@@ -808,7 +812,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
     	alertDialog.show();
     }
 
-    public static void showProgress(Activity a, int progress)
+    public static void showProgress(Activity a, int progress, int max)
     {
     	if (progressDialog == null)
     	{
@@ -821,12 +825,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
     		progressDialog.show();
         }
         progressDialog.setProgress(progress);
-    }
-
-    public static void setPdMax(int max)
-    {
-    	if (progressDialog != null)
-    		progressDialog.setMax(max);
+		progressDialog.setMax(max);
     }
 
     public static void showPatientezChaines(Activity a)
@@ -860,8 +859,10 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 
     public static void dismissPd()
     {
+    	FBMHttpConnection.FBMLog("ProgrammationActivity dismiss");
     	if (progressDialog != null)
     	{
+        	FBMHttpConnection.FBMLog("ok");
     		progressDialog.dismiss();
     		progressDialog = null;
     	}
@@ -978,7 +979,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
                     if (errMsg != null)
                     {
 						setResult(EnregistrementsActivity.RESULT_PROG_NOK);
-                        afficherMsgErreur(errMsg, progAct);
+                        afficherMsgErreur(errMsg);
 	                }
                     else
                     {
@@ -1094,7 +1095,8 @@ public class ProgrammationActivity extends Activity implements PvrConstants
         		String resultat = FBMHttpConnection.getPage(FBMHttpConnection.postAuthRequest(url, postVars, true, true));
 
         		int erreurPos = resultat.indexOf("erreurs");
-        		if (erreurPos > 0) {
+        		if (erreurPos > 0)
+        		{
         			int debutErr, finErr;
         			String msgErreur;
         			
@@ -1103,11 +1105,23 @@ public class ProgrammationActivity extends Activity implements PvrConstants
         			finErr = msgErreur.substring(debutErr).indexOf("<");
         			msgErreur = msgErreur.substring(debutErr, debutErr+finErr);
         			
-        			if (msgErreur.indexOf("Erreur interne 1") >= 0) {
+        			if (msgErreur.indexOf("Erreur interne 1") >= 0)
+        			{
         				msgErreur += "\n" + getString(R.string.pvrErreurInterne1);
         			}
         			db.close();
         			return getString(R.string.pvrErreurConsole) + "\n" + msgErreur;
+        		}
+        		else
+        		{
+        			// On enregistre le total de minutes d'enregistrement effectués avec l'application
+        			// plus tard on pourra l'afficher à l'utilisateur
+        			SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
+        			int total = mgr.getInt(KEY_TOTAL_ENR, 0);
+        			total += duree;
+        			Editor editor = mgr.edit();
+    				editor.putInt(KEY_TOTAL_ENR, total);
+    				editor.commit();
         		}
         		db.close();
         		return null;
@@ -1116,17 +1130,21 @@ public class ProgrammationActivity extends Activity implements PvrConstants
         FBMHttpConnection.FBMLog("FIN LONGUE");
     }
 	
-	static void afficherMsgErreur(String msg, Activity a) {	
-    	alertDialog = new AlertDialog.Builder(a).create();
-    	alertDialog.setTitle("Erreur!");
-    	alertDialog.setIcon(R.drawable.fm_magnetoscope);
-    	alertDialog.setMessage(msg);
-    	alertDialog.setButton("Ok", new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int which) {
-				dismissAd();
-			}
-		});
-		alertDialog.show();
+	void afficherMsgErreur(String msg)
+	{	
+		if (progAct != null)
+		{
+	    	alertDialog = new AlertDialog.Builder(progAct).create();
+	    	alertDialog.setTitle("Erreur!");
+	    	alertDialog.setIcon(R.drawable.fm_magnetoscope);
+	    	alertDialog.setMessage(msg);
+	    	alertDialog.setButton("Ok", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int which) {
+					dismissAd();
+				}
+			});
+			alertDialog.show();
+		}
     }
     
 	private boolean remplirFicheFromGuide()
@@ -1157,7 +1175,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 	        String date[] = dt[0].split("-");
 	        String time[] = dt[1].split(":");
 	        choosen_year_deb = Integer.decode(date[0]);
-	        choosen_month_deb = Integer.decode(date[1]);
+	        choosen_month_deb = Integer.decode(date[1])-1;
 	        choosen_day_deb = Integer.decode(date[2]);
 	        choosen_hour_deb = Integer.decode(time[0]);
 	        choosen_minute_deb = Integer.decode(time[1]);
@@ -1463,11 +1481,11 @@ public class ProgrammationActivity extends Activity implements PvrConstants
         	return new PvrNetwork(progAct, getChaines, getDisques).getData();
         }
 
-        protected void onProgressUpdate(Integer... progress)
+/*        protected void onProgressUpdate(Integer... progress)
         {
-            showProgress(progAct, progress[0]);
+            showProgress(progAct, progress[0], );
         }	        
-
+*/
         protected void onPostExecute(Boolean telechargementOk)
         {
         	if (telechargementOk == Boolean.TRUE)
@@ -1475,7 +1493,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
         	}
         	else
         	{
-    			afficherMsgErreur(progAct.getString(R.string.pvrErreurTelechargementDonnees), progAct);
+    			afficherMsgErreur(progAct.getString(R.string.pvrErreurTelechargementDonnees));
         	}
         	preparerActivite();
         	dismissPd();

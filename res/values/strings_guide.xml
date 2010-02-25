@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="guide_option_refresh">Rafraichir</string>
-	<string name="guide_option_select">Choisir les chaînes</string>
+	<string name="guide_option_select">Gérer les favoris</string>
 </resources>

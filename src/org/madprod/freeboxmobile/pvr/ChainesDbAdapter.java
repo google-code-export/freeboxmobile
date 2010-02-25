@@ -45,7 +45,6 @@ public class ChainesDbAdapter {
     public static final String KEY_DISQUE_MOUNT = "d_mount";
     public static final String KEY_DISQUE_LABEL = "d_label";
 
-    public static final String KEY_PROG_NAME = "name";
     public static final String KEY_PROG_GENRE_ID = "genre_id";
     public static final String KEY_PROG_CHANNEL_ID = "channel_id"; // = gc_id (KEY_GUIDECHAINE_ID)
     public static final String KEY_PROG_RESUM_S = "resum_s";
@@ -150,8 +149,8 @@ public class ChainesDbAdapter {
 
     private final Context mCtx;
 
-    private static class DatabaseHelper extends SQLiteOpenHelper {
-
+    private static class DatabaseHelper extends SQLiteOpenHelper
+    {
         DatabaseHelper(Context context)
         {
 			super(context, DATABASE_NAME+"_"+FBMHttpConnection.getIdentifiant(), null, DATABASE_VERSION);
@@ -196,7 +195,8 @@ public class ChainesDbAdapter {
      * 
      * @param ctx the Context within which to work
      */
-    public ChainesDbAdapter(Context ctx) {
+    public ChainesDbAdapter(Context ctx)
+    {
         this.mCtx = ctx;
     }
 
@@ -217,8 +217,7 @@ public class ChainesDbAdapter {
     
     public void close()
     {
-        mDb.close();
-        mDbHelper.close();
+   		mDb.close();
     }
 
     /*
@@ -282,6 +281,11 @@ public class ChainesDbAdapter {
     			},
 		        null, null, null, null, KEY_GUIDECHAINE_CANAL);
     }
+
+	public long getNbChaines()
+	{
+		return mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE_GUIDECHAINES).simpleQueryForLong();
+	}
 
 	/*
      * METHODES POUR LES PROGRAMMES

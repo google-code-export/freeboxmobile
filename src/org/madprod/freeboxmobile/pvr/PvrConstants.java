@@ -14,4 +14,6 @@ public interface PvrConstants extends Constants
 	static final int PVR_MODE_DISABLED = 0;
 	static final int PVR_MODE_PUBLIC = 1;
 	static final int PVR_MODE_PRIVATE = 2;
+	
+	static final String KEY_TOTAL_ENR = "pvr_total_enr";
 }
