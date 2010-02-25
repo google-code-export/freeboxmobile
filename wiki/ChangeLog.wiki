@@ -91,6 +91,12 @@ Release : 1
  * SERVICES : Notification de nouveaux messages
 
 = Versions beta de !FreeboxMobile =
+== 0.30rc2 ==
+Sortie le XX/02/2010<br>
+Release : 22<br>
+Revision : XXX
+ * 
+
 == 0.30rc1 ==
 Sortie le 24/02/2010<br>
 Release : 21<br>
