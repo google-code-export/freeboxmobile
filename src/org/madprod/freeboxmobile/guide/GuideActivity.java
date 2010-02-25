@@ -67,12 +67,15 @@ public class GuideActivity extends ListActivity implements GuideConstants
 	private String selectedDate;
 	private String finDateHeure;
 	
+	private static boolean mode_reduit;
+	
 	// Cette liste sert à récupérer la date correspondant à l'indice du spinner
 	private List<String> calDates = new ArrayList<String>();
 	private ArrayList<GuideAdapter> ga = null;
 	private ArrayList<ListeChaines> listesChaines;
 
 	String jours[] = {"", "Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"};
+
 	@Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -163,6 +166,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
 			editor.commit();
 			displayAboutGuide();
 		}
+		mode_reduit = mgr.getBoolean(KEY_MODE, false);
     }
 	
     @Override
@@ -179,6 +183,21 @@ public class GuideActivity extends ListActivity implements GuideConstants
     	super.onDestroy();
     }
 
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu)
+    {
+    	menu.removeItem(GUIDE_OPTION_MODE);
+        if (mode_reduit)
+        {
+        	menu.add(0, GUIDE_OPTION_MODE, 2, "Passer en mode étendu").setIcon(android.R.drawable.ic_menu_view);
+        }
+        else
+        {
+        	menu.add(0, GUIDE_OPTION_MODE, 2, "Passer en mode réduit").setIcon(android.R.drawable.ic_menu_view);
+        }
+        return true;
+    }
+    
 	@Override
     public boolean onCreateOptionsMenu(Menu menu)
 	{
@@ -186,6 +205,10 @@ public class GuideActivity extends ListActivity implements GuideConstants
 
         menu.add(0, GUIDE_OPTION_REFRESH, 0, R.string.guide_option_refresh).setIcon(android.R.drawable.ic_menu_rotate);
         menu.add(0, GUIDE_OPTION_SELECT, 1, R.string.guide_option_select).setIcon(android.R.drawable.ic_menu_add);
+        if (mode_reduit)
+        	menu.add(0, GUIDE_OPTION_MODE, 2, "Passer en mode étendu").setIcon(android.R.drawable.ic_menu_view);
+        else
+        	menu.add(0, GUIDE_OPTION_MODE, 2, "Passer en mode réduit").setIcon(android.R.drawable.ic_menu_view);
         return true;
     }
 
@@ -199,6 +222,13 @@ public class GuideActivity extends ListActivity implements GuideConstants
     			return true;
     		case GUIDE_OPTION_REFRESH:
     			new GuideActivityNetwork(selectedDate+" "+selectedHeure, false, true, true, true).execute((Void[])null);
+    			return true;
+    		case GUIDE_OPTION_MODE:
+    			mode_reduit = (mode_reduit ? false : true);
+    			Editor editor = getSharedPreferences(KEY_PREFS, MODE_PRIVATE).edit();
+    			editor.putBoolean(KEY_MODE, mode_reduit);
+    			editor.commit();
+    	    	adapter.notifyDataSetChanged();
     			return true;
         }
         return super.onOptionsItemSelected(item);
@@ -277,8 +307,6 @@ public class GuideActivity extends ListActivity implements GuideConstants
     		case -1 :
     	    	FBMHttpConnection.FBMLog("RESULT SUPPR");
     			getFromDb();
-//    			refresh();
-//    			adapter.notifyDataSetInvalidated();
     			break;
     		// Si on a ajouté un favori -> mise à jour réseau
     		case 1:
@@ -425,7 +453,6 @@ public class GuideActivity extends ListActivity implements GuideConstants
 	
     public void refresh()
     {
-    	FBMHttpConnection.FBMLog("Refreshing...");
     	GuideAdapter g;
     	if (ga != null)
     	{
@@ -521,6 +548,17 @@ public class GuideActivity extends ListActivity implements GuideConstants
 				holder.heure.setText(convertDateTimeHoraire(listeChaines.programmes.getString(heureCI)));
 				holder.duree.setText(convertDuree(listeChaines.programmes.getInt(dureeCI)));
 				holder.desc.setText(listeChaines.programmes.getString(descCI));
+				
+				if (mode_reduit)
+				{
+					holder.duree.setVisibility(View.GONE);
+					holder.desc.setVisibility(View.GONE);
+				}
+				else
+				{
+					holder.duree.setVisibility(View.VISIBLE);
+					holder.desc.setVisibility(View.VISIBLE);
+				}
 			}
 			return convertView;
 		}
@@ -529,8 +567,6 @@ public class GuideActivity extends ListActivity implements GuideConstants
 		{
 			listeChaines.programmes = mDbHelper.getProgrammes(listeChaines.chaine_id, d, f);
 			guideAct.startManagingCursor(listeChaines.programmes);
-//    		notifyDataSetChanged();
-//    		notifyDataSetInvalidated();
 		}
 		
 		public String convertDuree(int duree)

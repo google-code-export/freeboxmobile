@@ -107,7 +107,6 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 			Editor editor = mgr.edit();
 			editor.putString(KEY_SPLASH, getString(R.string.app_version));
 			editor.commit();
-			displayAbout();
 			File log = new File(Environment.getExternalStorageDirectory()+DIR_FBM, file_log);
 			log.delete();
 
@@ -122,11 +121,10 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 			{
 				InfoAdslCheck.changeTimer(Integer.decode(ms), this);
 			}
+			displayAbout();
 		}
 
         FBMHttpConnection.FBMLog("type:"+mgr.getString(KEY_LINETYPE, ""));
-
-		setTitle(getString(R.string.app_name)+" "+FBMHttpConnection.getTitle());
     }
 
     @Override
