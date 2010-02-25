@@ -339,13 +339,19 @@ public class ChainesDbAdapter {
      * METHODES POUR LES CHAINES
      */
 
-    public void swapChaines() {
+	public void makeChaines()
+	{
+        mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_SERVICESTEMP);
+        mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_CHAINESTEMP);
+        mDb.execSQL(DATABASE_CREATE_CHAINESTEMP);
+        mDb.execSQL(DATABASE_CREATE_SERVICESTEMP);		
+	}
+    public void swapChaines()
+    {
         mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_SERVICES);
     	mDb.execSQL("ALTER TABLE "+DATABASE_TABLE_SERVICESTEMP+" RENAME TO "+DATABASE_TABLE_SERVICES);
         mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_CHAINES);
     	mDb.execSQL("ALTER TABLE "+DATABASE_TABLE_CHAINESTEMP+" RENAME TO "+DATABASE_TABLE_CHAINES);
-        mDb.execSQL(DATABASE_CREATE_CHAINESTEMP);
-        mDb.execSQL(DATABASE_CREATE_SERVICESTEMP);
     }
 
     public void cleanTempChaines()
@@ -423,17 +429,16 @@ public class ChainesDbAdapter {
      * METHODES POUR LES BOITIERS/DISQUES
      */
 
+    public void makeBoitiersDisques()
+    {
+        mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_BOITIERSDISQUESTEMP);
+        mDb.execSQL(DATABASE_CREATE_BOITIERSDISQUESTEMP);    	    	
+    }
+
     public void swapBoitiersDisques()
     {
         mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_BOITIERSDISQUES);
     	mDb.execSQL("ALTER TABLE "+DATABASE_TABLE_BOITIERSDISQUESTEMP+" RENAME TO "+DATABASE_TABLE_BOITIERSDISQUES);
-        mDb.execSQL(DATABASE_CREATE_BOITIERSDISQUESTEMP);    	
-    }
-
-    public void cleanTempBoitiersDisques()
-    {
-        mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_BOITIERSDISQUESTEMP);
-        mDb.execSQL(DATABASE_CREATE_BOITIERSDISQUESTEMP);    	
     }
 
 	public long createBoitierDisque(String b_name, int b_id, int d_free_size, int d_total_size, int d_id,

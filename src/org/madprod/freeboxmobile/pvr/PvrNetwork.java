@@ -147,6 +147,7 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Pvr
 					}
 					if (getDisques)
 					{
+						db.makeBoitiersDisques();
 						// ON RECUPERE LES DISQUES
 						jDisksArray = jObject.getJSONArray("disks");
 						for (i=0 ; i < jDisksArray.length() ; i++)
@@ -170,6 +171,7 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Pvr
 					}
 					if (getChaines)
 					{
+						db.makeChaines();
 						// ON RECUPERE LA LISTE DES CHAINES DE CE BOITIER
 						jChainesArray = jObject.getJSONArray("services");
 						if (boitier == 0)
@@ -280,13 +282,6 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Pvr
 				db.swapChaines();
 			if (getDisques)
 				db.swapBoitiersDisques();
-		}
-		else
-		{
-			if (getChaines)
-				db.cleanTempChaines();
-			if (getDisques)
-				db.cleanTempBoitiersDisques();
 		}
 		db.close();
 	}
