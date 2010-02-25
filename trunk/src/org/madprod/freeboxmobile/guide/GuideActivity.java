@@ -54,7 +54,7 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 
 public class GuideActivity extends ListActivity implements GuideConstants
 {
-	private static ProgressDialog progressDialog;
+	private static ProgressDialog progressDialog = null;
 	public static String progressText;
 	private static ChainesDbAdapter mDbHelper;
 	private static Activity guideAct;
@@ -139,20 +139,21 @@ public class GuideActivity extends ListActivity implements GuideConstants
         			int i = heuresSpinner.getSelectedItemPosition();
         			selectedHeure = (i<10?"0"+i:i)+":00:00";
         			setFinDateHeure();
-        			new GuideActivityNetwork(selectedDate+" "+selectedHeure, false, true, false).execute((Void[])null);
+        			new GuideActivityNetwork(selectedDate+" "+selectedHeure, false, true, false, false).execute((Void[])null);
         		}
         	}
         );
         boolean nochaine = getFromDb();
     	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:00:00");
-    	if ((ga == null) || (ga.size() == 0) || (nochaine))
+    	// TODO : ici ne rafraichir les chaines que si leur nombre == 0
+//    	if ((ga == null) || (ga.size() == 0) || (nochaine))
+    	if ((mDbHelper.getNbChaines() == 0) || (nochaine))
     	{
-    		new GuideActivityNetwork(sdf.format(new Date()), true, true, false).execute((Void[])null);    		
+    		new GuideActivityNetwork(sdf.format(new Date()), true, true, false, false).execute((Void[])null);    		
     	}
     	else
-    		new GuideActivityNetwork(sdf.format(new Date()), false, true, false).execute((Void[])null);
+    		new GuideActivityNetwork(sdf.format(new Date()), false, true, false, false).execute((Void[])null);
     	setTitle(getString(R.string.app_name)+" Guide TV - "+FBMHttpConnection.getTitle());
-//    	setListAdapter(adapter);
     	
 		SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 		if (!mgr.getString(KEY_SPLASH_GUIDE, "0").equals(this.getString(R.string.app_version)))
@@ -168,6 +169,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
     public void onStart()
     {
     	super.onStart();
+    	FBMHttpConnection.FBMLog("GUIDE onStart");
     }
 
     @Override
@@ -196,7 +198,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
     			startActivityForResult(new Intent(this, GuideChoixChainesActivity.class),0);
     			return true;
     		case GUIDE_OPTION_REFRESH:
-    			new GuideActivityNetwork(selectedDate+" "+selectedHeure, false, true, true).execute((Void[])null);
+    			new GuideActivityNetwork(selectedDate+" "+selectedHeure, false, true, true, true).execute((Void[])null);
     			return true;
         }
         return super.onOptionsItemSelected(item);
@@ -268,7 +270,25 @@ public class GuideActivity extends ListActivity implements GuideConstants
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-    	getFromDb();
+    	FBMHttpConnection.FBMLog("ON ACTIVITY RESULT : "+resultCode);
+    	switch (resultCode)
+    	{
+    		// Si on a supprimé un favori sans en ajouter, pas besoin d'une mise à jour réseau
+    		case -1 :
+    	    	FBMHttpConnection.FBMLog("RESULT SUPPR");
+    			getFromDb();
+//    			refresh();
+//    			adapter.notifyDataSetInvalidated();
+    			break;
+    		// Si on a ajouté un favori -> mise à jour réseau
+    		case 1:
+    	    	FBMHttpConnection.FBMLog("RESULT ADD");
+    	    	new GuideActivityNetwork(selectedDate+" "+selectedHeure, false, true, true, true).execute((Void[])null);
+    	    break;
+    	    default:
+    	    	FBMHttpConnection.FBMLog("C'est quoi ce switch ???");
+    	    break;
+    	}
     }
     
     private void launchActivity(Class<?> cls, int pos)
@@ -407,14 +427,16 @@ public class GuideActivity extends ListActivity implements GuideConstants
     {
     	FBMHttpConnection.FBMLog("Refreshing...");
     	GuideAdapter g;
-		Iterator<GuideAdapter> it = ga.iterator();
-		while(it.hasNext())
-		{
-			g = it.next();
-			g.changeDateTime(selectedDate+" "+selectedHeure, finDateHeure);
-		}
+    	if (ga != null)
+    	{
+			Iterator<GuideAdapter> it = ga.iterator();
+			while(it.hasNext())
+			{
+				g = it.next();
+				g.changeDateTime(selectedDate+" "+selectedHeure, finDateHeure);
+			}
+    	}
 		adapter.notifyDataSetChanged();
-		adapter.notifyDataSetInvalidated();
     }
     
     public static class GuideAdapter extends BaseAdapter
@@ -507,8 +529,8 @@ public class GuideActivity extends ListActivity implements GuideConstants
 		{
 			listeChaines.programmes = mDbHelper.getProgrammes(listeChaines.chaine_id, d, f);
 			guideAct.startManagingCursor(listeChaines.programmes);
-    		notifyDataSetChanged();
-    		notifyDataSetInvalidated();
+//    		notifyDataSetChanged();
+//    		notifyDataSetInvalidated();
 		}
 		
 		public String convertDuree(int duree)
@@ -598,6 +620,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
     
     public static void dismissPd()
     {
+    	FBMHttpConnection.FBMLog("GuideActivity Dismiss");
     	if (progressDialog != null)
     	{
     		progressDialog.dismiss();
@@ -608,13 +631,49 @@ public class GuideActivity extends ListActivity implements GuideConstants
 	private void displayAboutGuide()
     {	
     	AlertDialog d = new AlertDialog.Builder(this).create();
-		d.setTitle(getString(R.string.app_name)+" - Guide TV");
+		d.setTitle(getString(R.string.app_name)+" - GuideTV");
+		d.setIcon(R.drawable.fm_guide_tv);
 		d.setMessage(
 			"Le guide est en version beta.\n\n"+
 			"Ses fonctionnalités, son look et ses performances seront améliorés "+
 			"dans les prochaines semaines.\n\n"+
 			"Mais il est déjà pratique comme cela :)"
 			);
+		d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
+			{
+				public void onClick(DialogInterface dialog, int which)
+				{
+					dialog.dismiss();
+					displayHelp();
+				}
+			}
+			);
+		d.show();
+    }
+
+	private void displayHelp()
+    {	
+    	AlertDialog d = new AlertDialog.Builder(this).create();
+		d.setTitle(getString(R.string.app_name)+" - GuideTV");
+		d.setIcon(R.drawable.fm_guide_tv);
+		d.setMessage(
+			"Pour ajouter ou supprimer des favoris au guide, utilisez l'option 'Gérez les favoris' disponible dans le menu.");
+		d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
+			{
+				public void onClick(DialogInterface dialog, int which)
+				{
+					dialog.dismiss();
+				}
+			}
+			);
+		d.show();
+    }
+
+	private void displayError()
+    {	
+    	AlertDialog d = new AlertDialog.Builder(this).create();
+		d.setTitle(getString(R.string.app_name)+" - Guide TV");
+		d.setMessage("Problème réseau, veuillez réessayer.");
 		d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
 			{
 				public void onClick(DialogInterface dialog, int which)
@@ -632,6 +691,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
     	private boolean getChaines;
     	private boolean getProg;
     	private boolean forceRefresh;
+    	private boolean refreshActivity;
     	
         protected void onPreExecute()
         {
@@ -639,12 +699,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
 
         protected Integer doInBackground(Void... arg0)
         {
-        	Integer res = new GuideNetwork(GuideActivity.this, debdatetime, getChaines, getProg, forceRefresh).getData();
-        	if ((res != DATA_NOT_DOWNLOADED) && (getChaines))
-        	{
-        		getFromDb();
-        	}
-        	return res;
+        	return new GuideNetwork(GuideActivity.this, debdatetime, getChaines, getProg, 0, forceRefresh).getData();
         }
         
         protected void onProgressUpdate(Integer... progress)
@@ -654,26 +709,36 @@ public class GuideActivity extends ListActivity implements GuideConstants
 
         protected void onPostExecute(Integer result)
         {
-        	if (result != DATA_NOT_DOWNLOADED)
+        	if (((result != DATA_NOT_DOWNLOADED) && (getChaines)) || (refreshActivity))
         	{
+        		getFromDb();
         	}
-        	else {
-        		// TODO : afficher erreur si il y a erreur
-//        		ProgrammationActivity.afficherMsgErreur(activity.getString(R.string.pvrErreurTelechargementChaines), activity);
+        	if (result == DATA_NOT_DOWNLOADED)
+        	{
+        		displayError();
         	}
        		dismissPd();
-       		if ((!getChaines) && (result == DATA_NEW_DATA))
+       		if ((!refreshActivity) && (!getChaines))
        		{
        			refresh();
        		}
         }
         
-        public GuideActivityNetwork(String d, boolean chaine, boolean prog, boolean force)
+        /**
+         * 
+         * @param d
+         * @param chaine
+         * @param prog
+         * @param force
+         * @param refreshactivity : pour rafraichir toute l'activité après un onActivityResult du choix des favoris
+         */
+        public GuideActivityNetwork(String d, boolean chaine, boolean prog, boolean force, boolean refreshactivity)
         {
        		debdatetime = d;
         	getChaines = chaine;
         	getProg = prog;
         	forceRefresh = force;
+        	refreshActivity = refreshactivity;
         	FBMHttpConnection.FBMLog("GUIDEACTIVITYNETWORK START "+d+" "+chaine+" "+prog);
         }
     }

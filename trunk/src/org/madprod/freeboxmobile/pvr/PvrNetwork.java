@@ -29,6 +29,7 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Pvr
 	private Activity activity;
 	private boolean getChaines;
 	private boolean getDisques;
+	private int max;
 	
     protected void onPreExecute()
     {
@@ -41,22 +42,12 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Pvr
     
     protected void onProgressUpdate(Integer... progress)
     {
-        ProgrammationActivity.showProgress(activity, progress[0]);
+        ProgrammationActivity.showProgress(activity, progress[0], max);
     }
     
     protected void onPostExecute(Boolean telechargementOk)
     {
-    	if (telechargementOk == Boolean.TRUE)
-    	{
-    	}
-    	else
-    	{
-    		ProgrammationActivity.afficherMsgErreur(activity.getString(R.string.pvrErreurTelechargementChaines), activity);
-    	}
-    	if (activity != null)
-    	{
-    		ProgrammationActivity.dismissPd();
-    	}
+   		ProgrammationActivity.dismissPd();
     }
     
     public PvrNetwork(Activity a, boolean getChaines, boolean getDisques)
@@ -186,7 +177,8 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Pvr
 							ProgrammationActivity.progressText = "Actualisation de la liste des chaînes pour "+nbBoitiers+" boitier"+(nbBoitiers >1?"s...":"...");
 							publishProgress(0);
 							max = nbBoitiers * jChainesArray.length();
-							ProgrammationActivity.setPdMax(max);
+							//ProgrammationActivity.setPdMax(max);
+							this.max = max; 
 						}
 	
 						for (i=0 ; i < jChainesArray.length() ; i++)

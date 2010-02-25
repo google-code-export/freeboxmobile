@@ -86,7 +86,7 @@ public class LigneInfoDbAdapter implements LigneInfoConstants
     public void close()
     {
     	mDb.close();
-        mDbHelper.close();
+//        mDbHelper.close();
     }
 
     /**
