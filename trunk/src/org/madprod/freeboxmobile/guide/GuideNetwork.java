@@ -318,7 +318,7 @@ public class GuideNetwork extends AsyncTask<Void, Integer, Integer> implements G
         {
         	ok = false;
         }
-//   		publishProgress(max);
+   		publishProgress(max);
     	FBMHttpConnection.FBMLog("Guide Network end "+new Date());
     	db.close();
     	if (ok)
