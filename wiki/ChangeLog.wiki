@@ -92,10 +92,10 @@ Release : 1
 
 = Versions beta de !FreeboxMobile =
 == 0.30rc2 ==
-Sortie le XX/02/2010<br>
+Sortie le 25/02/2010<br>
 Release : 22<br>
-Revision : XXX
- * 
+Revision : 420
+ * GUIDE : Debug
 
 == 0.30rc1 ==
 Sortie le 24/02/2010<br>
