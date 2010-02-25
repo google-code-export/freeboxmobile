@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.SpannableString;
@@ -50,11 +51,11 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 {
 	private Activity homeActivity;
 	private List< Map<String,Object> > modulesList;
+	private AsyncTask<ComptePayload, Void, ComptePayload> task = null;
 	
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
-//		setTheme();
 		FBMHttpConnection.FBMLog("MainActivity Create "+getString(R.string.app_version)+"\n"+new Date().toString());
         super.onCreate(savedInstanceState);
 
@@ -81,6 +82,10 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     {
     	FBMHttpConnection.FBMLog("MainActivity Start");
     	super.onStart();
+    	if (task != null)
+    	{
+    		refreshCompte();
+    	}
     	SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 		FBMHttpConnection.initVars(this, null);
 		// Si l'utilisateur n'a pas configuré de compte
@@ -94,13 +99,13 @@ public class HomeListActivity extends ListActivity implements HomeConstants
         	if (!mgr.getString(KEY_FBMVERSION, "0").equals(getString(R.string.app_version)))
         	{
         		FBMHttpConnection.FBMLog("HOME : on rafraichi le compte "+mgr.getString(KEY_FBMVERSION, "0"));
-        		refreshCompte();
+        		if (task == null)
+        			refreshCompte();
         		Editor editor = mgr.edit();
 				editor.putString(KEY_FBMVERSION, getString(R.string.app_version));
 				editor.commit();
         	}
         }
-        
 		// Si on est sur un premier lancement de la nouvelle version :
 		if (!mgr.getString(KEY_SPLASH, "0").equals(getString(R.string.app_version)))
 		{
@@ -151,12 +156,15 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 
     private void refreshCompte()
     {
-    	SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
-        new ManageCompte(this).execute(new ComptePayload(
-        		mgr.getString(KEY_TITLE, ""),
-        		mgr.getString(KEY_USER, ""),
-        		mgr.getString(KEY_PASSWORD, ""),
-        		null, true));    	
+    	if ((task != null) && (task.getStatus() == AsyncTask.Status.FINISHED) || (task == null))
+    	{
+	    	SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
+	        task = new ManageCompte(this).execute(new ComptePayload(
+	        		mgr.getString(KEY_TITLE, ""),
+	        		mgr.getString(KEY_USER, ""),
+	        		mgr.getString(KEY_PASSWORD, ""),
+	        		null, true));
+    	}
     }
 
     private void setModules()

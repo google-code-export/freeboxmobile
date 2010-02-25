@@ -19,6 +19,8 @@ import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -64,6 +66,15 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
         mDbHelper.open();
         setTitle(getString(R.string.app_name)+" Favoris - "+FBMHttpConnection.getTitle());
         getFavoris();
+        
+		SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
+		if (!mgr.getString(KEY_SPLASH_FAVORIS, "0").equals(this.getString(R.string.app_version)))
+		{
+			Editor editor = mgr.edit();
+			editor.putString(KEY_SPLASH_FAVORIS, this.getString(R.string.app_version));
+			editor.commit();
+			displayAboutFavoris();
+		}
     }
     
     @Override
@@ -276,6 +287,27 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
 		d.show();
     }
     
+	private void displayAboutFavoris()
+    {	
+    	AlertDialog d = new AlertDialog.Builder(this).create();
+		d.setTitle(getString(R.string.app_name)+" - Favoris");
+		d.setIcon(R.drawable.fm_guide_tv);
+		d.setMessage(
+			"Utilisez la liste horizontale d'icônes pour voir les favoris actuels.\n"+
+			"Cliquez sur un icône de chaîne pour supprimer un favori.\n\n"+
+			"Utilisez la liste vericale (icônes + nom) pour ajouter des favoris."
+			);
+		d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
+			{
+				public void onClick(DialogInterface dialog, int which)
+				{
+					dialog.dismiss();
+				}
+			}
+			);
+		d.show();
+    }
+	
     public void showError()
     {
     	AlertDialog d = new AlertDialog.Builder(this).create();
@@ -364,8 +396,8 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
         	}
             params.add(new BasicNameValuePair("chaine", ((Integer)param).toString()));
         	result = Action(params);
-        	if (result)
-        	{
+//        	if (result)
+//        	{
 	        	switch (command)
 	        	{
 		        	case FAVORIS_COMMAND_RESET:
@@ -378,7 +410,7 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
 		                mDbHelper.deleteProgsChaine(param);
 		            	break;
 	        	}
-        	}
+//        	}
         	return result;
         }
         
@@ -386,27 +418,24 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
         {
         	GuideActivity.dismissPd();
        		dismissPd();
-       		if (result)
-       		{
-       			refresh();
-	        	switch (command)
-	        	{
-		        	case FAVORIS_COMMAND_RESET:
-		        		activityResult = 1;
-		            	break;
-		        	case FAVORIS_COMMAND_ADD:
-		        		activityResult = 1;
-		            	break;
-		        	case FAVORIS_COMMAND_SUPPR:
-		        		if (activityResult == 0)
-		        		{
-		        			activityResult = -1;
-		        		}
-		            	break;
-	        	}
-	            setResult(activityResult);
-       		}
-       		else
+   			refresh();
+        	switch (command)
+        	{
+	        	case FAVORIS_COMMAND_RESET:
+	        		activityResult = 1;
+	            	break;
+	        	case FAVORIS_COMMAND_ADD:
+	        		activityResult = 1;
+	            	break;
+	        	case FAVORIS_COMMAND_SUPPR:
+	        		if (activityResult == 0)
+	        		{
+	        			activityResult = -1;
+	        		}
+	            	break;
+        	}
+            setResult(activityResult);
+       		if (!result)
        		{
        			showError();
        		}
