@@ -10,7 +10,6 @@ Pour les fonctionnalités déjà implémentées, voir le ChangeLog.
  * 0.40 : Lire l'actualité Freenautes à partir de son mobile ([http://www.universfreebox.com Univers Freebox], [http://freephonie.org/ Freephonie], ...) via l'application !FreeboxMobile
  * 0.45 : Lire l'actualité Freenautes à partir d'un widget de bureau Android 
  * 0.48 : Consulter et archiver l'historique des appels de sa Freebox à partir de son mobile (avec un lien numéro de téléphone - contact)
- * 0.50 : Envoyer un fax à partir de son mobile (à travers le service fax de l'offre Freebox)
  * 0.60 : Accéder aux contenus vidéo de son réseau local à partir de son mobile (y compris lorsqu'on se trouve hors de chez soi)
  * 0.70 : Accéder aux enregistrements vidéo de sa FreeboxHD à partir de son mobile (y compris lorsqu'on se trouve hors de chez soi)
  * 0.80 : Accéder aux contenus audio de son réseau local à partir de son mobile (y compris lorsqu'on se trouve hors de chez soi)
