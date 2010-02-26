@@ -1,5 +1,6 @@
 package org.madprod.freeboxmobile.guide;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -327,6 +328,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
 		i.putExtra(ChainesDbAdapter.KEY_PROG_CHANNEL_ID, p.channel_id);
 		i.putExtra(ChainesDbAdapter.KEY_PROG_DUREE, p.duree);
 		i.putExtra(ChainesDbAdapter.KEY_PROG_DATETIME_DEB, p.datetime_deb);
+		i.putExtra(ChainesDbAdapter.KEY_PROG_DATETIME_FIN, p.datetime_fin);
 		i.putExtra(ChainesDbAdapter.KEY_GUIDECHAINE_CANAL, p.canal);
 		i.putExtra(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE, p.image);
 		i.putExtra(ChainesDbAdapter.KEY_GUIDECHAINE_NAME, p.chaine_name);
@@ -473,7 +475,10 @@ public class GuideActivity extends ListActivity implements GuideConstants
     	private int titreCI;
     	private int dureeCI;
     	private int descCI;
-    	private int heureCI;
+    	private int heuredebCI;
+    	private int heurefinCI;
+    	private Date curDate;
+    	private Date dfin;
     	
     	public GuideAdapter(Context c, ListeChaines l)
     	{
@@ -484,8 +489,10 @@ public class GuideActivity extends ListActivity implements GuideConstants
 	    		this.titreCI = listeChaines.programmes.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_TITLE);
 	    		this.dureeCI = listeChaines.programmes.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_DUREE);
 	    		this.descCI = listeChaines.programmes.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_RESUM_S);
-	    		this.heureCI = listeChaines.programmes.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_DATETIME_DEB);
+	    		this.heuredebCI = listeChaines.programmes.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_DATETIME_DEB);
+	    		this.heurefinCI = listeChaines.programmes.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_DATETIME_FIN);
     		}
+    		this.curDate = new Date();
     	}
     	
 		@Override
@@ -503,7 +510,8 @@ public class GuideActivity extends ListActivity implements GuideConstants
 			Programme p = new Programme();
 			listeChaines.programmes.moveToPosition(position);
 			p.channel_id = listeChaines.programmes.getInt(listeChaines.programmes.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_CHANNEL_ID));
-			p.datetime_deb = listeChaines.programmes.getString(heureCI);
+			p.datetime_deb = listeChaines.programmes.getString(heuredebCI);
+			p.datetime_fin = listeChaines.programmes.getString(heurefinCI);
 			p.duree = listeChaines.programmes.getInt(dureeCI);
 			p.titre = listeChaines.programmes.getString(titreCI);
 			p.canal = listeChaines.canal;
@@ -538,6 +546,20 @@ public class GuideActivity extends ListActivity implements GuideConstants
 					holder.heure = (TextView)convertView.findViewById(R.id.guideRowHeure);
 					holder.desc = (TextView)convertView.findViewById(R.id.guideRowDesc);
 			        holder.duree = (TextView)convertView.findViewById(R.id.guideRowDuree);
+			        
+			        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			        try
+			        {
+						dfin = sdf.parse(listeChaines.programmes.getString(heurefinCI));
+						holder.isfinished = dfin.before(curDate);
+					}
+			        catch (IllegalArgumentException e)
+			        {
+						e.printStackTrace();
+					} catch (ParseException e)
+					{
+						e.printStackTrace();
+					}
 			        convertView.setTag(holder);
 				}
 				else
@@ -545,11 +567,13 @@ public class GuideActivity extends ListActivity implements GuideConstants
 					holder = (ViewHolder)convertView.getTag();
 				}
 				holder.titre.setText(listeChaines.programmes.getString(titreCI));
-				holder.heure.setText(convertDateTimeHoraire(listeChaines.programmes.getString(heureCI)));
-				holder.duree.setText(convertDuree(listeChaines.programmes.getInt(dureeCI)));
-				holder.desc.setText(listeChaines.programmes.getString(descCI));
-				
-				if (mode_reduit)
+				holder.heure.setText(convertDateTimeHoraire(listeChaines.programmes.getString(heuredebCI)));
+				if (holder.isfinished)
+				{
+					holder.titre.setTextColor(0xFF888888);
+					holder.heure.setTextColor(0xFF888888);
+				}
+				if ((mode_reduit) || (holder.isfinished))
 				{
 					holder.duree.setVisibility(View.GONE);
 					holder.desc.setVisibility(View.GONE);
@@ -558,6 +582,8 @@ public class GuideActivity extends ListActivity implements GuideConstants
 				{
 					holder.duree.setVisibility(View.VISIBLE);
 					holder.desc.setVisibility(View.VISIBLE);
+					holder.duree.setText(convertDuree(listeChaines.programmes.getInt(dureeCI)));
+					holder.desc.setText(listeChaines.programmes.getString(descCI));
 				}
 			}
 			return convertView;
@@ -600,6 +626,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
 			TextView	desc;
 			TextView	heure;
 			TextView	duree;
+			Boolean		isfinished;
 		}
 
     }
@@ -611,6 +638,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
 		public int guidechaine_id;
     	public int duree;
     	public String datetime_deb;
+    	public String datetime_fin;
     	public String titre;
     	public int canal;
     	public String chaine_name;

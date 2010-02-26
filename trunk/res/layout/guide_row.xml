@@ -4,6 +4,6 @@
 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="1h50" android:id="@+id/guideRowDuree" android:textSize="12dip"></TextView>
 </LinearLayout><LinearLayout android:id="@+id/LinearLayout02" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginLeft="5dip">
 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/guideRowTitre" android:text="Star Wars" android:textSize="16dip" android:typeface="normal" android:textStyle="bold"></TextView>
-<TextView android:text="@+id/TextView03" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/guideRowDesc" android:textSize="12dip"></TextView>
+<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="12dip" android:id="@+id/guideRowDesc" android:text="Desc"></TextView>
 </LinearLayout>
 </LinearLayout>

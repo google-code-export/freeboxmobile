@@ -1,5 +1,9 @@
 package org.madprod.freeboxmobile.guide;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
@@ -56,21 +60,40 @@ public class GuideDetailsActivity extends Activity implements GuideConstants
 	        String hm[] = date[1].split(":");
 	        dateHeureEmission.setText("Diffusé le "+amj[2]+"/"+amj[1]+"/"+amj[0]+" à "+hm[0]+"h"+hm[1]);
 	        
+	        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	        try
+	        {
+				Date dfin = sdf.parse(extras.getString(ChainesDbAdapter.KEY_PROG_DATETIME_FIN));
+		        if (dfin.before(new Date()))
+		        {
+		    		enregistrer.setFocusable(false);
+		    		enregistrer.setClickable(false);
+		    		enregistrer.setTextColor(0xFF888888);
+		        }
+		        else
+		        {
+			        enregistrer.setOnClickListener(
+							new View.OnClickListener()
+							{
+								@Override
+								public void onClick(View arg0)
+								{
+									Intent i = new Intent(GuideDetailsActivity.this, ProgrammationActivity.class);
+									i.putExtras(extras);
+							        startActivity(i);
+								}
+							}
+						);
+		        }
+			}
+	        catch (ParseException e)
+	        {
+	        	FBMHttpConnection.FBMLog("GUIDEDETAILSACTIVITY : pb parse date "+e.getMessage());
+				e.printStackTrace();
+			}
 	        nomChaine.setText(extras.getString(ChainesDbAdapter.KEY_GUIDECHAINE_NAME)+" (canal "+
 	        		((Integer)extras.getInt(ChainesDbAdapter.KEY_GUIDECHAINE_CANAL)).toString()+")");
 	        regarder.setText("Regarder "+extras.getString(ChainesDbAdapter.KEY_GUIDECHAINE_NAME));
-	        enregistrer.setOnClickListener(
-					new View.OnClickListener()
-					{
-						@Override
-						public void onClick(View arg0)
-						{
-							Intent i = new Intent(GuideDetailsActivity.this, ProgrammationActivity.class);
-							i.putExtras(extras);
-					        startActivity(i);
-						}
-					}
-				);
 	        String filepath = Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES+extras.getString(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE);
 			Bitmap bmp = BitmapFactory.decodeFile(filepath);
 			if (bmp != null)
