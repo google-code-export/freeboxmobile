@@ -222,7 +222,6 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View v, int i, long l)
 			{
-				FBMHttpConnection.FBMLog("ON ITEM SELECTED LISTENER 1");
 				Cursor c = mDbHelper.fetchFromTitle(parent.getSelectedItem().toString());
 				if ((c.getCount() > 0) && !c.getString(c.getColumnIndexOrThrow(KEY_USER)).equals(FBMHttpConnection.getIdentifiant()))
 				{
@@ -231,7 +230,6 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 						SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 						Long duree = (new Date()).getTime() - getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getLong(KEY_LAST_REFRESH+c.getString(c.getColumnIndexOrThrow(KEY_USER)), 0);
 						FBMHttpConnection.FBMLog("TEMPS : "+c.getString(c.getColumnIndexOrThrow(KEY_USER))+" - "+getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getLong(KEY_LAST_REFRESH+c.getString(c.getColumnIndexOrThrow(KEY_USER)), 0)+" "+duree);
-						// Si ca fait + de 24 heures, on met à jour
 						// Si ca fait + de 30 jours on met à jour (2592000000 )
 						if (duree > 2592000000L)
 						{
