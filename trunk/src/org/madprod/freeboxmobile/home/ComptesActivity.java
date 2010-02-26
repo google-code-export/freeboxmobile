@@ -297,12 +297,12 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 				{
 					SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 					updatePrefs(mgr.edit(), c);
-					FBMHttpConnection.initCompte(ComptesActivity.this);
 	            	Toast t = Toast.makeText(ComptesActivity.this, "Compte "+c.getString(c.getColumnIndexOrThrow(KEY_TITLE))+" selectionné",Toast.LENGTH_LONG);
 	            	t.show();
 				}
 				mDb.close();
         	}
         }
+        FBMHttpConnection.initCompte(ComptesActivity.this);
     }
 }

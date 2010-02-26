@@ -1024,7 +1024,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 		        }
 		        choosen_year_deb = dtdeb.getYear() + 1900;
 		        choosen_month_deb = dtdeb.getMonth();
-		        choosen_day_deb = dtdeb.getDay();
+		        choosen_day_deb = dtdeb.getDate();
 		        choosen_hour_deb = dtdeb.getHours();
 		        choosen_minute_deb = dtdeb.getMinutes();
 		        if (immediat)
@@ -1050,7 +1050,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 				Date dtfin = sdf.parse(datetimefin);
 		        choosen_year_fin = dtfin.getYear() + 1900;
 		        choosen_month_fin = dtfin.getMonth();
-		        choosen_day_fin = dtfin.getDay();
+		        choosen_day_fin = dtfin.getDate();
 		        choosen_hour_fin = dtfin.getHours();
 		        choosen_minute_fin = dtfin.getMinutes();
 			}
