@@ -131,7 +131,7 @@ public class FBMHttpConnection implements Constants
 		httpProgressDialog.setIcon(R.drawable.icon_fbm_reverse);
 		httpProgressDialog.setTitle("Mon compte Freebox");
 		httpProgressDialog.setCancelable(false);
-		httpProgressDialog.setMessage("Veuillez patienter,\n\nChargement / rafraichissement des données en cours... (ca peut être long)");
+		httpProgressDialog.setMessage("Veuillez patienter,\n\nChargement / rafraichissement des données en cours...");
 		httpProgressDialog.show();
 
 //		httpProgressDialog = ProgressDialog.show(a, "Mon Compte Free", "Connexion en cours ...", true,false);
@@ -143,6 +143,7 @@ public class FBMHttpConnection implements Constants
 		httpProgressDialog.setIcon(R.drawable.icon_fbm_reverse);
 		httpProgressDialog.setTitle("Mise à jour des données");
 		httpProgressDialog.setMessage("Connexion en cours...");
+		httpProgressDialog.setCancelable(false);
 		httpProgressDialog.show();
 //		httpProgressDialog = ProgressDialog.show(a, "Mise à jour des données", "Connexion en cours ...", true,false);
 	}

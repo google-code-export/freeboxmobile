@@ -18,7 +18,6 @@ import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.WindowManager;
 
 /**
 *

@@ -61,8 +61,8 @@ Par exemple, si vous voulez enregistrer une émission tous les mardi et mercredi
 	
 	<string name="pvrPatientez">Veuillez patienter</string>
 	<string name="pvrSuppressionEnCours">Suppression en cours...</string>
-	<string name="pvrTelechargementChaines">Chargement de la liste des chaînes disponibles...\n(ca peut être long)</string>
-	<string name="pvrTelechargementDonnees">Chargement des données...\n(ca peut être long)</string>
+	<string name="pvrTelechargementChaines">Chargement de la liste des chaînes disponibles...</string>
+	<string name="pvrTelechargementDonnees">Chargement des données...</string>
 	<string name="pvrErreurTelechargementChaines">Impossible de charger la liste des chaînes !\n\nSi vous n'avez pas de FreeboxHD active sur votre ligne ce message est normal.</string>
 	<string name="pvrErreurTelechargementDonnees">Impossible de télécharger les données !</string>
 	

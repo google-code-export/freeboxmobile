@@ -11,6 +11,7 @@ import org.madprod.freeboxmobile.Constants;
 
 public interface PvrConstants extends Constants
 {
+	static final String KEY_SPLASH_PVR = "splashscreen_pvr";
 	static final int PVR_MODE_DISABLED = 0;
 	static final int PVR_MODE_PUBLIC = 1;
 	static final int PVR_MODE_PRIVATE = 2;
