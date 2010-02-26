@@ -1,7 +1,10 @@
 package org.madprod.freeboxmobile.pvr;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.http.NameValuePair;
@@ -20,20 +23,14 @@ import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
-import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.View.OnClickListener;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -46,7 +43,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
-import android.widget.ViewFlipper;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
@@ -101,27 +97,15 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 	TextView nomEmission = null;
 	TextView dureeEmission = null;
 	Spinner chainesSpinner = null;
-//	Spinner dureeSpinner = null;
 	Spinner boitierHDSpinner = null;
 	Spinner disqueSpinner = null;
 
-	private final int LAYOUT_BENOIT = 1;
-	private final int LAYOUT_OLIVIER = 2;
-	private int selectedLayout = LAYOUT_OLIVIER;
-
 	// identifiant du dernier user à être entré dans l'activité
 	public static String lastUser = "";
-	boolean orientationPortrait = false;
 	int positionEcran = 0;
 	int nbEcrans = 3;
-    private Button suivant, precedent, boutonOK, buttonRecur, ButtonDateDeb, ButtonTimeDeb, ButtonDateFin, ButtonTimeFin;
-	private GestureDetector gestureDetector;
-	private Animation slideLeftIn;
-	private Animation slideLeftOut;
-	private Animation slideRightIn;
-    private Animation slideRightOut;
+    private Button buttonRecur, ButtonDateDeb, ButtonTimeDeb, ButtonDateFin, ButtonTimeFin;
     CheckBox lendi, mordi, credi, joudi, dredi, sadi, gromanche;
-    ViewFlipper viewFlipper;
     public static String progressText = ""; // Text des progressDialog avec bar
     private AsyncTask<Void, Integer, Boolean> progNetwork = null;
     
@@ -159,7 +143,6 @@ public class ProgrammationActivity extends Activity implements PvrConstants
     			savedInstanceState.getLong(EnregistrementsDbAdapter.KEY_ROWID)
     			: 0;
     	
-    	FBMHttpConnection.FBMLog("fromListe : "+fromListe+" "+mRowId);
     	Bundle extras = getIntent().getExtras();
     	if (mRowId == 0)
     	{
@@ -167,7 +150,6 @@ public class ProgrammationActivity extends Activity implements PvrConstants
     	}
 		if (mRowId != 0)
 			fromListe = true;
-    	FBMHttpConnection.FBMLog("fromListe : "+fromListe+" "+mRowId);
     	if (extras != null)
     		fromGuide = extras.getString(ChainesDbAdapter.KEY_PROG_TITLE) != null;
     	
@@ -181,20 +163,12 @@ public class ProgrammationActivity extends Activity implements PvrConstants
         ButtonTimeDeb = (Button) findViewById(R.id.ButtonTimeDeb);
         ButtonDateFin = (Button) findViewById(R.id.ButtonDateFin);
         ButtonTimeFin = (Button) findViewById(R.id.ButtonTimeFin);
-        boutonOK = (Button) findViewById(R.id.pvrPrgBtnOK);
-        suivant = (Button) findViewById(R.id.pvrPrgBtnSuivant);
-        precedent = (Button) findViewById(R.id.pvrPrgBtnPrecedent);
         buttonRecur = (Button) findViewById(R.id.pvrPrgBtnRecur);
         nomEmission = (TextView) findViewById(R.id.pvrPrgNom);
         dureeEmission = (TextView) findViewById(R.id.pvrPrgDuree);
         chainesSpinner = (Spinner) findViewById(R.id.pvrPrgChaine);
-//        dureeSpinner = (Spinner) findViewById(R.id.pvrPrgDurees);
         boitierHDSpinner = (Spinner) findViewById(R.id.pvrPrgBoitier);
         disqueSpinner = (Spinner) findViewById(R.id.pvrPrgDisque);
-        slideLeftIn = AnimationUtils.loadAnimation(this, R.anim.slide_left_in);
-        slideLeftOut = AnimationUtils.loadAnimation(this, R.anim.slide_left_out);
-        slideRightIn = AnimationUtils.loadAnimation(this, R.anim.slide_right_in);
-        slideRightOut = AnimationUtils.loadAnimation(this, R.anim.slide_right_out);
         lendi = (CheckBox) findViewById(R.id.pvrPrgJour0);
         mordi = (CheckBox) findViewById(R.id.pvrPrgJour1);
         credi = (CheckBox) findViewById(R.id.pvrPrgJour2);
@@ -202,15 +176,6 @@ public class ProgrammationActivity extends Activity implements PvrConstants
         dredi = (CheckBox) findViewById(R.id.pvrPrgJour4);
         sadi = (CheckBox) findViewById(R.id.pvrPrgJour5);
         gromanche = (CheckBox) findViewById(R.id.pvrPrgJour6);
-        viewFlipper = (ViewFlipper) findViewById(R.id.pvrFlipper);
-        
-        
-        if (selectedLayout == LAYOUT_OLIVIER) {
-        	orientationPortrait = false;
-        }
-        else {
-        	orientationPortrait = getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
-        }
         
         if (choosen_year_deb == 0)
         {
@@ -276,10 +241,17 @@ public class ProgrammationActivity extends Activity implements PvrConstants
             }
         });
 
-        dureeEmission.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            public void onFocusChange(View v, boolean b) {
-            	if (b == false) {
+        dureeEmission.setOnFocusChangeListener(new View.OnFocusChangeListener()
+        {
+            public void onFocusChange(View v, boolean b)
+            {
+            	if (b == false)
+            	{
             		setFin();
+            		if (getDuree() < 1)
+            		{
+            			afficherMsgErreur("Vous ne pouvez pas utiliser cette durée !");
+            		}
             	}
             }
         });
@@ -307,46 +279,17 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 				}
 	        });
         }
-        
-        // Flipper
-        if (orientationPortrait && selectedLayout == LAYOUT_BENOIT) {
-            // Le choix du boitier HD est masqué par défaut, on fera showPrevious si on détecte 2 boitiers HD
-    		viewFlipper.showNext();
-    		
-    		// Listeners sur les boutons
-	        suivant.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View arg0) {
-					swipeRight();
-				}
-	        });
-	        precedent.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View arg0) {
-					swipeLeft();
-				}
-	        });
-	        gestureDetector = new GestureDetector(new MyGestureDetector());
 
-	        // Callbacks pour gérer la récurrence en mode portrait
-	        lendi.setOnCheckedChangeListener(new SelectionRecurrenceListener(0));
-	        mordi.setOnCheckedChangeListener(new SelectionRecurrenceListener(1));
-	        credi.setOnCheckedChangeListener(new SelectionRecurrenceListener(2));
-	        joudi.setOnCheckedChangeListener(new SelectionRecurrenceListener(3));
-	        dredi.setOnCheckedChangeListener(new SelectionRecurrenceListener(4));
-	        sadi.setOnCheckedChangeListener(new SelectionRecurrenceListener(5));
-	        gromanche.setOnCheckedChangeListener(new SelectionRecurrenceListener(6));
-        }
-        
         // Boitier HD
-        boitierHDSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+        boitierHDSpinner.setOnItemSelectedListener(new OnItemSelectedListener()
+        {
 			@Override
-			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+			{
 				if (mBoitierHD != position) {
 	        		boitiersCursor.moveToPosition(position);
 	        		mBoitierHD = boitiersCursor.getInt(boitiersCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_BOITIER_ID));
 	        		mBoitierHDName = boitiersCursor.getString(boitiersCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_BOITIER_NAME));
-//	        		FBMHttpConnection.FBMLog("BOITIER : "+mBoitierHD+" "+mBoitierHDName);
 	        		remplirSpinner(R.id.pvrPrgDisque);
 	        		remplirSpinner(R.id.pvrPrgChaine);
 					afficherInfosDisque();
@@ -433,15 +376,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
     	progAct = null;
     	super.onDestroy();
     }
-    
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if (orientationPortrait) {
-        	return gestureDetector.onTouchEvent(event);
-        }
-	    return false;
-    }
-	
+
 	@Override
 	protected void onResume()
 	{
@@ -458,7 +393,8 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 	}
 
 	@Override
-	protected void onPause() {
+	protected void onPause()
+	{
 		super.onPause();
     	
 		if (progressDialog != null)
@@ -469,8 +405,6 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 		{
 			alertDialog.dismiss();
 		}
-		// TODO: enregistrer l'état du formulaire qqpart pour
-		// le récupérer quand on revient sur l'activité
 	}
     
     /* Creates the menu items */
@@ -485,15 +419,12 @@ public class ProgrammationActivity extends Activity implements PvrConstants
         switch (item.getItemId()) {
         case MENU_UPDATE_HD:
         	runProgNetwork(false, true);
-//        	new ProgNetwork(false, true).execute((Void[])null);
             return true;
         case MENU_UPDATE_CHAINES:
         	runProgNetwork(true, false);
-//        	new ProgNetwork(true, false).execute((Void[])null);
             return true;
         case MENU_UPDATE_ALL:
         	runProgNetwork(true, true);
-//        	new ProgNetwork(true, true).execute((Void[])null);
             return true;
         }
         return false;
@@ -583,7 +514,6 @@ public class ProgrammationActivity extends Activity implements PvrConstants
             	choosen_hour_deb = h;
             	choosen_minute_deb = m;
         		ButtonTimeDeb.setText(makeTime(h,m));
-
         		setFin();
             }
         };
@@ -596,7 +526,6 @@ public class ProgrammationActivity extends Activity implements PvrConstants
             	choosen_hour_fin = h;
             	choosen_minute_fin = m;
         		ButtonTimeFin.setText(makeTime(h,m));
-
         		setDuree();
             }
         };
@@ -676,58 +605,6 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 		public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 			joursChoisis[jourId] = isChecked;
 		}
-    }
-    
-    private void swipeLeft() {
-		positionEcran--;
-		suivant.setVisibility(View.VISIBLE);
-		if (positionEcran == -1) {
-			positionEcran = 0;
-		} else {
-			if (positionEcran == 0) {
-				precedent.setVisibility(View.INVISIBLE);
-			}
-			viewFlipper.setInAnimation(slideRightIn);
-			viewFlipper.setOutAnimation(slideRightOut);
-			viewFlipper.showPrevious();
-		}
-    }
-    private void swipeRight() {
-		positionEcran++;
-		precedent.setVisibility(View.VISIBLE);
-		if (positionEcran > nbEcrans) {
-			positionEcran = nbEcrans;
-		} else {
-			if (positionEcran == nbEcrans) {
-				suivant.setVisibility(View.INVISIBLE);
-				boutonOK.setVisibility(View.VISIBLE);
-			}
-			viewFlipper.setInAnimation(slideLeftIn);
-			viewFlipper.setOutAnimation(slideLeftOut);
-			viewFlipper.showNext();
-		}
-    }
-    
-    class MyGestureDetector extends SimpleOnGestureListener {
-        private static final int SWIPE_MIN_DISTANCE = 120;
-        private static final int SWIPE_MAX_OFF_PATH = 250;
-    	private static final int SWIPE_THRESHOLD_VELOCITY = 200;
-        @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            try {
-                if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
-                    return false;
-                // right to left swipe
-                if(e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-                	swipeRight();
-                }  else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-                	swipeLeft();
-                }
-            } catch (Exception e) {
-                // nothing
-            }
-            return false;
-        }
     }
     
     void resetJours() {
@@ -878,18 +755,12 @@ public class ProgrammationActivity extends Activity implements PvrConstants
     
     private void preparerActivite()
     {
-//    	refreshDateTimeButtons();
-    	
         // Dans tous les cas on remplit le spinner du boitier (même si on l'affiche pas)
     	// car son init remplit certaines variables nécessaires aux disques (chaque disque dépend d'un boitier)
     	remplirSpinner(R.id.pvrPrgBoitier);
     	// Suppression du layout de sélection si on n'a qu'un boitier HD
-		if (plusieursBoitiersHD) {
-    		if ((orientationPortrait) && (selectedLayout == LAYOUT_BENOIT)) {
-        		viewFlipper.showPrevious();
-        	}
-    	}
-    	else if (orientationPortrait == false) {
+		if (!plusieursBoitiersHD)
+		{
     		findViewById(R.id.pvrPrgLayoutBoitier).setVisibility(View.GONE);
     	}
 
@@ -909,30 +780,6 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 			public void onNothingSelected(AdapterView<?> arg0) {
 			}
     	});
-/*
-    	dureeSpinner.setOnItemSelectedListener(new OnItemSelectedListener()
-    	{
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
-			{
-				FBMHttpConnection.FBMLog("DUREESPINNER SELECTED : "+parent.getSelectedItem().toString());
-				FBMHttpConnection.FBMLog("DUREESPINNER SELECTED WAS : "+dureeEmission.getText());
-				String duree = (String) getResources().getTextArray(R.array.pvrValeursDurees)[position];
-				dureeEmission.setText(duree);
-				setFin();
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> arg0) {
-			}
-    	});
-
-    	int lastPos = dureeSpinner.getSelectedItemPosition();
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.pvrListeDurees,
-        		android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        dureeSpinner.setAdapter(adapter);
-*/
     	// S'il s'agit d'une modification d'un enregistrement existant, remplir le formulaire
     	if (chainesCursor.getCount() > 0)
     	{
@@ -1025,19 +872,9 @@ public class ProgrammationActivity extends Activity implements PvrConstants
         		service = servicesCursor.getInt(servicesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_SERVICE_ID));
         		
         		// Date et heure
-       	       	if (selectedLayout == LAYOUT_BENOIT) {
-	        		DatePicker datePicker = (DatePicker) findViewById(R.id.pvrPrgDate);
-	        		date = makeDate(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
-
-	        		TimePicker timePicker = (TimePicker) findViewById(R.id.pvrPrgHeure);
-	        		h = timePicker.getCurrentHour();
-	        		m = timePicker.getCurrentMinute();
-     	       	}
-       	       	else {
-       	       		date = makeDate(choosen_year_deb, choosen_month_deb, choosen_day_deb);
-            		h = choosen_hour_deb;
-            		m = choosen_minute_deb;
-       	       	}
+   	       		date = makeDate(choosen_year_deb, choosen_month_deb, choosen_day_deb);
+        		h = choosen_hour_deb;
+        		m = choosen_minute_deb;
         		
         		if (h < 10) {	heure = "0" + h; }
         		else { 			heure = "" + h; }
@@ -1069,21 +906,14 @@ public class ProgrammationActivity extends Activity implements PvrConstants
             			repeat_a += "0";
             		}
             	}
-        		
-            	// Post vars pour modification:
-            	//chaine=12&service=0&date=10%2F01%2F2010&heure=23&minutes=09
-            	//&duree=185&emission=pouet&where_id=0&ide=12&submit=MODIFIER+L%27ENREGISTREMENT
+
             	if (fromListe)
             	{
-            		FBMHttpConnection.FBMLog("MODIFIER !!!"+fromListe+" "+ide.toString());
             		postVars.add(new BasicNameValuePair("submit", "MODIFIER+L%27ENREGISTREMENT"));
             		postVars.add(new BasicNameValuePair("ide", ide.toString()));
             	}
-            	//pour un ajout:
-            	// chaine=7&service=0&date=07%2F01%2F2010&heure=12&minutes=01
-            	//&duree=134&emission=pouet&where_id=0&submit=PROGRAMMER+L%27ENREGISTREMENT
-
-            	else {
+            	else
+            	{
             		postVars.add(new BasicNameValuePair("submit", "PROGRAMMER L'ENREGISTREMENT"));
             	}
 
@@ -1091,7 +921,6 @@ public class ProgrammationActivity extends Activity implements PvrConstants
         		String url = "http://adsl.free.fr/admin/magneto.pl";
         		if (plusieursBoitiersHD)
         			postVars.add(new BasicNameValuePair("box", ""+mBoitierHD));
-        		FBMHttpConnection.FBMLog("Programmation sur le serveur de Free");
         		String resultat = FBMHttpConnection.getPage(FBMHttpConnection.postAuthRequest(url, postVars, true, true));
 
         		int erreurPos = resultat.indexOf("erreurs");
@@ -1127,7 +956,6 @@ public class ProgrammationActivity extends Activity implements PvrConstants
         		return null;
             }
         });
-        FBMHttpConnection.FBMLog("FIN LONGUE");
     }
 	
 	void afficherMsgErreur(String msg)
@@ -1135,7 +963,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 		if (progAct != null)
 		{
 	    	alertDialog = new AlertDialog.Builder(progAct).create();
-	    	alertDialog.setTitle("Erreur!");
+	    	alertDialog.setTitle("Erreur !");
 	    	alertDialog.setIcon(R.drawable.fm_magnetoscope);
 	    	alertDialog.setMessage(msg);
 	    	alertDialog.setButton("Ok", new DialogInterface.OnClickListener() {
@@ -1167,25 +995,84 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 					break;
 				}
 			} while (chainesCursor.moveToNext());
-			
 	        chainesSpinner.setSelection(chainesCursor.getPosition());
-	        dureeEmission.setText(((Integer)bundle.getInt(ChainesDbAdapter.KEY_PROG_DUREE)).toString());
-	        String datetime = bundle.getString(ChainesDbAdapter.KEY_PROG_DATETIME_DEB);
-	        String dt[] = datetime.split(" ");
-	        String date[] = dt[0].split("-");
-	        String time[] = dt[1].split(":");
-	        choosen_year_deb = Integer.decode(date[0]);
-	        choosen_month_deb = Integer.decode(date[1])-1;
-	        choosen_day_deb = Integer.decode(date[2]);
-	        choosen_hour_deb = Integer.decode(time[0]);
-	        choosen_minute_deb = Integer.decode(time[1]);
+	        
+	        String datetimedeb = bundle.getString(ChainesDbAdapter.KEY_PROG_DATETIME_DEB);
+	        String datetimefin = bundle.getString(ChainesDbAdapter.KEY_PROG_DATETIME_FIN);
+	        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	        try
+	        {
+				Date dtdeb = sdf.parse(datetimedeb);
+				boolean immediat = false;
+		        if (dtdeb.before(new Date()))
+		        {
+		        	dtdeb = new Date();
+		        	immediat = true;
+		        }
+		        choosen_year_deb = dtdeb.getYear() + 1900;
+		        choosen_month_deb = dtdeb.getMonth();
+		        choosen_day_deb = dtdeb.getDay();
+		        choosen_hour_deb = dtdeb.getHours();
+		        choosen_minute_deb = dtdeb.getMinutes();
+		        if (immediat)
+		        {
+		            Calendar c = Calendar.getInstance();
+		            c.set(choosen_year_deb, choosen_month_deb, choosen_day_deb, choosen_hour_deb, choosen_minute_deb);
+		            c.add(Calendar.MINUTE, 2);
+		            choosen_year_deb = c.get(Calendar.YEAR);
+		            choosen_month_deb = c.get(Calendar.MONTH);
+		            choosen_day_deb = c.get(Calendar.DAY_OF_MONTH);
+		            choosen_hour_deb = c.get(Calendar.HOUR_OF_DAY);
+		            choosen_minute_deb = c.get(Calendar.MINUTE);
+		        }
+			}
+	        catch (ParseException e)
+	        {
+	        	FBMHttpConnection.FBMLog("Problème conversion de date deb ! "+e.getMessage());
+				e.printStackTrace();
+				showErreurDate("fin");
+			}
+	        try
+	        {
+				Date dtfin = sdf.parse(datetimefin);
+		        choosen_year_fin = dtfin.getYear() + 1900;
+		        choosen_month_fin = dtfin.getMonth();
+		        choosen_day_fin = dtfin.getDay();
+		        choosen_hour_fin = dtfin.getHours();
+		        choosen_minute_fin = dtfin.getMinutes();
+			}
+	        catch (ParseException e)
+	        {
+	        	FBMHttpConnection.FBMLog("Problème conversion de date fin ! "+e.getMessage());
+				e.printStackTrace();
+				showErreurDate("début");
+			}
+	        setDuree();
 	        refreshDateTimeButtons();
 	        afficherInfosDisque();
-	        FBMHttpConnection.FBMLog("REMPLIR FICHE GUIDE DUREE="+dureeEmission.getText().toString());
 	        fromGuide = false;
 	        return true;
         }
         return false;
+	}
+
+	private void showErreurDate(String q)
+	{
+    	alertDialog = new AlertDialog.Builder(this).create();
+    	alertDialog.setTitle("Problème");
+    	alertDialog.setIcon(R.drawable.icon_fbm_reverse);
+    	alertDialog.setMessage(
+			"Une erreur est survenue lors de la récupération de la date.\n\n"+
+			"Veuillez vérifier la date de "+q+" de votre enregistrement."
+		);
+    	alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
+			{
+				public void onClick(DialogInterface dialog, int which)
+				{
+					dismissAd();
+				}
+			});
+    	alertDialog.show();
 	}
 	
 	/**
@@ -1201,11 +1088,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
         {
         	return false;
         }
-        
-        //TODO: faire le remplissage si on vient de l'onglet grille des programmes
-        // pour l'instant ça ne remplit la fiche que d'un enregistrement venant
-        // de sqlite
-        
+
         if (mRowId >= 0)
         {
 	        // Récupération des infos concernant cet enregistrement
@@ -1281,8 +1164,8 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 	//    	FBMHttpConnection.FBMLog("afficherInfosDisque : "+disqueId + " "+mBoitierHDName);
 	    	Cursor c = db.fetchDisque(disqueId, mBoitierHDName);
 	    	startManagingCursor(c);
-	        if (c.moveToFirst()) {
-				FBMHttpConnection.FBMLog("DISQUE : "+c.getString(c.getColumnIndex(ChainesDbAdapter.KEY_DISQUE_LABEL)));
+	        if (c.moveToFirst())
+	        {
 	        	int gigaFree = getGiga(c.getInt(c.getColumnIndex(ChainesDbAdapter.KEY_DISQUE_FREE_SIZE)));
 	        	int gigaTotal = getGiga(c.getInt(c.getColumnIndex(ChainesDbAdapter.KEY_DISQUE_TOTAL_SIZE)));
 	
@@ -1292,16 +1175,8 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 	    			.setText(getString(R.string.pvrInfosDisque2).replace("#libre", ""+gigaFree));
 	        	((TextView) findViewById(R.id.pvrPrgInfosDisque3))
 	    			.setText(getString(R.string.pvrInfosDisque3).replace("#total", ""+gigaTotal));
-	        	switch (selectedLayout)	{
-	        		case LAYOUT_BENOIT:
-	                	((TextView) findViewById(R.id.pvrPrgInfosDisque4))
-	        			.setText(getString(R.string.pvrInfosDisque4).replace("#mount", c.getString(c.getColumnIndex(ChainesDbAdapter.KEY_DISQUE_MOUNT))));
-	        		break;
-	        		case LAYOUT_OLIVIER:
-	                	((TextView) findViewById(R.id.pvrPrgInfosDisque4))
-	        			.setText(getString(R.string.pvrInfosDisque4_2).replace("#mount", c.getString(c.getColumnIndex(ChainesDbAdapter.KEY_DISQUE_MOUNT))));
-	                break;
-	        	}
+              	((TextView) findViewById(R.id.pvrPrgInfosDisque4))
+        			.setText(getString(R.string.pvrInfosDisque4_2).replace("#mount", c.getString(c.getColumnIndex(ChainesDbAdapter.KEY_DISQUE_MOUNT))));
 	        	if (gigaFree < 4) {
 	        		((TextView) findViewById(R.id.pvrPrgInfosDisqueEspaceFaible))
 	        			.setText(getString(R.string.pvrInfosDisqueEspaceFaible));
@@ -1427,25 +1302,6 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 		}
 		db.close();
     }
-	
-    // Fonctions pour récupérer la position d'une chaine/disque dans un spinner
-/*	private int getChaineSpinnerId_old(String chaine) {
-		int i = 0;
-
-		if (chainesCursor.moveToFirst())
-		{
-            int chaineNameIndex = chainesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_NAME);
-        	do
-        	{
-        		if (chainesCursor.getString(chaineNameIndex).equals(chaine))
-        			return i;
-        		i++;
-        	}
-       		while (chainesCursor.moveToNext());
-        }
-		return -1;
-	}
-*/
     
 	private int getDisqueSpinnerId(String disque) {
 		int i = 0;
