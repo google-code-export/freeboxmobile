@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:scrollbars="none">
+    
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+		<ImageView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:id="@+id/LogoFreeboxMobile"
+			android:src="@drawable/freebox_mobile_pvr"
+			android:layout_gravity="center" android:layout_marginTop="10dp">
+		</ImageView>
+    
+	    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:orientation="vertical"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent" android:padding="10dp">
+	    
+	   		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			    android:orientation="vertical"
+			    android:id="@+id/pvrPrgLayoutBoitier"
+			    android:layout_width="fill_parent"
+			    android:layout_height="fill_parent" android:padding="10dp">
+			    
+				<TextView android:text="@string/pvrTxtBoitier" android:id="@+id/TxtBoitier" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="26sp"></TextView>
+				<Spinner android:id="@+id/pvrPrgBoitier" android:layout_width="fill_parent" android:layout_height="wrap_content"></Spinner>
+				
+	    	</LinearLayout>
+	        
+			<TextView android:text="@string/pvrTxtChaine" android:id="@+id/TxtChaine" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="26sp"></TextView>
+			<Spinner android:id="@+id/pvrPrgChaine" android:layout_width="fill_parent" android:layout_height="wrap_content"></Spinner>
+			<TextView android:text="@string/pvrTxtQualite" android:id="@+id/TxtQualite" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="26sp"></TextView>
+			<Spinner android:id="@+id/pvrPrgQualite" android:layout_width="fill_parent" android:layout_height="wrap_content"></Spinner>
+			<TextView android:text="@string/pvrTxtQualiteDisque" android:id="@+id/TxtQualiteDisque" android:layout_width="wrap_content" android:layout_height="wrap_content" android:paddingBottom="5dp" android:textSize="12dip"></TextView>
+			<TextView android:text="@string/pvrTxtDate" android:id="@+id/TxtDate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="26sp"></TextView>
+			<DatePicker android:id="@+id/pvrPrgDate" android:layout_width="wrap_content" android:layout_height="wrap_content"></DatePicker>
+			<TextView android:text="@string/pvrTxtHeure" android:id="@+id/TxtHeure" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="26sp"></TextView>
+			<TimePicker android:id="@+id/pvrPrgHeure" android:layout_width="wrap_content" android:layout_height="wrap_content"></TimePicker>
+			<TextView android:text="@string/pvrTxtDuree" android:id="@+id/TxtDuree" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="26sp"></TextView>
+						
+		    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		    android:orientation="horizontal"
+		    android:layout_width="fill_parent"
+		    android:layout_height="wrap_content">
+				<EditText android:text="120" android:id="@+id/pvrPrgDuree" android:layout_width="90dp" android:layout_height="wrap_content" android:inputType="phone" android:maxLength="3"></EditText>
+				<Spinner android:id="@+id/pvrPrgDurees" android:layout_width="fill_parent" android:layout_height="wrap_content"></Spinner>
+			</LinearLayout>
+			
+			<TextView android:text="@string/pvrTxtNom" android:id="@+id/TxtNom" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="26sp"></TextView>
+			<EditText android:text="@string/pvrNomDefaut" android:id="@+id/pvrPrgNom" android:layout_width="fill_parent" android:layout_height="wrap_content"></EditText>
+			<TextView android:text="@string/pvrTxtDisque" android:id="@+id/TxtDisque" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="26sp"></TextView>
+			<Spinner android:id="@+id/pvrPrgDisque" android:layout_width="fill_parent" android:layout_height="wrap_content"></Spinner>
+			
+			<ProgressBar
+				android:id="@+id/pvrPrgDisquePB"
+    		    style="?android:attr/progressBarStyleHorizontal"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"></ProgressBar>
+				
+			<TextView android:id="@+id/pvrPrgInfosDisque1" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+			<TextView android:id="@+id/pvrPrgInfosDisque2" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+			<TextView android:id="@+id/pvrPrgInfosDisque3" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+			<TextView android:id="@+id/pvrPrgInfosDisque4" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+			<TextView android:id="@+id/pvrPrgInfosDisqueEspaceFaible" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+			
+			<TextView android:text="@string/pvrTxtRecurrence" android:id="@+id/TxtDisque" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="26sp"></TextView>
+			<Button android:text="@string/pvrTxtPrgBtnRecur" android:id="@+id/pvrPrgBtnRecur" android:layout_width="wrap_content" android:layout_height="wrap_content" android:clickable="true"></Button>
+			<TextView android:text="@string/pvrTxtRecurrenceInfo" android:id="@+id/TxtDisque" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+			 
+			<Button
+				android:drawableLeft="@drawable/pvr_btn_record"
+				android:text="@string/pvrTxtPrgBtnOK"
+				android:id="@+id/pvrPrgBtnOK"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:clickable="true"></Button>
+		
+		</LinearLayout>
+	</LinearLayout>
+</ScrollView>
+	
