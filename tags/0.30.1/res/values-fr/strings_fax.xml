@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<!-- Valeur affichées dans l'écrans de fax -->
+	<string name="faxNumberLabel">Destinataire</string>
+	<string name="faxNumberHint">numéro de fax</string>
+	<string name="faxMailConfirmation">Mail de confirmation</string>
+	<string name="faxAnonymousNumber">Masquer mon numéro</string>
+	<string name="faxChooseAFile">Choisir</string>
+	<string name="faxSend">Envoyer le fax</string>
+	<string name="faxFileLabel">Fichier</string>
+	<string name="faxNoFile">Aucun fichier</string>
+	<string name="faxFileNameSuffix">...</string>
+	
+	<!-- Valeurs affichée dans l'écran de selection d'un fichier -->
+	<string name="faxParentDirectory">Parent</string>
+	
+	<!-- Messages utilisés dans la gestion des alertes (erreurs, succès etc...) -->
+	<string name="faxDemandOK">Demande de fax de %1$s prise en compte</string>
+	<string name="faxStartNotificationTicker">Nouveau fax en cours d'envoi</string>
+	<string name="faxSendingFile">Fax de %1$s vers %2$s en cours...</string>
+	<string name="faxSuccess">Fichier %1$s faxé !</string>
+	
+	<!-- MEssages d'erreur -->
+	<string name="faxError">Erreur pendant la demande de fax de %1$s</string>
+	<string name="faxErrorNoFile">Fichier obligatoire</string>
+	<string name="faxErrorNumberLabel">Saisissez un numéro de téléphone valide ici</string>
+</resources>
