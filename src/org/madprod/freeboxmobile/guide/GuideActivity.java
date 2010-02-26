@@ -36,6 +36,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -45,6 +46,7 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.AdapterView.OnItemSelectedListener;
 
 /**
 *
@@ -86,28 +88,18 @@ public class GuideActivity extends ListActivity implements GuideConstants
         guideAct = this;
         FBMHttpConnection.initVars(this, null);
         FBMHttpConnection.FBMLog("GUIDE CREATE");
+		SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
+		mode_reduit = mgr.getBoolean(KEY_MODE, false);
         
         setContentView(R.layout.guide);
         registerForContextMenu(getListView());
 
         mDbHelper = new ChainesDbAdapter(this);
         mDbHelper.open();
-
-        // On rempli les spinners
-        List<String> heures = new ArrayList<String>();
-        for (Integer i=0; i < 24; i++)
-        {
-        	heures.add(i.toString()+"h - "+(i+4>23?((Integer)(i+4-24)).toString():i+4)+"h");
-        }
-        heuresSpinner = (Spinner) findViewById(R.id.HeuresSpinner);
-		spinnerAdapter = new ArrayAdapter<String>(
-				this, android.R.layout.simple_spinner_item, heures);
-		spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		heuresSpinner.setAdapter(spinnerAdapter);
-
+        FBMHttpConnection.FBMLog("Nettoyage, anciens programmes effacés : "+mDbHelper.deleteOldProgs());
         Calendar c = Calendar.getInstance();
+
         int h = c.get(Calendar.HOUR_OF_DAY);
-        heuresSpinner.setSelection(h);
         selectedHeure = (h<10?"0"+h:h)+":00:00";
         
         c.setFirstDayOfWeek(Calendar.MONDAY);
@@ -133,6 +125,32 @@ public class GuideActivity extends ListActivity implements GuideConstants
 		spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		datesSpinner.setAdapter(spinnerAdapter);
 
+        datesSpinner.setOnItemSelectedListener(new OnItemSelectedListener()
+        {
+			@Override
+			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3)
+			{
+				Calendar cal = Calendar.getInstance();
+				FBMHttpConnection.FBMLog("DATES SPINNER SELECTED " + cal.get(Calendar.DAY_OF_MONTH) + " "+ cal.get(Calendar.HOUR_OF_DAY)+
+						" "+calDates.get(arg2).split("-")[2]);
+				String sdate = calDates.get(arg2).split("-")[2];
+				int jour = Integer.decode(sdate);
+				if (cal.get(Calendar.DAY_OF_MONTH) == jour)
+				{
+					remplirHeuresSpinner(cal.get(Calendar.HOUR_OF_DAY));
+				}
+				else
+				{
+					remplirHeuresSpinner(0);	
+				}
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0)
+			{
+			}
+        });
+
 		buttonOk = (Button) findViewById(R.id.GuideButtonOk);
         buttonOk.setOnClickListener(
         	new View.OnClickListener()
@@ -140,8 +158,9 @@ public class GuideActivity extends ListActivity implements GuideConstants
         		public void onClick(View view)
         		{
         			selectedDate = calDates.get(datesSpinner.getSelectedItemPosition());
-        			int i = heuresSpinner.getSelectedItemPosition();
-        			selectedHeure = (i<10?"0"+i:i)+":00:00";
+        			String s = (String) heuresSpinner.getSelectedItem();
+        			selectedHeure = s.split("h")[0]+":00:00";
+        			FBMHttpConnection.FBMLog("Item at position : "+s+" "+selectedHeure);
         			setFinDateHeure();
         			new GuideActivityNetwork(selectedDate+" "+selectedHeure, false, true, false, false).execute((Void[])null);
         		}
@@ -149,8 +168,6 @@ public class GuideActivity extends ListActivity implements GuideConstants
         );
         boolean nochaine = getFromDb();
     	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:00:00");
-    	// TODO : ici ne rafraichir les chaines que si leur nombre == 0
-//    	if ((ga == null) || (ga.size() == 0) || (nochaine))
     	if ((mDbHelper.getNbChaines() == 0) || (nochaine))
     	{
     		new GuideActivityNetwork(sdf.format(new Date()), true, true, false, false).execute((Void[])null);    		
@@ -159,7 +176,6 @@ public class GuideActivity extends ListActivity implements GuideConstants
     		new GuideActivityNetwork(sdf.format(new Date()), false, true, false, false).execute((Void[])null);
     	setTitle(getString(R.string.app_name)+" Guide TV - "+FBMHttpConnection.getTitle());
     	
-		SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 		if (!mgr.getString(KEY_SPLASH_GUIDE, "0").equals(this.getString(R.string.app_version)))
 		{
 			Editor editor = mgr.edit();
@@ -167,7 +183,6 @@ public class GuideActivity extends ListActivity implements GuideConstants
 			editor.commit();
 			displayAboutGuide();
 		}
-		mode_reduit = mgr.getBoolean(KEY_MODE, false);
     }
 	
     @Override
@@ -320,6 +335,31 @@ public class GuideActivity extends ListActivity implements GuideConstants
     	}
     }
     
+    private void remplirHeuresSpinner(int h)
+    {
+    	Integer oldHeure = -1;
+    	
+    	if (heuresSpinner != null)
+    	{
+    		oldHeure = Integer.decode(((String) heuresSpinner.getSelectedItem()).split("h")[0]);
+    	}
+
+        List<String> heures = new ArrayList<String>();
+        for (Integer i=h; i < 24; i++)
+        {
+        	heures.add(i.toString()+"h - "+(i+4>23?((Integer)(i+4-24)).toString():i+4)+"h");
+        }
+        heuresSpinner = (Spinner) findViewById(R.id.HeuresSpinner);
+		ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(
+				this, android.R.layout.simple_spinner_item, heures);
+		spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		heuresSpinner.setAdapter(spinnerAdapter);
+		if ((oldHeure != -1) && (h <= oldHeure))
+		{
+			heuresSpinner.setSelection(oldHeure - h, true);
+		}
+    }
+    
     private void launchActivity(Class<?> cls, int pos)
     {
 		Programme p = (Programme) adapter.getItem(pos);
@@ -336,12 +376,11 @@ public class GuideActivity extends ListActivity implements GuideConstants
 		i.putExtra(ChainesDbAdapter.KEY_GUIDECHAINE_ID, p.guidechaine_id);
         startActivity(i);
     }
-    
+
 	private void setFinDateHeure()
 	{
-		// TODO : code cleaning ici
 		String sdatefin;
-		long heurefin = heuresSpinner.getSelectedItemId() + 4;
+		long heurefin = Integer.decode(selectedHeure.split(":")[0]) + 4;
 		long datefin = datesSpinner.getSelectedItemId();
 		if (heurefin > 23)
 		{
@@ -420,7 +459,24 @@ public class GuideActivity extends ListActivity implements GuideConstants
 					else
 						nochaine = true;
 
-					l.programmes = mDbHelper.getProgrammes(l.chaine_id, selectedDate+" "+selectedHeure, finDateHeure);
+			        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			        String datetoget = selectedDate+" "+selectedHeure;
+			        try
+			        {
+						Date dselect = sdf.parse(datetoget);
+				        if (dselect.before(new Date()))
+				        {
+				        	datetoget = sdf.format(new Date());
+				        	selectedDate = datetoget.split(" ")[0];
+				        	selectedHeure = datetoget.split(" ")[1];
+				        }
+					}
+			        catch (ParseException e)
+			        {
+			        	FBMHttpConnection.FBMLog("GUIDEACTIVITY : pb parse date "+e.getMessage());
+						e.printStackTrace();
+					}
+					l.programmes = mDbHelper.getProgrammes(l.chaine_id, datetoget, finDateHeure);
 					startManagingCursor(l.programmes);
 					listesChaines.add(l);
 				} while (chainesIds.moveToNext());
@@ -477,8 +533,6 @@ public class GuideActivity extends ListActivity implements GuideConstants
     	private int descCI;
     	private int heuredebCI;
     	private int heurefinCI;
-    	private Date curDate;
-    	private Date dfin;
     	
     	public GuideAdapter(Context c, ListeChaines l)
     	{
@@ -492,7 +546,6 @@ public class GuideActivity extends ListActivity implements GuideConstants
 	    		this.heuredebCI = listeChaines.programmes.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_DATETIME_DEB);
 	    		this.heurefinCI = listeChaines.programmes.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_DATETIME_FIN);
     		}
-    		this.curDate = new Date();
     	}
     	
 		@Override
@@ -547,19 +600,6 @@ public class GuideActivity extends ListActivity implements GuideConstants
 					holder.desc = (TextView)convertView.findViewById(R.id.guideRowDesc);
 			        holder.duree = (TextView)convertView.findViewById(R.id.guideRowDuree);
 			        
-			        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			        try
-			        {
-						dfin = sdf.parse(listeChaines.programmes.getString(heurefinCI));
-						holder.isfinished = dfin.before(curDate);
-					}
-			        catch (IllegalArgumentException e)
-			        {
-						e.printStackTrace();
-					} catch (ParseException e)
-					{
-						e.printStackTrace();
-					}
 			        convertView.setTag(holder);
 				}
 				else
@@ -568,12 +608,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
 				}
 				holder.titre.setText(listeChaines.programmes.getString(titreCI));
 				holder.heure.setText(convertDateTimeHoraire(listeChaines.programmes.getString(heuredebCI)));
-				if (holder.isfinished)
-				{
-					holder.titre.setTextColor(0xFF888888);
-					holder.heure.setTextColor(0xFF888888);
-				}
-				if ((mode_reduit) || (holder.isfinished))
+				if (mode_reduit)
 				{
 					holder.duree.setVisibility(View.GONE);
 					holder.desc.setVisibility(View.GONE);
@@ -626,7 +661,6 @@ public class GuideActivity extends ListActivity implements GuideConstants
 			TextView	desc;
 			TextView	heure;
 			TextView	duree;
-			Boolean		isfinished;
 		}
 
     }

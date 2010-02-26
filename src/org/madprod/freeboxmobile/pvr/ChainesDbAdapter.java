@@ -1,5 +1,7 @@
 package org.madprod.freeboxmobile.pvr;
 
+import java.util.Calendar;
+
 import org.madprod.freeboxmobile.FBMHttpConnection;
 
 import android.content.ContentValues;
@@ -335,6 +337,15 @@ public class ChainesDbAdapter {
 	public int deleteProgsChaine(int id)
 	{
 		return mDb.delete(DATABASE_TABLE_PROGRAMMES, KEY_PROG_CHANNEL_ID+" = "+id, null);
+	}
+	
+	public int deleteOldProgs()
+	{
+		Calendar c = Calendar.getInstance();
+    	Integer mois = c.get(Calendar.MONTH)+1;
+    	Integer jour = c.get(Calendar.DAY_OF_MONTH);
+		String date = c.get(Calendar.YEAR)+"-"+(mois<10?"0":"")+mois.toString()+"-"+(jour<10?"0":"")+jour.toString()+" 00:00:00";
+		return mDb.delete(DATABASE_TABLE_PROGRAMMES, KEY_PROG_DATETIME_FIN+" < '"+date+"'", null);
 	}
 
     /*

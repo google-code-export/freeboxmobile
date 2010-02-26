@@ -59,7 +59,7 @@ public class GuideDetailsActivity extends Activity implements GuideConstants
 	        String amj[] = date[0].split("-");
 	        String hm[] = date[1].split(":");
 	        dateHeureEmission.setText("Diffusé le "+amj[2]+"/"+amj[1]+"/"+amj[0]+" à "+hm[0]+"h"+hm[1]);
-	        
+
 	        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	        try
 	        {
