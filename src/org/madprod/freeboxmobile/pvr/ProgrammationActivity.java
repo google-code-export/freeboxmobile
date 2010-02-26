@@ -319,7 +319,21 @@ public class ProgrammationActivity extends Activity implements PvrConstants
     		// Si bdd des chaines vide, on propose de la remplir
 			if (chainesCursor.getCount()==0)
 			{
-				showPasDeChaine();
+				SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
+	        	// S'il s'agit du premier lancement de cette version, on rafraichi pas mal d'infos
+	        	if (!mgr.getString(KEY_SPLASH_PVR, "0").equals(getString(R.string.app_version)))
+	        	{
+					runProgNetwork(true, true);
+	        		FBMHttpConnection.FBMLog("PVR: on rafraichi les chaines");
+	        		Editor editor = mgr.edit();
+					editor.putString(KEY_SPLASH_PVR, getString(R.string.app_version));
+					editor.commit();
+	        		afficherMsgErreur("La liste des chaînes est vide, elle va être actualisée dans quelques secondes.");
+	        	}
+	        	else
+	        	{
+	        		showPasDeChaine();
+	        	}
 			}
 			else // Sinon on met quand même à jour la liste des disques
 			{
@@ -666,7 +680,6 @@ public class ProgrammationActivity extends Activity implements PvrConstants
     	alertDialog.setTitle("La liste des chaînes du magnétoscope est vide");
     	alertDialog.setIcon(R.drawable.icon_fbm_reverse);
     	alertDialog.setMessage(
-			"La liste des chaînes est vide.\n"+
 			"Ceci est peut être dû à un problème réseau lors du téléchargement.\n"+
 			"Vous pouvez rafraichir la liste des chaînes en utilisant le bouton MENU de votre téléphone "+
 			"ou en cliquant ci-dessous."

@@ -12,6 +12,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.graphics.Typeface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.MenuItem;
@@ -221,6 +222,7 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View v, int i, long l)
 			{
+				FBMHttpConnection.FBMLog("ON ITEM SELECTED LISTENER 1");
 				Cursor c = mDbHelper.fetchFromTitle(parent.getSelectedItem().toString());
 				if ((c.getCount() > 0) && !c.getString(c.getColumnIndexOrThrow(KEY_USER)).equals(FBMHttpConnection.getIdentifiant()))
 				{
@@ -232,17 +234,14 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 						// Si ca fait + de 24 heures, on met à jour
 						// Si ca fait + de 30 jours on met à jour (2592000000 )
 						if (duree > 2592000000L)
-//						if (duree > 86400000L)
 						{
 							updatePrefs(mgr.edit(), c);
 							FBMHttpConnection.initCompte(ComptesActivity.this);
-//							SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 					        new ManageCompte(ComptesActivity.this).execute(new ComptePayload(
 					        		mgr.getString(KEY_TITLE, ""),
 					        		mgr.getString(KEY_USER, ""),
 					        		mgr.getString(KEY_PASSWORD, ""),
-					        		null, true));
-//							new PvrNetwork(ComptesActivity.this, true, true).execute((Void[])null);
+						        	null, true));
 						}
 						else
 						{
@@ -300,13 +299,12 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 				{
 					SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 					updatePrefs(mgr.edit(), c);
-					FBMHttpConnection.initCompte(this);
+					FBMHttpConnection.initCompte(ComptesActivity.this);
 	            	Toast t = Toast.makeText(ComptesActivity.this, "Compte "+c.getString(c.getColumnIndexOrThrow(KEY_TITLE))+" selectionné",Toast.LENGTH_LONG);
 	            	t.show();
 				}
 				mDb.close();
         	}
         }
-        fillData();
     }
 }

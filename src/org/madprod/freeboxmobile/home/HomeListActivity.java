@@ -82,10 +82,6 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     {
     	FBMHttpConnection.FBMLog("MainActivity Start");
     	super.onStart();
-    	if (task != null)
-    	{
-    		refreshCompte();
-    	}
     	SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 		FBMHttpConnection.initVars(this, null);
 		// Si l'utilisateur n'a pas configuré de compte
@@ -99,8 +95,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
         	if (!mgr.getString(KEY_FBMVERSION, "0").equals(getString(R.string.app_version)))
         	{
         		FBMHttpConnection.FBMLog("HOME : on rafraichi le compte "+mgr.getString(KEY_FBMVERSION, "0"));
-        		if (task == null)
-        			refreshCompte();
+        		refreshCompte();
         		Editor editor = mgr.edit();
 				editor.putString(KEY_FBMVERSION, getString(R.string.app_version));
 				editor.commit();
@@ -174,7 +169,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		map = new HashMap<String,Object>();
 		map.put(M_ICON, R.drawable.fm_guide_tv);
 		map.put(M_TITRE, getString(R.string.buttonGuide));
-		map.put(M_DESC, "Consultez le guide TV, programmez des enregistrements, regardez la télévision");
+		map.put(M_DESC, "Consultez le guide TV, programmez des enregistrements");
 		map.put(M_CLASS, org.madprod.freeboxmobile.guide.GuideActivity.class);
 		modulesList.add(map);    	
     	map = new HashMap<String,Object>();
@@ -199,8 +194,8 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		map.put(M_ICON, R.drawable.fm_telecopie);
 		map.put(M_TITRE, getString(R.string.buttonFax));
 		map.put(M_DESC, "Utilisez votre compte Freebox pour envoyer des Fax à partir de votre mobile\n\nCette fonctionnalité sera bientot disponible");
-//		map.put(M_CLASS, null);
-		map.put(M_CLASS, FaxActivity.class);
+		map.put(M_CLASS, null);
+//		map.put(M_CLASS, FaxActivity.class);
 		modulesList.add(map);
 		map = new HashMap<String,Object>();
 		map.put(M_ICON, R.drawable.fm_actus_freenautes);
@@ -233,7 +228,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     {
 		FBMHttpConnection.FBMLog("MainActivity Resume");
     	super.onResume();
-
+    	
         SimpleAdapter mList = new SimpleAdapter(this, modulesList, R.layout.home_main_list_row, new String[] {M_ICON, M_TITRE, M_DESC}, new int[] {R.id.home_main_row_img, R.id.home_main_row_titre, R.id.home_main_row_desc});
         setListAdapter(mList);
     }
