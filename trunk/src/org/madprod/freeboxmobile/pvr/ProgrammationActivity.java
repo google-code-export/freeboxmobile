@@ -48,7 +48,6 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 
 /**
  * 
- * @author bduffez
  * $Id$
  *
  */

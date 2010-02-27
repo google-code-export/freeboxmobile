@@ -131,8 +131,6 @@ public class GuideActivity extends ListActivity implements GuideConstants
 			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3)
 			{
 				Calendar cal = Calendar.getInstance();
-				FBMHttpConnection.FBMLog("DATES SPINNER SELECTED " + cal.get(Calendar.DAY_OF_MONTH) + " "+ cal.get(Calendar.HOUR_OF_DAY)+
-						" "+calDates.get(arg2).split("-")[2]);
 				String sdate = calDates.get(arg2).split("-")[2];
 				int jour = Integer.decode(sdate);
 				if (cal.get(Calendar.DAY_OF_MONTH) == jour)
@@ -159,7 +157,12 @@ public class GuideActivity extends ListActivity implements GuideConstants
         		{
         			selectedDate = calDates.get(datesSpinner.getSelectedItemPosition());
         			String s = (String) heuresSpinner.getSelectedItem();
-        			selectedHeure = s.split("h")[0]+":00:00";
+        			selectedHeure = s.split("h")[0];
+        			if (selectedHeure.length() == 1)
+        			{
+        				selectedHeure = "0"+selectedHeure;
+        			}
+        			selectedHeure += ":00:00";
         			FBMHttpConnection.FBMLog("Item at position : "+s+" "+selectedHeure);
         			setFinDateHeure();
         			new GuideActivityNetwork(selectedDate+" "+selectedHeure, false, true, false, false).execute((Void[])null);
@@ -380,18 +383,30 @@ public class GuideActivity extends ListActivity implements GuideConstants
 	private void setFinDateHeure()
 	{
 		String sdatefin;
-		long heurefin = Integer.decode(selectedHeure.split(":")[0]) + 4;
-		long datefin = datesSpinner.getSelectedItemId();
-		if (heurefin > 23)
+		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+		Date dtdeb;
+		try
 		{
-			heurefin -= 24;
-			sdatefin = calDates.get((int) (datefin+1));
+			dtdeb = sdf.parse(selectedHeure);
+			long heurefin = dtdeb.getHours()+4;
+			long datefin = datesSpinner.getSelectedItemId();
+			if (heurefin > 23)
+			{
+				heurefin -= 24;
+				sdatefin = calDates.get((int) (datefin+1));
+			}
+			else
+			{
+				sdatefin = calDates.get((int) (datefin));
+			}
+			finDateHeure = sdatefin+" "+(heurefin<10?"0"+heurefin:heurefin)+":00:00";
 		}
-		else
+		catch (ParseException e)
 		{
-			sdatefin = calDates.get((int) (datefin));
+			FBMHttpConnection.FBMLog("setfinDateHeure pb decode heure "+ e.getMessage());
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		finDateHeure = sdatefin+" "+(heurefin<10?"0"+heurefin:heurefin)+":00:00";
 	}
     
 	/**
