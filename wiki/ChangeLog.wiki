@@ -14,6 +14,12 @@ SERVICES : tout ce qui tourne en tâche de fond
 RESEAU : les connexions réseau / authentifications sur la console Free...
 
 = Versions publiques de !FreeboxMobile =
+== 0.30.2 ==
+Sortie le 27/02/2010<br>
+Release : 25<br>
+Revision : XXX
+ * GUIDE : Corrections de bugs
+
 == 0.30.1 ==
 Sortie le 26/02/2010<br>
 Release : 24<br>
