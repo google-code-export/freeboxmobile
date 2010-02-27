@@ -17,7 +17,7 @@ RESEAU : les connexions réseau / authentifications sur la console Free...
 == 0.30.2 ==
 Sortie le 27/02/2010<br>
 Release : 25<br>
-Revision : XXX
+Revision : 436
  * GUIDE : Corrections de bugs
 
 == 0.30.1 ==
