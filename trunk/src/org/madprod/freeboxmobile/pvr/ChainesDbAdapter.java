@@ -240,6 +240,15 @@ public class ChainesDbAdapter {
 		return mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE_HISTOGUIDE + " WHERE "+KEY_PROG_DATETIME_DEB+" = '"+datetime+"'").simpleQueryForLong();
 	}
 	
+	public long deleteOldHisto()
+	{
+		Calendar c = Calendar.getInstance();
+    	Integer mois = c.get(Calendar.MONTH)+1;
+    	Integer jour = c.get(Calendar.DAY_OF_MONTH);
+		String date = c.get(Calendar.YEAR)+"-"+(mois<10?"0":"")+mois.toString()+"-"+(jour<10?"0":"")+jour.toString()+" 00:00:00";
+		return mDb.delete(DATABASE_TABLE_HISTOGUIDE, KEY_PROG_DATETIME_DEB+" < '"+date+"'", null);
+	}
+	
 	// Utilisé en cas d'ajout de nouvelles chaines aux favoris, 
 	// comme la nouvelle chaine ne sera pas dans l'historique...
 	public long clearHistorique()

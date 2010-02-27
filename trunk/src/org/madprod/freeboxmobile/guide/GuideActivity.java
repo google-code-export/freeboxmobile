@@ -96,7 +96,8 @@ public class GuideActivity extends ListActivity implements GuideConstants
 
         mDbHelper = new ChainesDbAdapter(this);
         mDbHelper.open();
-        FBMHttpConnection.FBMLog("Nettoyage, anciens programmes effacés : "+mDbHelper.deleteOldProgs());
+        FBMHttpConnection.FBMLog("Nettoyage des anciens programmes effacés : "+mDbHelper.deleteOldProgs());
+        FBMHttpConnection.FBMLog("Nettoyage de l'ancienne historique : "+mDbHelper.deleteOldHisto());
         Calendar c = Calendar.getInstance();
 
         int h = c.get(Calendar.HOUR_OF_DAY);
@@ -240,6 +241,10 @@ public class GuideActivity extends ListActivity implements GuideConstants
     			startActivityForResult(new Intent(this, GuideChoixChainesActivity.class),0);
     			return true;
     		case GUIDE_OPTION_REFRESH:
+				String s = selectedHeure.split(":")[0];
+				selectedHeure = s+":00:00";
+				FBMHttpConnection.FBMLog("Refresh manuel : "+selectedHeure);
+				setFinDateHeure();
     			new GuideActivityNetwork(selectedDate+" "+selectedHeure, false, true, true, true).execute((Void[])null);
     			return true;
     		case GUIDE_OPTION_MODE:
