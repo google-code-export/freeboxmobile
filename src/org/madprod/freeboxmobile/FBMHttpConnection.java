@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URI;
@@ -810,35 +811,17 @@ public class FBMHttpConnection implements Constants
         {
         	charset = "ISO8859_1";
         }
+        // TODO : tester et enlever ce if
 		if ((p == null) && (auth))
 		{
 			p = new ArrayList<NameValuePair>();
 		}
-		if (auth)
-		{
-			p.add(new BasicNameValuePair("id",id));
-			p.add(new BasicNameValuePair("idt",idt));
-		}
         if ((p != null) && (p.size() > 0))
         {
-        	try
-        	{
-        		if (p.get(0).getName().equals("pass"))
-        			log = false;
-                listConcat += URLEncoder.encode(p.get(0).getName(), charset);
-                listConcat += '=';
-                listConcat += URLEncoder.encode(p.get(0).getValue(), charset);
-        	}
-        	catch (Exception e)
-        	{
-        		FBMLog("makeStringForPost PB ENCODE : "+e.getMessage());
-                listConcat += URLEncoder.encode(p.get(0).getName());
-                listConcat += '=';
-                listConcat += URLEncoder.encode(p.get(0).getValue());        		
-        	}
-            for(int i = 1 ; i < p.size() ; i++)
+            for(int i = 0 ; i < p.size() ; i++)
             {
-                listConcat += "&";
+            	if (i != 0)
+            		listConcat += "&";
                 try
                 {
             		if (p.get(i).getName().equals("pass"))
@@ -849,13 +832,33 @@ public class FBMHttpConnection implements Constants
                 }
                 catch (Exception e)
                 {
-                	Log.d(DEBUGTAG, "makeStringForPost PB ENCODE : "+e.getMessage());
+                	FBMLog( "makeStringForPost PB ENCODE : "+e.getMessage());
 	                listConcat += URLEncoder.encode(p.get(i).getName());
 	                listConcat += '=';
 	                listConcat += URLEncoder.encode(p.get(i).getValue());
                 }
             }
         }
+		if (auth)
+		{
+			if ((p != null) && (p.size() > 0))
+			{
+				listConcat += "&";
+			}
+			try
+			{
+				listConcat += URLEncoder.encode("id", charset);
+				listConcat += '=';
+				listConcat += URLEncoder.encode(id, charset);
+				listConcat += '&';
+				listConcat += URLEncoder.encode("idt", charset);
+				listConcat += '=';
+				listConcat += URLEncoder.encode(idt, charset);
+			} catch (UnsupportedEncodingException e)
+			{
+            	FBMLog( "makeStringForPost PB ENCODE ID IDT : "+e.getMessage());
+			}
+		}
         if (log)
         	FBMLog("makeStringForPost : "+listConcat);
         return (listConcat);

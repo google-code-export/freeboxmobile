@@ -186,9 +186,11 @@ public class GuideNetwork extends AsyncTask<Void, Integer, Integer> implements G
 				jObject = new JSONObject(resultat);
 				if (jObject.has("redirect"))
 				{
+					FBMHttpConnection.FBMLog("Authentification expirée");
 					if (FBMHttpConnection.connect() == CONNECT_CONNECTED)
 					{
 						resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(MAGNETO_URL, param, true, true, "UTF8"));
+						jObject = new JSONObject(resultat);
 					}
 					else
 					{
