@@ -90,7 +90,7 @@ Release : 5
  * MEVO : Bug de vérification périodique corrigé (Issue 81)
 
 == 0.15 ==
-Sortie le 05/10/2009<br>
+Sortie le 05/01/2010<br>
 Release : 3
  * MEVO : !ProgressBar durant écoute des messages
  * MEVO : Emission d'un son lors de la notification de nouveaux messages
