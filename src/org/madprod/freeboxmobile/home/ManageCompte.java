@@ -80,6 +80,7 @@ public class ManageCompte extends AsyncTask<ComptePayload, Void, ComptePayload> 
     private void saveState(ComptePayload p)
     {
         Bundle bundle = new Bundle();
+        long id=0;
  
         ComptesDbAdapter mDbHelper = new ComptesDbAdapter(activity);
     	mDbHelper.open();
@@ -93,7 +94,7 @@ public class ManageCompte extends AsyncTask<ComptePayload, Void, ComptePayload> 
     	{
 	        if (p.rowid == null)
 	        {
-	            long id = mDbHelper.createCompte(p.title, p.login, p.password, (String) v.get(KEY_NRA),
+	            id = mDbHelper.createCompte(p.title, p.login, p.password, (String) v.get(KEY_NRA),
 	            		(String) v.get(KEY_DSLAM), (String) v.get(KEY_IP), (String) v.get(KEY_LINELENGTH),
 	            		(String) v.get(KEY_ATTN), (String) v.get(KEY_TEL), (String) v.get(KEY_LINETYPE),
 	            		(String) v.get(KEY_FBMVERSION));
@@ -104,10 +105,11 @@ public class ManageCompte extends AsyncTask<ComptePayload, Void, ComptePayload> 
 	        }
 	        else
 	        {
-	            mDbHelper.updateCompte(p.rowid, p.title, p.login, p.password, (String) v.get(KEY_NRA),
+	        	mDbHelper.updateCompte(p.rowid, p.title, p.login, p.password, (String) v.get(KEY_NRA),
 	            		(String) v.get(KEY_DSLAM), (String) v.get(KEY_IP), (String) v.get(KEY_LINELENGTH),
 	            		(String) v.get(KEY_ATTN), (String) v.get(KEY_TEL), (String) v.get(KEY_LINETYPE),
 	            		(String) v.get(KEY_FBMVERSION));
+	        	id = p.rowid;
 	        }
 
             bundle.putLong(ComptesDbAdapter.KEY_ROWID, p.rowid);
@@ -122,10 +124,11 @@ public class ManageCompte extends AsyncTask<ComptePayload, Void, ComptePayload> 
 	        mIntent.putExtras(bundle);
 	        activity.setResult(p.exit, mIntent);
     	}
-    	else // On met à jour les parametres de conf avec les nouvelles données
+		Cursor c = mDbHelper.fetchCompte(p.rowid);
+		// On met à jour les parametres de conf avec les nouvelles données
+    	if ((p.refresh) || (c.getString(c.getColumnIndexOrThrow(KEY_USER)).equals(FBMHttpConnection.getIdentifiant())))
     	{
-    		Cursor c = mDbHelper.fetchCompte(p.rowid);
-    		activity.startManagingCursor(c);
+    		FBMHttpConnection.FBMLog("REFRESH !");
     		SharedPreferences mgr = activity.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE);
     		Editor editor = mgr.edit();
     		editor.putString(KEY_USER, c.getString(c.getColumnIndexOrThrow(KEY_USER)));
@@ -140,8 +143,8 @@ public class ManageCompte extends AsyncTask<ComptePayload, Void, ComptePayload> 
     		editor.putString(KEY_LINETYPE, c.getString(c.getColumnIndexOrThrow(KEY_LINETYPE)));
     		editor.putString(KEY_FBMVERSION, c.getString(c.getColumnIndexOrThrow(KEY_FBMVERSION)));
     		editor.commit();
-    		c.close();
     	}
+		c.close();
     	mDbHelper.close();
     }
 }

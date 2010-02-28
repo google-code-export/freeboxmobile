@@ -292,7 +292,6 @@ public class ComptesActivity extends ListActivity implements HomeConstants
         	{
         		ComptesDbAdapter mDb = new ComptesDbAdapter(this).open();
 				Cursor c = mDb.fetchCompte(id);
-				startManagingCursor(c);
 				if (c.getCount() > 0)
 				{
 					SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
@@ -300,6 +299,7 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 	            	Toast t = Toast.makeText(ComptesActivity.this, "Compte "+c.getString(c.getColumnIndexOrThrow(KEY_TITLE))+" selectionné",Toast.LENGTH_LONG);
 	            	t.show();
 				}
+				c.close();
 				mDb.close();
         	}
         }
