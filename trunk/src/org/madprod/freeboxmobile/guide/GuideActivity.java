@@ -29,6 +29,7 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -87,7 +88,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
 
         guideAct = this;
         FBMHttpConnection.initVars(this, null);
-        FBMHttpConnection.FBMLog("GUIDE CREATE");
+        Log.i(TAG,"GUIDE CREATE");
 		SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 		mode_reduit = mgr.getBoolean(KEY_MODE, false);
         
@@ -96,8 +97,8 @@ public class GuideActivity extends ListActivity implements GuideConstants
 
         mDbHelper = new ChainesDbAdapter(this);
         mDbHelper.open();
-        FBMHttpConnection.FBMLog("Nettoyage des anciens programmes effacés : "+mDbHelper.deleteOldProgs());
-        FBMHttpConnection.FBMLog("Nettoyage de l'ancienne historique : "+mDbHelper.deleteOldHisto());
+        Log.d(TAG,"Nettoyage des anciens programmes effacés : "+mDbHelper.deleteOldProgs());
+        Log.d(TAG,"Nettoyage de l'ancienne historique : "+mDbHelper.deleteOldHisto());
         Calendar c = Calendar.getInstance();
 
         int h = c.get(Calendar.HOUR_OF_DAY);
@@ -164,7 +165,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
         				selectedHeure = "0"+selectedHeure;
         			}
         			selectedHeure += ":00:00";
-        			FBMHttpConnection.FBMLog("Item at position : "+s+" "+selectedHeure);
+        			Log.d(TAG,"Item at position : "+s+" "+selectedHeure);
         			setFinDateHeure();
         			new GuideActivityNetwork(selectedDate+" "+selectedHeure, false, true, false, false).execute((Void[])null);
         		}
@@ -193,7 +194,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
     public void onStart()
     {
     	super.onStart();
-    	FBMHttpConnection.FBMLog("GUIDE onStart");
+    	Log.i(TAG,"GUIDE onStart");
     }
 
     @Override
@@ -243,7 +244,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
     		case GUIDE_OPTION_REFRESH:
 				String s = selectedHeure.split(":")[0];
 				selectedHeure = s+":00:00";
-				FBMHttpConnection.FBMLog("Refresh manuel : "+selectedHeure);
+				Log.d(TAG,"Refresh manuel : "+selectedHeure);
 				setFinDateHeure();
     			new GuideActivityNetwork(selectedDate+" "+selectedHeure, false, true, true, true).execute((Void[])null);
     			return true;
@@ -309,7 +310,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
     protected void onRestoreInstanceState(Bundle savedInstanceState)
     {
     	super.onRestoreInstanceState(savedInstanceState);
-    	FBMHttpConnection.FBMLog("onRestore !");
+    	Log.i(TAG,"onRestore !");
 /*
             dureeEmission.setText(savedInstanceState.getString("da"));
             nomEmission.setText(savedInstanceState.getString("nomEmission"));
@@ -324,17 +325,17 @@ public class GuideActivity extends ListActivity implements GuideConstants
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-    	FBMHttpConnection.FBMLog("ON ACTIVITY RESULT : "+resultCode);
+    	Log.i(TAG,"ON ACTIVITY RESULT : "+resultCode);
     	switch (resultCode)
     	{
     		// Si on a supprimé un favori sans en ajouter, pas besoin d'une mise à jour réseau
     		case -1 :
-    	    	FBMHttpConnection.FBMLog("RESULT SUPPR");
+    	    	Log.d(TAG,"RESULT SUPPR");
     			getFromDb();
     			break;
     		// Si on a ajouté un favori -> mise à jour réseau
     		case 1:
-    	    	FBMHttpConnection.FBMLog("RESULT ADD");
+    	    	Log.d(TAG,"RESULT ADD");
     	    	new GuideActivityNetwork(selectedDate+" "+selectedHeure, false, true, true, true).execute((Void[])null);
     	    break;
     	    default:
@@ -407,8 +408,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
 		}
 		catch (ParseException e)
 		{
-			FBMHttpConnection.FBMLog("setfinDateHeure pb decode heure "+ e.getMessage());
-			// TODO Auto-generated catch block
+			Log.e(TAG,"setfinDateHeure pb decode heure "+ e.getMessage());
 			e.printStackTrace();
 		}
 	}
@@ -421,7 +421,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
 	{
 		boolean nochaine = false;
 
-		FBMHttpConnection.FBMLog("getFromDb");
+		Log.d(TAG,"getFromDb");
 	    adapter = new SectionedAdapter()
 	    {
 	    	protected View getHeaderView(String caption, Bitmap bmp, int index, View convertView, ViewGroup parent)
@@ -492,7 +492,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
 					}
 			        catch (ParseException e)
 			        {
-			        	FBMHttpConnection.FBMLog("GUIDEACTIVITY : pb parse date "+e.getMessage());
+			        	Log.e(TAG,"GUIDEACTIVITY : pb parse date "+e.getMessage());
 						e.printStackTrace();
 					}
 					l.programmes = mDbHelper.getProgrammes(l.chaine_id, datetoget, finDateHeure);
@@ -503,7 +503,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
 				// TODO : si nochaine == true, il manque une chaine, lancer un téléchargement des chaines du guide
 				if (nochaine == true)
 				{
-					FBMHttpConnection.FBMLog("IL MANQUE AU MOINS UNE CHAINE");
+					Log.d(TAG,"IL MANQUE AU MOINS UNE CHAINE");
 				}
 				// Ici on trie pour avoir les listes de programmes dans l'ordre des numéros de chaine
 				Collections.sort(listesChaines);
@@ -737,7 +737,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
     
     public static void dismissPd()
     {
-    	FBMHttpConnection.FBMLog("GuideActivity Dismiss");
+    	Log.i(TAG,"GuideActivity Dismiss");
     	if (progressDialog != null)
     	{
     		progressDialog.dismiss();
@@ -826,6 +826,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
 
         protected void onPostExecute(Integer result)
         {
+       		dismissPd();
         	if (((result != DATA_NOT_DOWNLOADED) && (getChaines)) || (refreshActivity))
         	{
         		getFromDb();
@@ -834,7 +835,6 @@ public class GuideActivity extends ListActivity implements GuideConstants
         	{
         		displayError();
         	}
-       		dismissPd();
        		if ((!refreshActivity) && (!getChaines))
        		{
        			refresh();
@@ -856,7 +856,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
         	getProg = prog;
         	forceRefresh = force;
         	refreshActivity = refreshactivity;
-        	FBMHttpConnection.FBMLog("GUIDEACTIVITYNETWORK START "+d+" "+chaine+" "+prog);
+        	Log.d(TAG,"GUIDEACTIVITYNETWORK START "+d+" "+chaine+" "+prog);
         }
     }
 }

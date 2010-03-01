@@ -194,7 +194,7 @@ public class SendlogActivity extends Activity implements HomeConstants
 	        String[] filterSpecs = new String[3];
 	        filterSpecs[0] = "AndroidRuntime:E";
 	//                    filterSpecs[1] = TAG + ":V";
-	        filterSpecs[1] = DEBUGTAG;
+	        filterSpecs[1] = TAG;
 	        filterSpecs[2] = "*:S";
 	        intent.putExtra(EXTRA_FILTER_SPECS, filterSpecs);
 	        
@@ -236,10 +236,10 @@ public class SendlogActivity extends Activity implements HomeConstants
             Matcher m = p.matcher(procVersionStr);
 
             if (!m.matches()) {
-                Log.e(DEBUGTAG, "Regex did not match on /proc/version: " + procVersionStr);
+                Log.e(TAG, "Regex did not match on /proc/version: " + procVersionStr);
                 return "Unavailable";
             } else if (m.groupCount() < 4) {
-                Log.e(DEBUGTAG, "Regex match on /proc/version only returned " + m.groupCount()
+                Log.e(TAG, "Regex match on /proc/version only returned " + m.groupCount()
                         + " groups");
                 return "Unavailable";
             } else {
@@ -248,7 +248,7 @@ public class SendlogActivity extends Activity implements HomeConstants
                         .append(m.group(4))).toString();
             }
         } catch (IOException e) {  
-            Log.e(DEBUGTAG,
+            Log.e(TAG,
                 "IO Exception when getting kernel version for Device Info screen",
                 e);
 

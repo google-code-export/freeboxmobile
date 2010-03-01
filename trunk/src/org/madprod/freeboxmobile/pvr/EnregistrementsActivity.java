@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,6 +30,7 @@ import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.madprod.freeboxmobile.Constants;
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
 
@@ -43,7 +45,8 @@ import org.madprod.freeboxmobile.R;
  * 
  */
 
-public class EnregistrementsActivity extends ExpandableListActivity {
+public class EnregistrementsActivity extends ExpandableListActivity implements Constants
+{
 	private boolean succesChargement;
     private static ListeEnregistrements listeEnregistrements = null;
     public static EnregistrementsActivity enrAct = null;
@@ -78,18 +81,18 @@ public class EnregistrementsActivity extends ExpandableListActivity {
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.pvr);
         FBMHttpConnection.initVars(this, null);
-        FBMHttpConnection.FBMLog("ENREGISTREMENTSACTIVITY CREATE");
+        Log.i(TAG,"ENREGISTREMENTSACTIVITY CREATE");
 
         File old_db = getDatabasePath("freeboxmobile"+FBMHttpConnection.getIdentifiant());
         if (old_db.exists())
         {
-        	FBMHttpConnection.FBMLog("PVR: Ancien nom de bdd sqlite, renommage en pvr_");
+        	Log.w(TAG,"PVR: Ancien nom de bdd sqlite, renommage en pvr_");
         	if (old_db.renameTo(getDatabasePath(EnregistrementsDbAdapter.DATABASE_NAME)))
         	{
-        		FBMHttpConnection.FBMLog("OK ");
+        		Log.w(TAG,"OK ");
         	} else
         	{
-        		FBMHttpConnection.FBMLog("KO");
+        		Log.w(TAG,"KO");
         	}
         }
         if (!curId.equals(FBMHttpConnection.getIdentifiant()))
@@ -367,7 +370,7 @@ public class EnregistrementsActivity extends ExpandableListActivity {
         		+ EnregistrementsDbAdapter.KEY_MIN + " ASC");
         c.moveToPosition(itemId);
         long rowId = c.getLong(c.getColumnIndex(EnregistrementsDbAdapter.KEY_ROWID));
-        FBMHttpConnection.FBMLog("ROWID : "+rowId+" ITEMID:"+itemId+
+        Log.d(TAG,"ROWID : "+rowId+" ITEMID:"+itemId+
         "IDE : "+c.getLong(c.getColumnIndex(EnregistrementsDbAdapter.KEY_IDE))
         );
 		String text = "J'enregistre sur ma Freebox '"+ 
@@ -397,7 +400,7 @@ public class EnregistrementsActivity extends ExpandableListActivity {
         		+ EnregistrementsDbAdapter.KEY_MIN + " ASC");
         c.moveToPosition(itemId);
         long rowId = c.getLong(c.getColumnIndex(EnregistrementsDbAdapter.KEY_ROWID));
-        FBMHttpConnection.FBMLog("ROWID : "+rowId+" ITEMID:"+itemId+
+        Log.d(TAG,"ROWID : "+rowId+" ITEMID:"+itemId+
         "IDE : "+c.getLong(c.getColumnIndex(EnregistrementsDbAdapter.KEY_IDE))
         );
         c.close();

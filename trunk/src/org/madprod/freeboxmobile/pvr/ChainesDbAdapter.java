@@ -2,6 +2,7 @@ package org.madprod.freeboxmobile.pvr;
 
 import java.util.Calendar;
 
+import org.madprod.freeboxmobile.Constants;
 import org.madprod.freeboxmobile.FBMHttpConnection;
 
 import android.content.ContentValues;
@@ -10,6 +11,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 /**
  * 
@@ -151,7 +153,7 @@ public class ChainesDbAdapter {
 
     private final Context mCtx;
 
-    private static class DatabaseHelper extends SQLiteOpenHelper
+    private static class DatabaseHelper extends SQLiteOpenHelper implements Constants
     {
         DatabaseHelper(Context context)
         {
@@ -161,7 +163,7 @@ public class ChainesDbAdapter {
         @Override
         public void onCreate(SQLiteDatabase db)
         {
-            FBMHttpConnection.FBMLog("DatabaseHelper onCreate called");
+            Log.i(TAG,"ChainesDbAdapter DatabaseHelper onCreate called");
 
             db.execSQL(DATABASE_CREATE_CHAINES);
             db.execSQL(DATABASE_CREATE_CHAINESTEMP);
@@ -176,7 +178,7 @@ public class ChainesDbAdapter {
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            FBMHttpConnection.FBMLog("Upgrading database from version " + oldVersion + " to "
+            Log.w(TAG,"Upgrading database from version " + oldVersion + " to "
                     + newVersion + ", which will destroy all old data");
             db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_CHAINES);
             db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_CHAINESTEMP);

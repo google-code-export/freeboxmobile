@@ -20,7 +20,7 @@ public class OnInfoAdslAlarmReceiver extends BroadcastReceiver implements Consta
 	@Override
 	public void onReceive(Context context, Intent intent)
 	{
-		Log.d(DEBUGTAG,"onReceive InfoAdsl Alarm");
+		Log.i(TAG,"onReceive InfoAdsl Alarm");
 		WakefullIntentService.acquireStaticLock(context);
 		context.startService(new Intent(context, InfoAdslCheck.class));
 	}

@@ -18,6 +18,7 @@ import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 
 /**
 *
@@ -128,7 +129,7 @@ public class ManageCompte extends AsyncTask<ComptePayload, Void, ComptePayload> 
 		// On met à jour les parametres de conf avec les nouvelles données
     	if ((p.refresh) || (c.getString(c.getColumnIndexOrThrow(KEY_USER)).equals(FBMHttpConnection.getIdentifiant())))
     	{
-    		FBMHttpConnection.FBMLog("REFRESH !");
+    		Log.d(TAG,"REFRESH !");
     		SharedPreferences mgr = activity.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE);
     		Editor editor = mgr.edit();
     		editor.putString(KEY_USER, c.getString(c.getColumnIndexOrThrow(KEY_USER)));

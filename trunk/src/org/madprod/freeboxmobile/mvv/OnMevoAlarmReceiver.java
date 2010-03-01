@@ -21,7 +21,7 @@ public class OnMevoAlarmReceiver extends BroadcastReceiver implements Constants
 	@Override
 	public void onReceive(Context context, Intent intent)
 	{
-		Log.i(DEBUGTAG,"onReceive Mevo Alarm");
+		Log.i(TAG,"onReceive Mevo Alarm");
 		WakefullIntentService.acquireStaticLock(context);
 		context.startService(new Intent(context, MevoSync.class));
 	}

@@ -15,6 +15,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.app.Activity;
 import android.os.AsyncTask;
+import android.util.Log;
 
 /**
  * télécharge la liste des chaines et disques
@@ -52,7 +53,6 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Pvr
     	activity = a;
     	this.getChaines = getChaines;
     	this.getDisques = getDisques;
-    	FBMHttpConnection.FBMLog("PVRNETWORK START");
     }
     
 	private int getBoolean(JSONObject o, String key)
@@ -111,7 +111,7 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Pvr
 	        param.add(new BasicNameValuePair("box", ""+boitier));
 	
 	        String resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(url, param, true, true, "ISO8859_1"));
-	    	FBMHttpConnection.FBMLog("DEBUT :"+new Date());
+	    	Log.i(TAG,"DEBUT :"+new Date());
 	        if (resultat != null)
 	        {
 	        	try
@@ -155,8 +155,8 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Pvr
 					    			jDiskObject.getString("mount_point"),
 					    			jDiskObject.getString("label")
 					    			);
-	//						FBMHttpConnection.FBMLog("GET DATA DIRECT BOITIER "+boitier+" DISQUE SAVED : "+id);
 						}
+						Log.d(TAG,"GET BOITIER "+boitier+" NB DISQUES : "+i);
 					}
 					if (getChaines)
 					{
@@ -167,7 +167,7 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Pvr
 						this.max = max;
 						courant = 0;
 						publishProgress(0);
-						FBMHttpConnection.FBMLog("Récupération chaines boitier "+boitier+" - nb chaines = "+max);
+						Log.d(TAG,"Récupération chaines boitier "+boitier+" - nb chaines = "+max);
 						for (i=0 ; i < jChainesArray.length() ; i++)
 						{
 							courant ++;
@@ -201,15 +201,15 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Pvr
 										jServiceObject.getString("desc"),
 										jServiceObject.getInt("id"),
 										pvrmode);
-	//					    	FBMHttpConnection.FBMLog("GET DATA DIRECT SERVICE "+id);
+	//					    	Log.d(TAG,"GET DATA DIRECT SERVICE "+id);
 							}
 						}
 					}
 				}
 	        	catch (JSONException e)
 	        	{
-					FBMHttpConnection.FBMLog("JSONException ! "+e.getMessage());
-					FBMHttpConnection.FBMLog(resultat);
+					Log.e(TAG,"JSONException ! "+e.getMessage());
+					Log.d(TAG,resultat);
 					e.printStackTrace();
 					ok = false;
 					break;
@@ -222,7 +222,7 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Pvr
 	        }
 	        boitier++;
     	} while (boitier < nbBoitiers);
-    	FBMHttpConnection.FBMLog("FIN :"+new Date());
+    	Log.i(TAG,"FIN :"+new Date());
 
     	if (getChaines)
     		publishProgress(max);
@@ -237,7 +237,7 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Pvr
 	    	editor.commit();
 	    	return true;
     	}
-        FBMHttpConnection.FBMLog("==> Impossible de télécharger le json des chaines/disques");
+        Log.d(TAG,"==> Impossible de télécharger le json des chaines/disques");
         return false;
     }
 

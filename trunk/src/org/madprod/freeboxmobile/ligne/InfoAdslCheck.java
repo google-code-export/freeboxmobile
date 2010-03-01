@@ -47,7 +47,7 @@ public class InfoAdslCheck extends WakefullIntentService implements Constants
 	protected void onHandleIntent(Intent intent)
 	{
 
-		Log.i(DEBUGTAG,"InfoAdslCheck onHandleIntent ");
+		Log.i(TAG,"InfoAdslCheck onHandleIntent ");
 
 		File log = new File(Environment.getExternalStorageDirectory()+DIR_FBM, file_log);
 		try
@@ -60,7 +60,7 @@ public class InfoAdslCheck extends WakefullIntentService implements Constants
 		}
 		catch (IOException e)
 		{
-			Log.e(DEBUGTAG, "Exception appending to log file ",e);
+			Log.e(TAG, "Exception appending to log file ",e);
 		}
 
 		try
@@ -96,7 +96,7 @@ public class InfoAdslCheck extends WakefullIntentService implements Constants
 		}
 		catch (Exception e)
 		{
-			Log.e(DEBUGTAG, "InfoAdslCheck : " + e.getMessage());
+			Log.e(TAG, "InfoAdslCheck : " + e.getMessage());
 			e.printStackTrace();
 		}
 		
@@ -110,7 +110,7 @@ public class InfoAdslCheck extends WakefullIntentService implements Constants
 		}
 		catch (IOException e)
 		{
-			Log.e(DEBUGTAG, "Exception appending to log file ",e);
+			Log.e(TAG, "Exception appending to log file ",e);
 		}
 
 		super.onHandleIntent(intent);
@@ -155,12 +155,12 @@ public class InfoAdslCheck extends WakefullIntentService implements Constants
 		if (ms != 0)
 		{
 			amgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), ms, pi);
-			Log.i(DEBUGTAG, "InfoAdslTimer changed to "+ms);
+			Log.i(TAG, "InfoAdslTimer changed to "+ms);
 		}
 		else
 		{
 			amgr.cancel(pi);
-			Log.i(DEBUGTAG, "InfoAdslTimer canceled");			
+			Log.i(TAG, "InfoAdslTimer canceled");			
 		}
 	}
 }
