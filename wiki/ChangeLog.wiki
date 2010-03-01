@@ -18,10 +18,11 @@ RESEAU : les connexions réseau / authentifications sur la console Free...
 Sortie le 01/03/2010<br>
 Release : 27<br>
 Revision : 446
- * GUIDE : Corrections de bugs
- * PVR : Corrections du bugs
  * GUIDE : Bouton "partager" dans les détails d'un programme
  * PVR : Option de menu contextuel (appui long) "Partager" sur un enregistrement programmé
+ * GUIDE : Corrections de bugs
+ * PVR : Corrections du bugs
+ * HOME : Nouveau système d'envoi des logs (nécessite Android Log Collector)
 
 == 0.30.3 ==
 Sortie le 28/02/2010<br>
