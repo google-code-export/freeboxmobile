@@ -364,7 +364,7 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 				params.add(new BasicNameValuePair("fichier",curs.getString(curs.getColumnIndex(KEY_NAME))));
 
 				Log.d(DEBUGTAG, "Deleting on server "+params);
-				FBMHttpConnection.getAuthRequestIS(mevoUrl+mevoDelPage, params, true, false);
+				FBMHttpConnection.getAuthRequest(mevoUrl+mevoDelPage, params, true, false, "ISO8859_1");
 			}
 		}
 		// Puis on marque le message comme effacé dans la base

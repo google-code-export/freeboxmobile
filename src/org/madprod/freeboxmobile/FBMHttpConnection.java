@@ -53,7 +53,7 @@ public class FBMHttpConnection implements Constants
 	private static String id = null;
 	private static String idt = null;
 
-	public static String fbmlog = "";
+//	public static String fbmlog = "";
 
 	private static int connectionStatus = CONNECT_NOT_CONNECTED;
 	
@@ -186,7 +186,7 @@ public class FBMHttpConnection implements Constants
 	public static void FBMLog(String s)
 	{
 		Log.d(DEBUGTAG, s);
-		fbmlog += s+"\n";
+//		fbmlog += s+"\n";
 	}
 
 	// TODO : A supprimer lors de la migration vers la classe FMLog
@@ -557,84 +557,6 @@ public class FBMHttpConnection implements Constants
         return false;
 	}
 
-	// TODO : Factoriser getAuthRequestIS et getAuthRequestISR
-	/**
-	 * getAuthRequest : perform a GET on an URL with p parameters
-	 * do not provide id or idt in URL
-	 * @param url : url to get
-	 * @param p : parameters for the GET request (null if none) (url must not have parameters in not null)
-	 * @param auth : true if you need id & idt added automatically for authentification on Free console (url must not have parameters in this case)
-	 * @param retour : set it to true of you want an InputStream with the page in return
-	 * @return InputStream HTML Page or null
-	 */
-	public static InputStream getAuthRequestIS(String url, List<NameValuePair> p, boolean auth, boolean retour)
-	{
-		// TODO : Renvoyer un InputStreamReader et non un InputStream
-		int c;
-		HttpURLConnection h = null;
-
-		c = checkConnected(CONNECT_CONNECTED);
-		try
-		{
-			FBMLog("-- GET IS : "+url);
-			if (c == CONNECT_CONNECTED)
-			{
-				FBMLog("GETIS : VERIF SI ON EST AUTHENTIFIE");
-				if (retour)
-					h = prepareConnection(url+"?"+makeStringForPost(p, auth, null), "GET");
-				else
-					h = prepareConnection(url+"?"+makeStringForPost(p, auth, null), "HEAD");
-
-				h.setDoInput(true);
-				FBMLog("HEADERS : "+h.getHeaderFields());
-				// TODO : Tenir compte du getResponseCode()
-				FBMLog("RESPONSE : "+h.getResponseCode()+" "+h.getResponseMessage());
-				if (h.getHeaderFields().get("location") != null)
-				{
-					c = CONNECT_NOT_CONNECTED;
-				}
-			}
-			if (c != CONNECT_CONNECTED)
-			{
-				if (h != null)
-				{
-					h.disconnect();
-					h = null;
-				}
-				FBMLog("GETIS : PAS AUTHENTIFIE SUR LA CONSOLE - SESSION EXPIREE");
-				c = connectionFree(login, password);
-				if (c == CONNECT_CONNECTED)
-				{
-					FBMLog("GETIS :  REAUTHENTIFICATION OK");
-					if (retour)
-						h = prepareConnection(url+"?"+makeStringForPost(p, auth, null), "GET");
-					else
-						h = prepareConnection(url+"?"+makeStringForPost(p, auth, null), "HEAD");
-					h.setDoInput(true);
-					FBMLog("HEADERS : "+h.getHeaderFields());
-					// TODO : Tenir compte du getResponseCode()
-					FBMLog("RESPONSE : "+h.getResponseCode()+" "+h.getResponseMessage());
-				}
-			}
-			else
-			{
-				FBMLog("GETIS : AUTHENTIFICATION OK");
-				c = CONNECT_CONNECTED;
-			}
-			if ((c == CONNECT_CONNECTED) && (retour == true))
-			{
-				FBMLog("GETIS : LECTURE DONNEES");
-				return (h.getInputStream());
-			}
-		}
-		catch (Exception e)
-		{
-			FBMLog("getAuthRequestIS "+e.getMessage());
-			e.printStackTrace();
-		}
-		return (null);
-	}
-
 	static String getCharset(String temp, String defaultCharset)
 	{
 		String charset = defaultCharset;
@@ -668,7 +590,6 @@ public class FBMHttpConnection implements Constants
 	{
 		int c;
 		HttpURLConnection h = null;
-//		String charset = "ISO8859_1";
 
 		c = checkConnected(CONNECT_CONNECTED);
 		try
@@ -909,7 +830,7 @@ public class FBMHttpConnection implements Constants
 		final String END_CONTENT_DISPOSITION = TWO_HYPHENS + BOUNDARY + END;
 		
 		int connected = checkConnected(CONNECT_CONNECTED);
-		Log.d(DEBUGTAG,"->POSTING FILE TO "+uploadFaxUrl);
+		FBMLog("->POSTING FILE TO "+uploadFaxUrl);
 		if (connected == CONNECT_CONNECTED){
 		
 			if(params == null){
@@ -981,7 +902,7 @@ public class FBMHttpConnection implements Constants
 	
 			//Test du code de retour
 			if (conn.getResponseCode() != expectedHttpStatus){
-				Log.e(DEBUGTAG, "Mauvais code Http retourné lors du post multipart : "+conn.getResponseCode()+" au lieu de "+expectedHttpStatus);
+				FBMLog("Mauvais code Http retourné lors du post multipart : "+conn.getResponseCode()+" au lieu de "+expectedHttpStatus);
 				return null;
 			}
 			
@@ -997,7 +918,7 @@ public class FBMHttpConnection implements Constants
 			FBMLog("Reponse FAX lue : "+result);
 			return result;
 		}
-		Log.e(FBMHttpConnection.DEBUGTAG, "Connexion impossible pour faxer le fichier "+fileToPost.getName());
+		FBMLog("Connexion impossible pour faxer le fichier "+fileToPost.getName());
 		return null;
 	}
 }

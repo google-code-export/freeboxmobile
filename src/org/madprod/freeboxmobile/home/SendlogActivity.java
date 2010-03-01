@@ -6,9 +6,11 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.net.Uri;
 import android.os.Build;
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
@@ -18,6 +20,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
 import android.text.SpannableStringBuilder;
@@ -39,8 +43,9 @@ import android.widget.AdapterView.OnItemSelectedListener;
 
 public class SendlogActivity extends Activity implements HomeConstants
 {
-	EditText desc;
-	String Wifi3G=""; 
+	private EditText desc;
+	private String Wifi3G="";
+	private String fbmlog = "";
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -81,15 +86,23 @@ public class SendlogActivity extends Activity implements HomeConstants
 			    			getString(R.string.app_version)+"\n\n"+
 			    			myLog+"\n"+
 			    			"Description :\n----------\n" + description + "\n----------\n"+
-			    			FBMHttpConnection.fbmlog);
+			    			fbmlog);
 					SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-			    	Intent i = new Intent(Intent.ACTION_SEND)
+/*			    	Intent i = new Intent(Intent.ACTION_SEND)
 			    		.putExtra(Intent.EXTRA_EMAIL, new String[]{"bugs@freeboxmobile.org"})
 			    		.putExtra(Intent.EXTRA_TEXT, ssb)
 			    		.putExtra(Intent.EXTRA_SUBJECT, 
 			    				getString(R.string.mail_subject)+" "+sdf.format(new Date())) 
 			    				.setType("message/rfc822");
-			    	startActivityForResult(Intent.createChooser(i,  "Choisissez votre logiciel de mail"),0); 
+			    				*/
+			    	fbmlog = ssb.toString();
+/*					Intent i = new Intent(Intent.ACTION_SEND)
+		    		.putExtra(Intent.EXTRA_TEXT, fbmlog).setType("text/plain")
+		    		.addCategory(Intent.CATEGORY_DEFAULT)
+		    		;
+			    	startActivityForResult(Intent.createChooser(i,  "Partagez ce programme avec"),0);
+*/
+			    	collectAndSendLog();
         		}
         		else
         		{
@@ -128,7 +141,67 @@ public class SendlogActivity extends Activity implements HomeConstants
         });
 
     }
-	   
+	
+
+    void collectAndSendLog()
+    {
+    	final String LOG_COLLECTOR_PACKAGE_NAME = "com.xtralogic.android.logcollector";//$NON-NLS-1$
+   	    final String ACTION_SEND_LOG = "com.xtralogic.logcollector.intent.action.SEND_LOG";//$NON-NLS-1$
+   	    final String EXTRA_SEND_INTENT_ACTION = "com.xtralogic.logcollector.intent.extra.SEND_INTENT_ACTION";//$NON-NLS-1$
+   	    final String EXTRA_DATA = "com.xtralogic.logcollector.intent.extra.DATA";//$NON-NLS-1$
+   	    final String EXTRA_ADDITIONAL_INFO = "com.xtralogic.logcollector.intent.extra.ADDITIONAL_INFO";//$NON-NLS-1$
+   	    final String EXTRA_SHOW_UI = "com.xtralogic.logcollector.intent.extra.SHOW_UI";//$NON-NLS-1$
+   	    final String EXTRA_FILTER_SPECS = "com.xtralogic.logcollector.intent.extra.FILTER_SPECS";//$NON-NLS-1$
+   	    final String EXTRA_FORMAT = "com.xtralogic.logcollector.intent.extra.FORMAT";//$NON-NLS-1$
+  	    final String EXTRA_BUFFER = "com.xtralogic.logcollector.intent.extra.BUFFER";//$NON-NLS-1$
+
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        final PackageManager packageManager = getPackageManager();
+        final Intent intent = new Intent(ACTION_SEND_LOG);
+        List<ResolveInfo> list = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        final boolean isInstalled = list.size() > 0;
+        
+        if (!isInstalled)
+        {
+            new AlertDialog.Builder(this)
+            .setTitle(getString(R.string.app_name))
+            .setIcon(android.R.drawable.ic_dialog_info)
+            .setMessage("Pour pouvoir nous envoyer le log d'erreur, vous devez installer l'application Log Collector (gratuite et open source).")
+            .setPositiveButton("Installer", new DialogInterface.OnClickListener()
+            {
+                public void onClick(DialogInterface dialog, int whichButton)
+                {
+                    Intent marketIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://search?q=pname:" + LOG_COLLECTOR_PACKAGE_NAME));
+                    marketIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(marketIntent); 
+                }
+            })
+            .setNegativeButton(android.R.string.cancel, null)
+            .show();
+        }
+        else
+        {
+	        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+	        intent.putExtra(EXTRA_SEND_INTENT_ACTION, Intent.ACTION_SENDTO);
+	        final String email = "bugs@freeboxmobile.org";
+	        intent.putExtra(EXTRA_DATA, Uri.parse("mailto:" + email));
+	        intent.putExtra(EXTRA_ADDITIONAL_INFO, fbmlog/*"Additonal info: <additional info from the device (firmware revision, etc.)>\n"*/);
+	        intent.putExtra(Intent.EXTRA_SUBJECT, "Freebox Mobile bug report "+sdf.format(new Date()));
+	
+	        intent.putExtra(EXTRA_FORMAT, "time");
+	        
+	        //The log can be filtered to contain data relevant only to your app
+	        String[] filterSpecs = new String[3];
+	        filterSpecs[0] = "AndroidRuntime:E";
+	//                    filterSpecs[1] = TAG + ":V";
+	        filterSpecs[1] = DEBUGTAG;
+	        filterSpecs[2] = "*:S";
+	        intent.putExtra(EXTRA_FILTER_SPECS, filterSpecs);
+	        
+	        startActivityForResult(intent, 0);
+        }
+    }
+
 	protected void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
     	Toast.makeText(this, "Merci de nous aider à améliorer Freebox Mobile !",
@@ -163,10 +236,10 @@ public class SendlogActivity extends Activity implements HomeConstants
             Matcher m = p.matcher(procVersionStr);
 
             if (!m.matches()) {
-                Log.e("FreeboxMobile", "Regex did not match on /proc/version: " + procVersionStr);
+                Log.e(DEBUGTAG, "Regex did not match on /proc/version: " + procVersionStr);
                 return "Unavailable";
             } else if (m.groupCount() < 4) {
-                Log.e("FreeboxMobile", "Regex match on /proc/version only returned " + m.groupCount()
+                Log.e(DEBUGTAG, "Regex match on /proc/version only returned " + m.groupCount()
                         + " groups");
                 return "Unavailable";
             } else {
@@ -175,7 +248,7 @@ public class SendlogActivity extends Activity implements HomeConstants
                         .append(m.group(4))).toString();
             }
         } catch (IOException e) {  
-            Log.e("FreeboxMobile",
+            Log.e(DEBUGTAG,
                 "IO Exception when getting kernel version for Device Info screen",
                 e);
 

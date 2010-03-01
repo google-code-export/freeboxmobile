@@ -101,8 +101,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 
 	// identifiant du dernier user à être entré dans l'activité
 	public static String lastUser = "";
-	int positionEcran = 0;
-	int nbEcrans = 3;
+//	int positionEcran = 0;
     private Button buttonRecur, ButtonDateDeb, ButtonTimeDeb, ButtonDateFin, ButtonTimeFin;
     CheckBox lendi, mordi, credi, joudi, dredi, sadi, gromanche;
     public static String progressText = ""; // Text des progressDialog avec bar
@@ -711,10 +710,15 @@ public class ProgrammationActivity extends Activity implements PvrConstants
     		progressDialog.setMessage(progressText);
     		progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
     		progressDialog.setCancelable(false);
+    		progressDialog.setMax(max);
     		progressDialog.show();
         }
+    	if (progress == 0)
+    	{
+    		progressDialog.setMessage(progressText);
+    		progressDialog.setMax(max);
+    	}
         progressDialog.setProgress(progress);
-		progressDialog.setMax(max);
     }
 
     public static void showPatientezChaines(Activity a)
@@ -748,10 +752,8 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 
     public static void dismissPd()
     {
-    	FBMHttpConnection.FBMLog("ProgrammationActivity dismiss");
     	if (progressDialog != null)
     	{
-        	FBMHttpConnection.FBMLog("ok");
     		progressDialog.dismiss();
     		progressDialog = null;
     	}
@@ -1297,6 +1299,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 		        	}
 		       		while (boitiersCursor.moveToNext());
 		        	plusieursBoitiersHD = (i > 1);
+		        	FBMHttpConnection.FBMLog("PLUSIEURS BOITIERS HD : "+i);
 		        }
 			break;
 		}
