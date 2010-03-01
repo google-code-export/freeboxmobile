@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.FreeboxMobile.NoTitleBar" parent="android:Theme.Light.NoTitleBar">
+        <item name="android:windowBackground">@drawable/freebox_background</item>
+    </style>
+    <style name="Theme.FreeboxMobile.TitleBar" parent="android:Theme.Light">
+        <item name="android:windowBackground">@drawable/freebox_background</item>
+    </style>
+</resources>
