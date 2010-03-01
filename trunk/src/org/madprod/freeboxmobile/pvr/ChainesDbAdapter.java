@@ -368,12 +368,16 @@ public class ChainesDbAdapter {
         mDb.execSQL(DATABASE_CREATE_CHAINESTEMP);
         mDb.execSQL(DATABASE_CREATE_SERVICESTEMP);		
 	}
+	
     public void swapChaines()
     {
-        mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_SERVICES);
-    	mDb.execSQL("ALTER TABLE "+DATABASE_TABLE_SERVICESTEMP+" RENAME TO "+DATABASE_TABLE_SERVICES);
-        mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_CHAINES);
-    	mDb.execSQL("ALTER TABLE "+DATABASE_TABLE_CHAINESTEMP+" RENAME TO "+DATABASE_TABLE_CHAINES);
+    	if (checkTable(DATABASE_TABLE_SERVICESTEMP) && checkTable(DATABASE_TABLE_CHAINESTEMP))
+    	{
+	        mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_SERVICES);
+	    	mDb.execSQL("ALTER TABLE "+DATABASE_TABLE_SERVICESTEMP+" RENAME TO "+DATABASE_TABLE_SERVICES);
+	        mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_CHAINES);
+	    	mDb.execSQL("ALTER TABLE "+DATABASE_TABLE_CHAINESTEMP+" RENAME TO "+DATABASE_TABLE_CHAINES);
+    	}
     }
 
     public void cleanTempChaines()
@@ -399,11 +403,6 @@ public class ChainesDbAdapter {
         initialValues.put(KEY_CHAINE_ID, chaine_id);
         initialValues.put(KEY_CHAINE_BOITIER, boitier_id);
         return mDb.insert(DATABASE_TABLE_CHAINESTEMP, null, initialValues);
-    }
-
-    public SQLiteDatabase getDb()
-    {
-    	return mDb;
     }
 
     /**
@@ -459,10 +458,18 @@ public class ChainesDbAdapter {
 
     public void swapBoitiersDisques()
     {
-        mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_BOITIERSDISQUES);
-    	mDb.execSQL("ALTER TABLE "+DATABASE_TABLE_BOITIERSDISQUESTEMP+" RENAME TO "+DATABASE_TABLE_BOITIERSDISQUES);
+    	if (checkTable(DATABASE_TABLE_BOITIERSDISQUESTEMP))
+    	{
+	        mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_BOITIERSDISQUES);
+	    	mDb.execSQL("ALTER TABLE "+DATABASE_TABLE_BOITIERSDISQUESTEMP+" RENAME TO "+DATABASE_TABLE_BOITIERSDISQUES);
+    	}
     }
 
+    public boolean checkTable(String table)
+    {
+    	return (mDb.compileStatement("SELECT COUNT("+KEY_ROWID+") FROM "+table).simpleQueryForLong() > 0);
+    }
+    
 	public long createBoitierDisque(String b_name, int b_id, int d_free_size, int d_total_size, int d_id,
 			int d_nomedia, int d_dirty, int d_readonly, int d_busy, String d_mount, String d_label)
 	{

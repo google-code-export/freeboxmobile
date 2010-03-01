@@ -21,6 +21,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -364,17 +366,9 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     	TextView tlog = new TextView(this);
     	TextView t = new TextView(this);
     	t.setText("Envoi d'un rapport d'erreur : afin d'aider les développeurs, à leur demande "+
-    			"vous pouvez leur envoyer le rapport d'erreur ci-dessous par email.\n"+
-    			"Confidentialité : vos mots de passe ne sont pas transmis. "+
-    			"Les données transmises sont affichées ci-dessous. Vous pourrez les modifier avant envoi.\n");
-    	if (FBMHttpConnection.fbmlog.equals(""))
-    	{
-        	tlog.setText("Log vide !");    		
-    	}
-    	else
-    	{
-    		tlog.setText(FBMHttpConnection.fbmlog);
-    	}
+    			"vous pouvez leur envoyer le rapport d'erreur ci-dessous par email.\n\n"+
+    			"Confidentialité : vos mots de passe ne sont pas transmis.\n"+
+    			"Vous pourrez voir et modifier les données transmises avant envoi.\n");
     	tlog.setTextColor(0xffffffff);
     	t.setTextColor(0xffffffff);
     	l.addView(t);

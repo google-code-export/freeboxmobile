@@ -32,7 +32,7 @@ public interface Constants
     static final String KEY_INFOADSL_PREFS_FREQ	= "infoadsl_freq";
     static final String KEY_LAST_DSLAM_CHECK = "last_dslam_check";
 
-	static final String DEBUGTAG		= "_FreeboxMobile";
+	static final String DEBUGTAG		= "FBM";
 	static final String DIR_FBM			= "/freeboxmobile/";
 
     public static final int CONNECT_LOGIN_FAILED = -1;

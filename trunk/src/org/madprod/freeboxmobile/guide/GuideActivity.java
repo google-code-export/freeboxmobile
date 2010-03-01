@@ -338,7 +338,6 @@ public class GuideActivity extends ListActivity implements GuideConstants
     	    	new GuideActivityNetwork(selectedDate+" "+selectedHeure, false, true, true, true).execute((Void[])null);
     	    break;
     	    default:
-    	    	FBMHttpConnection.FBMLog("C'est quoi ce switch ???");
     	    break;
     	}
     }

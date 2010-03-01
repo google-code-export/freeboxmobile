@@ -10,12 +10,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.madprod.freeboxmobile.FBMHttpConnection;
-import org.madprod.freeboxmobile.R;
 
-import android.content.ContentValues;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.database.sqlite.SQLiteDatabase;
 import android.app.Activity;
 import android.os.AsyncTask;
 
@@ -68,7 +65,6 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Pvr
 			}
 			catch (JSONException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -90,30 +86,24 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Pvr
     	int nbBoitiers = 0;
     	int i,j;
     	int chaineId;
-    	long id;
 		ChainesDbAdapter db;
 		int courant=0;
 		int max = 0;
 		boolean ok = true;
-		ContentValues chainesValues = new ContentValues(3);
-		ContentValues servicesValues = new ContentValues(5);
 		
 		db = new ChainesDbAdapter(activity);
 		db.open();
-//		SQLiteDatabase mDb = db.getDb();
 
     	String url = "http://adsl.free.fr/admin/magneto.pl";
     	
-    	// Copie en variables locales pour optimiser la vitesse
-    	final String KEY_CHAINE_ID = ChainesDbAdapter.KEY_CHAINE_ID;
-    	final String KEY_NAME = ChainesDbAdapter.KEY_CHAINE_NAME;
-    	final String KEY_CHAINE_BOITIER = ChainesDbAdapter.KEY_CHAINE_BOITIER;
-    	final String DATABASE_TABLE_CHAINESTEMP = ChainesDbAdapter.DATABASE_TABLE_CHAINESTEMP;
-    	final String KEY_SERVICE_DESC = ChainesDbAdapter. KEY_SERVICE_DESC;
-    	final String KEY_SERVICE_ID = ChainesDbAdapter. KEY_SERVICE_ID;
-    	final String KEY_PVR_MODE = ChainesDbAdapter. KEY_PVR_MODE;
-    	final String DATABASE_TABLE_SERVICESTEMP = ChainesDbAdapter.DATABASE_TABLE_SERVICESTEMP;
-    	
+    	if (getDisques)
+    	{
+			db.makeBoitiersDisques();    		
+    	}
+    	if (getChaines)
+    	{
+			db.makeChaines();    		
+    	}
     	do
     	{
 	        List<NameValuePair> param = new ArrayList<NameValuePair>();
@@ -147,7 +137,6 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Pvr
 					}
 					if (getDisques)
 					{
-						db.makeBoitiersDisques();
 						// ON RECUPERE LES DISQUES
 						jDisksArray = jObject.getJSONArray("disks");
 						for (i=0 ; i < jDisksArray.length() ; i++)
@@ -171,36 +160,25 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Pvr
 					}
 					if (getChaines)
 					{
-						db.makeChaines();
 						// ON RECUPERE LA LISTE DES CHAINES DE CE BOITIER
 						jChainesArray = jObject.getJSONArray("services");
-						if (boitier == 0)
-						{
-							ProgrammationActivity.progressText = "Actualisation de la liste des chaînes pour "+nbBoitiers+" boitier"+(nbBoitiers >1?"s...":"...");
-							publishProgress(0);
-							max = nbBoitiers * jChainesArray.length();
-							//ProgrammationActivity.setPdMax(max);
-							this.max = max; 
-						}
-	
+						max = jChainesArray.length();
+						ProgrammationActivity.progressText = "Actualisation de la liste des "+max+" chaînes pour le boitier "+(int)(boitier+1)+" ("+nbBoitiers+" boitier"+(nbBoitiers >1?"s":"")+" en tout)...";
+						this.max = max;
+						courant = 0;
+						publishProgress(0);
+						FBMHttpConnection.FBMLog("Récupération chaines boitier "+boitier+" - nb chaines = "+max);
 						for (i=0 ; i < jChainesArray.length() ; i++)
 						{
 							courant ++;
 							publishProgress(courant);
 							jChaineObject = jChainesArray.getJSONObject(i);
 							chaineId = jChaineObject.getInt("id");
-							
-/*							chainesValues.put(KEY_NAME, jChaineObject.getString("name"));
-					        chainesValues.put(KEY_CHAINE_ID, chaineId);
-					        chainesValues.put(KEY_CHAINE_BOITIER, boitier);
-							mDb.insert(DATABASE_TABLE_CHAINESTEMP, null, chainesValues);
-*/
 							db.createChaine(
 									jChaineObject.getString("name"),
 									chaineId,
 									boitier
 									);
-		//			    	FBMHttpConnection.FBMLog("GET DATA DIRECT CHAINE "+id);
 							jServicesArray = jChaineObject.getJSONArray("service");
 							for (j=0 ; j < jServicesArray.length() ; j++)
 							{
@@ -217,13 +195,6 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Pvr
 									pvrmode = PVR_MODE_DISABLED;
 								}
 								
-/*								servicesValues.put(KEY_CHAINE_ID, chaineId);
-							    servicesValues.put(KEY_CHAINE_BOITIER, boitier);
-							    servicesValues.put(KEY_SERVICE_DESC, jServiceObject.getString("desc"));
-							    servicesValues.put(KEY_SERVICE_ID, jServiceObject.getInt("id"));
-							    servicesValues.put(KEY_PVR_MODE, pvrmode);        
-							    mDb.insert(DATABASE_TABLE_SERVICESTEMP, null, servicesValues);
-*/
 								db.createService(
 										chaineId,
 										boitier,

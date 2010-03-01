@@ -256,7 +256,6 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
     
     private void displayDialog(final Integer id, final int command, String msg)
     {
-    	FBMHttpConnection.FBMLog("displayDialog : "+id);
 		Cursor chaineCursor = mDbHelper.getGuideChaine(id);
 		chaineCursor.moveToFirst();
 		String image = chaineCursor.getString(chaineCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE));
@@ -396,21 +395,18 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
         	}
             params.add(new BasicNameValuePair("chaine", ((Integer)param).toString()));
         	result = Action(params);
-//        	if (result)
-//        	{
-	        	switch (command)
-	        	{
-		        	case FAVORIS_COMMAND_RESET:
-		            	break;
-		        	case FAVORIS_COMMAND_ADD:
-		                mDbHelper.clearHistorique();
-		                new GuideNetwork(GuideChoixChainesActivity.this, null, false, true, param, true).getData();
-		            	break;
-		        	case FAVORIS_COMMAND_SUPPR:
-		                mDbHelper.deleteProgsChaine(param);
-		            	break;
-	        	}
-//        	}
+        	switch (command)
+        	{
+	        	case FAVORIS_COMMAND_RESET:
+	            	break;
+	        	case FAVORIS_COMMAND_ADD:
+	                mDbHelper.clearHistorique();
+	                new GuideNetwork(GuideChoixChainesActivity.this, null, false, true, param, true).getData();
+	            	break;
+	        	case FAVORIS_COMMAND_SUPPR:
+	                mDbHelper.deleteProgsChaine(param);
+	            	break;
+        	}
         	return result;
         }
         
