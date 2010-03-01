@@ -24,6 +24,7 @@ import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.Toast;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
 
 import org.apache.http.NameValuePair;
@@ -54,6 +55,7 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 	static final int CMENU_VOIR = 0;
 	static final int CMENU_MODIF = 1;
 	static final int CMENU_SUPPR = 2;
+	static final int CMENU_SHARE = 3;
 
 	static final int ACTIVITY_ENREGISTREMENT = 1;
 	static final int ACTIVITY_PROGRAMMATION = 2;
@@ -318,10 +320,16 @@ public class EnregistrementsActivity extends ExpandableListActivity {
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo)
+    {
     	super.onCreateContextMenu(menu, v, menuInfo);
+    	
+    	ExpandableListContextMenuInfo info = (ExpandableListContextMenuInfo) menuInfo;
+
+    	menu.setHeaderTitle(listeEnregistrements.get((int)info.id));
     	menu.add(0, CMENU_MODIF, 0, getString(R.string.pvrCMenuModif));
     	menu.add(0, CMENU_SUPPR, 0, getString(R.string.pvrCMenuSuppr));
+    	menu.add(0, CMENU_SHARE, 0, "Partager");
     }
 
     public boolean onContextItemSelected(MenuItem item)
@@ -335,10 +343,49 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 			case CMENU_SUPPR:
     			SupprimerEnregistrement(enrAct, getRowIdFromItemId(itemId));
 				return true;
+			case CMENU_SHARE:
+				PartagerEnregistrement(itemId);
 			default:
 				return super.onContextItemSelected(item);
 		}
     }
+    
+    private void PartagerEnregistrement(int itemId)
+    {
+        EnregistrementsDbAdapter db = new EnregistrementsDbAdapter(this);
+        db.open();
+        Cursor c = db.fetchAllEnregistrements(new String[] {
+        		EnregistrementsDbAdapter.KEY_ROWID ,
+        		EnregistrementsDbAdapter.KEY_IDE,
+        		EnregistrementsDbAdapter.KEY_CHAINE,
+        		EnregistrementsDbAdapter.KEY_DATE,
+        		EnregistrementsDbAdapter.KEY_HEURE,
+        		EnregistrementsDbAdapter.KEY_NOM
+        },
+        		EnregistrementsDbAdapter.KEY_DATE + " ASC, "
+        		+ EnregistrementsDbAdapter.KEY_HEURE + " ASC, "
+        		+ EnregistrementsDbAdapter.KEY_MIN + " ASC");
+        c.moveToPosition(itemId);
+        long rowId = c.getLong(c.getColumnIndex(EnregistrementsDbAdapter.KEY_ROWID));
+        FBMHttpConnection.FBMLog("ROWID : "+rowId+" ITEMID:"+itemId+
+        "IDE : "+c.getLong(c.getColumnIndex(EnregistrementsDbAdapter.KEY_IDE))
+        );
+		String text = "J'enregistre sur ma Freebox '"+ 
+				c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_NOM))+"' "+
+				"sur "+c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_CHAINE))+
+				" le "+c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_DATE))+
+				" à "+c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_HEURE))+
+				"\n\nPartagé par FreeboxMobile pour Android.";
+        Intent i = new Intent(Intent.ACTION_SEND)
+		.putExtra(Intent.EXTRA_TEXT, text).setType("text/plain")
+		.putExtra(Intent.EXTRA_SUBJECT, "EnregistrementTV partagé par FreeboxMobile")
+//			    		.addCategory(Intent.CATEGORY_DEFAULT)
+		;
+        c.close();
+        db.close();
+    	startActivityForResult(Intent.createChooser(i, "Partagez ce programme avec"),0);
+    }
+    
     private long getRowIdFromItemId(int itemId)
     {
     	// Récupération de l'id
@@ -426,6 +473,18 @@ public class EnregistrementsActivity extends ExpandableListActivity {
 		{
 			listeEnregistrements = new ArrayList<String>();
 			detailsEnregistrements = new ArrayList<List<String>>();
+		}
+		
+		public String get(int i)
+		{
+			if (listeEnregistrements.size() > i)
+			{
+				return listeEnregistrements.get(i);
+			}
+			else
+			{
+				return "";
+			}
 		}
 		
 	    public void vider()
