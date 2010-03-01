@@ -44,7 +44,7 @@ public class Config extends PreferenceActivity implements OnSharedPreferenceChan
     @Override
     protected void onDestroy()
     {
-    	Log.d(DEBUGTAG,"PREFS onDestroy");
+    	Log.i(TAG,"PREFS onDestroy");
     	if (myAlertDialog != null)
     	{
     		myAlertDialog.dismiss();

@@ -56,7 +56,7 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
         super.onCreate(savedInstanceState);
 
         FBMHttpConnection.initVars(this, null);
-        FBMHttpConnection.FBMLog("LINEINFO CREATE");
+        Log.i(TAG,"LINEINFO CREATE");
         
         setContentView(R.layout.ligne_info);
         setTitle(getString(R.string.app_name)+" - Info Ligne ADSL Freebox");
@@ -68,7 +68,7 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
     	super.onStart();
         SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
         lineType = mgr.getString(KEY_LINETYPE, "");
-        FBMHttpConnection.FBMLog("LineType : "+lineType);
+        Log.i(TAG,"LineType : "+lineType);
         if (DSLAM_Info.equals(""))
         	new UpdateCompte().execute(new Payload(mgr.getString(KEY_NRA, "").equals(""), mgr.getString(KEY_TITLE, ""), mgr.getString(KEY_USER, ""), mgr.getString(KEY_PASSWORD, ""), mgr.getString(KEY_NRA, "")));
         else
@@ -101,8 +101,7 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
 
     private void displayTicket(long l)
     {
-    	FBMHttpConnection.FBMLog("Fetchticket : "+l);
-    	Log.d(DEBUGTAG, "Fetchticket : "+l);
+    	Log.i(TAG,"Fetchticket : "+l);
     	LigneInfoDbAdapter mDb = new LigneInfoDbAdapter(LigneInfoActivity.this);
 		mDb.open();
     	Cursor c = mDb.fetchTicket(l);
@@ -321,22 +320,22 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
 					{
 						Map<String, Object> ticket = (Map<String, Object>) client.call("getTicketInfo", response[i]);
 						long result = mDb.createTicket((Integer)response[i], (String)ticket.get("title"), (String)ticket.get("description"), (String)ticket.get("start"), (String)ticket.get("end"));
-						Log.d(DEBUGTAG, "Liste tickets db : "+result);
+						Log.d(TAG, "Liste tickets db : "+result);
 					}
 				}
 				mDb.close();
 				
 				DSLAM_Histo = (Object[]) client.call("getDSLAMStatusHistory", mgr.getString(KEY_DSLAM, ""));
-				FBMHttpConnection.FBMLog("Liste histo:"+DSLAM_Histo.length);
+				Log.d(TAG,"Liste histo:"+DSLAM_Histo.length);
 			}
 			else
 			{
-				FBMHttpConnection.FBMLog("Pas de NRA");
+				Log.d(TAG,"Pas de NRA");
 			}
     	}
 		catch (Exception e)
 		{
-			Log.e(DEBUGTAG, "updateInfos : " + e.getMessage());
+			Log.e(TAG, "updateInfos : " + e.getMessage());
 			e.printStackTrace();
 		}
     }
@@ -349,7 +348,7 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
     	mDbHelper.open();
     	SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
     	String user = mgr.getString(KEY_USER, "");
-    	Log.d(DEBUGTAG, "User:"+user);
+    	Log.d(TAG, "User:"+user);
     	Long rowid = mDbHelper.getIdFromLogin(user);
     	if (rowid != null)
     	{
@@ -370,7 +369,7 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
     	}
     	else
     	{
-    		Log.d(DEBUGTAG, "saveState : pb : user not found !");
+    		Log.d(TAG, "saveState : pb : user not found !");
     	}
     	mDbHelper.close();
     }

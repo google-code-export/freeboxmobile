@@ -15,6 +15,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -35,7 +36,7 @@ public class GuideDetailsActivity extends Activity implements GuideConstants
         super.onCreate(savedInstanceState);
 
         FBMHttpConnection.initVars(this, null);
-        FBMHttpConnection.FBMLog("GUIDEDETAILS CREATE");
+        Log.i(TAG,"GUIDEDETAILS CREATE");
         setContentView(R.layout.guide_details);
         final Bundle extras = getIntent().getExtras();
         if (extras != null)
@@ -107,7 +108,7 @@ public class GuideDetailsActivity extends Activity implements GuideConstants
 			}
 	        catch (ParseException e)
 	        {
-	        	FBMHttpConnection.FBMLog("GUIDEDETAILSACTIVITY : pb parse date "+e.getMessage());
+	        	Log.e(TAG,"GUIDEDETAILSACTIVITY : pb parse date "+e.getMessage());
 				e.printStackTrace();
 			}
 	        nomChaine.setText(extras.getString(ChainesDbAdapter.KEY_GUIDECHAINE_NAME)+" (canal "+
@@ -126,7 +127,7 @@ public class GuideDetailsActivity extends Activity implements GuideConstants
         }
         else
         {
-        	FBMHttpConnection.FBMLog("GUIDEDETAILS ouvert sans données");
+        	Log.d(TAG,"GUIDEDETAILS ouvert sans données");
         }
         setTitle(getString(R.string.app_name)+" - Détails du programme");
     }

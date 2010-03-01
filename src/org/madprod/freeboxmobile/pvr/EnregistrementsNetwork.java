@@ -5,9 +5,11 @@ import java.util.List;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.madprod.freeboxmobile.Constants;
 import org.madprod.freeboxmobile.FBMHttpConnection;
 
 import android.content.Context;
+import android.util.Log;
 
 /**
  * télécharge la liste des enregistrements et les stocke en base
@@ -15,7 +17,7 @@ import android.content.Context;
  * $Id$
  */
 
-public class EnregistrementsNetwork
+public class EnregistrementsNetwork implements Constants
 {
 	private static String tableEnregistrements;
 
@@ -64,7 +66,7 @@ public class EnregistrementsNetwork
 	        			}
 			        	boitiers = boitiers.substring(d);
 			        	f = boitiers.indexOf("\"");
-			        	FBMHttpConnection.FBMLog("Boitier parse : "+boitiers.substring(4, f));
+			        	Log.d(TAG,"Boitier parse : "+boitiers.substring(4, f));
 			        	bNum = Integer.parseInt(boitiers.substring(4, f));
 			        	d = boitiers.indexOf("Boitier HD");
 			        	boitiers = boitiers.substring(d);
@@ -73,7 +75,7 @@ public class EnregistrementsNetwork
 //	        			bName = boitiers.substring(0, f);
 	        			boitiers = boitiers.substring(f);
 	        			nbBoitiers++;
-	        			FBMHttpConnection.FBMLog("Boitier : "+bNum);
+	        			Log.d(TAG,"Boitier : "+bNum);
 	        		} while (true);
 	        	}
 	        	else

@@ -9,10 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
@@ -183,20 +180,20 @@ public class FBMHttpConnection implements Constants
 	}
 
 	// TODO : A supprimer lors de la migration vers la classe FMLog
-	public static void FBMLog(String s)
-	{
-		Log.d(DEBUGTAG, s);
+//	public static void FBMLog(String s)
+//	{
+//		Log.d(DEBUGTAG, s);
 //		fbmlog += s+"\n";
-	}
+//	}
 
 	// TODO : A supprimer lors de la migration vers la classe FMLog
-	public static String getStackTrace(Throwable throwable)
-	{
-		Writer writer = new StringWriter();
-		PrintWriter printWriter = new PrintWriter(writer);
-		throwable.printStackTrace(printWriter);
-		return writer.toString();
-	}
+//	public static String getStackTrace(Throwable throwable)
+//	{
+////		Writer writer = new StringWriter();
+//		PrintWriter printWriter = new PrintWriter(writer);
+//		throwable.printStackTrace(printWriter);
+//		return writer.toString();
+//	}
 
     /**
      * Vérifie si le login et le pass ont bougé
@@ -209,7 +206,7 @@ public class FBMHttpConnection implements Constants
 		// Si les prefs ont bougé
 		if (( l!=null && p!= null) && ((!l.equals(login)) || (!p.equals(password))))
 		{
-			Log.d(DEBUGTAG, "UPDATE: " + login + " / " + l);
+			Log.d(TAG, "UPDATE: " + login + " / " + l);
 			login = l;
 			password = p;
 			id = null;
@@ -230,7 +227,7 @@ public class FBMHttpConnection implements Constants
 	{
 		if ((id == null) || (idt == null))
 		{
-			FBMLog("checkConnected : ON A JAMAIS ETE AUTHENTIFIE - ON S'AUTHENTIFIE");
+			Log.d(TAG,"checkConnected : ON A JAMAIS ETE AUTHENTIFIE - ON S'AUTHENTIFIE");
 			return (connectionFree(login, password));
 		}
 		else
@@ -260,7 +257,7 @@ public class FBMHttpConnection implements Constants
 			password = p;
 			v = parseConsole(l, p);
 			v.put(KEY_FBMVERSION, fbmversion);
-			FBMLog("connectFreeCheck : "+v);
+			Log.d(TAG,"connectFreeCheck : "+v);
 
 			// restauration des données présentes avant
 			login = mLogin;
@@ -270,7 +267,7 @@ public class FBMHttpConnection implements Constants
 		}
 		else
 		{
-			Log.d(DEBUGTAG, "connectFreeCheck failed");
+			Log.d(TAG, "connectFreeCheck failed");
 		}
 		return (v);
 	}
@@ -295,13 +292,13 @@ public class FBMHttpConnection implements Constants
 					r = s.substring(start,end);
 				}
 				else
-					FBMLog("parsePage end pb : "+tag);
+					Log.d(TAG,"parsePage end pb : "+tag);
 			}
 			else
-				FBMLog("parsePage start pb : "+tag);
+				Log.d(TAG,"parsePage start pb : "+tag);
 		}
 		else
-			FBMLog("parsePage itag pb : "+tag);
+			Log.d(TAG,"parsePage itag pb : "+tag);
 		// On supprimer les éventuels tags HTML qui seraient dans la chaine découpée
 		String dest="";
 		int l = r.length();
@@ -323,7 +320,7 @@ public class FBMHttpConnection implements Constants
 				i++;
 			}
 		}
-		FBMLog("["+tag+"] "+dest);
+		Log.d(TAG,"["+tag+"] "+dest);
 		return dest;
 	}
 	
@@ -347,8 +344,8 @@ public class FBMHttpConnection implements Constants
 				consoleValues.put(KEY_LINETYPE, "0");
 	    	// TODO : enlever la ligne suivante après debug
 	    	if (consoleValues.get(KEY_LINETYPE).equals("0"))
-				FBMLog("DEBUG INFO TECHNIQUES : "+br);		    		
-	    	FBMLog("type:"+consoleValues.get(KEY_LINETYPE));
+				Log.d(TAG,"DEBUG INFO TECHNIQUES : "+br);		    		
+	    	Log.d(TAG,"type:"+consoleValues.get(KEY_LINETYPE));
 	    	consoleValues.put(KEY_NRA, parsePage(br, "NRA :", "\">", "</"));
 	    	consoleValues.put(KEY_LINELENGTH, parsePage(br, "Longueur :", "red\">", " mètres"));
 	    	consoleValues.put(KEY_ATTN, parsePage(br, "Affaiblissement :", "red\">", " dB"));
@@ -361,13 +358,13 @@ public class FBMHttpConnection implements Constants
 				Object[] response = (Object[]) client.call("getDSLAMListForPool", consoleValues.get(KEY_IP));
 				if (response.length > 0)
 				{
-					FBMLog("XMLRPC : "+response[0]);
+					Log.d(TAG,"XMLRPC : "+response[0]);
 					consoleValues.put(KEY_DSLAM,(String) response[0]);
 				}
 				else
 				{
 					consoleValues.put(KEY_DSLAM,"");
-					FBMLog("DSLAM pas trouvé");
+					Log.d(TAG,"DSLAM pas trouvé");
 				}
 			}
 			else
@@ -378,8 +375,7 @@ public class FBMHttpConnection implements Constants
 		}
 		catch (Exception e)
 		{
-			FBMLog("parseConsole : " + e.getMessage());
-			Log.e(DEBUGTAG, "parseConsole : " + e.getMessage());
+			Log.e(TAG, "parseConsole : " + e.getMessage());
 			e.printStackTrace();
 		}
 		return (null);
@@ -399,7 +395,7 @@ public class FBMHttpConnection implements Constants
 		String m_idt = null;
 		HttpURLConnection h = null;
 		
-		FBMLog("Connect Free start ");
+		Log.d(TAG,"Connect Free start ");
         try
         {
     		List<NameValuePair> listParameter = new ArrayList<NameValuePair>();
@@ -415,7 +411,7 @@ public class FBMHttpConnection implements Constants
 			if (h.getHeaderFields().get("location") != null)
 			{
 				String s = h.getHeaderFields().get("location").toString();
-				FBMLog("connectFree : "+s);
+				Log.d(TAG,"connectFree : "+s);
 	    		String priv;
 				if (s.indexOf("idt=")>-1)
 				{
@@ -425,17 +421,17 @@ public class FBMHttpConnection implements Constants
 						priv = priv.substring(0, priv.indexOf(']'));
 					}
 					m_idt = priv;
-					FBMLog("idt :"+priv);
+					Log.d(TAG,"idt :"+priv);
 					priv = s.substring(s.indexOf("?id=")+4);
 					priv = priv.substring(0, priv.indexOf('&'));
 					m_id = priv;
-					FBMLog("id :"+priv);
+					Log.d(TAG,"id :"+priv);
 				}
 			}
         }
 		catch (Exception e)
 		{
-			FBMLog("connectFree : "+e.getMessage());
+			Log.e(TAG,"connectFree : "+e.getMessage());
         	e.printStackTrace();
         	connectionStatus = CONNECT_NOT_CONNECTED;
         	id = null;
@@ -457,7 +453,7 @@ public class FBMHttpConnection implements Constants
        	}
        	else
        	{
-       		FBMLog("MonCompeFree : AUTHENTIFICATION FAILED !");
+       		Log.d(TAG,"MonCompeFree : AUTHENTIFICATION FAILED !");
        		connectionStatus = CONNECT_LOGIN_FAILED;
        		id = null;
        		idt = null;
@@ -468,7 +464,7 @@ public class FBMHttpConnection implements Constants
 	private static HttpURLConnection prepareConnection(String url, String method) throws IOException
 	{
 		URL u = new URL(url);
-		FBMLog("PREPARECONNECTION : URL["+ u +"]METHOD ["+method+"]");
+		Log.d(TAG,"PREPARECONNECTION : URL["+ u +"]METHOD ["+method+"]");
 		HttpURLConnection c = (HttpURLConnection) u.openConnection();
 		c.setRequestMethod(method);
 		c.setAllowUserInteraction(false);
@@ -495,16 +491,16 @@ public class FBMHttpConnection implements Constants
         int connected;
 
         connected = checkConnected(CONNECT_CONNECTED);
-//		FBMLog("->DOWNLOADING FILE : "+url);
+//		Log.d(TAG,"->DOWNLOADING FILE : "+url);
         try
         {
 			if (connected == CONNECT_CONNECTED)
 			{
-//				FBMLog("GETFILE : VERIF SI ON EST AUTHENTIFIE");
+//				Log.d(TAG,"GETFILE : VERIF SI ON EST AUTHENTIFIE");
 				c = prepareConnection(url+"?"+makeStringForPost(p, auth, null), "GET");
 				c.setDoInput(true);
-				FBMLog("HEADERS : "+c.getHeaderFields());
-				FBMLog("RESPONSE : "+c.getResponseCode()+" "+c.getResponseMessage());
+				Log.d(TAG,"HEADERS : "+c.getHeaderFields());
+				Log.d(TAG,"RESPONSE : "+c.getResponseCode()+" "+c.getResponseMessage());
 				if (c.getHeaderFields().get("location") != null)
 				{
 					connected = CONNECT_NOT_CONNECTED;
@@ -517,25 +513,25 @@ public class FBMHttpConnection implements Constants
 					c.disconnect();
 					c = null;
 				}
-				FBMLog("GETFILE : PAS AUTHENTIFIE SUR LA CONSOLE - SESSION EXPIREE");
+				Log.d(TAG,"GETFILE : PAS AUTHENTIFIE SUR LA CONSOLE - SESSION EXPIREE");
 				connected = connectionFree(login, password);
 				if (connected == CONNECT_CONNECTED)
 				{
-					FBMLog("GETFILE : REAUTHENTIFICATION OK");
+					Log.d(TAG,"GETFILE : REAUTHENTIFICATION OK");
 					c = prepareConnection(url+"?"+makeStringForPost(p, auth, null), "GET");
 					c.setDoInput(true);
-					FBMLog("HEADERS : "+c.getHeaderFields());
-					FBMLog("RESPONSE : "+c.getResponseCode()+" "+c.getResponseMessage());
+					Log.d(TAG,"HEADERS : "+c.getHeaderFields());
+					Log.d(TAG,"RESPONSE : "+c.getResponseCode()+" "+c.getResponseMessage());
 				}
 			}
 			else
 			{
-//				FBMLog("GETFILE : AUTHENTIFICATION OK");
+//				Log.d(TAG,"GETFILE : AUTHENTIFICATION OK");
 				connected = CONNECT_CONNECTED;
 			}
 			if (connected == CONNECT_CONNECTED)
 			{
-//				FBMLog("GETFILE : LECTURE FICHIER");
+//				Log.d(TAG,"GETFILE : LECTURE FICHIER");
 		    	c.connect();
 		        f = new FileOutputStream(file);
 		        InputStream in = c.getInputStream();
@@ -546,13 +542,14 @@ public class FBMHttpConnection implements Constants
 		        }
 		    	f.close();
 		    	in.close();
-//		    	FBMLog("->FILE DOWNLOADED");
+//		    	Log.d(TAG,"->FILE DOWNLOADED");
 		    	return true;
 			}
         }
         catch (Exception e)
         {
-        	FBMLog("getFile : "+e.getMessage()+" "+getStackTrace(e));
+        	Log.e(TAG,"getFile : "+e.getMessage());
+        	e.printStackTrace();
 		}
         return false;
 	}
@@ -566,13 +563,13 @@ public class FBMHttpConnection implements Constants
 			if (pos != -1)
 			{
 				charset = temp.substring(pos+8);
-				FBMLog("CHARSET : "+charset);
+				Log.d(TAG,"CHARSET : "+charset);
 			}
 			else
-				FBMLog("CHARSET : not found - keep default "+charset);
+				Log.d(TAG,"CHARSET : not found - keep default "+charset);
 		}
 		else
-			FBMLog("CHARSET default : "+charset);
+			Log.d(TAG,"CHARSET default : "+charset);
 		return charset;
 	}
 
@@ -594,10 +591,10 @@ public class FBMHttpConnection implements Constants
 		c = checkConnected(CONNECT_CONNECTED);
 		try
 		{
-			FBMLog("-- GET ISR : "+url);
+			Log.d(TAG,"-- GET ISR : "+url);
 			if (c == CONNECT_CONNECTED)
 			{
-				FBMLog("GETISR : VERIF SI ON EST AUTHENTIFIE");
+				Log.d(TAG,"GETISR : VERIF SI ON EST AUTHENTIFIE");
 				if (retour)
 					h = prepareConnection(url+"?"+makeStringForPost(p, auth, charset), "GET");
 				else
@@ -605,9 +602,9 @@ public class FBMHttpConnection implements Constants
 				h.setDoInput(true);
 				charset = getCharset(h.getContentType(), charset);
 
-				FBMLog("HEADERS : "+h.getHeaderFields());
+				Log.d(TAG,"HEADERS : "+h.getHeaderFields());
 				// TODO : Tenir compte du getResponseCode()
-				FBMLog("RESPONSE : "+h.getResponseCode()+" "+h.getResponseMessage());
+				Log.d(TAG,"RESPONSE : "+h.getResponseCode()+" "+h.getResponseMessage());
 				if (h.getHeaderFields().get("location") != null)
 				{
 					c = CONNECT_NOT_CONNECTED;
@@ -620,29 +617,29 @@ public class FBMHttpConnection implements Constants
 					h.disconnect();
 					h = null;
 				}
-				FBMLog("GETISR : PAS AUTHENTIFIE SUR LA CONSOLE - SESSION EXPIREE");
+				Log.d(TAG,"GETISR : PAS AUTHENTIFIE SUR LA CONSOLE - SESSION EXPIREE");
 				c = connectionFree(login, password);
 				if (c == CONNECT_CONNECTED)
 				{
-					FBMLog("GETISR :  REAUTHENTIFICATION OK");
+					Log.d(TAG,"GETISR :  REAUTHENTIFICATION OK");
 					if (retour)
 						h = prepareConnection(url+"?"+makeStringForPost(p, auth, charset), "GET");
 					else
 						h = prepareConnection(url+"?"+makeStringForPost(p, auth, charset), "HEAD");
 					h.setDoInput(true);
-					FBMLog("HEADERS : "+h.getHeaderFields());
+					Log.d(TAG,"HEADERS : "+h.getHeaderFields());
 					// TODO : Tenir compte du getResponseCode()
-					FBMLog("RESPONSE : "+h.getResponseCode()+" "+h.getResponseMessage());
+					Log.d(TAG,"RESPONSE : "+h.getResponseCode()+" "+h.getResponseMessage());
 				}
 			}
 			else
 			{
-				FBMLog("GETISR : AUTHENTIFICATION OK");
+				Log.d(TAG,"GETISR : AUTHENTIFICATION OK");
 				c = CONNECT_CONNECTED;
 			}
 			if ((c == CONNECT_CONNECTED) && (retour == true))
 			{
-				FBMLog("GETISR : LECTURE DONNEES - TYPE : "+h.getContentType());
+				Log.d(TAG,"GETISR : LECTURE DONNEES - TYPE : "+h.getContentType());
 				charset = getCharset(h.getContentType(), charset);
 
 				return (new InputStreamReader(h.getInputStream(), charset));
@@ -650,7 +647,7 @@ public class FBMHttpConnection implements Constants
 		}
 		catch (Exception e)
 		{
-			FBMLog("getAuthRequestISR "+e.getMessage()+" "+getStackTrace(e));
+			Log.e(TAG,"getAuthRequestISR "+e.getMessage());
 			e.printStackTrace();
 		}
 		return (null);
@@ -662,13 +659,13 @@ public class FBMHttpConnection implements Constants
 		int c;
 		String pagesCharset = "ISO8859_1";
 
-		FBMLog("POST: " + url);
+		Log.d(TAG,"POST: " + url);
 		try
 		{
 			c = checkConnected(CONNECT_CONNECTED);
 			if (c == CONNECT_CONNECTED)
 			{
-				FBMLog("POST : VERIFICATION DE SESSION");
+				Log.d(TAG,"POST : VERIFICATION DE SESSION");
 				h = prepareConnection(url+(auth ? "?"+makeStringForPost(null, auth, null) : ""), "POST");
 				h.setDoOutput(true);
 				if (retour)
@@ -689,11 +686,11 @@ public class FBMHttpConnection implements Constants
 					h.disconnect();
 					h = null;
 				}
-				FBMLog("POST : PAS AUTHENTIFIE SUR LA CONSOLE - SESSION EXPIREE");
+				Log.d(TAG,"POST : PAS AUTHENTIFIE SUR LA CONSOLE - SESSION EXPIREE");
 				c = connectionFree(login, password);
 				if (c == CONNECT_CONNECTED)
 				{
-					FBMLog("POST :  REAUTHENTIFICATION OK");
+					Log.d(TAG,"POST :  REAUTHENTIFICATION OK");
 					h = prepareConnection(url+(auth ? "?"+makeStringForPost(null, auth, null) : ""), "POST");
 					h.setDoOutput(true);
 					if (retour)
@@ -706,19 +703,20 @@ public class FBMHttpConnection implements Constants
 			}
 			else
 			{
-				FBMLog("POST : AUTHENTIFICATION OK");
+				Log.d(TAG,"POST : AUTHENTIFICATION OK");
 				c = CONNECT_CONNECTED;
 			}
 			if ((c == CONNECT_CONNECTED) && (retour))
 			{
-				FBMLog("POST : LECTURE DONNEES");
+				Log.d(TAG,"POST : LECTURE DONNEES");
 				pagesCharset = getCharset(h.getContentType(), pagesCharset);
 				return (new InputStreamReader(h.getInputStream(), pagesCharset));
 			}
 		}
 		catch (Exception e)
 		{
-			FBMLog("EXCEPTION PostAuthRequest : "+e.getMessage()+" "+getStackTrace(e));
+			Log.e(TAG,"EXCEPTION PostAuthRequest : "+e.getMessage());
+			e.printStackTrace();
 		}
 		return (null);
 	}
@@ -753,7 +751,8 @@ public class FBMHttpConnection implements Constants
                 }
                 catch (Exception e)
                 {
-                	FBMLog( "makeStringForPost PB ENCODE : "+e.getMessage());
+                	Log.e(TAG, "makeStringForPost PB ENCODE : "+e.getMessage());
+                	e.printStackTrace();
 	                listConcat += URLEncoder.encode(p.get(i).getName());
 	                listConcat += '=';
 	                listConcat += URLEncoder.encode(p.get(i).getValue());
@@ -777,11 +776,12 @@ public class FBMHttpConnection implements Constants
 				listConcat += URLEncoder.encode(idt, charset);
 			} catch (UnsupportedEncodingException e)
 			{
-            	FBMLog( "makeStringForPost PB ENCODE ID IDT : "+e.getMessage());
+            	Log.e(TAG, "makeStringForPost PB ENCODE ID IDT : "+e.getMessage());
+            	e.printStackTrace();
 			}
 		}
         if (log)
-        	FBMLog("makeStringForPost : "+listConcat);
+        	Log.d(TAG,"makeStringForPost : "+listConcat);
         return (listConcat);
     }
 	
@@ -810,7 +810,8 @@ public class FBMHttpConnection implements Constants
 		}
 		catch (IOException e)
 		{
-			Log.e(DEBUGTAG, "getPage: "+e);
+			Log.e(TAG, "getPage: "+e);
+			e.printStackTrace();
 			return null;
 		}		
 		return sb.toString();
@@ -830,7 +831,7 @@ public class FBMHttpConnection implements Constants
 		final String END_CONTENT_DISPOSITION = TWO_HYPHENS + BOUNDARY + END;
 		
 		int connected = checkConnected(CONNECT_CONNECTED);
-		FBMLog("->POSTING FILE TO "+uploadFaxUrl);
+		Log.d(TAG,"->POSTING FILE TO "+uploadFaxUrl);
 		if (connected == CONNECT_CONNECTED){
 		
 			if(params == null){
@@ -902,7 +903,7 @@ public class FBMHttpConnection implements Constants
 	
 			//Test du code de retour
 			if (conn.getResponseCode() != expectedHttpStatus){
-				FBMLog("Mauvais code Http retourné lors du post multipart : "+conn.getResponseCode()+" au lieu de "+expectedHttpStatus);
+				Log.d(TAG,"Mauvais code Http retourné lors du post multipart : "+conn.getResponseCode()+" au lieu de "+expectedHttpStatus);
 				return null;
 			}
 			
@@ -915,10 +916,10 @@ public class FBMHttpConnection implements Constants
 				b.append(new String(data, 0, leng));
 			}
 			final String result = b.toString();
-			FBMLog("Reponse FAX lue : "+result);
+			Log.d(TAG,"Reponse FAX lue : "+result);
 			return result;
 		}
-		FBMLog("Connexion impossible pour faxer le fichier "+fileToPost.getName());
+		Log.d(TAG,"Connexion impossible pour faxer le fichier "+fileToPost.getName());
 		return null;
 	}
 }

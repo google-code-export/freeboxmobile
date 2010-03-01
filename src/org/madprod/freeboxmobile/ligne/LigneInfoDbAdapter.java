@@ -49,7 +49,7 @@ public class LigneInfoDbAdapter implements LigneInfoConstants
     	@Override
     	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
     	{
-    		Log.d(DEBUGTAG, "ComptesDbAdapter : Upgrading database from version " + oldVersion + " to "
+    		Log.d(TAG, "ComptesDbAdapter : Upgrading database from version " + oldVersion + " to "
                 + newVersion);
     		db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE);
     		onCreate(db);

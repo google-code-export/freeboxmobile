@@ -155,23 +155,24 @@ public class MevoMessage implements MevoConstants
 		}
 		catch (ParseException e)
 		{
-			Log.e(DEBUGTAG,"PARSE DATETIME HR "+e);
+			Log.e(TAG,"PARSE DATETIME HR "+e.getMessage());
+			e.printStackTrace();
 		}
 		return ret;
 	}
 
 	public void log()
 	{
-		Log.d(DEBUGTAG,"--- MSG LOG ---");
-		Log.d(DEBUGTAG," STATUS   :" + msgValues.getAsInteger(KEY_STATUS));
-		Log.d(DEBUGTAG," PRESENCE :" + msgValues.getAsInteger(KEY_PRESENCE));
-		Log.d(DEBUGTAG," SOURCE   :" + msgValues.getAsString(KEY_SOURCE));
-		Log.d(DEBUGTAG," QUAND    :" + msgValues.getAsString(KEY_QUAND));
-		Log.d(DEBUGTAG," LINK     :" + msgValues.getAsString(KEY_LINK));
-		Log.d(DEBUGTAG," DEL      :" + msgValues.getAsString(KEY_DEL));
-		Log.d(DEBUGTAG," NAME     :" + msgValues.getAsString(KEY_NAME));
-		Log.d(DEBUGTAG," LENGTH   :" + msgValues.getAsInteger(KEY_LENGTH));
-		Log.d(DEBUGTAG," CALLER   :" + msgValues.getAsString(KEY_CALLER));
+		Log.d(TAG,"--- MSG LOG ---");
+		Log.d(TAG," STATUS   :" + msgValues.getAsInteger(KEY_STATUS));
+		Log.d(TAG," PRESENCE :" + msgValues.getAsInteger(KEY_PRESENCE));
+		Log.d(TAG," SOURCE   :" + msgValues.getAsString(KEY_SOURCE));
+		Log.d(TAG," QUAND    :" + msgValues.getAsString(KEY_QUAND));
+		Log.d(TAG," LINK     :" + msgValues.getAsString(KEY_LINK));
+		Log.d(TAG," DEL      :" + msgValues.getAsString(KEY_DEL));
+		Log.d(TAG," NAME     :" + msgValues.getAsString(KEY_NAME));
+		Log.d(TAG," LENGTH   :" + msgValues.getAsInteger(KEY_LENGTH));
+		Log.d(TAG," CALLER   :" + msgValues.getAsString(KEY_CALLER));
 	}
 
 	public void setMsgFromCursor(Cursor c)
@@ -240,19 +241,23 @@ public class MevoMessage implements MevoConstants
 		}
 		catch (IllegalArgumentException e)
 		{
-			FBMHttpConnection.FBMLog("setMsgSource IllegalArgumentException : "+e.getMessage()+" "+FBMHttpConnection.getStackTrace(e));
+			Log.e(TAG,"setMsgSource IllegalArgumentException : "+e.getMessage()+" ");
+			e.printStackTrace();
 		}
 		catch (IllegalStateException e)
 		{
-			FBMHttpConnection.FBMLog("setMsgSource IllegalStateException : "+e.getMessage()+" "+FBMHttpConnection.getStackTrace(e));
+			Log.e(TAG,"setMsgSource IllegalStateException : "+e.getMessage());
+			e.printStackTrace();
 		}
 		catch (FileNotFoundException e)
 		{
-			FBMHttpConnection.FBMLog("setMsgSource FileNotFoundException : "+e.getMessage()+" "+FBMHttpConnection.getStackTrace(e));
+			Log.e(TAG,"setMsgSource FileNotFoundException : "+e.getMessage());
+			e.printStackTrace();
 		}
 		catch (IOException e)
 		{
-			FBMHttpConnection.FBMLog("setMsgSource IOException : "+e.getMessage()+" "+FBMHttpConnection.getStackTrace(e));
+			Log.e(TAG,"setMsgSource IOException : "+e.getMessage());
+			e.printStackTrace();
 		}
 		return false;
 	}

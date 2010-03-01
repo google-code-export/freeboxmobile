@@ -22,7 +22,7 @@ public class WakefullIntentService extends IntentService implements Constants
 
 	public static void acquireStaticLock(Context context)
 	{
-		Log.i(DEBUGTAG,"acquireStaticLock ");
+		Log.i(TAG,"acquireStaticLock ");
 		getLock(context).acquire();
 	}
 

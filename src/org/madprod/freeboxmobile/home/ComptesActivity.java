@@ -4,7 +4,6 @@ import java.util.Date;
 
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
-import org.madprod.freeboxmobile.pvr.PvrNetwork;
 
 import android.app.ListActivity;
 import android.content.Intent;
@@ -12,8 +11,8 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.graphics.Typeface;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
@@ -184,7 +183,7 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 
     private void fillData()
     {
-    	FBMHttpConnection.FBMLog("FILLDATA");
+    	Log.d(TAG,"FILLDATA");
         mComptesCursor = mDbHelper.fetchAllComptes();
         String[] from = new String[]{KEY_TITLE};
         int[] to = new int[]{R.id.comptes_liste_row};
@@ -229,7 +228,7 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 					{
 						SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 						Long duree = (new Date()).getTime() - getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getLong(KEY_LAST_REFRESH+c.getString(c.getColumnIndexOrThrow(KEY_USER)), 0);
-						FBMHttpConnection.FBMLog("TEMPS : "+c.getString(c.getColumnIndexOrThrow(KEY_USER))+" - "+getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getLong(KEY_LAST_REFRESH+c.getString(c.getColumnIndexOrThrow(KEY_USER)), 0)+" "+duree);
+						Log.d(TAG,"TEMPS : "+c.getString(c.getColumnIndexOrThrow(KEY_USER))+" - "+getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getLong(KEY_LAST_REFRESH+c.getString(c.getColumnIndexOrThrow(KEY_USER)), 0)+" "+duree);
 						// Si ca fait + de 30 jours on met à jour (2592000000 )
 						if (duree > 2592000000L)
 						{

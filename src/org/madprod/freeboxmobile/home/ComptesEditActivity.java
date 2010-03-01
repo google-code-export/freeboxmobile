@@ -79,7 +79,6 @@ public class ComptesEditActivity extends Activity implements Constants
                 String title = mTitleText.getText().toString();
                 String user = mUserText.getText().toString();
                 String password = mPasswordText.getText().toString();
-                Log.d(DEBUGTAG, "ici <"+title+">");
 
                 if (!title.equals("") && !user.equals("") && !password.equals(""))
                 {

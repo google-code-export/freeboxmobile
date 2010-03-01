@@ -111,7 +111,7 @@ public class FaxActivity extends Activity implements FaxConstants {
 				if("text/plain".equals(getIntent().getType())){
 					//Cas de l'envoi d'un texte saisi par l'utilisateur ou copié depuis une application
 					final String text = (String) getIntent().getExtras().get(Intent.EXTRA_TEXT);
-					FBMHttpConnection.FBMLog("Fax du texte : "+text);
+					Log.d(TAG,"Fax du texte : "+text);
 					try {
 						final File tempFile = File.createTempFile("fax", "txt");
 						final FileWriter writer = new FileWriter(tempFile);
@@ -119,8 +119,8 @@ public class FaxActivity extends Activity implements FaxConstants {
 						writer.close();
 						selectFile(tempFile);
 					} catch (IOException e) {
-						FBMHttpConnection.FBMLog("Erreur pendant le fax de "+text+" ["+e.getLocalizedMessage()+"]");
-						Log.e(DEBUGTAG, "Erreur pendant le fax de "+text,e);
+						Log.e(TAG,"Erreur pendant le fax de "+text+" ["+e.getLocalizedMessage()+"]");
+						e.printStackTrace();
 					}
 				}else{
 					final Uri uri = (Uri)getIntent().getExtras().get(Intent.EXTRA_STREAM);
@@ -222,7 +222,7 @@ public class FaxActivity extends Activity implements FaxConstants {
 			if(resultCode == Activity.RESULT_OK && data != null && data.getData()!=null){
 				selectFile(new File(data.getData().getPath()));
 			}else{
-				Log.d(DEBUGTAG, "Ignoring FileChooserActivity result Intent "+data);
+				Log.d(TAG, "Ignoring FileChooserActivity result Intent "+data);
 			}
 			break;
 		case PICK_CONTACT:
@@ -235,7 +235,7 @@ public class FaxActivity extends Activity implements FaxConstants {
 			        }
 			    break;
 			}else{
-				Log.d(DEBUGTAG, "Ignoring Fax Number pick activity result Intent "+data);
+				Log.d(TAG, "Ignoring Fax Number pick activity result Intent "+data);
 			}
 		}
 	}

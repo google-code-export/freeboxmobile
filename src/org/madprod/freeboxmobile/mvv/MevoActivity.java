@@ -71,7 +71,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
-		Log.d(DEBUGTAG,"MevoActivity create");
+		Log.i(TAG,"MevoActivity create");
         super.onCreate(savedInstanceState);
         FBMHttpConnection.initVars(this, null);
     	MevoSync.setActivity(this);
@@ -148,7 +148,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
 			@Override
 			public void updateUI()
 			{
-				Log.d(DEBUGTAG,"updateUI");
+				Log.i(TAG,"updateUI");
 				runOnUiThread(new Runnable()
 				{
 					public void run()
@@ -159,7 +159,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
 			}
     	}
     	);
-    	Log.d(DEBUGTAG,"MevoActivity Start");
+    	Log.i(TAG,"MevoActivity Start");
     }
     
     private void logMsgDetails(long id)
@@ -187,14 +187,14 @@ public class MevoActivity extends ListActivity implements MevoConstants
     {
     	super.onSaveInstanceState(outState);
     	outState.putString("hpBoutton", (mAudioManager.getMode()!=AudioManager.MODE_IN_CALL)?"1":"0");
-    	FBMHttpConnection.FBMLog("onSaveInstanceState called");
+    	Log.i(TAG,"onSaveInstanceState called");
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState)
     {
             super.onRestoreInstanceState(savedInstanceState);
-            FBMHttpConnection.FBMLog("onRestoreInstanceState called");
+            Log.i(TAG,"onRestoreInstanceState called");
             if (savedInstanceState.getString("hpBoutton").equals("1"))
             {
             	setHpOn();
@@ -241,7 +241,8 @@ public class MevoActivity extends ListActivity implements MevoConstants
 		}
 		catch (ClassCastException e)
 		{
-			Log.d(DEBUGTAG,"Bad Context Menu Info"+e);
+			Log.e(TAG,"Bad Context Menu Info"+e);
+			e.printStackTrace();
 			return;
 		}
 	}
@@ -341,17 +342,16 @@ public class MevoActivity extends ListActivity implements MevoConstants
 	@Override
 	public void onResume()
 	{
-		Log.d(DEBUGTAG,"onResume() start");
+		Log.i(TAG,"onResume() start");
 		super.onResume();
 		MevoSync.cancelNotif(NOTIF_MEVO);
 		mAdapter.refreshUI();
-		Log.d(DEBUGTAG,"onResume() end");
 	}
 
 	@Override
 	public void onPause()
 	{
-		Log.d(DEBUGTAG,"MevoActivity pause");
+		Log.i(TAG,"MevoActivity pause");
 		super.onPause();
 		mAdapter.stopPlay();
 		mAdapter.releaseMP();
@@ -474,7 +474,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
     	{
     		Cursor messagesCursor;
 
-            Log.d(DEBUGTAG,"getMessages() called");
+            Log.i(TAG,"getMessages() called");
 
     		play_current_mp = null;
 
@@ -540,7 +540,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
         			((Activity) mContext).setTitle(mContext.getString(R.string.app_name)+" "+mContext.getString(R.string.mevo_title_mevo)+" ("+nb+") - "+FBMHttpConnection.getTitle());
         		break;
     		}
-    		FBMHttpConnection.FBMLog("Mevo nombre msgs : "+mDbHelper.getNbMsg());
+    		Log.d(TAG,"Mevo nombre msgs : "+mDbHelper.getNbMsg());
     		return nb;
     	}
 
@@ -584,7 +584,8 @@ public class MevoActivity extends ListActivity implements MevoConstants
     		}
     		catch (Exception e)
     		{
-    			Log.e(DEBUGTAG,"Impossible de passer l'appel "+((MevoMessage)this.getItem(id)).getStringValue(KEY_SOURCE),e);
+    			Log.e(TAG,"Impossible de passer l'appel "+((MevoMessage)this.getItem(id)).getStringValue(KEY_SOURCE)+" "+e.getMessage());
+    			e.printStackTrace();
     		}
     	}
 
@@ -727,7 +728,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
 		@Override
     	public void onCompletion(MediaPlayer mp)
 		{
-    		Log.d(DEBUGTAG,"OnCompletion ! "+this.play_current_pos);
+    		Log.i(TAG,"OnCompletion ! "+this.play_current_pos);
 			messages.get(this.play_current_pos).setIntValue(KEY_PLAY_STATUS, PLAY_STATUS_STOP, false);
     		notifyDataSetInvalidated();
     		this.messageUpdateTask.cancel();
@@ -738,7 +739,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
 		@Override
 		public boolean onError(MediaPlayer mp, int what, int extra)
 		{
-			Log.d(DEBUGTAG,"onERROR "+what+" "+extra);
+			Log.i(TAG,"onERROR "+what+" "+extra);
 			play_current_mp.stop();
 			this.setMessageSeekBar(-1, 0, 0);
     		notifyDataSetChanged();
@@ -752,7 +753,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
 			{
 				if (play_current_mp.isPlaying())
 				{
-					Log.d(DEBUGTAG,"Stop current play");
+					Log.i(TAG,"Stop current play");
 					play_current_mp.pause();
 					play_current_mp.seekTo(0);
 				}
@@ -767,7 +768,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
 		{
 //			ViewHolder holder = (ViewHolder) view.findViewById(R.id.ligneMevo).getTag();
 			MevoMessage m = messages.get(pos);
-			Log.d(DEBUGTAG,"onITEMClick v:"+view+" pos:"+pos+" id:"+id+" cp:"+play_current_pos);
+			Log.d(TAG,"onITEMClick v:"+view+" pos:"+pos+" id:"+id+" cp:"+play_current_pos);
 			// Si on jouait un message d'une autre ligne,
 			// on lance le message de cette ligne à la place
 			if ((play_current_pos != pos) || (play_current_mp == null))
@@ -776,7 +777,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
 				try
 				{
     				play_current_pos = pos;
-					Log.d(DEBUGTAG,"Prepare play "+pos);
+					Log.d(TAG,"Prepare play "+pos);
 					play_current_mp = m.getMP();
 					m.setIntValue(KEY_STATUS, MSG_STATUS_LISTENED, true);
 					m.setIntValue(KEY_PLAY_STATUS, PLAY_STATUS_PLAY, false);
@@ -794,7 +795,8 @@ public class MevoActivity extends ListActivity implements MevoConstants
 					this.messageUpdateTask.cancel();
 					this.messageTimer.purge();
 					this.setMessageSeekBar(-1, 0, 0);
-					FBMHttpConnection.FBMLog("MEDIAPLAYER : Illegal State Exception "+e);
+					Log.d(TAG,"MEDIAPLAYER : Illegal State Exception "+e);
+					e.printStackTrace();
 				}
 			}
 			// sinon, l'utilisateur voulait juste arreter ou reprendre le message courant

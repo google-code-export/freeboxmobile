@@ -21,8 +21,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -33,6 +31,7 @@ import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.text.style.URLSpan;
 import android.text.util.Linkify;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -58,7 +57,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
-		FBMHttpConnection.FBMLog("MainActivity Create "+getString(R.string.app_version)+"\n"+new Date().toString());
+		Log.d(TAG,"MainActivity Create "+getString(R.string.app_version)+"\n"+new Date().toString());
         super.onCreate(savedInstanceState);
 
 		// On teste si on est dans le cas d'un premier lancement pour cette version de l'appli
@@ -82,7 +81,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     @Override
     protected void onStart()
     {
-    	FBMHttpConnection.FBMLog("MainActivity Start");
+    	Log.i(TAG,"MainActivity Start");
     	super.onStart();
     	SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 		FBMHttpConnection.initVars(this, null);
@@ -96,7 +95,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
         	// S'il s'agit du premier lancement de cette version, on rafraichi pas mal d'infos
         	if (!mgr.getString(KEY_FBMVERSION, "0").equals(getString(R.string.app_version)))
         	{
-        		FBMHttpConnection.FBMLog("HOME : on rafraichi le compte "+mgr.getString(KEY_FBMVERSION, "0"));
+        		Log.d(TAG,"HOME : on rafraichi le compte "+mgr.getString(KEY_FBMVERSION, "0"));
         		refreshCompte();
         		Editor editor = mgr.edit();
 				editor.putString(KEY_FBMVERSION, getString(R.string.app_version));
@@ -126,27 +125,27 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 			displayAbout();
 		}
 
-        FBMHttpConnection.FBMLog("type:"+mgr.getString(KEY_LINETYPE, ""));
+        Log.d(TAG,"type:"+mgr.getString(KEY_LINETYPE, ""));
     }
 
     @Override
     protected void onStop()
 	{
-    	FBMHttpConnection.FBMLog("MainActivity Stop");
+    	Log.i(TAG,"MainActivity Stop");
 		super.onStop();
 	}
 
     @Override
     protected void onDestroy()
     {
-    	FBMHttpConnection.FBMLog("MainActivity Destroy");
+    	Log.i(TAG,"MainActivity Destroy");
     	super.onDestroy();
     }
 
     @Override
     protected void onPause()
     {
-		FBMHttpConnection.FBMLog("MainActivity Pause");
+		Log.i(TAG,"MainActivity Pause");
     	super.onPause();
 		FBMHttpConnection.closeDisplay();
     }
@@ -228,7 +227,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     @Override
     protected void onResume()
     {
-		FBMHttpConnection.FBMLog("MainActivity Resume");
+		Log.i(TAG,"MainActivity Resume");
     	super.onResume();
     	
         SimpleAdapter mList = new SimpleAdapter(this, modulesList, R.layout.home_main_list_row, new String[] {M_ICON, M_TITRE, M_DESC}, new int[] {R.id.home_main_row_img, R.id.home_main_row_titre, R.id.home_main_row_desc});
@@ -249,7 +248,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		}
         else
         {
-        	FBMHttpConnection.FBMLog("LINE TYPE:"+mgr.getString(KEY_LINETYPE, "-1"));
+        	Log.d(TAG,"LINE TYPE:"+mgr.getString(KEY_LINETYPE, "-1"));
 	    	if (moduleName.equals(getString(R.string.buttonLigne)) &&
     			!mgr.getString(KEY_LINETYPE, "1").equals("0") &&
     			!mgr.getString(KEY_LINETYPE, "1").equals("1"))

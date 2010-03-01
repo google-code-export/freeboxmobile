@@ -132,7 +132,7 @@ public class EnregistrementsDbAdapter {
     		String nom, String ide, String chaine_id, String service_id, int boitier_id, String h, String min,
     		String dur, String name, String where_id, String repeat_a)
     {
-    	FBMHttpConnection.FBMLog("CREATE ENREGISTREMENT");
+    	Log.i(TAG,"CREATE ENREGISTREMENT");
         ContentValues initialValues = new ContentValues();
         
         initialValues.put(KEY_CHAINE, chaine);

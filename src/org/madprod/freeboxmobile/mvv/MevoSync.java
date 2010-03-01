@@ -70,7 +70,7 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 	{
 		int newmsg = 0;
 
-		FBMHttpConnection.FBMLog("MevoSync onHandleIntent ");
+		Log.i(TAG,"MevoSync onHandleIntent ");
 
 		File log = new File(Environment.getExternalStorageDirectory()+DIR_FBM, file_log);
 		try
@@ -83,7 +83,8 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 		}
 		catch (IOException e)
 		{
-			FBMHttpConnection.FBMLog("Exception appending to log file "+e.getMessage()+"\n"+FBMHttpConnection.getStackTrace(e));
+			Log.e(TAG,"Exception appending to log file "+e.getMessage());
+			e.printStackTrace();
 		}
 
 		mDbHelper = new MevoDbAdapter(this);
@@ -109,7 +110,8 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 		}
 		catch (IOException e)
 		{
-			FBMHttpConnection.FBMLog("Exception appending to log file "+e.getMessage()+"\n"+FBMHttpConnection.getStackTrace(e));
+			Log.e(TAG,"Exception appending to log file "+e.getMessage());
+			e.printStackTrace();
 		}
 
 		super.onHandleIntent(intent);
@@ -145,29 +147,29 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 	        File f = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_MEVO);
 	        if (f.exists())
 	        {
-	        	FBMHttpConnection.FBMLog("Ancienne config sans multicompte : migration messages...");
+	        	Log.w(TAG,"Ancienne config sans multicompte : migration messages...");
 	        	File nf = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+FBMHttpConnection.getIdentifiant());
 	        	nf.mkdirs();
 	        	if (f.renameTo(new File(nf, f.getName())))
 	        	{
-	        		FBMHttpConnection.FBMLog(" ok");
+	        		Log.w(TAG," ok");
 	        	}
 	        	else
 	        	{
-	        		FBMHttpConnection.FBMLog(" notok");
+	        		Log.w(TAG," notok");
 	        	}
 	        }
 	        File old_db = activity.getDatabasePath(MevoDbAdapter.DATABASE_NAME);
 	        if (old_db.exists())
 	        {
-	        	FBMHttpConnection.FBMLog("Ancienne config sans multicomptes : migration base de données... "+FBMHttpConnection.getIdentifiant());
+	        	Log.w(TAG,"Ancienne config sans multicomptes : migration base de données... "+FBMHttpConnection.getIdentifiant());
 	        	if (old_db.renameTo(activity.getDatabasePath(MevoDbAdapter.DATABASE_NAME+"_"+FBMHttpConnection.getIdentifiant())))
 	        	{
-	        		Log.d(DEBUGTAG, "ok");
+	        		Log.w(TAG, "ok");
 	        	}
 	        	else
 	        	{
-	        		Log.d(DEBUGTAG, " notok");
+	        		Log.w(TAG, " notok");
 	        	}
 	        }
 		}
@@ -181,14 +183,14 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 	@Override
 	public void onCreate()
 	{
-		FBMHttpConnection.FBMLog("MevoSync onCreate");
+		Log.i(TAG,"MevoSync onCreate");
 		super.onCreate();
 	}
 
 	@Override
 	public void onDestroy()
 	{
-		FBMHttpConnection.FBMLog("MevoSync onDestroy");
+		Log.i(TAG,"MevoSync onDestroy");
 		super.onDestroy();
 	}
 
@@ -284,12 +286,12 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 		if (ms != 0)
 		{
 			amgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), ms, pi);
-			FBMHttpConnection.FBMLog("MevoTimer  changed to "+ms);
+			Log.i(TAG,"MevoTimer  changed to "+ms);
 		}
 		else
 		{
 			amgr.cancel(pi);
-			FBMHttpConnection.FBMLog("MevoTimer canceled");			
+			Log.i(TAG,"MevoTimer canceled");			
 		}
 	}
 
@@ -320,7 +322,7 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 		File file;
 		Cursor curs;
 		
-		Log.d(DEBUGTAG, "deleteMsg "+name);
+		Log.d(TAG, "deleteMsg "+name);
 		if (mDbHelper == null)
 		{
 			mDbHelper = new MevoDbAdapter(CUR_ACTIVITY);
@@ -330,11 +332,11 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 		file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+FBMHttpConnection.getIdentifiant()+DIR_MEVO,name);
 		if (file.delete())
 		{
-			Log.d(DEBUGTAG, "Delete file ok");
+			Log.d(TAG, "Delete file ok");
 		}
 		else
 		{
-			Log.d(DEBUGTAG, "Delete file not ok");
+			Log.d(TAG, "Delete file not ok");
 		}
 
 		// On efface le message du serveur de Free
@@ -342,7 +344,7 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 		curs = mDbHelper.fetchMessage(name);
 		if (curs.moveToFirst() == false)
 		{
-			Log.d(DEBUGTAG, "delete : message non trouvé !!!!");
+			Log.d(TAG, "delete : message non trouvé !!!!");
 		}
 		else
 		{
@@ -363,13 +365,13 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 				params.add(new BasicNameValuePair("tel",tel));
 				params.add(new BasicNameValuePair("fichier",curs.getString(curs.getColumnIndex(KEY_NAME))));
 
-				Log.d(DEBUGTAG, "Deleting on server "+params);
+				Log.d(TAG, "Deleting on server "+params);
 				FBMHttpConnection.getAuthRequest(mevoUrl+mevoDelPage, params, true, false, "ISO8859_1");
 			}
 		}
 		// Puis on marque le message comme effacé dans la base
 		// (on l'efface pas à proprement dit de la base, ca pourrait servir pour un historique)
-		Log.d(DEBUGTAG, "Updating DB : "+mDbHelper.updateMessage(0, "", "", name));
+		Log.d(TAG, "Updating DB : "+mDbHelper.updateMessage(0, "", "", name));
 
 		if (UI_UPDATE_LISTENER != null)
 			UI_UPDATE_LISTENER.updateUI();
@@ -413,35 +415,35 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 					if (s.indexOf("<td") != -1)
 					{
 						if (s.indexOf("Pas de nouveau message") != -1)
-							Log.d(DEBUGTAG,"Pas de nouveau message !");
+							Log.d(TAG,"Pas de nouveau message !");
 						else
 						{
-							FBMHttpConnection.FBMLog("MESSAGE");
+							Log.d(TAG,"MESSAGE");
 							priv = s.substring(s.indexOf("<td"));
 							priv = priv.substring(priv.indexOf(">")+1);
 							status = priv.substring(0,priv.indexOf("<"));
-							FBMHttpConnection.FBMLog("->STATUS:"+status);
+							Log.d(TAG,"->STATUS:"+status);
 							priv = priv.substring(priv.indexOf("<td"));
 							priv = priv.substring(priv.indexOf(">")+1);
 							from = priv.substring(0,priv.indexOf("<"));
-							FBMHttpConnection.FBMLog("->FROM:"+from);
+							Log.d(TAG,"->FROM:"+from);
 							priv = priv.substring(priv.indexOf("<td"));
 							priv = priv.substring(priv.indexOf(">")+1);
 							when = priv.substring(0,priv.indexOf("<"));
-							FBMHttpConnection.FBMLog("->WHEN:"+when);
+							Log.d(TAG,"->WHEN:"+when);
 							priv = priv.substring(priv.indexOf("<td"));
 							priv = priv.substring(priv.indexOf(">")+1);
 							length = priv.substring(0,priv.indexOf(" "));
-							FBMHttpConnection.FBMLog("->LENGTH:"+length);
+							Log.d(TAG,"->LENGTH:"+length);
 							s = br.readLine();
 							priv = s.substring(s.indexOf("href=")+6);
 							link = priv.substring(0,priv.indexOf("'"));
-							FBMHttpConnection.FBMLog("->LINK:"+link);
+							Log.d(TAG,"->LINK:"+link);
 							priv = priv.substring(priv.indexOf("href=")+6);
 							del = priv.substring(0,priv.indexOf("'"));
-							FBMHttpConnection.FBMLog("->DEL:"+del);
+							Log.d(TAG,"->DEL:"+del);
 							name = link.substring(link.indexOf("fichier=")+8);
-							FBMHttpConnection.FBMLog("->NAME:"+name);
+							Log.d(TAG,"->NAME:"+name);
 							if (status.compareTo(STR_NEWMESSAGE) == 0)
 							{
 								intstatus = 0;
@@ -463,35 +465,34 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 							if (curs.moveToFirst() == false)
 				        	{
 								// Store data in db if the message is not present in the db
-								FBMHttpConnection.FBMLog("STORING IN DB");
+								Log.i(TAG,"STORING IN DB");
 					        	mDbHelper.createMessage(intstatus, presence, from, when, link, del, Integer.parseInt(length), name);
 					        	newmsg++;
 				        	}
 				        	else
 				        	{
 								// Update data in db if the message is already present in the db
-				        		FBMHttpConnection.FBMLog("UPDATING DB");
+				        		Log.i(TAG,"UPDATING DB");
 				        		mDbHelper.updateMessage(presence, link, del, name);
 				        	}
 				        	curs.close();
 						}
 					}
 				}
-				FBMHttpConnection.FBMLog("fin extract");
 			}
 			else
 			{
-				FBMHttpConnection.FBMLog("pb extract");
+				Log.d(TAG,"pb extract");
 			}
 			mDbHelper.close();
 		}
 
 		catch (Exception e)
 		{
-			FBMHttpConnection.FBMLog("getMessageList : " + e.getMessage());
+			Log.e(TAG,"getMessageList : " + e.getMessage());
 			e.printStackTrace();
 		}
-		FBMHttpConnection.FBMLog("getmessage end "+newmsg);
+		Log.i(TAG,"getmessage end "+newmsg);
 		return newmsg;
  	}
 

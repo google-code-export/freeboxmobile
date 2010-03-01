@@ -26,6 +26,7 @@ import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -132,6 +133,8 @@ public class ProgrammationActivity extends Activity implements PvrConstants
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.pvr_programmation2);
         FBMHttpConnection.initVars(this, null);
+        Log.i(TAG,"PROGRAMMATIONACTIVITY CREATE");
+
         resetJours();
 
         setTitle(getString(R.string.app_name) + " " + getString(R.string.pvrPVR)
@@ -304,7 +307,8 @@ public class ProgrammationActivity extends Activity implements PvrConstants
     protected void onStart()
     {
     	super.onStart();
-    	
+        Log.i(TAG,"PROGRAMMATIONACTIVITY START");
+
 		setProgressBarIndeterminateVisibility(pbiv);
     	if (lastUser.equals(FBMHttpConnection.getIdentifiant()))
     	{
@@ -322,7 +326,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 	        	if (!mgr.getString(KEY_SPLASH_PVR, "0").equals(getString(R.string.app_version)))
 	        	{
 					runProgNetwork(true, true);
-	        		FBMHttpConnection.FBMLog("PVR: on rafraichi les chaines");
+	        		Log.d(TAG,"PVR: on rafraichi les chaines");
 	        		Editor editor = mgr.edit();
 					editor.putString(KEY_SPLASH_PVR, getString(R.string.app_version));
 					editor.commit();
@@ -338,7 +342,6 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 				runProgNetwork(false, true);
 			}
     	}
-        FBMHttpConnection.FBMLog("FIN ONSTART");
     }
     
     private boolean runProgNetwork(final boolean chaines, final boolean disques)
@@ -445,7 +448,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 	@Override    
     protected Dialog onCreateDialog(int id) 
     {
-		FBMHttpConnection.FBMLog("ON CREATE FIN : "+choosen_year_fin+" "+choosen_month_fin+" "+choosen_day_fin+" "+choosen_hour_fin+" "+choosen_minute_fin);
+		Log.d(TAG,"ON CREATE FIN : "+choosen_year_fin+" "+choosen_month_fin+" "+choosen_day_fin+" "+choosen_hour_fin+" "+choosen_minute_fin);
 
         switch (id) {
             case DIALOG_DATE_DEB: 
@@ -554,7 +557,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
         choosen_minute_fin = c.get(Calendar.MINUTE);
 		ButtonDateFin.setText(makeDate(choosen_year_fin, choosen_month_fin, choosen_day_fin));
 		ButtonTimeFin.setText(makeTime(choosen_hour_fin, choosen_minute_fin));
-//		FBMHttpConnection.FBMLog("FIN : "+choosen_year_fin+" "+choosen_month_fin+" "+choosen_day_fin+" "+choosen_hour_fin+" "+choosen_minute_fin);
+//		Log.d(TAG,"FIN : "+choosen_year_fin+" "+choosen_month_fin+" "+choosen_day_fin+" "+choosen_hour_fin+" "+choosen_minute_fin);
     }
 
     int getDuree()
@@ -786,7 +789,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
 			{
-				FBMHttpConnection.FBMLog("DISQUE SELECTED : "+parent.getSelectedItem().toString());
+				Log.d(TAG,"DISQUE SELECTED : "+parent.getSelectedItem().toString());
 				afficherInfosDisque();
 			}
 
@@ -828,6 +831,10 @@ public class ProgrammationActivity extends Activity implements PvrConstants
                 	if (res == null)
                 	{
                 		EnregistrementsNetwork.updateEnregistrementsFromConsole(progAct);
+                	}
+                	else
+                	{
+                		Log.d(TAG,"RETOUR CONSOLE ENREGISTREMENT : "+res);
                 	}
     	        	return res;
                 }
@@ -882,7 +889,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
         		// Service
         		Spinner spinnerQualite = (Spinner) findViewById(R.id.pvrPrgQualite);
         		servicesCursor.moveToPosition(spinnerQualite.getSelectedItemPosition());
-        		FBMHttpConnection.FBMLog("SERVICE : "+servicesCursor.getString(servicesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_SERVICE_DESC)));
+        		Log.d(TAG,"SERVICE : "+servicesCursor.getString(servicesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_SERVICE_DESC)));
         		service = servicesCursor.getInt(servicesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_SERVICE_ID));
         		
         		// Date et heure
@@ -897,8 +904,9 @@ public class ProgrammationActivity extends Activity implements PvrConstants
         		
         		// Disque
         		int disqueId = disqueSpinner.getSelectedItemPosition();
-        		disquesCursor.moveToPosition(disqueId);
-        		where_id = disquesCursor.getInt(disquesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_DISQUE_ID));
+        		// TODO : Ici, si l'abonné n'a pas de disque dur dans sa Freebox : problème !
+       			disquesCursor.moveToPosition(disqueId);
+       			where_id = disquesCursor.getInt(disquesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_DISQUE_ID));
 
         		// Creation des variables POST
         		postVars.add(new BasicNameValuePair("chaine", mChaineID.toString()));
@@ -1042,7 +1050,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 			}
 	        catch (ParseException e)
 	        {
-	        	FBMHttpConnection.FBMLog("Problème conversion de date deb ! "+e.getMessage());
+	        	Log.e(TAG,"Problème conversion de date deb ! "+e.getMessage());
 				e.printStackTrace();
 				showErreurDate("fin");
 			}
@@ -1057,7 +1065,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 			}
 	        catch (ParseException e)
 	        {
-	        	FBMHttpConnection.FBMLog("Problème conversion de date fin ! "+e.getMessage());
+	        	Log.e(TAG,"Problème conversion de date fin ! "+e.getMessage());
 				e.printStackTrace();
 				showErreurDate("début");
 			}
@@ -1175,7 +1183,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 			disqueId = disquesCursor.getInt(t1);
 	    	ChainesDbAdapter db = new ChainesDbAdapter(this);
 	    	db.open();
-	//    	FBMHttpConnection.FBMLog("afficherInfosDisque : "+disqueId + " "+mBoitierHDName);
+	//    	Log.d(TAG,"afficherInfosDisque : "+disqueId + " "+mBoitierHDName);
 	    	Cursor c = db.fetchDisque(disqueId, mBoitierHDName);
 	    	startManagingCursor(c);
 	        if (c.moveToFirst())
@@ -1299,7 +1307,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 		        	}
 		       		while (boitiersCursor.moveToNext());
 		        	plusieursBoitiersHD = (i > 1);
-		        	FBMHttpConnection.FBMLog("PLUSIEURS BOITIERS HD : "+i);
+		        	Log.d(TAG,"PLUSIEURS BOITIERS HD : "+i);
 		        }
 			break;
 		}
@@ -1374,7 +1382,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
         
         public ProgNetwork(boolean getChaines, boolean getDisques)
         {
-        	FBMHttpConnection.FBMLog("ProgNetwork START "+getChaines + " "+getDisques);
+        	Log.d(TAG,"ProgNetwork START "+getChaines + " "+getDisques);
         	this.getChaines = getChaines;
         	this.getDisques = getDisques;
         }

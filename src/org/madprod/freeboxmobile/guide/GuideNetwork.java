@@ -21,6 +21,7 @@ import android.content.SharedPreferences.Editor;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.util.Log;
 
 /**
  * $Id$
@@ -88,7 +89,7 @@ public class GuideNetwork extends AsyncTask<Void, Integer, Integer> implements G
     	getProg = prog;
     	forceRefresh = force;
     	this.pnb = pnb;
-    	FBMHttpConnection.FBMLog("GUIDENETWORK START "+d+" "+chaine+" "+prog+" "+force);
+    	Log.d(TAG,"GUIDENETWORK START "+d+" "+chaine+" "+prog+" "+force);
     }
     
 	private int getBoolean(JSONObject o, String key)
@@ -169,7 +170,7 @@ public class GuideNetwork extends AsyncTask<Void, Integer, Integer> implements G
 			(getChaines == false))
 		{
 			// On a déjà les données, on les charge donc pas
-			FBMHttpConnection.FBMLog("ON A DEJA LES DONNEES");
+			Log.d(TAG,"ON A DEJA LES DONNEES");
 			db.close();
 			return DATA_FROM_CACHE;
 		}
@@ -180,13 +181,13 @@ public class GuideNetwork extends AsyncTask<Void, Integer, Integer> implements G
         String resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(MAGNETO_URL, param, true, true, "UTF8"));
         if (resultat != null)
         {
-        	FBMHttpConnection.FBMLog("Guide Network start "+new Date());
+        	Log.d(TAG,"Guide Network start "+new Date());
         	try
         	{
 				jObject = new JSONObject(resultat);
 				if (jObject.has("redirect"))
 				{
-					FBMHttpConnection.FBMLog("Authentification expirée");
+					Log.d(TAG,"Authentification expirée");
 					if (FBMHttpConnection.connect() == CONNECT_CONNECTED)
 					{
 						resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(MAGNETO_URL, param, true, true, "UTF8"));
@@ -284,12 +285,12 @@ public class GuideNetwork extends AsyncTask<Void, Integer, Integer> implements G
 						        filen = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES, canal+".png");
 								try
 								{
-									FBMHttpConnection.FBMLog("Copy file "+image);
+									Log.d(TAG,"Copy file "+image);
 									Utils.copyFile(file, filen);
 								}
 								catch (IOException e)
 								{
-									FBMHttpConnection.FBMLog("Impossible de copier "+image+" "+canal);
+									Log.d(TAG,"Impossible de copier "+image+" "+canal);
 									e.printStackTrace();
 								}
 							}
@@ -310,8 +311,8 @@ public class GuideNetwork extends AsyncTask<Void, Integer, Integer> implements G
 			}
         	catch (JSONException e)
         	{
-				FBMHttpConnection.FBMLog("JSONException ! "+e.getMessage());
-				FBMHttpConnection.FBMLog(resultat);
+				Log.e(TAG,"JSONException ! "+e.getMessage());
+				Log.d(TAG,resultat);
 				e.printStackTrace();
 				ok = false;
 			}
@@ -321,13 +322,13 @@ public class GuideNetwork extends AsyncTask<Void, Integer, Integer> implements G
         	ok = false;
         }
    		publishProgress(max);
-    	FBMHttpConnection.FBMLog("Guide Network end "+new Date());
+    	Log.d(TAG,"Guide Network end "+new Date());
     	db.close();
     	if (ok)
     	{
 	    	return DATA_NEW_DATA;
     	}
-        FBMHttpConnection.FBMLog("==> Impossible de télécharger les programmes");
+        Log.d(TAG,"==> Impossible de télécharger les programmes");
         return DATA_NOT_DOWNLOADED;
     }
 }

@@ -55,7 +55,7 @@ public class MevoDbAdapter implements MevoConstants
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
 		{
-			Log.w(DEBUGTAG, "MevoDbAdapter : Upgrading database from version " + oldVersion + " to "
+			Log.w(TAG, "MevoDbAdapter : Upgrading database from version " + oldVersion + " to "
 					+ newVersion + ", which will destroy all old data");
 			db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE);
 			onCreate(db);
@@ -72,7 +72,7 @@ public class MevoDbAdapter implements MevoConstants
 	public MevoDbAdapter(Context ctx)
 	{
 		this.mCtx = ctx;
-//		Log.d(DEBUGTAG,"DATABASE PATH : "+ctx.getDatabasePath("tptp"));
+//		Log.d(TAG,"DATABASE PATH : "+ctx.getDatabasePath("tptp"));
 	}
 
 	/**

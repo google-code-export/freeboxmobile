@@ -28,6 +28,7 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -60,7 +61,7 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
         super.onCreate(savedInstanceState);
 
         FBMHttpConnection.initVars(this, null);
-        FBMHttpConnection.FBMLog("GUIDECHOIXCHAINES CREATE");
+        Log.i(TAG,"GUIDECHOIXCHAINES CREATE");
         setContentView(R.layout.guide_choix_chaines);
         mDbHelper = new ChainesDbAdapter(this);
         mDbHelper.open();
@@ -95,7 +96,7 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
 	{
 		super.onListItemClick(l, v, pos, id);
 		itemSelected = pos;
-		FBMHttpConnection.FBMLog("ITEM SELECTED : "+itemSelected);
+		Log.d(TAG,"ITEM SELECTED : "+itemSelected);
 		TextView chaine_id = (TextView) v.findViewById(R.id.HiddenTextView); 
 		displayAdd(Integer.decode((String)chaine_id.getText()));
 	}
@@ -107,7 +108,7 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
     
     private void getFavoris()
     {
-		FBMHttpConnection.FBMLog("getFavoris");
+		Log.d(TAG,"getFavoris");
 
 		listeFavoris.clear();
 		// On commence par récupérer la liste des chaines favorites
@@ -441,7 +442,7 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
         {
         	this.command = command;
         	this.param = param;
-        	FBMHttpConnection.FBMLog("GUIDEFAVORISACTIVITYNETWORK START "+command+" "+param);
+        	Log.d(TAG,"GUIDEFAVORISACTIVITYNETWORK START "+command+" "+param);
         }
         
         private boolean Action(ArrayList<NameValuePair> params)
@@ -467,8 +468,8 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
 	    						}
 	    		            	catch (JSONException e)
 	    		            	{
-	    		    				FBMHttpConnection.FBMLog("JSONException ! "+e.getMessage());
-	    		    				FBMHttpConnection.FBMLog(res);
+	    		    				Log.e(TAG,"JSONException ! "+e.getMessage());
+	    		    				Log.e(TAG,res);
 	    		    				e.printStackTrace();
 	    		    				return false;
 	    		    			}    						
@@ -484,12 +485,12 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
             	}
             	catch (JSONException e)
             	{
-    				FBMHttpConnection.FBMLog("JSONException ! "+e.getMessage());
-    				FBMHttpConnection.FBMLog(res);
+    				Log.e(TAG,"JSONException ! "+e.getMessage());
+    				Log.e(TAG,res);
     				e.printStackTrace();
     				return false;
     			}
-            	FBMHttpConnection.FBMLog("ACTION : "+res);
+//            	Log.d(TAG,"ACTION : "+res);
                 return true;
             }
             return false;
