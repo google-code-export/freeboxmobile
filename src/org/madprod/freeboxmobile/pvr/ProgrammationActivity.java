@@ -64,8 +64,8 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 	// etat de ProgressBarIndeterminateVisibility
 	static private boolean pbiv = false;
 	
-	static private boolean fromListe = false;
-	static private boolean fromGuide = false;
+	private boolean fromListe = false;
+	private boolean fromGuide = false;
 	
 	// Id du boitier séléctionné
 	private static int mBoitierHD = 0;
@@ -74,6 +74,8 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 	// Curseur sur les boitiers
 	private static Cursor boitiersCursor = null;
 	SimpleCursorAdapter boitiersSpinnerAdapter = null;
+	
+	//TODO : Virer cette variable, sert à rien à priori
 	private static boolean plusieursBoitiersHD;
 	
 	// Curseur sur la liste des chaines
@@ -154,6 +156,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
     	if (extras != null)
     		fromGuide = extras.getString(ChainesDbAdapter.KEY_PROG_TITLE) != null;
     	
+    	Log.d(TAG, "from liste : "+fromListe+" - from guide : "+fromGuide);
         // Mode 24h
         ((TimePicker) findViewById(R.id.pvrPrgHeure)).setIs24HourView(true);
         
@@ -821,7 +824,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
             		progressDialog = new ProgressDialog(progAct);
             		progressDialog.setIcon(R.drawable.fm_magnetoscope);
             		progressDialog.setTitle(getString(R.string.pvrPatientez));
-            		progressDialog.setMessage(getString(fromListe ? R.string.pvrProgrammationEnCours : R.string.pvrModificationEnCours));
+            		progressDialog.setMessage(getString(fromListe ? R.string.pvrModificationEnCours: R.string.pvrProgrammationEnCours));
             		progressDialog.show();
                 }
             	

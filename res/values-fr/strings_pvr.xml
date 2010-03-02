@@ -53,7 +53,7 @@ Par exemple, si vous voulez enregistrer une émission tous les mardi et mercredi
 	<string name="pvrProgrammationEnCours">Programmation de l\'enregistrement en cours...</string>
 	<string name="pvrModificationEnCours">Modification de l\'enregistrement en cours...</string>
 	<string name="pvrModificationsEnregistrees">Enregistrement programmé !</string>
-	<string name="pvrErreurConsole">Message retourné par la console de free :</string>
+	<string name="pvrErreurConsole">Message retourné par le serveur :</string>
 	
 	<string name="pvrNonEnregistrable">Non enregistrable</string>
 	<string name="pvrGioLibres">Gio libres</string>
