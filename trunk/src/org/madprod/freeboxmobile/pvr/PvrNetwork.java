@@ -141,6 +141,8 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Pvr
 						jDisksArray = jObject.getJSONArray("disks");
 						for (i=0 ; i < jDisksArray.length() ; i++)
 						{
+							// En insérant en base comme cela, si un boitier n'a pas de disque
+							// il ne sera paas référencé (ce qui est voulu)
 							jDiskObject = jDisksArray.getJSONObject(i);
 					    	db.createBoitierDisque(
 					    			"Freebox HD "+(boitier+1),
@@ -227,9 +229,9 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Pvr
     	if (getChaines)
     		publishProgress(max);
     	db.close();
-    	doSwap(ok);
     	if (ok)
     	{
+        	doSwap();
 	    	// On met à jour le timestamp du dernier refresh
 			SharedPreferences mgr = activity.getSharedPreferences(KEY_PREFS, activity.MODE_PRIVATE);
 	    	Editor editor = mgr.edit();
@@ -241,19 +243,16 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Pvr
         return false;
     }
 
-	private void doSwap(boolean ok)
+	private void doSwap()
 	{
 		ChainesDbAdapter db;
 
 		db = new ChainesDbAdapter(activity);
 		db.open();
-		if (ok)
-		{
-			if (getChaines)
-				db.swapChaines();
-			if (getDisques)
-				db.swapBoitiersDisques();
-		}
+		if (getChaines)
+			db.swapChaines();
+		if (getDisques)
+			db.swapBoitiersDisques();
 		db.close();
 	}
 }
