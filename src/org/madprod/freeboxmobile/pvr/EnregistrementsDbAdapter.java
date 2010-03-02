@@ -209,11 +209,6 @@ public class EnregistrementsDbAdapter {
         return mDb.update(DATABASE_TABLE_ENR, args, KEY_ROWID + "=" + rowId, null) > 0;
     }
     
-    public boolean deleteAllEnregistrements_unused() {
-    	
-    	return mDb.delete(DATABASE_TABLE_ENR, "1", null) > 0;
-    }
-
     public Cursor fetchAllEnregistrements(String[] colonnes, String sort)
     {
         return mDb.query(DATABASE_TABLE_ENR, colonnes, KEY_STATUS+" = 1", null, null, null, sort);

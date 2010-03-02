@@ -941,8 +941,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 
         		// Requete HTTP
         		String url = "http://adsl.free.fr/admin/magneto.pl";
-        		if (plusieursBoitiersHD)
-        			postVars.add(new BasicNameValuePair("box", ""+mBoitierHD));
+       			postVars.add(new BasicNameValuePair("box", ""+mBoitierHD));
         		String resultat = FBMHttpConnection.getPage(FBMHttpConnection.postAuthRequest(url, postVars, true, true));
 
         		int erreurPos = resultat.indexOf("erreurs");
@@ -1009,7 +1008,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 			nomEmission.setText(bundle.getString(ChainesDbAdapter.KEY_PROG_TITLE));
 			nomEmissionSaisi = true;
 			chainesCursor.moveToFirst();
-			int chaine = bundle.getInt(ChainesDbAdapter.KEY_GUIDECHAINE_CANAL/*KEY_PROG_CHANNEL_ID*/);
+			int chaine = bundle.getInt(ChainesDbAdapter.KEY_GUIDECHAINE_CANAL);
 			do
 			{
 				if (chainesCursor.getInt(chainesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_CHAINE_ID)) == chaine)
@@ -1131,7 +1130,18 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 	        TimePicker heure = (TimePicker) findViewById(R.id.pvrPrgHeure);
 	        
 	        // Remplissage
-	        chainesSpinner.setSelection(c.getInt(c.getColumnIndex(EnregistrementsDbAdapter.KEY_CHAINE_ID)));
+			chainesCursor.moveToFirst();
+			int chaine = c.getInt(c.getColumnIndex(EnregistrementsDbAdapter.KEY_CHAINE_ID));//bundle.getInt(ChainesDbAdapter.KEY_GUIDECHAINE_CANAL);
+			do
+			{
+				if (chainesCursor.getInt(chainesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_CHAINE_ID)) == chaine)
+				{
+					break;
+				}
+			} while (chainesCursor.moveToNext());
+	        chainesSpinner.setSelection(chainesCursor.getPosition());
+
+//	        chainesSpinner.setSelection(c.getInt(c.getColumnIndex(EnregistrementsDbAdapter.KEY_CHAINE_ID)));
 	        disqueSpinner.setSelection(getDisqueSpinnerId(c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_WHERE_ID))));
 	        
 	        String strDate = c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_DATE));
