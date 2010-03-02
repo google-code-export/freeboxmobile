@@ -194,9 +194,17 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		map = new HashMap<String,Object>();
 		map.put(M_ICON, R.drawable.fm_telecopie);
 		map.put(M_TITRE, getString(R.string.buttonFax));
-		map.put(M_DESC, "Utilisez votre compte Freebox pour envoyer des Fax à partir de votre mobile\n\nCette fonctionnalité sera bientot disponible");
-		map.put(M_CLASS, null);
-//		map.put(M_CLASS, FaxActivity.class);
+		String t = "Utilisez votre compte Freebox pour envoyer des Fax à partir de votre mobile";
+		if (getString(R.string.app_version).contains("rc"))
+		{
+			map.put(M_CLASS, FaxActivity.class);
+		}
+		else
+		{
+			t += "\n\nCette fonctionnalité sera bientot disponible";
+			map.put(M_CLASS, null);
+		}
+		map.put(M_DESC, t);
 		modulesList.add(map);
 		map = new HashMap<String,Object>();
 		map.put(M_ICON, R.drawable.fm_actus_freenautes);

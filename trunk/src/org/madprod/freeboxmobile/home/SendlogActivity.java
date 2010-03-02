@@ -87,21 +87,7 @@ public class SendlogActivity extends Activity implements HomeConstants
 			    			myLog+"\n"+
 			    			"Description :\n----------\n" + description + "\n----------\n"+
 			    			fbmlog);
-					SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-/*			    	Intent i = new Intent(Intent.ACTION_SEND)
-			    		.putExtra(Intent.EXTRA_EMAIL, new String[]{"bugs@freeboxmobile.org"})
-			    		.putExtra(Intent.EXTRA_TEXT, ssb)
-			    		.putExtra(Intent.EXTRA_SUBJECT, 
-			    				getString(R.string.mail_subject)+" "+sdf.format(new Date())) 
-			    				.setType("message/rfc822");
-			    				*/
 			    	fbmlog = ssb.toString();
-/*					Intent i = new Intent(Intent.ACTION_SEND)
-		    		.putExtra(Intent.EXTRA_TEXT, fbmlog).setType("text/plain")
-		    		.addCategory(Intent.CATEGORY_DEFAULT)
-		    		;
-			    	startActivityForResult(Intent.createChooser(i,  "Partagez ce programme avec"),0);
-*/
 			    	collectAndSendLog();
         		}
         		else
@@ -185,7 +171,7 @@ public class SendlogActivity extends Activity implements HomeConstants
 	        intent.putExtra(EXTRA_SEND_INTENT_ACTION, Intent.ACTION_SENDTO);
 	        final String email = "bugs@freeboxmobile.org";
 	        intent.putExtra(EXTRA_DATA, Uri.parse("mailto:" + email));
-	        intent.putExtra(EXTRA_ADDITIONAL_INFO, fbmlog/*"Additonal info: <additional info from the device (firmware revision, etc.)>\n"*/);
+	        intent.putExtra(EXTRA_ADDITIONAL_INFO, fbmlog);
 	        intent.putExtra(Intent.EXTRA_SUBJECT, "Freebox Mobile bug report "+sdf.format(new Date()));
 	
 	        intent.putExtra(EXTRA_FORMAT, "time");

@@ -87,8 +87,8 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Pvr
     	int i,j;
     	int chaineId;
 		ChainesDbAdapter db;
-		int courant=0;
 		int max = 0;
+		int size = 0;
 		boolean ok = true;
 		
 		db = new ChainesDbAdapter(activity);
@@ -139,7 +139,8 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Pvr
 					{
 						// ON RECUPERE LES DISQUES
 						jDisksArray = jObject.getJSONArray("disks");
-						for (i=0 ; i < jDisksArray.length() ; i++)
+						size = jDisksArray.length();
+						for (i=0 ; i < size ; i++)
 						{
 							// En insérant en base comme cela, si un boitier n'a pas de disque
 							// il ne sera paas référencé (ce qui est voulu)
@@ -158,7 +159,7 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Pvr
 					    			jDiskObject.getString("label")
 					    			);
 						}
-						Log.d(TAG,"GET BOITIER "+boitier+" NB DISQUES : "+i);
+						Log.d(TAG,"GET BOITIER "+boitier+" - NB DISQUES : "+i);
 					}
 					if (getChaines)
 					{
@@ -167,13 +168,11 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Pvr
 						max = jChainesArray.length();
 						ProgrammationActivity.progressText = "Actualisation de la liste des "+max+" chaînes pour le boitier "+(int)(boitier+1)+" ("+nbBoitiers+" boitier"+(nbBoitiers >1?"s":"")+" en tout)...";
 						this.max = max;
-						courant = 0;
 						publishProgress(0);
 						Log.d(TAG,"Récupération chaines boitier "+boitier+" - nb chaines = "+max);
-						for (i=0 ; i < jChainesArray.length() ; i++)
+						for (i=0 ; i < max ; i++)
 						{
-							courant ++;
-							publishProgress(courant);
+							publishProgress(i);
 							jChaineObject = jChainesArray.getJSONObject(i);
 							chaineId = jChaineObject.getInt("id");
 							db.createChaine(
@@ -182,7 +181,8 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Pvr
 									boitier
 									);
 							jServicesArray = jChaineObject.getJSONArray("service");
-							for (j=0 ; j < jServicesArray.length() ; j++)
+							size = jServicesArray.length();
+							for (j=0 ; j < size ; j++)
 							{
 								jServiceObject = jServicesArray.getJSONObject(j);
 								mode = jServiceObject.getString("pvr_mode");
