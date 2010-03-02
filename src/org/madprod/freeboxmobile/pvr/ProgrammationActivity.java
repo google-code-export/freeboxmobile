@@ -290,7 +290,10 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
 			{
-				if (mBoitierHD != position) {
+				Log.d(TAG, "Boitier HD SPinner "+position+" "+id);
+				if (mBoitierHD != position)
+				{
+					Log.d(TAG, "Boitier HD SPinner into"+position+" "+id);
 	        		boitiersCursor.moveToPosition(position);
 	        		mBoitierHD = boitiersCursor.getInt(boitiersCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_BOITIER_ID));
 	        		mBoitierHDName = boitiersCursor.getString(boitiersCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_BOITIER_NAME));
@@ -1255,7 +1258,8 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 				break;
 				
 			case R.id.pvrPrgDisque:
-				disquesCursor = db.getListeDisques(mBoitierHDName);
+//				disquesCursor = db.getListeDisques(mBoitierHDName);
+				disquesCursor = db.getListeDisques(mBoitierHD);
 		        if (disquesCursor.moveToFirst())
 		        {
 					startManagingCursor(disquesCursor);
