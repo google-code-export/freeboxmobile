@@ -68,12 +68,14 @@ public class GuideDetailsActivity extends Activity implements GuideConstants
 						@Override
 						public void onClick(View arg0)
 						{
-							String text = titreEmission.getText()+"\n"+dateHeureEmission.getText()+"\n\n"+"Partagé par FreeboxMobile pour Android.";
+							String text = titreEmission.getText()+"\n"+dateHeureEmission.getText()+
+								" sur "+extras.getString(ChainesDbAdapter.KEY_GUIDECHAINE_NAME)+
+								"\n\n"+"Partagé par FreeboxMobile pour Android.";
 					        Intent i = new Intent(Intent.ACTION_SEND)
-				    		.putExtra(Intent.EXTRA_TEXT, text).setType("text/plain")
-				    		.putExtra(Intent.EXTRA_SUBJECT, "ProgrammeTV partagé par FreeboxMobile")
-//				    		.addCategory(Intent.CATEGORY_DEFAULT)
-				    		;
+				    			.putExtra(Intent.EXTRA_TEXT, text).setType("text/plain")
+				    			.putExtra(Intent.EXTRA_SUBJECT, "ProgrammeTV partagé par FreeboxMobile")
+//				    			.addCategory(Intent.CATEGORY_DEFAULT)
+				    			;
 					    	startActivityForResult(Intent.createChooser(i, "Partagez ce programme avec"),0);
 						}
 					}
