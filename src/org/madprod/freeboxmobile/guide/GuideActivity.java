@@ -178,7 +178,9 @@ public class GuideActivity extends ListActivity implements GuideConstants
     		new GuideActivityNetwork(sdf.format(new Date()), true, true, false, false).execute((Void[])null);    		
     	}
     	else
-    		new GuideActivityNetwork(sdf.format(new Date()), false, true, false, false).execute((Void[])null);
+    	{
+    		new GuideActivityNetwork(sdf.format(new Date()), false, true, false, true).execute((Void[])null);
+    	}
     	setTitle(getString(R.string.app_name)+" Guide TV - "+FBMHttpConnection.getTitle());
     	
 		if (!mgr.getString(KEY_SPLASH_GUIDE, "0").equals(this.getString(R.string.app_version)))
