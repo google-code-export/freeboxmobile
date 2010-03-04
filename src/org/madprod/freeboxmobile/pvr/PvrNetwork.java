@@ -10,11 +10,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.madprod.freeboxmobile.FBMHttpConnection;
+import org.madprod.freeboxmobile.FBMNetTask;
+import org.madprod.freeboxmobile.R;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.app.Activity;
-import android.os.AsyncTask;
 import android.util.Log;
 
 /**
@@ -22,54 +22,16 @@ import android.util.Log;
  * $Id$
  */
 
-public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements PvrConstants
+public class PvrNetwork extends FBMNetTask implements PvrConstants // AsyncTask<Void, Integer, Boolean> implements PvrConstants
 {
-	private Activity activity;
 	private boolean getChaines;
 	private boolean getDisques;
-	private int max;
 	
-    protected void onPreExecute()
+    public PvrNetwork(boolean getChaines, boolean getDisques)
     {
-    }
-
-    protected Boolean doInBackground(Void... arg0)
-    {
-    	return getData();
-    }
-    
-    protected void onProgressUpdate(Integer... progress)
-    {
-        ProgrammationActivity.showProgress(activity, progress[0], max);
-    }
-    
-    protected void onPostExecute(Boolean telechargementOk)
-    {
-   		ProgrammationActivity.dismissPd();
-    }
-    
-    public PvrNetwork(Activity a, boolean getChaines, boolean getDisques)
-    {
-    	activity = a;
     	this.getChaines = getChaines;
     	this.getDisques = getDisques;
     }
-    
-	private int getBoolean(JSONObject o, String key)
-	{
-		if (o.has(key))
-		{
-			try
-			{
-				return (o.getBoolean(key)?1:0);
-			}
-			catch (JSONException e)
-			{
-				e.printStackTrace();
-			}
-		}
-		return 0;
-	}
 
     public boolean getData()
     {
@@ -91,11 +53,12 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Pvr
 		int size = 0;
 		boolean ok = true;
 		
-		db = new ChainesDbAdapter(activity);
+		db = new ChainesDbAdapter(getActivity());
 		db.open();
 
     	String url = "http://adsl.free.fr/admin/magneto.pl";
-    	
+    	dProgressSet("Importation", "", R.drawable.fm_magnetoscope);
+
     	if (getDisques)
     	{
 			db.makeBoitiersDisques();    		
@@ -151,10 +114,10 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Pvr
 					    			jDiskObject.getInt("free_size"),
 					    			jDiskObject.getInt("total_size"),
 					    			jDiskObject.getInt("id"),
-					    			getBoolean(jDiskObject,"nomedia"),
-					    			getBoolean(jDiskObject,"dirty"),
-					    			getBoolean(jDiskObject,"readonly"),
-					    			getBoolean(jDiskObject,"busy"),
+					    			getJSONBoolean(jDiskObject,"nomedia"),
+					    			getJSONBoolean(jDiskObject,"dirty"),
+					    			getJSONBoolean(jDiskObject,"readonly"),
+					    			getJSONBoolean(jDiskObject,"busy"),
 					    			jDiskObject.getString("mount_point"),
 					    			jDiskObject.getString("label")
 					    			);
@@ -166,8 +129,7 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Pvr
 						// ON RECUPERE LA LISTE DES CHAINES DE CE BOITIER
 						jChainesArray = jObject.getJSONArray("services");
 						max = jChainesArray.length();
-						ProgrammationActivity.progressText = "Actualisation de la liste des "+max+" chaînes pour le boitier "+(int)(boitier+1)+" ("+nbBoitiers+" boitier"+(nbBoitiers >1?"s":"")+" en tout)...";
-						this.max = max;
+						dProgressMessage("Actualisation de la liste des "+max+" chaînes pour le boitier "+(int)(boitier+1)+" ("+nbBoitiers+" boitier"+(nbBoitiers >1?"s":"")+" en tout)...", max);
 						publishProgress(0);
 						Log.d(TAG,"Récupération chaines boitier "+boitier+" - nb chaines = "+max);
 						for (i=0 ; i < max ; i++)
@@ -229,11 +191,12 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Pvr
     	if (getChaines)
     		publishProgress(max);
     	db.close();
+    	publishProgress(-1);
     	if (ok)
     	{
         	doSwap();
 	    	// On met à jour le timestamp du dernier refresh
-			SharedPreferences mgr = activity.getSharedPreferences(KEY_PREFS, activity.MODE_PRIVATE);
+			SharedPreferences mgr = getActivity().getSharedPreferences(KEY_PREFS, getActivity().MODE_PRIVATE);
 	    	Editor editor = mgr.edit();
 	    	editor.putLong(KEY_LAST_REFRESH+FBMHttpConnection.getIdentifiant(), (new Date()).getTime());
 	    	editor.commit();
@@ -247,7 +210,7 @@ public class PvrNetwork extends AsyncTask<Void, Integer, Boolean> implements Pvr
 	{
 		ChainesDbAdapter db;
 
-		db = new ChainesDbAdapter(activity);
+		db = new ChainesDbAdapter(getActivity());
 		db.open();
 		if (getChaines)
 			db.swapChaines();

@@ -11,6 +11,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
 import org.madprod.freeboxmobile.FBMHttpConnection;
+import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.pvr.PvrNetwork;
 
@@ -91,9 +92,10 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 	private static Cursor servicesCursor = null;
 
 	private long mRowId = -1;
-	Activity progAct = null;
+	static Activity progAct = null;
 	private boolean nomEmissionSaisi = false;
 	private boolean[] joursChoisis = { false, false, false, false, false, false, false };
+	// TODO : Remove progressDialog variable
 	static ProgressDialog progressDialog = null;
 	static AlertDialog alertDialog = null;
 	TextView nomEmission = null;
@@ -134,7 +136,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.pvr_programmation2);
-        FBMHttpConnection.initVars(this, null);
+        FBMNetTask.register(this);
         Log.i(TAG,"PROGRAMMATIONACTIVITY CREATE");
 
         resetJours();
@@ -394,7 +396,8 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 	protected void onDestroy()
     {
     	FBMHttpConnection.closeDisplay();
-    	progAct = null;
+    	FBMNetTask.unregister(this);
+//    	progAct = null;
     	super.onDestroy();
     }
 
@@ -499,31 +502,43 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 	        }
 	    };
 
-		private DatePickerDialog.OnDateSetListener mDateSetListenerFin =
-		    new DatePickerDialog.OnDateSetListener() 
-		    {        
-		        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) 
-		        {
-		        	choosen_year_fin = year;
-		        	choosen_month_fin = monthOfYear;
-		        	choosen_day_fin = dayOfMonth;
-	        		ButtonDateDeb.setText(makeDate(year, monthOfYear, dayOfMonth));
-	        		
-	        		setDuree();
-		        }
-		    };
+	private DatePickerDialog.OnDateSetListener mDateSetListenerFin =
+	    new DatePickerDialog.OnDateSetListener() 
+	    {        
+	        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) 
+	        {
+	        	choosen_year_fin = year;
+	        	choosen_month_fin = monthOfYear;
+	        	choosen_day_fin = dayOfMonth;
+        		ButtonDateDeb.setText(makeDate(year, monthOfYear, dayOfMonth));
+        		
+        		setDuree();
+	        }
+	    };
 
 	private String makeDate(int y, int m, int d)
 	{
-		String cdate;
-		
-		cdate  = d < 10 ? "0" : "";
-		cdate += d;
-		cdate += "/";
-		cdate += m+1 < 10 ? "0" : "";
-		cdate += m+1;
-		cdate += "/";
-		cdate += y;
+		String cdate = "";
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		Calendar c = Calendar.getInstance();
+		try {
+			c.setTime(sdf.parse(y+"-"+m+"-"+d));
+			c.setFirstDayOfWeek(Calendar.MONDAY);
+			cdate = jours[c.get(Calendar.DAY_OF_WEEK)]+" ";
+			cdate += d < 10 ? "0" : "";
+			cdate += d;
+			cdate += " "+mois[c.get(Calendar.MONTH)+1];
+		} catch (ParseException e) 
+		{
+			e.printStackTrace();
+			cdate = d < 10 ? "0" : "";
+			cdate += d;
+			cdate += "/";
+			cdate += m+1 < 10 ? "0" : "";
+			cdate += m+1;
+			cdate += "/";
+			cdate += y;
+		}
 		return cdate;
 	}
 
@@ -709,6 +724,8 @@ public class ProgrammationActivity extends Activity implements PvrConstants
     	alertDialog.show();
     }
 
+    // TODO : remove
+    /*
     public static void showProgress(Activity a, int progress, int max)
     {
     	if (progressDialog == null)
@@ -750,21 +767,22 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 		progressDialog.show();
     }
 
-    private static void dismissAd()
-    {
-    	if (alertDialog != null)
-    	{
-    		alertDialog.dismiss();
-    		alertDialog = null;
-    	}
-    }
-
     public static void dismissPd()
     {
     	if (progressDialog != null)
     	{
     		progressDialog.dismiss();
     		progressDialog = null;
+    	}
+    }
+*/
+    
+    private static void dismissAd()
+    {
+    	if (alertDialog != null)
+    	{
+    		alertDialog.dismiss();
+    		alertDialog = null;
     	}
     }
 
@@ -820,35 +838,42 @@ public class ProgrammationActivity extends Activity implements PvrConstants
         {
             class TraiterFormulaireTask extends AsyncTask<Void, Integer, String>
             {
-            	ProgressDialog progressDialog = null;
+//            	ProgressDialog progressDialog = null;
+//            	String errMsg = "";
 
                 protected void onPreExecute()
                 {
-            		progressDialog = new ProgressDialog(progAct);
-            		progressDialog.setIcon(R.drawable.fm_magnetoscope);
-            		progressDialog.setTitle(getString(R.string.pvrPatientez));
-            		progressDialog.setMessage(getString(fromListe ? R.string.pvrModificationEnCours: R.string.pvrProgrammationEnCours));
-            		progressDialog.show();
+                	FBMNetTask.iProgressShow(
+                			getString(R.string.pvrPatientez),
+                			getString(fromListe ? R.string.pvrModificationEnCours: R.string.pvrProgrammationEnCours),
+                			R.drawable.fm_magnetoscope
+                	);
+//            		progressDialog = new ProgressDialog(progAct);
+//            		progressDialog.setIcon(R.drawable.fm_magnetoscope);
+//            		progressDialog.setTitle(getString(R.string.pvrPatientez));
+//            		progressDialog.setMessage(getString(fromListe ? R.string.pvrModificationEnCours: R.string.pvrProgrammationEnCours));
+//            		progressDialog.show();
                 }
             	
                 protected String doInBackground(Void... arg0)
                 {
-                	String res = doAction();
-                	if (res == null)
+                	String errMsg = doAction();
+                	if (errMsg == null)
                 	{
                 		EnregistrementsNetwork.updateEnregistrementsFromConsole(progAct);
                 	}
                 	else
                 	{
-                		Log.d(TAG,"RETOUR CONSOLE ENREGISTREMENT : "+res);
+                		Log.d(TAG,"RETOUR CONSOLE ENREGISTREMENT : "+errMsg);
                 	}
-    	        	return res;
+    	        	return errMsg;
                 }
                 
                 protected void onPostExecute(String errMsg)
                 {
-                    progressDialog.dismiss();
-                    progressDialog = null;
+//                    progressDialog.dismiss();
+//                    progressDialog = null;
+                	FBMNetTask.iProgressDialogDismiss();
 
                     if (errMsg != null)
                     {
@@ -1132,8 +1157,8 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 	        }
 	        
 	        // Views
-	        DatePicker date = (DatePicker) findViewById(R.id.pvrPrgDate);
-	        TimePicker heure = (TimePicker) findViewById(R.id.pvrPrgHeure);
+//	        DatePicker date = (DatePicker) findViewById(R.id.pvrPrgDate);
+//	        TimePicker heure = (TimePicker) findViewById(R.id.pvrPrgHeure);
 	        
 	        // Remplissage
 			chainesCursor.moveToFirst();
@@ -1153,12 +1178,13 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 	        String strDate = c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_DATE));
 	        int day = Integer.parseInt(strDate.substring(0,2));
 	        int month = Integer.parseInt(strDate.substring(3, 5));
+	        month -= 1; //month = 0..11
 	        int year = Integer.parseInt(strDate.substring(6));
-	        date.updateDate(year, month-1, day);//month = 0..11
+	        //date.updateDate(year, month-1, day);//month = 0..11
 	        
 	        String strHeure = c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_HEURE));
-	        heure.setCurrentHour(Integer.parseInt(strHeure.substring(0,2)));
-	        heure.setCurrentMinute(Integer.parseInt(strHeure.substring(3)));
+//	        heure.setCurrentHour(Integer.parseInt(strHeure.substring(0,2)));
+//	        heure.setCurrentMinute(Integer.parseInt(strHeure.substring(3)));
 	        
 	        choosen_year_deb = year;
 	        choosen_month_deb = month;
@@ -1366,22 +1392,14 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 
         protected void onPreExecute()
         {
-//    		if (!getChaines)
         		setProgressBarIndeterminateVisibility(true);
         		pbiv = true;
-//        		else
-//        			showPatientezDonnees(progAct);
         }
 
         protected Boolean doInBackground(Void... arg0) {
-        	return new PvrNetwork(progAct, getChaines, getDisques).getData();
+        	return new PvrNetwork(getChaines, getDisques).getData();
         }
 
-/*        protected void onProgressUpdate(Integer... progress)
-        {
-            showProgress(progAct, progress[0], );
-        }	        
-*/
         protected void onPostExecute(Boolean telechargementOk)
         {
         	if (telechargementOk == Boolean.TRUE)
@@ -1392,8 +1410,9 @@ public class ProgrammationActivity extends Activity implements PvrConstants
     			afficherMsgErreur(progAct.getString(R.string.pvrErreurTelechargementDonnees));
         	}
         	preparerActivite();
-        	dismissPd();
-    		setProgressBarIndeterminateVisibility(false);
+        	// progAct important ici / en cas de screenrotation, il est essentiel
+        	// (sinon le setProgressBar se fait sur l'ancienne activity que connait l'asynctask) 
+    		progAct.setProgressBarIndeterminateVisibility(false);
     		pbiv = false;
         }
         
