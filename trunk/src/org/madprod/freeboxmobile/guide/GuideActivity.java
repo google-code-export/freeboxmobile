@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.madprod.freeboxmobile.FBMHttpConnection;
+import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
 import org.madprod.freeboxmobile.pvr.ProgrammationActivity;
@@ -17,7 +18,6 @@ import org.madprod.freeboxmobile.pvr.ProgrammationActivity;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ListActivity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -58,7 +58,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 
 public class GuideActivity extends ListActivity implements GuideConstants
 {
-	private static ProgressDialog progressDialog = null;
+//	private static ProgressDialog progressDialog = null;
 	public static String progressText;
 	private static ChainesDbAdapter mDbHelper;
 	private static Activity guideAct;
@@ -78,8 +78,6 @@ public class GuideActivity extends ListActivity implements GuideConstants
 	private ArrayList<GuideAdapter> ga = null;
 	private ArrayList<ListeChaines> listesChaines;
 
-	String jours[] = {"", "Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"};
-
 	@Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -87,7 +85,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
         super.onCreate(savedInstanceState);
 
         guideAct = this;
-        FBMHttpConnection.initVars(this, null);
+        FBMNetTask.register(this);
         Log.i(TAG,"GUIDE CREATE");
 		SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 		mode_reduit = mgr.getBoolean(KEY_MODE, false);
@@ -202,6 +200,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
     @Override
     public void onDestroy()
     {
+    	FBMNetTask.unregister(this);
         mDbHelper.close();
     	super.onDestroy();
     }
@@ -716,6 +715,8 @@ public class GuideActivity extends ListActivity implements GuideConstants
 		}
     }
     
+    // TODO : Remove
+/*    
     public static void showProgress(Activity a, int progress)
     {
 		if (progressDialog == null)
@@ -746,7 +747,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
     		progressDialog = null;
     	}
     }
-    
+*/    
 	private void displayAboutGuide()
     {	
     	AlertDialog d = new AlertDialog.Builder(this).create();
@@ -823,12 +824,11 @@ public class GuideActivity extends ListActivity implements GuideConstants
         
         protected void onProgressUpdate(Integer... progress)
         {
-            showProgress(GuideActivity.this, progress[0]);
+//            showProgress(GuideActivity.this, progress[0]);
         }
 
         protected void onPostExecute(Integer result)
         {
-       		dismissPd();
         	if (((result != DATA_NOT_DOWNLOADED) && (getChaines)) || (refreshActivity))
         	{
         		getFromDb();
@@ -844,11 +844,11 @@ public class GuideActivity extends ListActivity implements GuideConstants
         }
         
         /**
-         * 
-         * @param d
-         * @param chaine
-         * @param prog
-         * @param force
+         * GuideactivityNetwork
+         * @param d : datetime début
+         * @param chaine : récupérer liste des chaines (+ logos) ?
+         * @param prog : récupérer liste des programmes ?
+         * @param force : forcer la récupération des programmes (ne pas tenir compte du cache) ?
          * @param refreshactivity : pour rafraichir toute l'activité après un onActivityResult du choix des favoris
          */
         public GuideActivityNetwork(String d, boolean chaine, boolean prog, boolean force, boolean refreshactivity)

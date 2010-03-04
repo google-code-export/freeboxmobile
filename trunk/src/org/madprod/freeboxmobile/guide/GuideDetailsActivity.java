@@ -2,9 +2,10 @@ package org.madprod.freeboxmobile.guide;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
-import org.madprod.freeboxmobile.FBMHttpConnection;
+import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
 import org.madprod.freeboxmobile.pvr.ProgrammationActivity;
@@ -35,7 +36,7 @@ public class GuideDetailsActivity extends Activity implements GuideConstants
     {
         super.onCreate(savedInstanceState);
 
-        FBMHttpConnection.initVars(this, null);
+        FBMNetTask.register(this);
         Log.i(TAG,"GUIDEDETAILS CREATE");
         setContentView(R.layout.guide_details);
         final Bundle extras = getIntent().getExtras();
@@ -60,7 +61,25 @@ public class GuideDetailsActivity extends Activity implements GuideConstants
 	        String date[] = dt.split(" ");
 	        String amj[] = date[0].split("-");
 	        String hm[] = date[1].split(":");
-	        dateHeureEmission.setText("Diffusé le "+amj[2]+"/"+amj[1]+"/"+amj[0]+" à "+hm[0]+"h"+hm[1]);
+	        
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			Calendar c = Calendar.getInstance();
+			try {
+				c.setTime(sdf.parse(date[0]));
+				c.setFirstDayOfWeek(Calendar.MONDAY);
+				String cdate = jours[c.get(Calendar.DAY_OF_WEEK)].toLowerCase()+" ";
+				cdate += amj[2].length() == 1 ? "0" : "";
+				cdate += amj[2];
+				cdate += " "+mois[c.get(Calendar.MONTH)];
+				cdate += " "+amj[0];
+				cdate += " à "+hm[0]+"h"+hm[1];
+		        dateHeureEmission.setText("Diffusé le "+cdate);
+			}
+			catch (ParseException e)
+			{
+				e.printStackTrace();
+				dateHeureEmission.setText("Diffusé le "+amj[2]+"/"+amj[1]+"/"+amj[0]+" à "+hm[0]+"h"+hm[1]);
+			}
 
 	        partager.setOnClickListener(
 					new View.OnClickListener()
@@ -82,7 +101,7 @@ public class GuideDetailsActivity extends Activity implements GuideConstants
 				);
 
 
-	        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	        /*SimpleDateFormat*/ sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	        try
 	        {
 				Date dfin = sdf.parse(extras.getString(ChainesDbAdapter.KEY_PROG_DATETIME_FIN));
@@ -132,5 +151,12 @@ public class GuideDetailsActivity extends Activity implements GuideConstants
         	Log.d(TAG,"GUIDEDETAILS ouvert sans données");
         }
         setTitle(getString(R.string.app_name)+" - Détails du programme");
+    }
+    
+    @Override
+    protected void onDestroy()
+    {
+    	FBMNetTask.unregister(this);
+    	super.onDestroy();
     }
 }

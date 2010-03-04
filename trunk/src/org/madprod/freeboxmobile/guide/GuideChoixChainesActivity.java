@@ -12,6 +12,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.madprod.freeboxmobile.FBMHttpConnection;
+import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
 
@@ -48,7 +49,7 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
 {
 	private static ChainesDbAdapter mDbHelper;
 	private ArrayList<Favoris> listeFavoris = new ArrayList<Favoris>();
-	private ProgressDialog progressDialog = null;
+//	private ProgressDialog progressDialog = null;
 	private List< Map<String,Object> > chainesToSelect;
 	// -1 si une chaine a été enlevée / 1 si une chaine a été ajoutée / 0 si pas bougé
 	// si suppression et ajout : 1
@@ -60,7 +61,7 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
     {
         super.onCreate(savedInstanceState);
 
-        FBMHttpConnection.initVars(this, null);
+        FBMNetTask.register(this);
         Log.i(TAG,"GUIDECHOIXCHAINES CREATE");
         setContentView(R.layout.guide_choix_chaines);
         mDbHelper = new ChainesDbAdapter(this);
@@ -87,6 +88,7 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
     @Override
     public void onDestroy()
     {
+    	FBMNetTask.unregister(this);
         mDbHelper.close();
     	super.onDestroy();
     }
@@ -324,6 +326,8 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
 		d.show();
     }
     
+    //TODO : Remove
+    /*
 	public void showProgressDialog(String title)
 	{
 		progressDialog = new ProgressDialog(this);
@@ -342,7 +346,8 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
     		progressDialog = null;
     	}
     }
-
+*/
+    
     private class Favoris implements Comparable<Favoris>
     {
     	public int guidechaine_id;
@@ -367,13 +372,16 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
         	switch (command)
         	{
 	        	case FAVORIS_COMMAND_RESET:
-	            	showProgressDialog("Réinitialisation");
+	        		FBMNetTask.iProgressShow("Réinitialisation","",R.drawable.fm_guide_tv);
+//	            	showProgressDialog("Réinitialisation");
 	            	break;
 	        	case FAVORIS_COMMAND_ADD:
-	            	showProgressDialog("Ajout");
+	        		FBMNetTask.iProgressShow("Ajout","",R.drawable.fm_guide_tv);
+//	            	showProgressDialog("Ajout");
 	            	break;
 	        	case FAVORIS_COMMAND_SUPPR:
-	            	showProgressDialog("Suppression");
+	        		FBMNetTask.iProgressShow("Suppression","",R.drawable.fm_guide_tv);
+//	            	showProgressDialog("Suppression");
 	            	break;
         	}
         }
@@ -413,8 +421,9 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
         
         protected void onPostExecute(Boolean result)
         {
-        	GuideActivity.dismissPd();
-       		dismissPd();
+//        	GuideActivity.dismissPd();
+//       		dismissPd();
+        	FBMNetTask.iProgressDialogDismiss();
    			refresh();
         	switch (command)
         	{

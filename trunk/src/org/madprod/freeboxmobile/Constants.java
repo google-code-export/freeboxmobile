@@ -44,4 +44,7 @@ public interface Constants
     // Pour Notification Manager
 	public final int NOTIF_MEVO = 1;
 	public final int NOTIF_INFOADSL = 2;
+	
+	public final String jours[] = {"", "Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"};
+	public final String mois[] = {"janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"};
 }

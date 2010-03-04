@@ -7,6 +7,7 @@ import java.util.TimerTask;
 
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.mvv.MevoMessage;
+import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.ServiceUpdateUIListener;
 
@@ -73,7 +74,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
     {
 		Log.i(TAG,"MevoActivity create");
         super.onCreate(savedInstanceState);
-        FBMHttpConnection.initVars(this, null);
+        FBMNetTask.register(this);
     	MevoSync.setActivity(this);
         setContentView(R.layout.mevo);
         registerForContextMenu(getListView());
@@ -179,6 +180,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
     @Override
     public void onDestroy()
     {
+    	FBMNetTask.unregister(this);
     	super.onDestroy();
     }
 

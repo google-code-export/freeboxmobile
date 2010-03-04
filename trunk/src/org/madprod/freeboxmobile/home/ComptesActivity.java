@@ -234,11 +234,11 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 						{
 							updatePrefs(mgr.edit(), c);
 							FBMHttpConnection.initCompte(ComptesActivity.this);
-					        new ManageCompte(ComptesActivity.this).execute(new ComptePayload(
+					        new ManageCompte(new ComptePayload(
 					        		mgr.getString(KEY_TITLE, ""),
 					        		mgr.getString(KEY_USER, ""),
 					        		mgr.getString(KEY_PASSWORD, ""),
-						        	null, true));
+						        	null, true)).execute();
 						}
 						else
 						{

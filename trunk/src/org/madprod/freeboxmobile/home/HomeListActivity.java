@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.madprod.freeboxmobile.Config;
 import org.madprod.freeboxmobile.FBMHttpConnection;
+import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.fax.FaxActivity;
 import org.madprod.freeboxmobile.ligne.InfoAdslCheck;
@@ -52,13 +53,15 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 {
 	private Activity homeActivity;
 	private List< Map<String,Object> > modulesList;
-	private AsyncTask<ComptePayload, Void, ComptePayload> task = null;
+	private AsyncTask<Void, Integer, Integer> task = null;
 	
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
 		Log.d(TAG,"MainActivity Create "+getString(R.string.app_version)+"\n"+new Date().toString());
         super.onCreate(savedInstanceState);
+
+        FBMNetTask.register(this);
 
 		// On teste si on est dans le cas d'un premier lancement pour cette version de l'appli
        	modulesList = new ArrayList< Map<String,Object> >();
@@ -139,9 +142,19 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     protected void onDestroy()
     {
     	Log.i(TAG,"MainActivity Destroy");
+		FBMNetTask.unregister(this);
     	super.onDestroy();
     }
 
+    @Override
+    protected void onResume()
+    {
+		Log.i(TAG,"MainActivity Resume");
+    	super.onResume();
+        SimpleAdapter mList = new SimpleAdapter(this, modulesList, R.layout.home_main_list_row, new String[] {M_ICON, M_TITRE, M_DESC}, new int[] {R.id.home_main_row_img, R.id.home_main_row_titre, R.id.home_main_row_desc});
+        setListAdapter(mList);
+    }
+    
     @Override
     protected void onPause()
     {
@@ -155,11 +168,11 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     	if ((task != null) && (task.getStatus() == AsyncTask.Status.FINISHED) || (task == null))
     	{
 	    	SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
-	        task = new ManageCompte(this).execute(new ComptePayload(
+	        task = new ManageCompte(new ComptePayload(
 	        		mgr.getString(KEY_TITLE, ""),
 	        		mgr.getString(KEY_USER, ""),
 	        		mgr.getString(KEY_PASSWORD, ""),
-	        		null, true));
+	        		null, true)).execute();
     	}
     }
 
@@ -230,16 +243,6 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		map.put(M_DESC, "Accédez aux vidéos, enregistrements et musiques qui sont chez vous\n\nCette fonctionnalité n'est pas encore disponible");
 		map.put(M_CLASS, null);
 		modulesList.add(map);
-    }
-
-    @Override
-    protected void onResume()
-    {
-		Log.i(TAG,"MainActivity Resume");
-    	super.onResume();
-    	
-        SimpleAdapter mList = new SimpleAdapter(this, modulesList, R.layout.home_main_list_row, new String[] {M_ICON, M_TITRE, M_DESC}, new int[] {R.id.home_main_row_img, R.id.home_main_row_titre, R.id.home_main_row_desc});
-        setListAdapter(mList);
     }
     
     @Override
@@ -318,6 +321,24 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     			return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+    
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent)
+    {
+        super.onActivityResult(requestCode, resultCode, intent);
+        switch(requestCode)
+        {
+        	case ACTIVITY_COMPTES:
+            	if (FBMHttpConnection.checkUpdated(
+            			getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_USER, null),
+            			getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_PASSWORD, null)
+            			))
+            	{
+            		FBMHttpConnection.initVars(homeActivity, null);
+            	}
+        		break;
+        }
     }
     
     private void shareApp()
@@ -524,27 +545,11 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 				public void onClick(DialogInterface dialog, int which)
 				{
 					dialog.dismiss();
+					//TODO : désactiver les modules qui dépendent de la SD ?
+					finish();
 				}
 			}
 		);
 		d.show();      
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent intent)
-    {
-        super.onActivityResult(requestCode, resultCode, intent);
-        switch(requestCode)
-        {
-        	case ACTIVITY_COMPTES:
-            	if (FBMHttpConnection.checkUpdated(
-            			getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_USER, null),
-            			getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_PASSWORD, null)
-            			))
-            	{
-            		FBMHttpConnection.initVars(homeActivity, null);
-            	}
-        		break;
-        }
     }
 }

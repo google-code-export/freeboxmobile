@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.madprod.freeboxmobile.Constants;
 import org.madprod.freeboxmobile.FBMHttpConnection;
+import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.home.ComptesDbAdapter;
 import org.madprod.freeboxmobile.mvv.MevoMessage;
@@ -55,11 +56,18 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
     {
         super.onCreate(savedInstanceState);
 
-        FBMHttpConnection.initVars(this, null);
+        FBMNetTask.register(this);
         Log.i(TAG,"LINEINFO CREATE");
         
         setContentView(R.layout.ligne_info);
         setTitle(getString(R.string.app_name)+" - Info Ligne ADSL Freebox");
+    }
+    
+    @Override
+    protected void onDestroy()
+    {
+    	FBMNetTask.unregister(this);
+    	super.onDestroy();
     }
     
     @Override
@@ -418,27 +426,39 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
 		@Override
     	protected void onPreExecute()
     	{
-    		FBMHttpConnection.showProgressDialog2(LigneInfoActivity.this);
+			FBMNetTask.iProgressShow(
+					"Mise à jour des données",
+					"Connexion en cours...",
+					R.drawable.fm_infos_adsl);
+//    		FBMHttpConnection.showProgressDialog2(LigneInfoActivity.this);
     	}
 
     	@Override
     	protected void onPostExecute(Payload payload)
     	{
+    		FBMNetTask.iProgressDialogDismiss();
     		if ((payload.refresh) && (payload.result != null))
     		{
     			if (payload.result != null)
     			{
-	        		FBMHttpConnection.dismissPd();
+//	        		FBMHttpConnection.dismissPd();
     			}
     			else
     			{
-            		FBMHttpConnection.dismissPd();
-       				FBMHttpConnection.showError(LigneInfoActivity.this);    				
+//            		FBMHttpConnection.dismissPd();
+    				FBMNetTask.alertDialogShow(
+    						"Connexion impossible",
+    						"Impossible de se connecter au portail de Free.\n"+
+    						"Vérifiez votre identifiant, " +
+    						"votre mot de passe et votre "+	
+    						"connexion à Internet (Wifi, 3G...).",
+    						R.drawable.fm_infos_adsl);
+//     				FBMHttpConnection.showError(LigneInfoActivity.this);    				
     			}
     		}
     		else
     		{
-    			FBMHttpConnection.dismissPd();
+//    			FBMHttpConnection.dismissPd();
     		}
 			refreshView();
     	}

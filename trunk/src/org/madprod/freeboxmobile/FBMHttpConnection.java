@@ -101,6 +101,7 @@ public class FBMHttpConnection implements Constants
 			initVars(a, null);
 	}
 
+	// TODO : Remove ?
 	public static void closeDisplay()
 	{
 		if (httpProgressDialog != null)
@@ -123,7 +124,8 @@ public class FBMHttpConnection implements Constants
 		return (login);
 	}
 
-	public static void showProgressDialog(Activity a)
+	// TODO : remove ?
+	public static void showProgressDialog_unused(Activity a)
 	{
 		httpProgressDialog = new ProgressDialog(a);
 		httpProgressDialog.setIcon(R.drawable.icon_fbm_reverse);
@@ -135,7 +137,8 @@ public class FBMHttpConnection implements Constants
 //		httpProgressDialog = ProgressDialog.show(a, "Mon Compte Free", "Connexion en cours ...", true,false);
 	}
 
-	public static void showProgressDialog2(Activity a)
+	// TODO : Remove
+	public static void showProgressDialog2_unused(Activity a)
 	{
 		httpProgressDialog = new ProgressDialog(a);
 		httpProgressDialog.setIcon(R.drawable.icon_fbm_reverse);
@@ -146,7 +149,8 @@ public class FBMHttpConnection implements Constants
 //		httpProgressDialog = ProgressDialog.show(a, "Mise à jour des données", "Connexion en cours ...", true,false);
 	}
 
-	public static void dismissPd()
+	// TODO : Remove
+	public static void dismissPd_unused()
 	{
 		if (httpProgressDialog != null)
 		{
@@ -155,7 +159,8 @@ public class FBMHttpConnection implements Constants
 		}
 	}
 
-	public static AlertDialog showError(Activity a)
+	// TODO : remove
+	public static AlertDialog showError_unused(Activity a)
 	{
 		errorAlert = new AlertDialog.Builder(a).create();
 		errorAlert.setTitle("Connexion impossible");
@@ -279,26 +284,33 @@ public class FBMHttpConnection implements Constants
 		int end;
 		int itag;
 
-		itag = s.indexOf(tag);
-		if (itag != -1)
+		if (s != null)
 		{
-			start = s.indexOf(first, itag);
-			if (start != -1)
+			itag = s.indexOf(tag);
+			if (itag != -1)
 			{
-				end = s.indexOf(last, start);
-				if (end != -1)
+				start = s.indexOf(first, itag);
+				if (start != -1)
 				{
-					start += first.length();
-					r = s.substring(start,end);
+					end = s.indexOf(last, start);
+					if (end != -1)
+					{
+						start += first.length();
+						r = s.substring(start,end);
+					}
+					else
+						Log.d(TAG,"parsePage end pb : "+tag);
 				}
 				else
-					Log.d(TAG,"parsePage end pb : "+tag);
+					Log.d(TAG,"parsePage start pb : "+tag);
 			}
 			else
-				Log.d(TAG,"parsePage start pb : "+tag);
+				Log.d(TAG,"parsePage itag pb : "+tag);
 		}
 		else
-			Log.d(TAG,"parsePage itag pb : "+tag);
+		{
+			Log.d(TAG,"parsePage : page null !");
+		}
 		// On supprimer les éventuels tags HTML qui seraient dans la chaine découpée
 		String dest="";
 		int l = r.length();

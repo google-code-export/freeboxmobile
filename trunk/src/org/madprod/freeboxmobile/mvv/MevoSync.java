@@ -13,13 +13,13 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.madprod.freeboxmobile.home.HomeListActivity;
 import org.madprod.freeboxmobile.FBMHttpConnection;
+import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.ServiceUpdateUIListener;
 import org.madprod.freeboxmobile.WakefullIntentService;
 
 import android.app.Activity;
 import android.app.AlarmManager;
-import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -50,8 +50,10 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
     public static ServiceUpdateUIListener UI_UPDATE_LISTENER;
     private static Activity CUR_ACTIVITY;
 
+    // TODO : Remove myProgressDialog, replace with functions of FBMNetTask
     static ProgressDialog myProgressDialog = null;
-    static AlertDialog myAlertDialog = null;
+    // TODO : Remove myAlertDialog
+//    static AlertDialog myAlertDialog = null;
 
 	static NotificationManager mNotificationManager = null;
 
@@ -126,10 +128,12 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 			{
 				myProgressDialog.dismiss();
 			}
+/*
 			if (myAlertDialog != null)
 			{
 				myAlertDialog.dismiss();
 			}
+*/
 		}
 		else
 		{
@@ -137,10 +141,12 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 			{
 				myProgressDialog.show();
 			}
+/*
 			if (myAlertDialog != null)
 			{
 				myAlertDialog.show();
 			}
+*/
 			mNotificationManager= (NotificationManager) activity.getSystemService(NOTIFICATION_SERVICE);
 
 	        // Si l'application a été utilisée avant le support du multicomptes, on migre les données
@@ -266,7 +272,14 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 			{
 				public void run()
 				{
-					myAlertDialog = FBMHttpConnection.showError(CUR_ACTIVITY);
+    				FBMNetTask.alertDialogShow(
+    						"Connexion impossible",
+    						"Impossible de se connecter au portail de Free.\n"+
+    						"Vérifiez votre identifiant, " +
+    						"votre mot de passe et votre "+	
+    						"connexion à Internet (Wifi, 3G...).",
+    						R.drawable.fm_repondeur);
+//					myAlertDialog = FBMHttpConnection.showError(CUR_ACTIVITY);
 				}
 			});        	
         }

@@ -4,10 +4,12 @@ import java.util.Date;
 
 import org.madprod.freeboxmobile.Constants;
 import org.madprod.freeboxmobile.FBMHttpConnection;
+import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.guide.GuideActivity;
 import org.madprod.freeboxmobile.guide.GuideNetwork;
 import org.madprod.freeboxmobile.pvr.ProgrammationActivity;
 import org.madprod.freeboxmobile.pvr.PvrNetwork;
+import org.madprod.freeboxmobile.R;
 
 import android.app.Activity;
 import android.content.ContentValues;
@@ -27,35 +29,34 @@ import android.util.Log;
 * 
 */
 
-public class ManageCompte extends AsyncTask<ComptePayload, Void, ComptePayload> implements Constants
+public class ManageCompte extends FBMNetTask implements Constants// AsyncTask<ComptePayload, Void, ComptePayload> implements Constants
 {
-	public static Activity activity;
+	ComptePayload payload;
 
 	@Override
-	protected ComptePayload doInBackground(ComptePayload... payload)
+	protected Integer doInBackground(Void...params)
 	{
-		payload[0].result = FBMHttpConnection.connectFreeCheck(payload[0].login, payload[0].password);
-		if ((payload[0].result != null) && (payload[0].refresh))
+		payload.result = FBMHttpConnection.connectFreeCheck(payload.login, payload.password);
+		if ((payload.result != null) && (payload.refresh))
 		{
-			new PvrNetwork(activity, true, true).getData();
+	    	dProgressSet("Importation", "", R.drawable.fm_magnetoscope);
+			new PvrNetwork(true, true).getData();
 	    	ProgrammationActivity.lastUser = "";
-			new GuideNetwork(activity, null, true, true, 0, false).getData();
+			new GuideNetwork(getActivity(), null, true, true, 0, false).getData();
 		}
-		return payload[0];
+		return (0);
 	}
 
 	@Override
 	protected void onPreExecute()
 	{
-		FBMHttpConnection.showProgressDialog(activity);
+		iProgressShow("Mon compte Freebox", "Veuillez patienter,\n\nChargement / rafraichissement des données en cours...", R.drawable.icon_fbm_reverse);
 	}
 
 	@Override
-	protected void onPostExecute(ComptePayload payload)
+	protected void onPostExecute(Integer i)
 	{
-    	ProgrammationActivity.dismissPd();
-		GuideActivity.dismissPd();
-		FBMHttpConnection.dismissPd();
+		dismissAll();
 		if (payload.result != null)
 		{
 				payload.exit = Activity.RESULT_OK;
@@ -63,19 +64,24 @@ public class ManageCompte extends AsyncTask<ComptePayload, Void, ComptePayload> 
 
 				if (!payload.refresh)
 				{
-					activity.finish();
+					getActivity().finish();
 				}
 		}
 		else
 		{
-				FBMHttpConnection.showError(activity);
+			alertDialogShow("Connexion impossible",
+					"Impossible de se connecter au portail de Free.\n"+
+					"Vérifiez votre identifiant, " +
+					"votre mot de passe et votre "+	
+					"connexion à Internet (Wifi, 3G...).",
+					R.drawable.icon_fbm_reverse);
 				payload.exit = Activity.RESULT_CANCELED;
 		}
 	}
 
-	public ManageCompte(Activity a)
+	public ManageCompte(ComptePayload p)
 	{
-		activity = a;
+		payload = p;
 	}
 
     private void saveState(ComptePayload p)
@@ -83,7 +89,7 @@ public class ManageCompte extends AsyncTask<ComptePayload, Void, ComptePayload> 
         Bundle bundle = new Bundle();
         long id=0;
  
-        ComptesDbAdapter mDbHelper = new ComptesDbAdapter(activity);
+        ComptesDbAdapter mDbHelper = new ComptesDbAdapter(getActivity());
     	mDbHelper.open();
     	ContentValues v = p.result;
  
@@ -123,14 +129,14 @@ public class ManageCompte extends AsyncTask<ComptePayload, Void, ComptePayload> 
     	{
             Intent mIntent = new Intent();
 	        mIntent.putExtras(bundle);
-	        activity.setResult(p.exit, mIntent);
+	        getActivity().setResult(p.exit, mIntent);
     	}
 		Cursor c = mDbHelper.fetchCompte(p.rowid);
 		// On met à jour les parametres de conf avec les nouvelles données
     	if ((p.refresh) || (c.getString(c.getColumnIndexOrThrow(KEY_USER)).equals(FBMHttpConnection.getIdentifiant())))
     	{
     		Log.d(TAG,"REFRESH !");
-    		SharedPreferences mgr = activity.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE);
+    		SharedPreferences mgr = getActivity().getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE);
     		Editor editor = mgr.edit();
     		editor.putString(KEY_USER, c.getString(c.getColumnIndexOrThrow(KEY_USER)));
     		editor.putString(KEY_PASSWORD, c.getString(c.getColumnIndexOrThrow(KEY_PASSWORD)));
