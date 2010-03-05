@@ -190,7 +190,6 @@ public class GuideMenuActivity extends Activity implements GuideConstants
 			{
 				Cursor chaineCursor;
 //				boolean nochaine = false;
-				
 				int CI_progchannel_id = chainesIds.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_CHANNEL_ID);
 				do
 				{
