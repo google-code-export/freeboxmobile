@@ -18,3 +18,4 @@ Pour les fonctionnalités déjà implémentées, voir le ChangeLog.
 Plus tard :
  * Préconfigurer une application SIP ([https://code.google.com/p/sipdroid/ SIP Droid] ?) afin qu'elle utilise le service SIP Freebox
  * Intégrer la gestion de !FreeWifi
+ * Intégrer un serveur DLNA afin d'accéder aux contenus de son smartphone à partir de son réseau domestique
