@@ -58,6 +58,7 @@ public class FBMHttpConnection implements Constants
 	private static final String suiviTechUrl = "http://adsl.free.fr/suivi/suivi_techgrrr.pl";
 	public static final String frimousseUrl = "http://www.frimousse.org/outils/xmlrpc";
 	
+	// Todo : remove httpProgressDialog (& errorAlert ?)
 	public static ProgressDialog httpProgressDialog = null;
 	public static AlertDialog errorAlert = null;
 
@@ -75,6 +76,7 @@ public class FBMHttpConnection implements Constants
 		}
 		USER_AGENT = c.getString(R.string.app_name)+"/"+c.getString(R.string.app_version)+" (Linux; U; Android "+Build.VERSION.RELEASE+"; fr-fr;)";
 		// On teste pour si on entre ici suite
+		// TODO : Remove httpProgressDialog
         if (httpProgressDialog != null)
         {
            	httpProgressDialog.show();
@@ -183,22 +185,6 @@ public class FBMHttpConnection implements Constants
 		errorAlert.show();
 		return errorAlert;
 	}
-
-	// TODO : A supprimer lors de la migration vers la classe FMLog
-//	public static void FBMLog(String s)
-//	{
-//		Log.d(DEBUGTAG, s);
-//		fbmlog += s+"\n";
-//	}
-
-	// TODO : A supprimer lors de la migration vers la classe FMLog
-//	public static String getStackTrace(Throwable throwable)
-//	{
-////		Writer writer = new StringWriter();
-//		PrintWriter printWriter = new PrintWriter(writer);
-//		throwable.printStackTrace(printWriter);
-//		return writer.toString();
-//	}
 
     /**
      * Vérifie si le login et le pass ont bougé
@@ -483,6 +469,9 @@ public class FBMHttpConnection implements Constants
 		c.setUseCaches(false);
 		c.setInstanceFollowRedirects(false);
 		c.setRequestProperty("User-Agent", USER_AGENT);
+		// TODO : Check this !
+		c.setConnectTimeout(1000);
+		c.setReadTimeout(10000);
 		return (c);
 	}
 	
@@ -743,10 +732,10 @@ public class FBMHttpConnection implements Constants
         	charset = "ISO8859_1";
         }
         // TODO : tester et enlever ce if
-		if ((p == null) && (auth))
-		{
-			p = new ArrayList<NameValuePair>();
-		}
+//		if ((p == null) && (auth))
+//		{
+//			p = new ArrayList<NameValuePair>();
+//		}
         if ((p != null) && (p.size() > 0))
         {
             for(int i = 0 ; i < p.size() ; i++)

@@ -403,6 +403,7 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
         }
     }
 
+    // TODO : Nettoyer plus bas les lignes de code commentées
     private class UpdateCompte extends AsyncTask<Payload, Void, Payload> implements Constants
     {
     	@Override

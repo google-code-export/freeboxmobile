@@ -348,20 +348,6 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
     }
 */
     
-    private class Favoris implements Comparable<Favoris>
-    {
-    	public int guidechaine_id;
-    	public int canal;
-    	public String name;
-    	public String image;
-    	
-		@Override
-		public int compareTo(Favoris another)
-		{
-			return (canal - another.canal);
-		}
-    }
-    
     private class GuideFavorisActivityNetwork extends AsyncTask<Void, Integer, Boolean>
     {
     	private int command;
