@@ -1,9 +1,11 @@
 package org.madprod.freeboxmobile.pvr;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import org.madprod.freeboxmobile.Constants;
 import org.madprod.freeboxmobile.FBMHttpConnection;
+import org.madprod.freeboxmobile.guide.GuideConstants;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -15,11 +17,11 @@ import android.util.Log;
 
 /**
  * 
- * @author bduffez
  * $Id$
  */
 
-public class ChainesDbAdapter {
+public class ChainesDbAdapter implements GuideConstants
+{
 
     public static final String KEY_CHAINE_NAME = "name";
     public static final String KEY_CHAINE_ID = "chaine_id"; // = gc_canal (KEY_GUIDECHAINE_CANAL)
@@ -277,6 +279,11 @@ public class ChainesDbAdapter {
 		return mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE_GUIDECHAINES + " WHERE "+KEY_GUIDECHAINE_ID+" = "+id).simpleQueryForLong();
 	}
 
+	/**
+	 * get chaine details for selected guidechaine_id
+	 * @param id
+	 * @return
+	 */
     public Cursor getGuideChaine(int id)
     {
 		return mDb.query(DATABASE_TABLE_GUIDECHAINES, new String[] {KEY_ROWID, KEY_GUIDECHAINE_FBXID,
@@ -318,15 +325,42 @@ public class ChainesDbAdapter {
         return mDb.insert(DATABASE_TABLE_PROGRAMMES, null, initialValues);
     }
     
-    public Cursor getProgrammes(int chaineId, String deb, String fin)
+    /**
+     * get Programs for chaine <chaineId> where datefin > deb and datedeb < fin and correspond to categories
+     * @param chaineId
+     * @param deb
+     * @param fin
+     * @return
+     */
+    public Cursor getProgrammes(int chaineId, String deb, String fin, ArrayList<Categorie> categories)
     {
+    	String where =
+    		KEY_PROG_CHANNEL_ID+" = "+chaineId+" AND "+
+        	KEY_PROG_DATETIME_FIN+" > '"+deb+"' AND "+
+        	KEY_PROG_DATETIME_DEB+" < '"+fin+"'";
+    	
+    	String c = "";
+    	for (int i = 0; i < categories.size(); i++)
+    	{
+    		if (categories.get(i).checked == true)
+    		{
+    			if (c.length() > 0)
+    			{
+    				c += " OR ";
+    			}
+   				c += KEY_PROG_GENRE_ID+" = "+categories.get(i).id;
+    		}
+    	}
+    	
+    	if (c.length() > 0)
+    	{
+    		where += " AND ("+c+")";
+    	}
 		return mDb.query(DATABASE_TABLE_PROGRAMMES, new String[]
                    {KEY_ROWID, KEY_PROG_GENRE_ID,
 		        	KEY_PROG_CHANNEL_ID, KEY_PROG_RESUM_S, KEY_PROG_RESUM_L, KEY_PROG_TITLE,
 		        	KEY_PROG_DUREE, KEY_PROG_DATETIME_DEB, KEY_PROG_DATETIME_FIN},
-		        KEY_PROG_CHANNEL_ID+" = "+chaineId+" AND "+
-		        KEY_PROG_DATETIME_FIN+" > '"+deb+"' AND "+
-		        KEY_PROG_DATETIME_DEB+" < '"+fin+"'"
+		        where
 		        , null, null, null, KEY_PROG_DATETIME_DEB);
     }
 
@@ -335,6 +369,10 @@ public class ChainesDbAdapter {
 		return mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE_PROGRAMMES + " WHERE "+KEY_PROG_CHANNEL_ID+" = "+channelId+" AND "+KEY_PROG_DATETIME_DEB+" = '"+horaire_deb+"'").simpleQueryForLong();
 	}
 	
+	/**
+	 * Get channels IDs of programs present in database
+	 * @return
+	 */
 	public Cursor getChainesProg()
 	{
         return mDb.query(true, DATABASE_TABLE_PROGRAMMES,

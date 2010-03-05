@@ -4,4 +4,5 @@
 	<string name="guide_option_select">Gérer les favoris</string>
 	<string name="guide_option_mode_reduit">Passer en mode réduit</string>
 	<string name="guide_option_mode_etendu">Passer en mode étendu</string>
+	<string name="guide_option_filter">Choisir les catégories</string>
 </resources>

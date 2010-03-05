@@ -4,6 +4,7 @@ import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.os.PowerManager;
+import android.os.PowerManager.WakeLock;
 import android.util.Log;
 
 /**
@@ -56,7 +57,10 @@ public class WakefullIntentService extends IntentService implements Constants
 	{
 		lockLocal.acquire();
 		super.onStart(intent, startId);
-		getLock(this).release();
+		WakeLock mWakeLock = getLock(this);
+		if (mWakeLock.isHeld())
+			mWakeLock.release();
+//		getLock(this).release();
 	}
 	
 	@Override

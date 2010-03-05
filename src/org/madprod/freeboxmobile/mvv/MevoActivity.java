@@ -206,7 +206,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
             	setHpOff();
             }
     }
-    
+
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View view, ContextMenuInfo menuInfo)
 	{
