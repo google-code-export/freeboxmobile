@@ -35,7 +35,6 @@ public class ComptesEditActivity extends Activity implements Constants
         super.onCreate(savedInstanceState);
         
         FBMNetTask.register(this);
-//        FBMHttpConnection.initVars(ComptesEditActivity.this, null);
 
     	mDbHelper = new ComptesDbAdapter(ComptesEditActivity.this);
     	mDbHelper.open();
