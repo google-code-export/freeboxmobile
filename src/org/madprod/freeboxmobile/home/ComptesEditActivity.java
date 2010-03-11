@@ -2,6 +2,7 @@ package org.madprod.freeboxmobile.home;
 
 import org.madprod.freeboxmobile.Constants;
 import org.madprod.freeboxmobile.FBMHttpConnection;
+import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
 
 import android.app.Activity;
@@ -33,7 +34,8 @@ public class ComptesEditActivity extends Activity implements Constants
     {
         super.onCreate(savedInstanceState);
         
-        FBMHttpConnection.initVars(ComptesEditActivity.this, null);
+        FBMNetTask.register(this);
+//        FBMHttpConnection.initVars(ComptesEditActivity.this, null);
 
     	mDbHelper = new ComptesDbAdapter(ComptesEditActivity.this);
     	mDbHelper.open();
@@ -163,6 +165,8 @@ public class ComptesEditActivity extends Activity implements Constants
     @Override
     protected void onDestroy()
     {
+    	FBMNetTask.unregister(this);
+    	// TODO : remove
     	FBMHttpConnection.closeDisplay();
     	mDbHelper.close();
         super.onDestroy();

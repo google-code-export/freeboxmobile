@@ -54,7 +54,8 @@ public class FBMHttpConnection implements Constants
 
 	private static int connectionStatus = CONNECT_NOT_CONNECTED;
 	
-	private static final String serverUrl = "http://subscribe.free.fr/login/login.pl";
+//	private static final String serverUrl = "http://subscribe.free.fr/login/login.pl";
+	private static final String serverUrl = "https://subscribes.free.fr/login/login.pl";
 	private static final String suiviTechUrl = "http://adsl.free.fr/suivi/suivi_techgrrr.pl";
 	public static final String frimousseUrl = "http://www.frimousse.org/outils/xmlrpc";
 	
