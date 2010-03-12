@@ -46,6 +46,8 @@ public class EnregistrementsNetwork implements Constants
 	    	contenu = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(url, param, true, true, "ISO8859_1"));
 	    	if (contenu == null)
 	    	{
+	    		// TODO : Dans le cas de plusieurs boitiers, le fait qu'un des boitiers
+	    		// soit null (donc eteind) ne doit pas tout interrompre
 	    		return false;
 	    	}
 	
