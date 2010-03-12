@@ -3,6 +3,7 @@ package org.madprod.freeboxmobile.home;
 import java.util.Date;
 
 import org.madprod.freeboxmobile.FBMHttpConnection;
+import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
 
 import android.app.ListActivity;
@@ -47,6 +48,8 @@ public class ComptesActivity extends ListActivity implements HomeConstants
     public void onCreate(Bundle savedInstanceState)
     {
     	super.onCreate(savedInstanceState);
+    	
+    	FBMNetTask.register(this);
     	if (mDbHelper == null)
     	{
 	        mDbHelper = new ComptesDbAdapter(this);
@@ -160,6 +163,7 @@ public class ComptesActivity extends ListActivity implements HomeConstants
     		mDbHelper.close();
     		mDbHelper = null;
     	}
+    	FBMNetTask.unregister(this);
     	super.onDestroy();
     }
 

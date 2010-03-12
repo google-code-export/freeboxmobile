@@ -516,6 +516,20 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 	        }
 	    };
 
+	private String makeDateForPost(int y, int m, int d)
+	{
+		String cdate = "";
+		
+		cdate = d < 10 ? "0" : "";
+		cdate += d;
+		cdate += "/";
+		cdate += m+1 < 10 ? "0" : "";
+		cdate += m+1;
+		cdate += "/";
+		cdate += y;
+		return cdate;
+	}
+	
 	private String makeDate(int y, int m, int d)
 	{
 		String cdate = "";
@@ -531,13 +545,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 		} catch (ParseException e) 
 		{
 			e.printStackTrace();
-			cdate = d < 10 ? "0" : "";
-			cdate += d;
-			cdate += "/";
-			cdate += m+1 < 10 ? "0" : "";
-			cdate += m+1;
-			cdate += "/";
-			cdate += y;
+			cdate = makeDateForPost(y, m, d);
 		}
 		return cdate;
 	}
@@ -924,7 +932,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
         		service = servicesCursor.getInt(servicesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_SERVICE_ID));
         		
         		// Date et heure
-   	       		date = makeDate(choosen_year_deb, choosen_month_deb, choosen_day_deb);
+   	       		date = makeDateForPost(choosen_year_deb, choosen_month_deb, choosen_day_deb);
         		h = choosen_hour_deb;
         		m = choosen_minute_deb;
         		
