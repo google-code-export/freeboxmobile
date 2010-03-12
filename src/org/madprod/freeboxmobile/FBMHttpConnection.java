@@ -471,8 +471,8 @@ public class FBMHttpConnection implements Constants
 		c.setInstanceFollowRedirects(false);
 		c.setRequestProperty("User-Agent", USER_AGENT);
 		// TODO : Check this !
-		c.setConnectTimeout(1000);
-		c.setReadTimeout(10000);
+		c.setConnectTimeout(30000);
+		c.setReadTimeout(30000);
 		return (c);
 	}
 	
