@@ -181,6 +181,8 @@ public class PvrNetwork extends FBMNetTask implements PvrConstants // AsyncTask<
 	        }
 	        else
 	        {
+	        	// TODO : Si on a un boitier débranché, on tombe ici mais il ne faudrait pas
+	        	// sortir comme ca (ca empeche la maj de tous les autres boitiers)
 	        	ok = false;
 	        	break;
 	        }
