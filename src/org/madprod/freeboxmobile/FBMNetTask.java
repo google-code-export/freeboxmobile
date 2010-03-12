@@ -115,17 +115,18 @@ public class FBMNetTask extends AsyncTask<Void, Integer, Integer> implements Con
 	
 	public static void iProgressShow(String title, String message, int icon)
 	{
-		if (iProgressDialog == null)
+		if (activity != null)
 		{
-			iProgressDialog = new ProgressDialog(activity);
+			if (iProgressDialog == null)
+			{
+				iProgressDialog = new ProgressDialog(activity);
+			}
+			iProgressDialog.setIcon(icon);
+			iProgressDialog.setTitle(title);
+			iProgressDialog.setCancelable(false);
+			iProgressDialog.setMessage(message);
+			iProgressDialog.show();
 		}
-		iProgressDialog.setIcon(icon);
-		iProgressDialog.setTitle(title);
-		iProgressDialog.setCancelable(false);
-		iProgressDialog.setMessage(message);
-//		iProgressDialog.setMessage("Veuillez patienter,\n\nChargement / rafraichissement des données en cours...");
-		iProgressDialog.show();
-//		httpProgressDialog = ProgressDialog.show(a, "Mon Compte Free", "Connexion en cours ...", true,false);
 	}
 
 	public static void dProgressSet(String title, String message, int icon)
