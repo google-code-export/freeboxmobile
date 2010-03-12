@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="guide_option_refresh">Rafraichir</string>
+	<string name="guide_option_select">Gérer les favoris</string>
+	<string name="guide_option_mode_reduit">Passer en mode réduit</string>
+	<string name="guide_option_mode_etendu">Passer en mode étendu</string>
+	<string name="guide_option_filter">Choisir les catégories</string>
+</resources>
