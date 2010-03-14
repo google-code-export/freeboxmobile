@@ -100,7 +100,7 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
 		itemSelected = pos;
 		Log.d(TAG,"ITEM SELECTED : "+itemSelected);
 		TextView chaine_id = (TextView) v.findViewById(R.id.HiddenTextView); 
-		displayAdd(Integer.decode((String)chaine_id.getText()));
+		displayAdd(Integer.parseInt((String)chaine_id.getText()));
 	}
 
     private void refresh()

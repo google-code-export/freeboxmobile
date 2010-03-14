@@ -192,32 +192,28 @@ public class PvrNetwork extends FBMNetTask implements PvrConstants // AsyncTask<
 
     	if (getChaines)
     		publishProgress(max);
-    	db.close();
     	publishProgress(-1);
     	if (ok)
     	{
-        	doSwap();
+        	doSwap(db);
 	    	// On met à jour le timestamp du dernier refresh
 			SharedPreferences mgr = getActivity().getSharedPreferences(KEY_PREFS, getActivity().MODE_PRIVATE);
 	    	Editor editor = mgr.edit();
 	    	editor.putLong(KEY_LAST_REFRESH+FBMHttpConnection.getIdentifiant(), (new Date()).getTime());
 	    	editor.commit();
+	    	db.close();
 	    	return true;
     	}
         Log.d(TAG,"==> Impossible de télécharger le json des chaines/disques");
+    	db.close();
         return false;
     }
 
-	private void doSwap()
+	private void doSwap(ChainesDbAdapter db)
 	{
-		ChainesDbAdapter db;
-
-		db = new ChainesDbAdapter(getActivity());
-		db.open();
 		if (getChaines)
 			db.swapChaines();
 		if (getDisques)
 			db.swapBoitiersDisques();
-		db.close();
 	}
 }

@@ -146,7 +146,7 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants //AsyncTa
 						jHorairesObject = jChannelsObject.getJSONObject(channelId);
 						for (Iterator <String> jt = jHorairesObject.keys(); jt.hasNext() ;)
 						{
-							channel_id = Integer.decode(channelId);
+							channel_id = Integer.parseInt(channelId);
 							String datetime_deb = jt.next();
 							// Je ne sais pas à quoi correspond le channel_id 173 mais les programmes sont vides
 							// et il n'y a pas de chaine qui corresponde dans la liste des chaines
@@ -155,12 +155,12 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants //AsyncTa
 							{
 								jHoraireObject = jHorairesObject.getJSONObject(datetime_deb);
 								db.createProgramme(
-									Integer.decode(getJSONString(jHoraireObject, "genre_id")),
+									Integer.parseInt(getJSONString(jHoraireObject, "genre_id")),
 									channel_id,
 									getJSONString(jHoraireObject,"resum_s"),
 									getJSONString(jHoraireObject,"resum_l"),
 									getJSONString(jHoraireObject,"title"),
-									Integer.decode(getJSONString(jHoraireObject,"duree")),
+									Integer.parseInt(getJSONString(jHoraireObject,"duree")),
 									datetime_deb,
 									getJSONString(jHoraireObject,"datetime_fin")
 									);
@@ -192,7 +192,7 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants //AsyncTa
 					{
 						publishProgress(courant++);
 						String channelId = it.next();
-						channel_id = Integer.decode(channelId);
+						channel_id = Integer.parseInt(channelId);
 						jChannelObject = jChannelsObject.getJSONObject(channelId);
 						image = getJSONString(jChannelObject, "image");
 						canal = getJSONString(jChannelObject, "canal");
@@ -221,9 +221,9 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants //AsyncTa
 						if (db.isGuideChainePresent(channel_id) == 0)
 						{
 							db.createGuideChaine(
-								Integer.decode(getJSONString(jChannelObject, "fbx_id")),
+								Integer.parseInt(getJSONString(jChannelObject, "fbx_id")),
 								channel_id,
-								Integer.decode(canal),
+								Integer.parseInt(canal),
 								getJSONString(jChannelObject, "name"),
 								image
 								);
