@@ -141,7 +141,7 @@ public class EnregistrementsNetwork implements Constants
 				where_id =		recupererChamp("value=\"", "\"");
 				repeat_a =		recupererChamp("value=\"", "\"") + " ";
 				
-				if (db.isEnregistrementPresent(Integer.decode(ide)) > 0)
+				if (db.isEnregistrementPresent(Integer.parseInt(ide)) > 0)
 				{
 					db.updateEnregistrement(chaine, "", date, heure, duree, nom, ide,
 							chaine_id, service_id, h, min, dur, name, where_id, repeat_a);	

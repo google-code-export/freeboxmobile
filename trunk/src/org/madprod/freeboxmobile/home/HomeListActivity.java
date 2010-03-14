@@ -80,7 +80,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
         	showSdCardError();
 		setContentView(R.layout.home_main_list);
 		setTitle(getString(R.string.app_name)+" "+FBMHttpConnection.getTitle());
-    }
+	}
 
     @Override
     protected void onStart()
@@ -119,12 +119,12 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 			String ms = mgr.getString(KEY_MEVO_PREFS_FREQ, "0");
 			if (!ms.equals("0"))
 			{
-				MevoSync.changeTimer(Integer.decode(ms), this);
+				MevoSync.changeTimer(Integer.parseInt(ms), this);
 			}
 			ms = mgr.getString(KEY_INFOADSL_PREFS_FREQ, "0");
 			if (!ms.equals("0"))
 			{
-				InfoAdslCheck.changeTimer(Integer.decode(ms), this);
+				InfoAdslCheck.changeTimer(Integer.parseInt(ms), this);
 			}
 			displayAbout();
 		}

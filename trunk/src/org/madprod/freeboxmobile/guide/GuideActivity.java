@@ -160,7 +160,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
 			{
 				Calendar cal = Calendar.getInstance();
 				String sdate = GuideUtils.calDates.get(arg2).split("-")[2];
-				int jour = Integer.decode(sdate);
+				int jour = Integer.parseInt(sdate);
 				if (cal.get(Calendar.DAY_OF_MONTH) == jour)
 				{
 					heuresAdapter = GuideUtils.remplirHeuresSpinner(GuideActivity.this, cal.get(Calendar.HOUR_OF_DAY), R.id.HeuresSpinner);

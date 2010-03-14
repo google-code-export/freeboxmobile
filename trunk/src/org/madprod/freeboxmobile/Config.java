@@ -85,14 +85,14 @@ public class Config extends PreferenceActivity implements OnSharedPreferenceChan
 		{
     		if (value != null)
     		{
-    			MevoSync.changeTimer(Integer.decode(value), this);
+    			MevoSync.changeTimer(Integer.parseInt(value), this);
     		}
 		}
     	else if (KEY_INFOADSL_PREFS_FREQ.equals(key))
 		{
     		if (value != null)
     		{
-    			InfoAdslCheck.changeTimer(Integer.decode(value), this);
+    			InfoAdslCheck.changeTimer(Integer.parseInt(value), this);
     		}
 		}
 

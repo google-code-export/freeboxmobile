@@ -56,7 +56,7 @@ public class GuideUtils implements Constants
         Spinner hs = (Spinner) a.findViewById(hsid);
     	if (hs.getSelectedItem() != null)
     	{
-    		oldHeure = Integer.decode(((String) hs.getSelectedItem()).split("h")[0]);
+    		oldHeure = Integer.parseInt(((String) hs.getSelectedItem()).split("h")[0]);
     	}
 
         List<String> heures = new ArrayList<String>();
