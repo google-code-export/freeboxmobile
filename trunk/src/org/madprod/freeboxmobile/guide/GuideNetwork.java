@@ -200,7 +200,10 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants //AsyncTa
 						
 						// On teste si on a le fichier qui correspond à la chaine
 				        file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES, image);
-				        if (file.exists() == false)
+				        if (
+				        		(file.exists() == false) || 
+				        		((file.exists() == true) && (file.length() == 0))
+				        	)
 				        {
 							if (FBMHttpConnection.getFile(file, IMAGES_URL+image, null, false))
 							{

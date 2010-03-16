@@ -25,7 +25,6 @@ public interface GuideConstants extends Constants
     static final int GUIDE_CONTEXT_ENREGISTRER = Menu.FIRST;
     static final int GUIDE_CONTEXT_DETAILS = Menu.FIRST + 1;
     
-    static final String DIR_CHAINES = "chaines/";
     static final String IMAGES_URL = "http://adsl.free.fr/im/chaines/";
     static final String MAGNETO_URL = "http://adsl.free.fr/admin/magneto.pl";
     

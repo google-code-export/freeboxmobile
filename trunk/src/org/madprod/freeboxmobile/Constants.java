@@ -34,6 +34,8 @@ public interface Constants
 
 	static final String TAG		= "FBM";
 	static final String DIR_FBM			= "/freeboxmobile/";
+    static final String OLDDIR_CHAINES = "chaines/";
+    static final String DIR_CHAINES = ".chaines/";
 
     public static final int CONNECT_LOGIN_FAILED = -1;
     public static final int CONNECT_NOT_CONNECTED = 0;
@@ -47,4 +49,5 @@ public interface Constants
 	
 	public final String jours[] = {"", "Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"};
 	public final String mois[] = {"janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"};
+	
 }
