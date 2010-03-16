@@ -52,7 +52,6 @@ import android.widget.TextView;
 
 public class HomeListActivity extends ListActivity implements HomeConstants
 {
-	private Activity homeActivity;
 	private List< Map<String,Object> > modulesList;
 	private AsyncTask<Void, Integer, Integer> task = null;
 	
@@ -75,7 +74,6 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		e.commit();
 		e = mgr.edit();
 */
-        homeActivity = this;
         if (Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED) == false)
         	showSdCardError();
 		setContentView(R.layout.home_main_list);
@@ -336,7 +334,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
             			getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_PASSWORD, null)
             			))
             	{
-            		FBMHttpConnection.initVars(homeActivity, null);
+            		FBMHttpConnection.initVars(HomeListActivity.this, null);
             	}
         		break;
         }
@@ -410,7 +408,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		{
 			public void onClick(DialogInterface dialog, int which)
 			{
-		    	startActivity(new Intent(homeActivity, SendlogActivity.class));
+		    	startActivity(new Intent(HomeListActivity.this, SendlogActivity.class));
 			}
 		});
     	d.setButton(DialogInterface.BUTTON_POSITIVE, "Annuler", new DialogInterface.OnClickListener()
@@ -466,7 +464,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		{
 			public void onClick(DialogInterface dialog, int which)
 			{
-		    	startActivity(new Intent(homeActivity, org.madprod.freeboxmobile.home.WhatsNewActivity.class));
+		    	startActivity(new Intent(HomeListActivity.this, org.madprod.freeboxmobile.home.WhatsNewActivity.class));
 			}
 		});
 		d.show();
@@ -526,7 +524,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		{
 			public void onClick(DialogInterface dialog, int which)
 			{
-		    	startActivityForResult(new Intent(homeActivity, org.madprod.freeboxmobile.home.ComptesActivity.class), ACTIVITY_COMPTES);
+		    	startActivityForResult(new Intent(HomeListActivity.this, org.madprod.freeboxmobile.home.ComptesActivity.class), ACTIVITY_COMPTES);
 			}
 		});
 		d.show();      
