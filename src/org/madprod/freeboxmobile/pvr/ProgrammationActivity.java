@@ -920,6 +920,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
         		// Duree, emission, nom
         		duree = Integer.parseInt(dureeEmission.getText().toString());
         		emission = nomEmission.getText().toString();
+        		emission = emission.replaceAll("&","-");
         		
         		if (emission.length() == 0) {
         			return getString(R.string.pvrErreurNomEmission);

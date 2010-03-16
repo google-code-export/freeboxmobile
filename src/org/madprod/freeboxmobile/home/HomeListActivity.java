@@ -16,7 +16,6 @@ import org.madprod.freeboxmobile.guide.GuideMenuActivity;
 import org.madprod.freeboxmobile.ligne.InfoAdslCheck;
 import org.madprod.freeboxmobile.mvv.MevoSync;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.DialogInterface;

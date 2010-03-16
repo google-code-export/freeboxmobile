@@ -159,7 +159,7 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants //AsyncTa
 									channel_id,
 									getJSONString(jHoraireObject,"resum_s"),
 									getJSONString(jHoraireObject,"resum_l"),
-									getJSONString(jHoraireObject,"title"),
+									getJSONString(jHoraireObject,"title").replaceAll("&amp;","&"),
 									Integer.parseInt(getJSONString(jHoraireObject,"duree")),
 									datetime_deb,
 									getJSONString(jHoraireObject,"datetime_fin")
