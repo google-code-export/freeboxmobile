@@ -107,7 +107,24 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		// Si on est sur un premier lancement de la nouvelle version :
 		if (!mgr.getString(KEY_SPLASH, "0").equals(getString(R.string.app_version)))
 		{
-			Editor editor = mgr.edit();
+			// Si on avait l'ancienne structure pour stocker les logos des chaînes, on migre :
+			File of = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+OLDDIR_CHAINES);
+	        if (of.exists())
+	        {
+	        	Log.i(TAG,"Ancien dossier des chaînes, on renomme");
+//	        	File nf = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES);
+//	        	nf.mkdirs();
+	        	if (of.renameTo(new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES)))
+	        	{
+	        		Log.i(TAG," ok");
+	        	}
+	        	else
+	        	{
+	        		Log.i(TAG," notok");
+	        	}
+	        }
+
+	        Editor editor = mgr.edit();
 			editor.putString(KEY_SPLASH, getString(R.string.app_version));
 			editor.commit();
 			File log = new File(Environment.getExternalStorageDirectory()+DIR_FBM, file_log);
@@ -126,7 +143,6 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 			}
 			displayAbout();
 		}
-
         Log.d(TAG,"type:"+mgr.getString(KEY_LINETYPE, ""));
     }
 
