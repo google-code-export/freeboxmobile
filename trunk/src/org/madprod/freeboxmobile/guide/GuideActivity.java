@@ -76,7 +76,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
 	//private List<String> calDates = new ArrayList<String>();
 	private ArrayList<GuideAdapter> ga = null;
 	private ArrayList<ListeChaines> listesChaines;
-	private static ArrayList<Categorie> categories = new ArrayList<Categorie>();
+	private static ArrayList<Categorie> categories;
 	private static String[] categoriesDialog;
 	private static ArrayAdapter<String> heuresAdapter;
 
@@ -96,7 +96,8 @@ public class GuideActivity extends ListActivity implements GuideConstants
 
 		setContentView(R.layout.guide);
         registerForContextMenu(getListView());
-
+        categories = new ArrayList<Categorie>();
+        
         for (i = 0; i < genres.length; i++)
         {
         	if (genres[i].length() > 0)
