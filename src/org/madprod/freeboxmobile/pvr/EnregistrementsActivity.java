@@ -25,13 +25,13 @@ import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.Toast;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.madprod.freeboxmobile.Constants;
 import org.madprod.freeboxmobile.FBMHttpConnection;
+import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
 
 /**
@@ -80,7 +80,7 @@ public class EnregistrementsActivity extends ExpandableListActivity implements C
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.pvr);
-        FBMHttpConnection.initVars(this, null);
+        FBMNetTask.register(this);
         Log.i(TAG,"ENREGISTREMENTSACTIVITY CREATE");
 
         File old_db = getDatabasePath("freeboxmobile"+FBMHttpConnection.getIdentifiant());
@@ -127,7 +127,8 @@ public class EnregistrementsActivity extends ExpandableListActivity implements C
 	protected void onDestroy()
     {
     	super.onDestroy();
-    	FBMHttpConnection.closeDisplay();
+    	FBMNetTask.unregister(this);
+//    	FBMHttpConnection.closeDisplay();
     	enrAct = null;
     }
 	

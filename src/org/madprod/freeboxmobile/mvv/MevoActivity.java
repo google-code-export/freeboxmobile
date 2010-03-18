@@ -358,7 +358,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
 		mAdapter.stopPlay();
 		mAdapter.releaseMP();
 		MevoSync.setActivity(null);
-		FBMHttpConnection.closeDisplay();
+//		FBMHttpConnection.closeDisplay();
 	}
 
 	private void setHpOff()

@@ -19,7 +19,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -76,8 +75,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 	private static Cursor boitiersCursor = null;
 	SimpleCursorAdapter boitiersSpinnerAdapter = null;
 	
-	//TODO : Virer cette variable, sert à rien à priori
-	private static boolean plusieursBoitiersHD;
+	private boolean plusieursBoitiersHD;
 	
 	// Curseur sur la liste des chaines
 	private static Cursor chainesCursor = null;
@@ -95,8 +93,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 	static Activity progAct = null;
 	private boolean nomEmissionSaisi = false;
 	private boolean[] joursChoisis = { false, false, false, false, false, false, false };
-	// TODO : Remove progressDialog variable
-	static ProgressDialog progressDialog = null;
+
 	static AlertDialog alertDialog = null;
 	TextView nomEmission = null;
 	TextView dureeEmission = null;
@@ -106,7 +103,6 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 
 	// identifiant du dernier user à être entré dans l'activité
 	public static String lastUser = "";
-//	int positionEcran = 0;
     private Button buttonRecur, ButtonDateDeb, ButtonTimeDeb, ButtonDateFin, ButtonTimeFin;
     CheckBox lendi, mordi, credi, joudi, dredi, sadi, gromanche;
     public static String progressText = ""; // Text des progressDialog avec bar
@@ -395,9 +391,8 @@ public class ProgrammationActivity extends Activity implements PvrConstants
     @Override
 	protected void onDestroy()
     {
-    	FBMHttpConnection.closeDisplay();
+//    	FBMHttpConnection.closeDisplay();
     	FBMNetTask.unregister(this);
-//    	progAct = null;
     	super.onDestroy();
     }
 
@@ -405,11 +400,6 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 	protected void onResume()
 	{
 		super.onResume();
-
-		if (progressDialog != null)
-		{
-			progressDialog.show();
-		}
 		if (alertDialog != null)
 		{
 			alertDialog.show();
@@ -420,11 +410,6 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 	protected void onPause()
 	{
 		super.onPause();
-    	
-		if (progressDialog != null)
-		{
-			progressDialog.dismiss();
-		}
 		if (alertDialog != null)
 		{
 			alertDialog.dismiss();

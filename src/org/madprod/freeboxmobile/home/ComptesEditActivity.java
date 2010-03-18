@@ -1,7 +1,6 @@
 package org.madprod.freeboxmobile.home;
 
 import org.madprod.freeboxmobile.Constants;
-import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
 
@@ -166,7 +165,7 @@ public class ComptesEditActivity extends Activity implements Constants
     {
     	FBMNetTask.unregister(this);
     	// TODO : remove
-    	FBMHttpConnection.closeDisplay();
+//    	FBMHttpConnection.closeDisplay();
     	mDbHelper.close();
         super.onDestroy();
     }
