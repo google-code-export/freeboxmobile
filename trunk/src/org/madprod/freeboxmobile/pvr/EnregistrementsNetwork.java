@@ -36,7 +36,7 @@ public class EnregistrementsNetwork implements Constants
 		
         // Recup if tv
         String contenu = null;
-    	url = "http://adsl.free.fr/admin/magneto.pl";
+    	url = "https://adsls.free.fr/admin/magneto.pl";
     	List<NameValuePair> param;
     	do
     	{
@@ -50,7 +50,10 @@ public class EnregistrementsNetwork implements Constants
 	    		// soit null (donc eteind) ne doit pas tout interrompre
 	    		return false;
 	    	}
-	
+	    	if (contenu.length() == 0)
+	    	{
+		    	contenu = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(url, param, true, true, "ISO8859_1"));	    		
+	    	}
 			if (boitier == 0)
 			{
 	        	// Plusieurs boitiers HD ?

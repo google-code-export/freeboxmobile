@@ -40,7 +40,7 @@ import android.util.Log;
 
 public class MevoSync extends WakefullIntentService implements MevoConstants
 {
-	private static final String mevoUrl = "http://adsl.free.fr/admin/tel/";
+	private static final String mevoUrl = "https://adsls.free.fr/admin/tel/";
 	private static final String mevoListPage = "notification_tel.pl";
 	private static final String mevoDelPage = "efface_message.pl";
 
@@ -52,8 +52,6 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 
     // TODO : Remove myProgressDialog, replace with functions of FBMNetTask
     static ProgressDialog myProgressDialog = null;
-    // TODO : Remove myAlertDialog
-//    static AlertDialog myAlertDialog = null;
 
 	static NotificationManager mNotificationManager = null;
 
@@ -128,12 +126,6 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 			{
 				myProgressDialog.dismiss();
 			}
-/*
-			if (myAlertDialog != null)
-			{
-				myAlertDialog.dismiss();
-			}
-*/
 		}
 		else
 		{
@@ -141,12 +133,6 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 			{
 				myProgressDialog.show();
 			}
-/*
-			if (myAlertDialog != null)
-			{
-				myAlertDialog.show();
-			}
-*/
 			mNotificationManager= (NotificationManager) activity.getSystemService(NOTIFICATION_SERVICE);
 
 	        // Si l'application a été utilisée avant le support du multicomptes, on migre les données

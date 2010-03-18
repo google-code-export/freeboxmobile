@@ -591,7 +591,7 @@ public class EnregistrementsActivity extends ExpandableListActivity implements C
 		postVars.add(new BasicNameValuePair("supp", "Supprimer"));
 		
 		// Requete HTTP
-		String url = "http://adsl.free.fr/admin/magneto.pl";
+		String url = "https://adsls.free.fr/admin/magneto.pl";
 		FBMHttpConnection.postAuthRequest(url, postVars, true, false);
 	}
 

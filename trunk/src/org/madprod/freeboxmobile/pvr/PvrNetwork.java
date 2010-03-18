@@ -57,7 +57,7 @@ public class PvrNetwork extends FBMNetTask implements PvrConstants // AsyncTask<
 		db = new ChainesDbAdapter(getActivity());
 		db.open();
 
-    	String url = "http://adsl.free.fr/admin/magneto.pl";
+    	String url = "https://adsls.free.fr/admin/magneto.pl";
     	dProgressSet("Importation", "", R.drawable.fm_magnetoscope);
 
     	if (getDisques)
@@ -78,8 +78,13 @@ public class PvrNetwork extends FBMNetTask implements PvrConstants // AsyncTask<
 	    	Log.i(TAG,"DEBUT :"+new Date());
 	        if (resultat != null)
 	        {
+	        	Log.d(TAG,"result_size:"+resultat.length());
 	        	try
 	        	{
+	        		if (resultat.length() == 0)
+	        		{
+	        			resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(url, param, true, true, "ISO8859_1"));
+	        		}
 					jObject = new JSONObject(resultat);
 					if (jObject.has("redirect"))
 					{
@@ -174,7 +179,7 @@ public class PvrNetwork extends FBMNetTask implements PvrConstants // AsyncTask<
 	        	catch (JSONException e)
 	        	{
 					Log.e(TAG,"JSONException ! "+e.getMessage());
-					Log.d(TAG,resultat);
+					Log.d(TAG,"Page:"+resultat);
 					e.printStackTrace();
 					ok = false;
 					break;
