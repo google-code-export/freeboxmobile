@@ -18,8 +18,6 @@ import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.Utils;
 import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
 
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.app.Activity;
 import android.os.Environment;
 import android.util.Log;

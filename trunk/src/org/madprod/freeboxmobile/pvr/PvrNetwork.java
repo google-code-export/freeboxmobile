@@ -13,6 +13,7 @@ import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
 
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.util.Log;
@@ -197,10 +198,15 @@ public class PvrNetwork extends FBMNetTask implements PvrConstants // AsyncTask<
     	{
         	doSwap(db);
 	    	// On met à jour le timestamp du dernier refresh
-			SharedPreferences mgr = getActivity().getSharedPreferences(KEY_PREFS, getActivity().MODE_PRIVATE);
-	    	Editor editor = mgr.edit();
-	    	editor.putLong(KEY_LAST_REFRESH+FBMHttpConnection.getIdentifiant(), (new Date()).getTime());
-	    	editor.commit();
+        	// TODO : Peut etre mettre mgr dans FBMNetTask afin qu'il soit toujours accessible et qu'on puisse toujours faire l'update ci-dessous
+        	Activity a = getActivity();
+        	if (a != null)
+        	{
+				SharedPreferences mgr = getActivity().getSharedPreferences(KEY_PREFS, Activity.MODE_PRIVATE);
+		    	Editor editor = mgr.edit();
+		    	editor.putLong(KEY_LAST_REFRESH+FBMHttpConnection.getIdentifiant(), (new Date()).getTime());
+		    	editor.commit();
+        	}
 	    	db.close();
 	    	return true;
     	}

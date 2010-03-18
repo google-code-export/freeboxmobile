@@ -22,11 +22,8 @@ import org.apache.http.message.BasicNameValuePair;
 import org.xmlrpc.android.XMLRPCClient;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Build;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
@@ -50,18 +47,11 @@ public class FBMHttpConnection implements Constants
 	private static String id = null;
 	private static String idt = null;
 
-//	public static String fbmlog = "";
-
 	private static int connectionStatus = CONNECT_NOT_CONNECTED;
 	
-//	private static final String serverUrl = "http://subscribe.free.fr/login/login.pl";
 	private static final String serverUrl = "https://subscribes.free.fr/login/login.pl";
 	private static final String suiviTechUrl = "http://adsl.free.fr/suivi/suivi_techgrrr.pl";
 	public static final String frimousseUrl = "http://www.frimousse.org/outils/xmlrpc";
-	
-	// Todo : remove httpProgressDialog (& errorAlert ?)
-	public static ProgressDialog httpProgressDialog = null;
-	public static AlertDialog errorAlert = null;
 
 	/**
 	 * Init les variables statiques
@@ -76,16 +66,6 @@ public class FBMHttpConnection implements Constants
 			c = a.getBaseContext();
 		}
 		USER_AGENT = c.getString(R.string.app_name)+"/"+c.getString(R.string.app_version)+" (Linux; U; Android "+Build.VERSION.RELEASE+"; fr-fr;)";
-		// On teste pour si on entre ici suite
-		// TODO : Remove httpProgressDialog
-        if (httpProgressDialog != null)
-        {
-           	httpProgressDialog.show();
-        }
-        if (errorAlert != null)
-        {
-           	errorAlert.show();
-        }
         title = c.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_TITLE, null);
 		login = c.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_USER, null);
 		password = c.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_PASSWORD, null);
@@ -103,19 +83,6 @@ public class FBMHttpConnection implements Constants
 		if (a != null)
 			initVars(a, null);
 	}
-
-	// TODO : Remove ?
-	public static void closeDisplay()
-	{
-		if (httpProgressDialog != null)
-        {
-           	httpProgressDialog.dismiss();
-        }
-       if (errorAlert != null)
-        {
-           	errorAlert.dismiss();
-        }
-	}
 	
 	public static String getTitle()
 	{
@@ -125,66 +92,6 @@ public class FBMHttpConnection implements Constants
 	public static String getIdentifiant()
 	{
 		return (login);
-	}
-
-	// TODO : remove ?
-	public static void showProgressDialog_unused(Activity a)
-	{
-		httpProgressDialog = new ProgressDialog(a);
-		httpProgressDialog.setIcon(R.drawable.icon_fbm_reverse);
-		httpProgressDialog.setTitle("Mon compte Freebox");
-		httpProgressDialog.setCancelable(false);
-		httpProgressDialog.setMessage("Veuillez patienter,\n\nChargement / rafraichissement des données en cours...");
-		httpProgressDialog.show();
-
-//		httpProgressDialog = ProgressDialog.show(a, "Mon Compte Free", "Connexion en cours ...", true,false);
-	}
-
-	// TODO : Remove
-	public static void showProgressDialog2_unused(Activity a)
-	{
-		httpProgressDialog = new ProgressDialog(a);
-		httpProgressDialog.setIcon(R.drawable.icon_fbm_reverse);
-		httpProgressDialog.setTitle("Mise à jour des données");
-		httpProgressDialog.setMessage("Connexion en cours...");
-		httpProgressDialog.setCancelable(false);
-		httpProgressDialog.show();
-//		httpProgressDialog = ProgressDialog.show(a, "Mise à jour des données", "Connexion en cours ...", true,false);
-	}
-
-	// TODO : Remove
-	public static void dismissPd_unused()
-	{
-		if (httpProgressDialog != null)
-		{
-			httpProgressDialog.dismiss();
-			httpProgressDialog = null;
-		}
-	}
-
-	// TODO : remove
-	public static AlertDialog showError_unused(Activity a)
-	{
-		errorAlert = new AlertDialog.Builder(a).create();
-		errorAlert.setTitle("Connexion impossible");
-		errorAlert.setIcon(R.drawable.icon_fbm_reverse);
-		errorAlert.setMessage(
-				"Impossible de se connecter au portail de Free.\n"+
-				"Vérifiez votre identifiant, " +
-				"votre mot de passe et votre "+	
-				"connexion à Internet (Wifi, 3G...)."
-		);
-		errorAlert.setButton("Ok", new DialogInterface.OnClickListener()
-			{
-				public void onClick(DialogInterface dialog, int which)
-				{
-					dialog.dismiss();
-					errorAlert = null;
-				}
-			}
-		);
-		errorAlert.show();
-		return errorAlert;
 	}
 
     /**
@@ -732,11 +639,6 @@ public class FBMHttpConnection implements Constants
         {
         	charset = "ISO8859_1";
         }
-        // TODO : tester et enlever ce if
-//		if ((p == null) && (auth))
-//		{
-//			p = new ArrayList<NameValuePair>();
-//		}
         if ((p != null) && (p.size() > 0))
         {
             for(int i = 0 ; i < p.size() ; i++)

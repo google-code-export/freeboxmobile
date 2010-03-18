@@ -1,11 +1,8 @@
 package org.madprod.freeboxmobile.home;
 
-import java.util.Date;
-
 import org.madprod.freeboxmobile.Constants;
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.FBMNetTask;
-import org.madprod.freeboxmobile.guide.GuideActivity;
 import org.madprod.freeboxmobile.guide.GuideNetwork;
 import org.madprod.freeboxmobile.pvr.ProgrammationActivity;
 import org.madprod.freeboxmobile.pvr.PvrNetwork;
@@ -18,7 +15,6 @@ import android.content.SharedPreferences;
 import android.content.Context;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 

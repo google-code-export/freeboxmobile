@@ -12,6 +12,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.madprod.freeboxmobile.Constants;
 import org.madprod.freeboxmobile.FBMHttpConnection;
+import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
 
 import android.app.Activity;
@@ -59,7 +60,7 @@ public class FaxActivity extends Activity implements FaxConstants {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		FBMHttpConnection.initVars(this,null);
+		FBMNetTask.register(this);
 		this.setContentView(R.layout.fax);
 
 		numberBox = (EditText) findViewById(R.id.faxNumber);
@@ -148,7 +149,7 @@ public class FaxActivity extends Activity implements FaxConstants {
 	
 	@Override
 	protected void onDestroy() {
-		FBMHttpConnection.closeDisplay();
+		FBMNetTask.unregister(this);
 		super.onDestroy();
 	}
 	

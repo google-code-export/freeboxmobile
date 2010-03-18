@@ -18,7 +18,6 @@ import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;

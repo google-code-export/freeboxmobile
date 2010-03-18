@@ -174,7 +174,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     {
 		Log.i(TAG,"MainActivity Pause");
     	super.onPause();
-		FBMHttpConnection.closeDisplay();
+//		FBMHttpConnection.closeDisplay();
     }
 
     private void refreshCompte()
