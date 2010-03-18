@@ -741,7 +741,6 @@ public class FBMHttpConnection implements Constants
 		}		
 		return sb.toString();
 	}
-	
 
 	/**
 	 * Post d'un fichier en multipart
