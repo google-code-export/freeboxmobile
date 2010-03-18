@@ -576,6 +576,12 @@ public class EnregistrementsActivity extends ExpandableListActivity implements C
 		
 		c.close();
 
+		Log.d(TAG, "REPEAT_A : ["+repeat_a+"]");
+		if (repeat_a == null)
+		{
+			Log.d(TAG, "REPEAT_A NULL");
+		}
+		
 		// Creation des variables POST
 		postVars.add(new BasicNameValuePair("ide", ide));
 		postVars.add(new BasicNameValuePair("chaine_id", chaine_id));
@@ -591,7 +597,8 @@ public class EnregistrementsActivity extends ExpandableListActivity implements C
 		postVars.add(new BasicNameValuePair("supp", "Supprimer"));
 		
 		// Requete HTTP
-		String url = "https://adsls.free.fr/admin/magneto.pl";
+//		String url = "https://adsls.free.fr/admin/magneto.pl";
+		String url = "http://adsl.free.fr/admin/magneto.pl";
 		FBMHttpConnection.postAuthRequest(url, postVars, true, false);
 	}
 

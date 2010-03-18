@@ -534,10 +534,7 @@ public class FBMHttpConnection implements Constants
 				if (c == CONNECT_CONNECTED)
 				{
 					Log.d(TAG,"GETISR :  REAUTHENTIFICATION OK");
-					if (retour)
-						h = prepareConnection(url+"?"+makeStringForPost(p, auth, charset), "GET");
-					else
-						h = prepareConnection(url+"?"+makeStringForPost(p, auth, charset), "HEAD");
+					h = prepareConnection(url+"?"+makeStringForPost(p, auth, charset), retour ? "GET": "HEAD");
 					h.setDoInput(true);
 					Log.d(TAG,"HEADERS : "+h.getHeaderFields());
 					// TODO : Tenir compte du getResponseCode()
@@ -565,6 +562,17 @@ public class FBMHttpConnection implements Constants
 		return (null);
 	}
 
+	public static void makePost(HttpURLConnection h, boolean retour, String params) throws IOException
+	{
+		h.setDoOutput(true);
+		if (retour)
+			h.setDoInput(true);
+		OutputStreamWriter o = new OutputStreamWriter(h.getOutputStream());
+		o.write(params);
+		o.flush();
+		o.close();		
+	}
+	
 	public static InputStreamReader postAuthRequest(String url, List<NameValuePair> p, boolean auth, boolean retour)
 	{
 		HttpURLConnection h = null;
@@ -579,6 +587,7 @@ public class FBMHttpConnection implements Constants
 			{
 				Log.d(TAG,"POST : VERIFICATION DE SESSION");
 				h = prepareConnection(url+(auth ? "?"+makeStringForPost(null, auth, null) : ""), "POST");
+//				makePost(h, retour, makeStringForPost(p, false, null));
 				h.setDoOutput(true);
 				if (retour)
 					h.setDoInput(true);
@@ -586,6 +595,14 @@ public class FBMHttpConnection implements Constants
 				o.write(makeStringForPost(p, false, null));
 				o.flush();
 				o.close();
+				Log.d(TAG,"RESPONSE : "+h.getResponseCode()+" "+h.getResponseMessage());
+/*				if (h.getResponseCode() == -1)
+				{
+					h = prepareConnection(url+(auth ? "?"+makeStringForPost(null, auth, null) : ""), "POST");
+					makePost(h, retour, makeStringForPost(p, false, null));
+					Log.d(TAG,"RESPONSE : "+h.getResponseCode()+" "+h.getResponseMessage());
+				}
+*/
 				if (h.getHeaderFields().get("location") != null)
 				{
 					c = CONNECT_NOT_CONNECTED;
@@ -611,6 +628,7 @@ public class FBMHttpConnection implements Constants
 					o.write(makeStringForPost(p, false, null));
 					o.flush();
 					o.close();
+					Log.d(TAG,"RESPONSE : "+h.getResponseCode()+" "+h.getResponseMessage());
 				}
 			}
 			else

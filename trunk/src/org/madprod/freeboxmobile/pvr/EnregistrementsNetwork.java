@@ -142,7 +142,7 @@ public class EnregistrementsNetwork implements Constants
 				dur =			recupererChamp("value=\"", "\"");
 				name =			recupererChamp("value=\"", "\"");
 				where_id =		recupererChamp("value=\"", "\"");
-				repeat_a =		recupererChamp("value=\"", "\"") + " ";
+				repeat_a =		recupererChamp("value=\"", "\"");
 				
 				if (db.isEnregistrementPresent(Integer.parseInt(ide)) > 0)
 				{
@@ -181,7 +181,7 @@ public class EnregistrementsNetwork implements Constants
     	pos = tableEnregistrements.indexOf(debut);    	
     	if (pos <= 0 || pos + debut.length() > tableEnregistrements.length())
     	{
-    		return null;
+    		return "";
     	}
     	champ = tableEnregistrements.substring(pos + debut.length());
     	tableEnregistrements = tableEnregistrements.substring(pos + debut.length());
@@ -190,7 +190,7 @@ public class EnregistrementsNetwork implements Constants
     	pos = champ.indexOf(fin);
     	if (pos <= 0 || pos > champ.length() || pos > tableEnregistrements.length())
     	{
-    		return null;
+    		return "";
     	}
     	champ = champ.substring(0, pos);
     	tableEnregistrements = tableEnregistrements.substring(pos);
