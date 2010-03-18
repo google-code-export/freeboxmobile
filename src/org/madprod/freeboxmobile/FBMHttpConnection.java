@@ -17,6 +17,8 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.net.ssl.HttpsURLConnection;
+
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.xmlrpc.android.XMLRPCClient;
@@ -50,7 +52,7 @@ public class FBMHttpConnection implements Constants
 	private static int connectionStatus = CONNECT_NOT_CONNECTED;
 	
 	private static final String serverUrl = "https://subscribes.free.fr/login/login.pl";
-	private static final String suiviTechUrl = "http://adsl.free.fr/suivi/suivi_techgrrr.pl";
+	private static final String suiviTechUrl = "https://adsls.free.fr/suivi/suivi_techgrrr.pl";
 	public static final String frimousseUrl = "http://www.frimousse.org/outils/xmlrpc";
 
 	/**
@@ -495,6 +497,7 @@ public class FBMHttpConnection implements Constants
 	public static InputStreamReader getAuthRequest(String url, List<NameValuePair> p, boolean auth, boolean retour, String charset)
 	{
 		int c;
+
 		HttpURLConnection h = null;
 
 		c = checkConnected(CONNECT_CONNECTED);

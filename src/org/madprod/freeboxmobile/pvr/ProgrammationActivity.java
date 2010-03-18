@@ -965,10 +965,18 @@ public class ProgrammationActivity extends Activity implements PvrConstants
             	}
 
         		// Requete HTTP
-        		String url = "http://adsl.free.fr/admin/magneto.pl";
+        		String url = "https://adsls.free.fr/admin/magneto.pl";
        			postVars.add(new BasicNameValuePair("box", ""+mBoitierHD));
         		String resultat = FBMHttpConnection.getPage(FBMHttpConnection.postAuthRequest(url, postVars, true, true));
 
+        		Log.d(TAG, "RESULTAT POST : "+resultat);
+        		Log.d(TAG, "FIN RESULTAT "+resultat.length());
+        		if (resultat.length() == 0)
+        		{
+            		resultat = FBMHttpConnection.getPage(FBMHttpConnection.postAuthRequest(url, postVars, true, true));        			
+        		}
+        		Log.d(TAG, "RESULTAT2 POST : "+resultat);
+        		Log.d(TAG, "FIN RESULTAT2 "+resultat.length());
         		int erreurPos = resultat.indexOf("erreurs");
         		if (erreurPos > 0)
         		{
