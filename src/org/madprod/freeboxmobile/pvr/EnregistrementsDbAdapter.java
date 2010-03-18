@@ -55,14 +55,14 @@ public class EnregistrementsDbAdapter {
 		+ KEY_DUR + " integer not null,"
 		+ KEY_NAME + " text not null,"
 		+ KEY_WHERE_ID + " integer not null,"
-		+ KEY_REPEAT_A + " text,"
+		+ KEY_REPEAT_A + " text not null,"
 		+ KEY_STATUS + " integer not null"
 		+ ");";
 
     static final String DATABASE_NAME = "pvr";
     private static final String DATABASE_TABLE_ENR = "enregistrements";
 
-    private static final int DATABASE_VERSION = 10;
+    private static final int DATABASE_VERSION = 11;
     
     private static final String DATABASE_CREATE_ENR =
         "create table " + DATABASE_TABLE_ENR + TABLE_ENREGISTREMENTS;
