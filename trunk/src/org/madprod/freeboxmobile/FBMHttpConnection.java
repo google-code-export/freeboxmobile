@@ -13,6 +13,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -380,8 +381,8 @@ public class FBMHttpConnection implements Constants
 		c.setInstanceFollowRedirects(false);
 		c.setRequestProperty("User-Agent", USER_AGENT);
 		// TODO : Check this !
-		c.setConnectTimeout(30000);
-		c.setReadTimeout(30000);
+//		c.setConnectTimeout(30000);
+//		c.setReadTimeout(30000);
 		return (c);
 	}
 	
@@ -507,15 +508,17 @@ public class FBMHttpConnection implements Constants
 			if (c == CONNECT_CONNECTED)
 			{
 				Log.d(TAG,"GETISR : VERIF SI ON EST AUTHENTIFIE");
-				if (retour)
-					h = prepareConnection(url+"?"+makeStringForPost(p, auth, charset), "GET");
-				else
-					h = prepareConnection(url+"?"+makeStringForPost(p, auth, charset), "HEAD");
+				h = prepareConnection(url+"?"+makeStringForPost(p, auth, charset), retour ? "GET" : "HEAD");
 				h.setDoInput(true);
-				charset = getCharset(h.getContentType(), charset);
+				if (h.getResponseCode() == -1)
+				{
+					Log.d(TAG, "GETISR : SECOND ESSAI...");
+					h = prepareConnection(url+"?"+makeStringForPost(p, auth, charset), retour ? "GET" : "HEAD");
+					h.setDoInput(true);					
+				}
 
+				charset = getCharset(h.getContentType(), charset);
 				Log.d(TAG,"HEADERS : "+h.getHeaderFields());
-				// TODO : Tenir compte du getResponseCode()
 				Log.d(TAG,"RESPONSE : "+h.getResponseCode()+" "+h.getResponseMessage());
 				if (h.getHeaderFields().get("location") != null)
 				{
@@ -562,6 +565,7 @@ public class FBMHttpConnection implements Constants
 		return (null);
 	}
 
+	// TODO : Remove ?
 	public static void makePost(HttpURLConnection h, boolean retour, String params) throws IOException
 	{
 		h.setDoOutput(true);
@@ -587,22 +591,22 @@ public class FBMHttpConnection implements Constants
 			{
 				Log.d(TAG,"POST : VERIFICATION DE SESSION");
 				h = prepareConnection(url+(auth ? "?"+makeStringForPost(null, auth, null) : ""), "POST");
-//				makePost(h, retour, makeStringForPost(p, false, null));
 				h.setDoOutput(true);
 				if (retour)
 					h.setDoInput(true);
+				if (h.getResponseCode() == -1)
+				{
+					Log.d(TAG, "POST : Second essai...");
+					h = prepareConnection(url+(auth ? "?"+makeStringForPost(null, auth, null) : ""), "POST");
+					h.setDoOutput(true);
+					if (retour)
+						h.setDoInput(true);					
+				}
 				OutputStreamWriter o = new OutputStreamWriter(h.getOutputStream());
 				o.write(makeStringForPost(p, false, null));
 				o.flush();
 				o.close();
 				Log.d(TAG,"RESPONSE : "+h.getResponseCode()+" "+h.getResponseMessage());
-/*				if (h.getResponseCode() == -1)
-				{
-					h = prepareConnection(url+(auth ? "?"+makeStringForPost(null, auth, null) : ""), "POST");
-					makePost(h, retour, makeStringForPost(p, false, null));
-					Log.d(TAG,"RESPONSE : "+h.getResponseCode()+" "+h.getResponseMessage());
-				}
-*/
 				if (h.getHeaderFields().get("location") != null)
 				{
 					c = CONNECT_NOT_CONNECTED;
