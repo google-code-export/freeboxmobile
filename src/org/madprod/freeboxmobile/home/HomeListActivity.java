@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.madprod.freeboxmobile.Config;
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.FBMNetTask;
@@ -62,6 +64,33 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 
         FBMNetTask.register(this);
 
+		// TESTS POUR TROUVER OU EST LE BUG HTTPS CHEZ FREE
+		/*
+		List<NameValuePair> postVars = new ArrayList<NameValuePair>();
+		String mUrl;
+		String resultat;
+		postVars.add(new BasicNameValuePair("detail", "0"));
+		postVars.add(new BasicNameValuePair("box", "0"));
+        mUrl = "https://www.google.com/analytics/reporting/login?ctu=https://www.google.com/analytics/settings/%3Fet%3Dreset%26hl%3Dfr";
+        resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(mUrl, postVars, true, true, "UTF8"));
+        Log.d(TAG, "RESULTAT G 1:"+resultat.length());
+        resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(mUrl, postVars, true, true, "UTF8"));
+        Log.d(TAG, "RESULTAT G 2:"+resultat.length());
+        resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(mUrl, postVars, true, true, "UTF8"));
+        Log.d(TAG, "RESULTAT G 3:"+resultat.length());
+        resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(mUrl, postVars, true, true, "UTF8"));
+        Log.d(TAG, "RESULTAT G 4:"+resultat.length());
+        mUrl = "https://adsls.free.fr/admin/magneto.pl";
+        resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(mUrl, postVars, true, true, "UTF8"));
+        Log.d(TAG, "RESULTAT F 1:"+resultat.length());
+        resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(mUrl, postVars, true, true, "UTF8"));
+        Log.d(TAG, "RESULTAT F 2:"+resultat.length());
+        resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(mUrl, postVars, true, true, "UTF8"));
+        Log.d(TAG, "RESULTAT F 3:"+resultat.length());
+        resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(mUrl, postVars, true, true, "UTF8"));
+        Log.d(TAG, "RESULTAT F 4:"+resultat.length());
+        */
+		
 		// On teste si on est dans le cas d'un premier lancement pour cette version de l'appli
        	modulesList = new ArrayList< Map<String,Object> >();
        	setModules();

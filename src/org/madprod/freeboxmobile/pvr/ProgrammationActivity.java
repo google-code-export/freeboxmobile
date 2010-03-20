@@ -716,59 +716,6 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 		});
     	alertDialog.show();
     }
-
-    // TODO : remove
-    /*
-    public static void showProgress(Activity a, int progress, int max)
-    {
-    	if (progressDialog == null)
-    	{
-    		progressDialog = new ProgressDialog(a);
-    		progressDialog.setIcon(R.drawable.fm_magnetoscope);
-    		progressDialog.setTitle("Importation");
-    		progressDialog.setMessage(progressText);
-    		progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-    		progressDialog.setCancelable(false);
-    		progressDialog.setMax(max);
-    		progressDialog.show();
-        }
-    	if (progress == 0)
-    	{
-    		progressDialog.setMessage(progressText);
-    		progressDialog.setMax(max);
-    	}
-        progressDialog.setProgress(progress);
-    }
-
-    public static void showPatientezChaines(Activity a)
-    {
-		progressDialog = new ProgressDialog(a);
-		progressDialog.setIcon(R.drawable.fm_magnetoscope);
-		progressDialog.setTitle(a.getString(R.string.pvrPatientez));
-		progressDialog.setMessage(a.getString(R.string.pvrTelechargementChaines));
-		progressDialog.setCancelable(false);
-		progressDialog.show();
-    }
-
-    public static void showPatientezDonnees(Activity a)
-    {
-		progressDialog = new ProgressDialog(a);
-		progressDialog.setIcon(R.drawable.fm_magnetoscope);
-		progressDialog.setTitle(a.getString(R.string.pvrPatientez));
-		progressDialog.setMessage(a.getString(R.string.pvrTelechargementDonnees));
-		progressDialog.setCancelable(false);
-		progressDialog.show();
-    }
-
-    public static void dismissPd()
-    {
-    	if (progressDialog != null)
-    	{
-    		progressDialog.dismiss();
-    		progressDialog = null;
-    	}
-    }
-*/
     
     private static void dismissAd()
     {
@@ -831,9 +778,6 @@ public class ProgrammationActivity extends Activity implements PvrConstants
         {
             class TraiterFormulaireTask extends AsyncTask<Void, Integer, String>
             {
-//            	ProgressDialog progressDialog = null;
-//            	String errMsg = "";
-
                 protected void onPreExecute()
                 {
                 	FBMNetTask.iProgressShow(
@@ -841,11 +785,6 @@ public class ProgrammationActivity extends Activity implements PvrConstants
                 			getString(fromListe ? R.string.pvrModificationEnCours: R.string.pvrProgrammationEnCours),
                 			R.drawable.fm_magnetoscope
                 	);
-//            		progressDialog = new ProgressDialog(progAct);
-//            		progressDialog.setIcon(R.drawable.fm_magnetoscope);
-//            		progressDialog.setTitle(getString(R.string.pvrPatientez));
-//            		progressDialog.setMessage(getString(fromListe ? R.string.pvrModificationEnCours: R.string.pvrProgrammationEnCours));
-//            		progressDialog.show();
                 }
             	
                 protected String doInBackground(Void... arg0)
@@ -864,8 +803,6 @@ public class ProgrammationActivity extends Activity implements PvrConstants
                 
                 protected void onPostExecute(String errMsg)
                 {
-//                    progressDialog.dismiss();
-//                    progressDialog = null;
                 	FBMNetTask.iProgressDialogDismiss();
 
                     if (errMsg != null)
@@ -898,25 +835,33 @@ public class ProgrammationActivity extends Activity implements PvrConstants
         		Integer service, duree, where_id;
         		int h, m;
         		String date, emission, heure, minutes;
-        		
-        		ChainesDbAdapter db = new ChainesDbAdapter(progAct);
-        		db.open();
 
+        		// On refait des query ici, parceque des operations asynchrones peuvent toucher aux
+        		// cursor du reste de l'appli
+                ChainesDbAdapter db = new ChainesDbAdapter(progAct);
+                db.open();
+                
+        		Log.d (TAG, "DoAction");
         		// Duree, emission, nom
         		duree = Integer.parseInt(dureeEmission.getText().toString());
         		emission = nomEmission.getText().toString();
         		emission = emission.replaceAll("&","-");
         		
-        		if (emission.length() == 0) {
+        		if (emission.length() == 0)
+        		{
+        			db.close();
         			return getString(R.string.pvrErreurNomEmission);
         		}
 
         		// Service
         		Spinner spinnerQualite = (Spinner) findViewById(R.id.pvrPrgQualite);
-        		servicesCursor.moveToPosition(spinnerQualite.getSelectedItemPosition());
-        		Log.d(TAG,"SERVICE : "+servicesCursor.getString(servicesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_SERVICE_DESC)));
-        		service = servicesCursor.getInt(servicesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_SERVICE_ID));
-        		
+        		// TODO : créer une requete plutot que de chercher dans le cursor
+        		Cursor mServicesCursor = db.fetchServicesChaine(mChaineID, mBoitierHD);
+        		mServicesCursor.moveToPosition(spinnerQualite.getSelectedItemPosition());
+        		Log.d(TAG,"SERVICE : "+mServicesCursor.getString(mServicesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_SERVICE_DESC)));
+        		service = mServicesCursor.getInt(mServicesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_SERVICE_ID));
+        		mServicesCursor.close();
+
         		// Date et heure
    	       		date = makeDateForPost(choosen_year_deb, choosen_month_deb, choosen_day_deb);
         		h = choosen_hour_deb;
@@ -930,8 +875,12 @@ public class ProgrammationActivity extends Activity implements PvrConstants
         		// Disque
         		int disqueId = disqueSpinner.getSelectedItemPosition();
         		// TODO : Ici, si l'abonné n'a pas de disque dur dans sa Freebox : problème !
-       			disquesCursor.moveToPosition(disqueId);
-       			where_id = disquesCursor.getInt(disquesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_DISQUE_ID));
+
+        		// TODO : créer une requete plutot que de chercher dans le cursor
+        		Cursor mDisquesCursor = db.getListeDisques(mBoitierHD);
+       			mDisquesCursor.moveToPosition(disqueId);
+       			where_id = mDisquesCursor.getInt(mDisquesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_DISQUE_ID));
+       			mDisquesCursor.close();
 
         		// Creation des variables POST
         		postVars.add(new BasicNameValuePair("chaine", mChaineID.toString()));
@@ -969,14 +918,6 @@ public class ProgrammationActivity extends Activity implements PvrConstants
        			postVars.add(new BasicNameValuePair("box", ""+mBoitierHD));
         		String resultat = FBMHttpConnection.getPage(FBMHttpConnection.postAuthRequest(url, postVars, true, true));
 
-        		Log.d(TAG, "RESULTAT POST : "+resultat);
-        		Log.d(TAG, "FIN RESULTAT "+resultat.length());
-        		if (resultat.length() == 0)
-        		{
-            		resultat = FBMHttpConnection.getPage(FBMHttpConnection.postAuthRequest(url, postVars, true, true));        			
-        		}
-        		Log.d(TAG, "RESULTAT2 POST : "+resultat);
-        		Log.d(TAG, "FIN RESULTAT2 "+resultat.length());
         		int erreurPos = resultat.indexOf("erreurs");
         		if (erreurPos > 0)
         		{
@@ -1006,7 +947,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
     				editor.putInt(KEY_TOTAL_ENR, total);
     				editor.commit();
         		}
-        		db.close();
+    			db.close();
         		return null;
             }
         });
@@ -1398,12 +1339,14 @@ public class ProgrammationActivity extends Activity implements PvrConstants
         		pbiv = true;
         }
 
-        protected Boolean doInBackground(Void... arg0) {
+        protected Boolean doInBackground(Void... arg0)
+        {
         	return new PvrNetwork(getChaines, getDisques).getData();
         }
 
         protected void onPostExecute(Boolean telechargementOk)
         {
+        	preparerActivite();
         	if (telechargementOk == Boolean.TRUE)
         	{
         	}
@@ -1411,7 +1354,6 @@ public class ProgrammationActivity extends Activity implements PvrConstants
         	{
     			afficherMsgErreur(progAct.getString(R.string.pvrErreurTelechargementDonnees));
         	}
-        	preparerActivite();
         	// progAct important ici / en cas de screenrotation, il est essentiel
         	// (sinon le setProgressBar se fait sur l'ancienne activity que connait l'asynctask) 
     		progAct.setProgressBarIndeterminateVisibility(false);

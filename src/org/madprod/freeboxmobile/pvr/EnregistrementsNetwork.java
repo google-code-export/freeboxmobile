@@ -13,7 +13,6 @@ import android.util.Log;
 
 /**
  * télécharge la liste des enregistrements et les stocke en base
- * @author 
  * $Id$
  */
 
@@ -49,10 +48,6 @@ public class EnregistrementsNetwork implements Constants
 	    		// TODO : Dans le cas de plusieurs boitiers, le fait qu'un des boitiers
 	    		// soit null (donc eteind) ne doit pas tout interrompre
 	    		return false;
-	    	}
-	    	if (contenu.length() == 0)
-	    	{
-		    	contenu = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(url, param, true, true, "ISO8859_1"));	    		
 	    	}
 			if (boitier == 0)
 			{
