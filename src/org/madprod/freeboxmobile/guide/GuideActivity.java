@@ -803,42 +803,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
 			return (canal - another.canal);
 		}
     }
-    
-
-    
-    // TODO : Remove
-/*    
-    public static void showProgress(Activity a, int progress)
-    {
-		if (progressDialog == null)
-    	{
-    		progressDialog = new ProgressDialog(a);
-    		progressDialog.setIcon(R.drawable.fm_magnetoscope);
-    		progressDialog.setTitle("Importation");
-    		progressDialog.setMessage(progressText);
-    		progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-    		progressDialog.setCancelable(false);
-    		progressDialog.show();
-        }
-		progressDialog.setMessage(progressText);
-        progressDialog.setProgress(progress);
-    }
-
-    public static void setPdMax(int max)
-    {
-    	progressDialog.setMax(max);
-    }
-    
-    public static void dismissPd()
-    {
-    	Log.i(TAG,"GuideActivity Dismiss");
-    	if (progressDialog != null)
-    	{
-    		progressDialog.dismiss();
-    		progressDialog = null;
-    	}
-    }
-*/    
+       
 	private void displayHelp()
     {	
     	AlertDialog d = new AlertDialog.Builder(this).create();
@@ -888,11 +853,6 @@ public class GuideActivity extends ListActivity implements GuideConstants
         protected Integer doInBackground(Void... arg0)
         {
         	return new GuideNetwork(GuideActivity.this, debdatetime, getChaines, getProg, 0, forceRefresh).getData();
-        }
-
-        protected void onProgressUpdate(Integer... progress)
-        {
-//            showProgress(GuideActivity.this, progress[0]);
         }
 
         protected void onPostExecute(Integer result)

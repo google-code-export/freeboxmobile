@@ -19,6 +19,7 @@ import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -59,6 +60,11 @@ public class GuideMenuActivity extends Activity implements GuideConstants
         mDbHelper.open();
         Log.d(TAG,"Nettoyage des anciens programmes effacés : "+mDbHelper.deleteOldProgs());
         Log.d(TAG,"Nettoyage de l'ancienne historique : "+mDbHelper.deleteOldHisto());
+
+    	if (mDbHelper.getNbChaines() == 0)
+    	{
+    		new GuideMenuActivityNetwork().execute((Void[])null);    		
+    	}
 
         Button enCours = (Button) findViewById(R.id.ButtonEnCours);
         enCours.setOnClickListener(
@@ -264,4 +270,38 @@ public class GuideMenuActivity extends Activity implements GuideConstants
 			);
 		d.show();
     }
+	
+    private class GuideMenuActivityNetwork extends AsyncTask<Void, Integer, Integer>
+    {
+        protected void onPreExecute()
+        {
+        }
+
+        protected Integer doInBackground(Void... arg0)
+        {
+        	return new GuideNetwork(GuideMenuActivity.this, null, true, true, 0, false).getData();
+        }
+
+        protected void onPostExecute(Integer result)
+        {
+        	if (result != DATA_NOT_DOWNLOADED)
+        	{
+        		getFavoris();
+        	}
+        }
+
+        /**
+         * GuideactivityNetwork
+         * @param d : datetime début
+         * @param chaine : récupérer liste des chaines (+ logos) ?
+         * @param prog : récupérer liste des programmes ?
+         * @param force : forcer la récupération des programmes (ne pas tenir compte du cache) ?
+         * @param refreshactivity : pour rafraichir toute l'activité après un onActivityResult du choix des favoris
+         */
+        public GuideMenuActivityNetwork()
+        {
+        	Log.d(TAG,"GUIDEMENUACTIVITYNETWORK START");
+        }
+    }
+
 }
