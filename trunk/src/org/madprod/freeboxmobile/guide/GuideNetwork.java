@@ -190,7 +190,15 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants //AsyncTa
 					{
 						publishProgress(courant++);
 						String channelId = it.next();
-						channel_id = Integer.parseInt(channelId);
+						if (channelId.length() > 0)
+						{
+							channel_id = Integer.parseInt(channelId);
+						}
+						else
+						{
+							Log.d(TAG,"ChannelId == -1");
+							channel_id = -1;
+						}
 						jChannelObject = jChannelsObject.getJSONObject(channelId);
 						image = getJSONString(jChannelObject, "image");
 						canal = getJSONString(jChannelObject, "canal");
