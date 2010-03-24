@@ -72,8 +72,6 @@ public class GuideActivity extends ListActivity implements GuideConstants
 
 	private static boolean mode_reduit;
 	
-	// Cette liste sert à récupérer la date correspondant à l'indice du spinner
-	//private List<String> calDates = new ArrayList<String>();
 	private ArrayList<GuideAdapter> ga = null;
 	private ArrayList<ListeChaines> listesChaines;
 	private static ArrayList<Categorie> categories;
@@ -118,6 +116,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
 
         mDbHelper = new ChainesDbAdapter(this);
         mDbHelper.open();
+       
         final Bundle extras = getIntent().getExtras();
         datesSpinner = (Spinner) findViewById(R.id.DatesSpinner);
         heuresSpinner = (Spinner) findViewById(R.id.HeuresSpinner);
@@ -125,25 +124,6 @@ public class GuideActivity extends ListActivity implements GuideConstants
         GuideUtils.makeCalDates();
         Calendar c = Calendar.getInstance();
         c.setFirstDayOfWeek(Calendar.MONDAY);
-        // TODO : Remove
-        /*
-        Calendar c = Calendar.getInstance();
-        c.setFirstDayOfWeek(Calendar.MONDAY);
-        List<String> dates = new ArrayList<String>();
-        Integer mois, jour;
-        for (i=0; i < 7; i++)
-        {
-        	mois = c.get(Calendar.MONTH)+1;
-        	jour = c.get(Calendar.DAY_OF_MONTH);
-        	dates.add(jours[c.get(Calendar.DAY_OF_WEEK)] +" "+ ((Integer)c.get(Calendar.DAY_OF_MONTH)).toString());
-        	GuideUtils.calDates.add(c.get(Calendar.YEAR)+"-"+(mois<10?"0":"")+mois.toString()+"-"+(jour<10?"0":"")+jour.toString());
-            c.add(Calendar.DAY_OF_MONTH, 1);
-        }
-        // Un de plus pour la date/heure de fin
-    	mois = c.get(Calendar.MONTH)+1;
-    	jour = c.get(Calendar.DAY_OF_MONTH);
-    	calDates.add(c.get(Calendar.YEAR)+"-"+(mois<10?"0":"")+mois.toString()+"-"+(jour<10?"0":"")+jour.toString());
-*/
         
     	// Selections
     	selectedDate = GuideUtils.calDates.get(0);
