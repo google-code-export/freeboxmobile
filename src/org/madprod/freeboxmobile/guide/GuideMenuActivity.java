@@ -23,6 +23,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -30,6 +31,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.LinearLayout.LayoutParams;
@@ -185,7 +187,7 @@ public class GuideMenuActivity extends Activity implements GuideConstants
 		Log.d(TAG,"getFavoris");
 
 		listeFavoris.clear();
-		// On commence par récupérer la liste des chaines favorites
+
     	Cursor chainesIds = mDbHelper.getChainesProg();
     	startManagingCursor (chainesIds);
         if (chainesIds != null)
@@ -194,7 +196,6 @@ public class GuideMenuActivity extends Activity implements GuideConstants
 			if (chainesIds.moveToFirst())
 			{
 				Cursor chaineCursor;
-//				boolean nochaine = false;
 				int CI_progchannel_id = chainesIds.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_CHANNEL_ID);
 				do
 				{
@@ -208,8 +209,6 @@ public class GuideMenuActivity extends Activity implements GuideConstants
 						f.image = chaineCursor.getString(chaineCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE));
 						chaineCursor.close();
 					}
-//					else
-//						nochaine = true;
 					listeFavoris.add(f);
 				} while (chainesIds.moveToNext());
 			}
@@ -223,9 +222,13 @@ public class GuideMenuActivity extends Activity implements GuideConstants
 	    	LinearLayout csly = (LinearLayout) findViewById(R.id.ChoixSelectedLinearLayout);
 	    	csly.removeAllViews();
 	    	LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+	    	csly.setGravity(Gravity.CENTER);
+	    	params.gravity = (Gravity.CENTER);
 	    	params.setMargins(5,5,5,5);
 			while(it.hasNext())
 			{
+				LinearLayout il = new LinearLayout(this);
+				il.setOrientation(LinearLayout.VERTICAL);
 				f = it.next();
 		        filepath = Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES+f.image;
 				bmp = BitmapFactory.decodeFile(filepath);
@@ -244,7 +247,14 @@ public class GuideMenuActivity extends Activity implements GuideConstants
 		            		}
 		            	}
 		            );
-				csly.addView(i);
+		        il.addView(i);
+				TextView t = new TextView(this);
+				t.setText(f.name);
+				t.setTextSize(8);
+				// TODO : Terminer (mettre le nom des chaînes sous le logo)
+//				il.addView(t);
+				il.setGravity(Gravity.CENTER);
+				csly.addView(il);
 			}
 		}
     }
