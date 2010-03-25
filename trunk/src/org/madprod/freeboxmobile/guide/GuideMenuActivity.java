@@ -26,6 +26,7 @@ import android.os.Environment;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -181,8 +182,8 @@ public class GuideMenuActivity extends Activity implements GuideConstants
 		FBMNetTask.unregister(this);
 		super.onDestroy();
 	}
-	
-	// TODO : factoriser avec celui de GuideChoixChainesActivity et mettre dans GuideUtils
+
+	// TODO : rafraichir lors d'un retour de GuideChoixChainesActivity) après modification des favoris
 	private void getFavoris()
     {
 		Log.d(TAG,"getFavoris");
@@ -218,44 +219,22 @@ public class GuideMenuActivity extends Activity implements GuideConstants
 
 			// On créé l'horizontal scrollview en haut avec la liste des chaines favorites
 			Iterator<Favoris> it = listeFavoris.iterator();
-			String filepath;
-			Bitmap bmp;
 	    	LinearLayout csly = (LinearLayout) findViewById(R.id.ChoixSelectedLinearLayout);
 	    	csly.removeAllViews();
-	    	LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 	    	csly.setGravity(Gravity.CENTER);
-	    	params.gravity = (Gravity.CENTER);
-	    	params.setMargins(5,5,5,5);
 			while(it.hasNext())
 			{
-				LinearLayout il = new LinearLayout(this);
-				il.setOrientation(LinearLayout.VERTICAL);
 				f = it.next();
-		        filepath = Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES+f.image;
-				bmp = BitmapFactory.decodeFile(filepath);
-				ImageView i = new ImageView(this);
-				i.setImageBitmap(bmp);
-				i.setLayoutParams(params);
-				i.setTag((Integer)f.guidechaine_id);
-		        i.setOnClickListener(
-		            	new View.OnClickListener()
-		            	{
-		            		public void onClick(View view)
-		            		{
-		            			Log.d(TAG, "click "+(Integer)view.getTag());
-		            			Toast.makeText(GuideMenuActivity.this, "Fonctionnalité non disponible pour l'instant",
-		    	    					Toast.LENGTH_SHORT).show();
-		            		}
-		            	}
-		            );
-		        il.addView(i);
-				TextView t = new TextView(this);
-				t.setText(f.name);
-				t.setTextSize(8);
-				// TODO : Terminer (mettre le nom des chaînes sous le logo)
-//				il.addView(t);
-				il.setGravity(Gravity.CENTER);
-				csly.addView(il);
+				csly.addView(GuideUtils.addVisuelChaine(f.image, f.name, (Integer)f.guidechaine_id,
+					new View.OnClickListener()
+            		{
+            			public void onClick(View view)
+            			{
+            				Log.d(TAG, "click "+(Integer)view.getTag());
+            				Toast.makeText(GuideMenuActivity.this, "Fonctionnalité non disponible pour l'instant", Toast.LENGTH_SHORT).show();
+            			}
+            		},
+            		this));
 			}
 		}
     }

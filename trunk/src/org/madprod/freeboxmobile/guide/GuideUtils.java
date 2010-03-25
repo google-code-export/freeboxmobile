@@ -4,15 +4,31 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import org.madprod.freeboxmobile.Constants;
+import org.madprod.freeboxmobile.R;
+import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
 
 import android.app.Activity;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Environment;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.LinearLayout.LayoutParams;
 
 /**
 *
@@ -107,5 +123,30 @@ public class GuideUtils implements Constants
 			e.printStackTrace();
 			return "";
 		}
+	}
+	
+	public static LinearLayout addVisuelChaine(String image, String name, Integer tag, View.OnClickListener o, Activity a)
+	{
+		LinearLayout il = new LinearLayout(a);
+		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+    	params.gravity = (Gravity.CENTER);
+    	params.setMargins(5,5,5,5);
+        String filepath = Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES+image;
+		Bitmap bmp = BitmapFactory.decodeFile(filepath);
+		ImageView i = new ImageView(a);
+		i.setImageBitmap(bmp);
+		i.setLayoutParams(params);
+		i.setTag(tag);
+        i.setOnClickListener(o);
+        il.addView(i);
+		TextView t = new TextView(a);
+		t.setText(name);
+		t.setTextSize(8);
+		t.setGravity(Gravity.CENTER);
+		il.addView(t);
+		il.setOrientation(LinearLayout.VERTICAL);
+		il.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+		il.setGravity(Gravity.CENTER_HORIZONTAL);
+		return il;
 	}
 }
