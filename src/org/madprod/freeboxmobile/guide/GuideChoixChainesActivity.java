@@ -49,7 +49,6 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
 {
 	private static ChainesDbAdapter mDbHelper;
 	private ArrayList<Favoris> listeFavoris = new ArrayList<Favoris>();
-//	private ProgressDialog progressDialog = null;
 	private List< Map<String,Object> > chainesToSelect;
 	// -1 si une chaine a été enlevée / 1 si une chaine a été ajoutée / 0 si pas bougé
 	// si suppression et ajout : 1
@@ -68,7 +67,7 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
         mDbHelper.open();
         setTitle(getString(R.string.app_name)+" Favoris - "+FBMHttpConnection.getTitle());
         getFavoris();
-        
+
 		SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 		if (!mgr.getString(KEY_SPLASH_FAVORIS, "0").equals(Utils.getFBMVersion(this)))
 		{
@@ -113,6 +112,7 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
 		Log.d(TAG,"getFavoris");
 
 		listeFavoris.clear();
+		
 		// On commence par récupérer la liste des chaines favorites
     	Cursor chainesIds = mDbHelper.getChainesProg();
     	startManagingCursor (chainesIds);
@@ -145,6 +145,24 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
 			// Ici on trie pour avoir les listes de programmes dans l'ordre des numéros de chaine
 			Collections.sort(listeFavoris);
 
+			// On créé l'horizontal scrollview en haut avec la liste des chaines favorites
+			Iterator<Favoris> it = listeFavoris.iterator();
+	    	LinearLayout csly = (LinearLayout) findViewById(R.id.ChoixSelectedLinearLayout);
+	    	csly.removeAllViews();
+			while(it.hasNext())
+			{
+				f = it.next();
+				csly.addView(GuideUtils.addVisuelChaine(f.image, f.name, (Integer)f.guidechaine_id,
+	            	new View.OnClickListener()
+	            	{
+	            		public void onClick(View view)
+	            		{
+	            			displaySuppr((Integer)view.getTag());
+	            		}
+	            	},
+	            	this));
+			}
+
 			// Ici on récupère la liste des chaines disponibles pour le guide auxquelles ont enlève celles
 			// déjà sélectionnées
 			chainesToSelect = new ArrayList< Map<String,Object> >();
@@ -159,7 +177,7 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
 					final int CI_id = allChaines.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_ID);
 					String image;
 					Map<String,Object> map;
-					for (Iterator<Favoris> it = listeFavoris.iterator(); it.hasNext();)
+					for (it = listeFavoris.iterator(); it.hasNext();)
 					{
 						f = it.next();
 						while ((!allChaines.isAfterLast()) &&
@@ -214,35 +232,6 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
 			        }
 				}
 				allChaines.close();
-			}
-
-			// On créé l'horizontal scrollview en haut avec la liste des chaines favorites
-			Iterator<Favoris> it = listeFavoris.iterator();
-			String filepath;
-			Bitmap bmp;
-	    	LinearLayout csly = (LinearLayout) findViewById(R.id.ChoixSelectedLinearLayout);
-	    	csly.removeAllViews();
-	    	LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-	    	params.setMargins(5,5,5,5);
-			while(it.hasNext())
-			{
-				f = it.next();
-		        filepath = Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES+f.image;
-				bmp = BitmapFactory.decodeFile(filepath);
-				ImageView i = new ImageView(this);
-				i.setImageBitmap(bmp);
-				i.setLayoutParams(params);
-				i.setTag((Integer)f.guidechaine_id);
-		        i.setOnClickListener(
-		            	new View.OnClickListener()
-		            	{
-		            		public void onClick(View view)
-		            		{
-		            			displaySuppr((Integer)view.getTag());
-		            		}
-		            	}
-		            );
-				csly.addView(i);
 			}
 		}
     }
