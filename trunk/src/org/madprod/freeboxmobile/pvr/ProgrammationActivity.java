@@ -172,13 +172,6 @@ public class ProgrammationActivity extends Activity implements PvrConstants
         chainesSpinner = (Spinner) findViewById(R.id.pvrPrgChaine);
         boitierHDSpinner = (Spinner) findViewById(R.id.pvrPrgBoitier);
         disqueSpinner = (Spinner) findViewById(R.id.pvrPrgDisque);
-        lendi = (CheckBox) findViewById(R.id.pvrPrgJour0);
-        mordi = (CheckBox) findViewById(R.id.pvrPrgJour1);
-        credi = (CheckBox) findViewById(R.id.pvrPrgJour2);
-        joudi = (CheckBox) findViewById(R.id.pvrPrgJour3);
-        dredi = (CheckBox) findViewById(R.id.pvrPrgJour4);
-        sadi = (CheckBox) findViewById(R.id.pvrPrgJour5);
-        gromanche = (CheckBox) findViewById(R.id.pvrPrgJour6);
         
         if (choosen_year_deb == 0)
         {
