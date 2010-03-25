@@ -14,6 +14,7 @@ import org.madprod.freeboxmobile.Constants;
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
+import org.madprod.freeboxmobile.Utils;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -94,10 +95,10 @@ public class FaxActivity extends Activity implements FaxConstants {
 		});
 		
 		SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
-		if (!mgr.getString(KEY_SPLASH_FAX, "0").equals(this.getString(R.string.app_version)))
+		if (!mgr.getString(KEY_SPLASH_FAX, "0").equals(Utils.getFBMVersion(this)))
 		{
 			Editor editor = mgr.edit();
-			editor.putString(KEY_SPLASH_FAX, this.getString(R.string.app_version));
+			editor.putString(KEY_SPLASH_FAX, Utils.getFBMVersion(this));
 			editor.commit();
 			displayInfos();
 		}

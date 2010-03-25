@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
+import org.madprod.freeboxmobile.Utils;
 import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
 
 import android.app.AlertDialog;
@@ -69,10 +70,10 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
         getFavoris();
         
 		SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
-		if (!mgr.getString(KEY_SPLASH_FAVORIS, "0").equals(this.getString(R.string.app_version)))
+		if (!mgr.getString(KEY_SPLASH_FAVORIS, "0").equals(Utils.getFBMVersion(this)))
 		{
 			Editor editor = mgr.edit();
-			editor.putString(KEY_SPLASH_FAVORIS, this.getString(R.string.app_version));
+			editor.putString(KEY_SPLASH_FAVORIS, Utils.getFBMVersion(this));
 			editor.commit();
 			displayAboutFavoris();
 		}

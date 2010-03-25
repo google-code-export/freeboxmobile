@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Build;
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
+import org.madprod.freeboxmobile.Utils;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -83,7 +84,7 @@ public class SendlogActivity extends Activity implements HomeConstants
 	        		myLog += getBuildDetailsAsString();
 			    	SpannableStringBuilder ssb = new SpannableStringBuilder(
 			    			getString(R.string.app_name)+" : "+
-			    			getString(R.string.app_version)+"\n\n"+
+			    			Utils.getFBMVersion(SendlogActivity.this)+"\n\n"+
 			    			myLog+"\n"+
 			    			"Description :\n----------\n" + description + "\n----------\n"+
 			    			fbmlog);
@@ -107,7 +108,6 @@ public class SendlogActivity extends Activity implements HomeConstants
         				}
         			});
         			d.show();      
-
         		}
    			}
         });

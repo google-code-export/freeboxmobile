@@ -68,11 +68,11 @@ public class FBMHttpConnection implements Constants
 		{
 			c = a.getBaseContext();
 		}
-		USER_AGENT = c.getString(R.string.app_name)+"/"+c.getString(R.string.app_version)+" (Linux; U; Android "+Build.VERSION.RELEASE+"; fr-fr;)";
+		fbmversion = Utils.getFBMVersion(c);
+		USER_AGENT = c.getString(R.string.app_name)+"/"+fbmversion+" (Linux; U; Android "+Build.VERSION.RELEASE+"; fr-fr;)";
         title = c.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_TITLE, null);
 		login = c.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_USER, null);
 		password = c.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_PASSWORD, null);
-		fbmversion = c.getString(R.string.app_version);
 	}
 
 	/**
