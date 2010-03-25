@@ -13,6 +13,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
+import org.madprod.freeboxmobile.Utils;
 import org.madprod.freeboxmobile.pvr.PvrNetwork;
 
 import android.app.Activity;
@@ -327,12 +328,12 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 			{
 				SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 	        	// S'il s'agit du premier lancement de cette version, on rafraichi pas mal d'infos
-	        	if (!mgr.getString(KEY_SPLASH_PVR, "0").equals(getString(R.string.app_version)))
+	        	if (!mgr.getString(KEY_SPLASH_PVR, "0").equals(Utils.getFBMVersion(this)))
 	        	{
 					runProgNetwork(true, true);
 	        		Log.d(TAG,"PVR: on rafraichi les chaines");
 	        		Editor editor = mgr.edit();
-					editor.putString(KEY_SPLASH_PVR, getString(R.string.app_version));
+					editor.putString(KEY_SPLASH_PVR, Utils.getFBMVersion(this));
 					editor.commit();
 	        		afficherMsgErreur("La liste des chaînes est vide, elle va être actualisée dans quelques secondes.");
 	        	}

@@ -8,6 +8,7 @@ import java.util.Iterator;
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
+import org.madprod.freeboxmobile.Utils;
 import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
 
 import android.app.Activity;
@@ -164,10 +165,10 @@ public class GuideMenuActivity extends Activity implements GuideConstants
         );
 
 	   	setTitle(getString(R.string.app_name)+" Menu Guide TV - "+FBMHttpConnection.getTitle());
-		if (!mgr.getString(KEY_SPLASH_GUIDE, "0").equals(this.getString(R.string.app_version)))
+		if (!mgr.getString(KEY_SPLASH_GUIDE, "0").equals(Utils.getFBMVersion(this)))
 		{
 			Editor editor = mgr.edit();
-			editor.putString(KEY_SPLASH_GUIDE, this.getString(R.string.app_version));
+			editor.putString(KEY_SPLASH_GUIDE, Utils.getFBMVersion(this));
 			editor.commit();
 			displayAboutGuide();
 		}

@@ -7,12 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 import org.madprod.freeboxmobile.Config;
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
+import org.madprod.freeboxmobile.Utils;
 import org.madprod.freeboxmobile.fax.FaxActivity;
 import org.madprod.freeboxmobile.guide.GuideMenuActivity;
 import org.madprod.freeboxmobile.ligne.InfoAdslCheck;
@@ -59,11 +58,12 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
-		Log.d(TAG,"MainActivity Create "+getString(R.string.app_version)+"\n"+new Date().toString());
+		Log.d(TAG,"MainActivity Create "+Utils.getFBMVersion(this)+"\n"+new Date().toString());
         super.onCreate(savedInstanceState);
 
         FBMNetTask.register(this);
 
+        Utils.getFBMVersion(this);
 		// TESTS POUR TROUVER OU EST LE BUG HTTPS CHEZ FREE
 		/*
 		List<NameValuePair> postVars = new ArrayList<NameValuePair>();
@@ -123,17 +123,17 @@ public class HomeListActivity extends ListActivity implements HomeConstants
         else
         {
         	// S'il s'agit du premier lancement de cette version, on rafraichi pas mal d'infos
-        	if (!mgr.getString(KEY_FBMVERSION, "0").equals(getString(R.string.app_version)))
+        	if (!mgr.getString(KEY_FBMVERSION, "0").equals(Utils.getFBMVersion(this)))
         	{
         		Log.d(TAG,"HOME : on rafraichi le compte "+mgr.getString(KEY_FBMVERSION, "0"));
         		refreshCompte();
         		Editor editor = mgr.edit();
-				editor.putString(KEY_FBMVERSION, getString(R.string.app_version));
+				editor.putString(KEY_FBMVERSION, Utils.getFBMVersion(this));
 				editor.commit();
         	}
         }
 		// Si on est sur un premier lancement de la nouvelle version :
-		if (!mgr.getString(KEY_SPLASH, "0").equals(getString(R.string.app_version)))
+		if (!mgr.getString(KEY_SPLASH, "0").equals(Utils.getFBMVersion(this)))
 		{
 			// Si on avait l'ancienne structure pour stocker les logos des chaînes, on migre :
 			File of = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+OLDDIR_CHAINES);
@@ -153,7 +153,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 	        }
 
 	        Editor editor = mgr.edit();
-			editor.putString(KEY_SPLASH, getString(R.string.app_version));
+			editor.putString(KEY_SPLASH, Utils.getFBMVersion(this));
 			editor.commit();
 			File log = new File(Environment.getExternalStorageDirectory()+DIR_FBM, file_log);
 			log.delete();
@@ -251,7 +251,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		map.put(M_ICON, R.drawable.fm_telecopie);
 		map.put(M_TITRE, getString(R.string.buttonFax));
 		String t = "Utilisez votre compte Freebox pour envoyer des Fax à partir de votre mobile";
-		if (getString(R.string.app_version).contains("rc"))
+		if (Utils.getFBMVersion(this).contains("rc"))
 		{
 			map.put(M_CLASS, FaxActivity.class);
 		}
@@ -475,7 +475,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     	t.setText("Freebox Mobile est une application indépendante de Free.\n\n"+
 			"Site web :\nhttp://www.freeboxmobile.org\n\n"+
 			"Contact :\ncontact@freeboxmobile.org\n\n"+
-			"Version : "+getString(R.string.app_version)+"\n\n"+
+			"Version : "+Utils.getFBMVersion(this)+"\n\n"+
 			"Facebook (devenez fan !) :\nhttp://www.facebook.com/search/?q=freeboxmobile\n\n"+
 			"Auteurs :\n"+
 			"- Olivier Rosello : Architecture / Réseau / Home / Info ADSL / Téléphone / Guide des Programmes\n"+

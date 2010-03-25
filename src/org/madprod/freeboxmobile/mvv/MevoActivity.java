@@ -10,6 +10,7 @@ import org.madprod.freeboxmobile.mvv.MevoMessage;
 import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.ServiceUpdateUIListener;
+import org.madprod.freeboxmobile.Utils;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -130,10 +131,10 @@ public class MevoActivity extends ListActivity implements MevoConstants
 		deleteButton.setClickable(false);
 		
 		SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
-		if (!mgr.getString(KEY_SPLASH_MEVO, "0").equals(this.getString(R.string.app_version)))
+		if (!mgr.getString(KEY_SPLASH_MEVO, "0").equals(Utils.getFBMVersion(this)))
 		{
 			Editor editor = mgr.edit();
-			editor.putString(KEY_SPLASH_MEVO, this.getString(R.string.app_version));
+			editor.putString(KEY_SPLASH_MEVO, Utils.getFBMVersion(this));
 			editor.commit();
 			displayAboutMevo();
 		}

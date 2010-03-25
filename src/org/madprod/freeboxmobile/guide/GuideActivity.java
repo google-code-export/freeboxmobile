@@ -11,6 +11,7 @@ import java.util.Iterator;
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
+import org.madprod.freeboxmobile.Utils;
 import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
 import org.madprod.freeboxmobile.pvr.ProgrammationActivity;
 
@@ -223,10 +224,10 @@ public class GuideActivity extends ListActivity implements GuideConstants
     		new GuideActivityNetwork(dt, false, true, false, true).execute((Void[])null);
     	}
     	setTitle(getString(R.string.app_name)+" Guide TV - "+FBMHttpConnection.getTitle());   
-		if (!mgr.getString(KEY_SPLASH_GUIDE, "0").equals(this.getString(R.string.app_version)))
+		if (!mgr.getString(KEY_SPLASH_GUIDE, "0").equals(Utils.getFBMVersion(this)))
 		{
 			Editor editor = mgr.edit();
-			editor.putString(KEY_SPLASH_GUIDE, this.getString(R.string.app_version));
+			editor.putString(KEY_SPLASH_GUIDE, Utils.getFBMVersion(this));
 			editor.commit();
 			displayHelp();
 		}
