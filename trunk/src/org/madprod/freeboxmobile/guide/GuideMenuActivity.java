@@ -183,7 +183,14 @@ public class GuideMenuActivity extends Activity implements GuideConstants
 		super.onDestroy();
 	}
 
-	// TODO : rafraichir lors d'un retour de GuideChoixChainesActivity) après modification des favoris
+	@Override
+	protected void onResume()
+	{
+		super.onResume();
+		getFavoris();
+	}
+	
+	// TODO : rafraichir lors d'un retour de GuideChoixChainesActivity après modification des favoris
 	private void getFavoris()
     {
 		Log.d(TAG,"getFavoris");

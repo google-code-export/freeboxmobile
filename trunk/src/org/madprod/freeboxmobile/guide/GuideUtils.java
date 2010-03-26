@@ -136,14 +136,16 @@ public class GuideUtils implements Constants
 		ImageView i = new ImageView(a);
 		i.setImageBitmap(bmp);
 		i.setLayoutParams(params);
-		i.setTag(tag);
-        i.setOnClickListener(o);
+//		i.setTag(tag);
+//        i.setOnClickListener(o);
         il.addView(i);
 		TextView t = new TextView(a);
 		t.setText(name);
 		t.setTextSize(8);
 		t.setGravity(Gravity.CENTER);
 		il.addView(t);
+		il.setTag(tag);
+		il.setOnClickListener(o);
 		il.setOrientation(LinearLayout.VERTICAL);
 		il.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 		il.setGravity(Gravity.CENTER_HORIZONTAL);
