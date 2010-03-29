@@ -12,11 +12,12 @@ Un dossier pour les strings existe (toujours définir les strings dans un xml) d
 Définir un fichier par module : res/values/strings_mevo.xml par exemple
 ----
 == Dans le code==
-=== Utiliser la connexion à la console de Free===
+=== Accès à la console de Free===
  * dans le onCreate de chaque Activity, appeler impérativement : 
    * *FBMNetTask.register(this);*
  * dans le onDestroy de chaque Activity, appeler impérativement :
    * *FBMNetTask.unregister(this);*
+Pour accéder à la console (faire des GET ou des POST sur des pages), il faut utiliser des aSyncTask, via FBMNetTask. FBMNetTask permet de gérer les progressdialog et les alertdialog en cas de sortie de l'activity, de screenrotation, etc... Exemple : regarder le code de !GuideMenuActivity qui utilise !GuideNetwork qui étend FBMNetTask.
 ===Gérer le multicomptes===
  * Les utilisateurs peuvent utiliser !FreeboxMobile sur plusieurs comptes Freebox. Toutefois, un seul compte est actif à un moment donné. Ils peuvent modifier le compte actif à partir du menu dans la page d'accueil de !FreeboxMobile.
  * Pour connaître le compte actif (au démarrage d'un module par exemple), utiliser * !HttpConnection.getIdentifiant() *
