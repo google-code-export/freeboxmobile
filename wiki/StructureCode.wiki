@@ -13,7 +13,7 @@ Définir un fichier par module : res/values/strings_mevo.xml par exemple
 ----
 == Dans le code==
 === Accès à la console de Free===
- * dans le onCreate de chaque Activity, appeler impérativement : 
+ * dans le onCreate et le onActivityResult (si présent) de chaque Activity, appeler impérativement : 
    * *FBMNetTask.register(this);*
  * dans le onDestroy de chaque Activity, appeler impérativement :
    * *FBMNetTask.unregister(this);*
