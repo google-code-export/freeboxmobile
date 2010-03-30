@@ -54,7 +54,14 @@ public class PvrNetwork extends FBMNetTask implements PvrConstants // AsyncTask<
 		int size = 0;
 		boolean ok = true;
 		
-		db = new ChainesDbAdapter(getActivity());
+		Activity a = getActivity();
+		if (a == null)
+			return false;
+		db = new ChainesDbAdapter(a);
+		if (db == null)
+		{
+			return (false);
+		}
 		db.open();
 
     	String url = "https://adsls.free.fr/admin/magneto.pl";
@@ -199,7 +206,7 @@ public class PvrNetwork extends FBMNetTask implements PvrConstants // AsyncTask<
         	doSwap(db);
 	    	// On met à jour le timestamp du dernier refresh
         	// TODO : Peut etre mettre mgr dans FBMNetTask afin qu'il soit toujours accessible et qu'on puisse toujours faire l'update ci-dessous
-        	Activity a = getActivity();
+        	a = getActivity();
         	if (a != null)
         	{
 				SharedPreferences mgr = getActivity().getSharedPreferences(KEY_PREFS, Activity.MODE_PRIVATE);

@@ -30,4 +30,8 @@
 		<item>210</item>
 		<item>240</item>
 	</string-array>
+	<string-array name="entries_compte_type">
+		<item>Freebox ADSL</item>
+		<item>Freebox Optique</item>
+	</string-array>
 </resources>

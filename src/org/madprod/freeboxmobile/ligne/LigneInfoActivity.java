@@ -409,17 +409,18 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
     	@Override
     	protected Payload doInBackground(Payload... payload)
     	{
+    		// TODO : Remove tout ca
     		// refresh est demandé si NRA n'existe pas dans les prefs, donc si on est dans le cas d'un compte
     		// configuré avec Freeboxmobile <= 0.16 
-    		if (payload[0].refresh)
-    		{
-    			payload[0].result = FBMHttpConnection.connectFreeCheck(payload[0].login, payload[0].password);
-    			if (payload[0].result != null)
-    			{
-    				saveState(payload[0]);
-    				payload[0].nra = (String) payload[0].result.get(KEY_NRA);
-    			}
-    		}
+//    		if (payload[0].refresh)
+//    		{
+//    			payload[0].result = FBMHttpConnection.connectFreeCheck(payload[0].login, payload[0].password);
+//    			if (payload[0].result != null)
+//    			{
+//    				saveState(payload[0]);
+//    				payload[0].nra = (String) payload[0].result.get(KEY_NRA);
+//    			}
+//    		}
    			updateInfos(payload[0]);
     		return payload[0];
     	}
@@ -431,7 +432,6 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
 					"Mise à jour des données",
 					"Connexion en cours...",
 					R.drawable.fm_infos_adsl);
-//    		FBMHttpConnection.showProgressDialog2(LigneInfoActivity.this);
     	}
 
     	@Override
@@ -440,13 +440,8 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
     		FBMNetTask.iProgressDialogDismiss();
     		if ((payload.refresh) && (payload.result != null))
     		{
-    			if (payload.result != null)
+    			if (payload.result == null)
     			{
-//	        		FBMHttpConnection.dismissPd();
-    			}
-    			else
-    			{
-//            		FBMHttpConnection.dismissPd();
     				FBMNetTask.alertDialogShow(
     						"Connexion impossible",
     						"Impossible de se connecter au portail de Free.\n"+
@@ -454,12 +449,7 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
     						"votre mot de passe et votre "+	
     						"connexion à Internet (Wifi, 3G...).",
     						R.drawable.fm_infos_adsl);
-//     				FBMHttpConnection.showError(LigneInfoActivity.this);    				
     			}
-    		}
-    		else
-    		{
-//    			FBMHttpConnection.dismissPd();
     		}
 			refreshView();
     	}
