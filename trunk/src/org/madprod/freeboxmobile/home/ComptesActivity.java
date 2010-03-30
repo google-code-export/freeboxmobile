@@ -48,7 +48,8 @@ public class ComptesActivity extends ListActivity implements HomeConstants
     public void onCreate(Bundle savedInstanceState)
     {
     	super.onCreate(savedInstanceState);
-    	
+        Log.d(TAG, "onCreate");
+
     	FBMNetTask.register(this);
     	if (mDbHelper == null)
     	{
@@ -242,6 +243,7 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 					        		mgr.getString(KEY_TITLE, ""),
 					        		mgr.getString(KEY_USER, ""),
 					        		mgr.getString(KEY_PASSWORD, ""),
+					        		(mgr.getString(KEY_LINETYPE, "0").equals(LINE_TYPE_FBXOPTIQUE) ? COMPTES_TYPE_FO : COMPTES_TYPE_ADSL),
 						        	null, true)).execute();
 						}
 						else
@@ -286,7 +288,9 @@ public class ComptesActivity extends ListActivity implements HomeConstants
     protected void onActivityResult(int requestCode, int resultCode, Intent intent)
     {
         super.onActivityResult(requestCode, resultCode, intent);
-
+        
+        Log.d(TAG, "onActivityResult");
+        FBMNetTask.register(this);
         // Si il n'y avait pas de compte définit et qu'un compte vient d'être créé, on le selectionne par défaut
         if ((getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_USER, null) == null) && (resultCode != 0))
         {

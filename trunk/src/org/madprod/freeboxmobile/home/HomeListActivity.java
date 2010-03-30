@@ -215,6 +215,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 	        		mgr.getString(KEY_TITLE, ""),
 	        		mgr.getString(KEY_USER, ""),
 	        		mgr.getString(KEY_PASSWORD, ""),
+	        		(mgr.getString(KEY_LINETYPE, "0").equals(LINE_TYPE_FBXOPTIQUE) ? COMPTES_TYPE_FO : COMPTES_TYPE_ADSL),
 	        		null, true)).execute();
     	}
     }

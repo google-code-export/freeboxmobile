@@ -50,4 +50,13 @@ public interface Constants
 	public final String jours[] = {"", "Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"};
 	public final String mois[] = {"janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"};
 	
+    // Types de comptes - doit respecter l'ordre du nom des comptes définis dans array.xml
+	// Utile uniquement pour le spinner de la creation d'un nouveau compte
+    static final int COMPTES_TYPE_ADSL = 0;
+    static final int COMPTES_TYPE_FO = 1;
+    
+    // Types de lignes,+ précis que le type de compte. C'est ce qui est stocké et utilisé
+    static final String LINE_TYPE_FBXIPADSL = "0";
+    static final String LINE_TYPE_FBXDEGROUPE = "1";
+    static final String LINE_TYPE_FBXOPTIQUE = "2";
 }

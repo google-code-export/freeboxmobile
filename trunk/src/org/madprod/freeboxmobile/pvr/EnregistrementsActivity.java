@@ -50,7 +50,7 @@ public class EnregistrementsActivity extends ExpandableListActivity implements C
 	private boolean succesChargement;
     private static ListeEnregistrements listeEnregistrements = null;
     public static EnregistrementsActivity enrAct = null;
-    private AsyncTask<Void, Integer, Boolean> task = null;
+//    private AsyncTask<Void, Integer, Boolean> task = null;
     
 	static final int MENU_UPDATE = 0;
 	static final int MENU_ADD = 1;
@@ -189,7 +189,7 @@ public class EnregistrementsActivity extends ExpandableListActivity implements C
     
     public void updaterEnregistrements(boolean updateFromConsole)
     {
-    	task = new UpdateEnregistrementsTask(updateFromConsole).execute();
+    	new UpdateEnregistrementsTask(updateFromConsole).execute();
     }
 
 	/**

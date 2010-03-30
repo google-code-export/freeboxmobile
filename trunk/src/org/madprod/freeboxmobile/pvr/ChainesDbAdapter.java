@@ -215,7 +215,8 @@ public class ChainesDbAdapter implements GuideConstants
      *         initialization call)
      * @throws SQLException if the database could be neither opened or created
      */
-    public ChainesDbAdapter open() throws SQLException {
+    public ChainesDbAdapter open() throws SQLException
+    {
         mDbHelper = new DatabaseHelper(mCtx);
         mDb = mDbHelper.getWritableDatabase();
         return this;

@@ -136,7 +136,7 @@ public class FBMHttpConnection implements Constants
 			return (defValue);
 	}
 
-	public static ContentValues connectFreeCheck(String l, String p)
+	public static ContentValues connectFreeCheck(String l, String p, int type)
 	{
 		String mLogin;
 		String mPassword;
@@ -157,7 +157,7 @@ public class FBMHttpConnection implements Constants
 
 			login = l;
 			password = p;
-			v = parseConsole(l, p);
+			v = parseConsole(l, p, type);
 			v.put(KEY_FBMVERSION, fbmversion);
 			Log.d(TAG,"connectFreeCheck : "+v);
 
@@ -238,21 +238,27 @@ public class FBMHttpConnection implements Constants
 	 * @param l : login du compte à parser
 	 * @param p : mot de passe du compte à parser
 	 */
-	private static ContentValues parseConsole(String l, String p)
+	private static ContentValues parseConsole(String l, String p, int type)
 	{
 		try
 		{
 			ContentValues consoleValues = new ContentValues();
 			String br = getPage(getAuthRequest(suiviTechUrl, null, true, true, "ISO8859_1"));
 			String offre = parsePage(br, "Raccordée actuellement en offre", "<font", "</font>");
-			if (offre.contains("Freebox dégroupé"))
-		    	consoleValues.put(KEY_LINETYPE, "1");
-			else if (offre.contains("Fibre Optique"))
-				consoleValues.put(KEY_LINETYPE, "2");
-			else
-				consoleValues.put(KEY_LINETYPE, "0");
+			switch (type)
+			{
+				case COMPTES_TYPE_ADSL :
+					if (offre.contains("Freebox dégroupé"))
+				    	consoleValues.put(KEY_LINETYPE, LINE_TYPE_FBXDEGROUPE);
+					else
+						consoleValues.put(KEY_LINETYPE, LINE_TYPE_FBXIPADSL);
+					break;
+				case COMPTES_TYPE_FO :
+					consoleValues.put(KEY_LINETYPE, LINE_TYPE_FBXOPTIQUE);
+					break;
+			}
 	    	// TODO : enlever la ligne suivante après debug
-	    	if (consoleValues.get(KEY_LINETYPE).equals("0"))
+	    	if (consoleValues.get(KEY_LINETYPE).equals(LINE_TYPE_FBXIPADSL))
 				Log.d(TAG,"DEBUG INFO TECHNIQUES : "+br);		    		
 	    	Log.d(TAG,"type:"+consoleValues.get(KEY_LINETYPE));
 	    	consoleValues.put(KEY_NRA, parsePage(br, "NRA :", "\">", "</"));

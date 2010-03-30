@@ -15,6 +15,7 @@ public class ComptePayload
 	public String title;
     public String login;
     public String password;
+    public int type;
     public ContentValues result;
     public Long rowid;
     public int exit = Activity.RESULT_CANCELED;
@@ -22,12 +23,13 @@ public class ComptePayload
     // ou d'un refresh provenant de HomeActivity
     public boolean refresh;
     
-    public ComptePayload(String title, String login, String password, Long rowid, boolean refresh)
+    public ComptePayload(String title, String login, String password, int type, Long rowid, boolean refresh)
     {
     	this.title = title;
     	this.login = login;
     	this.password = password;
     	this.rowid = rowid;
     	this.refresh = refresh;
+    	this.type = type;
     }
 }
