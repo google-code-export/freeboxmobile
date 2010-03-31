@@ -180,8 +180,25 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants //AsyncTa
 					File file, filen;
 					String image, canal;
 					courant = 0;
+					// TODO : enlever après confirmation tests ok
+/*
 		        	file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES);
 		        	file.mkdirs();
+		        	file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES+".nomedia");
+		        	if (!file.exists())
+			        {
+	        			Log.i(TAG, "Création du .nomedia");
+		        		try
+		        		{
+		        			Log.i(TAG, "ok");
+		        			file.createNewFile();
+		        		}
+		        		catch(IOException e)
+		        		{
+		        			Log.e(TAG, "Echec de la creation du .nomedia "+e.getMessage());
+		        		}
+			        }
+*/
 					jChannelsObject = jObject.getJSONObject("chaines");
 					max = jChannelsObject.length();
 					dProgressMessage("Actualisation de la liste des "+max+" chaînes disponibles pour le Guide...",max);
