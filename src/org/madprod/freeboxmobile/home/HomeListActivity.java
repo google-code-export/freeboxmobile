@@ -1,6 +1,7 @@
 package org.madprod.freeboxmobile.home;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -137,12 +138,13 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		{
 			// Si on avait l'ancienne structure pour stocker les logos des chaînes, on migre :
 			File of = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+OLDDIR_CHAINES);
+        	File file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES);
 	        if (of.exists())
 	        {
-	        	Log.i(TAG,"Ancien dossier des chaînes, on renomme");
+	        	Log.i(TAG,"Ancien dossier des chaînes, on renomme "+OLDDIR_CHAINES+" en "+DIR_CHAINES);
 //	        	File nf = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES);
 //	        	nf.mkdirs();
-	        	if (of.renameTo(new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES)))
+	        	if (of.renameTo(file))
 	        	{
 	        		Log.i(TAG," ok");
 	        	}
@@ -150,6 +152,27 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 	        	{
 	        		Log.i(TAG," notok");
 	        	}
+	        }
+	        // Si le dossier des chaînes n'existe pas, on le créé
+        	if (!file.exists())
+        	{
+        		Log.i(TAG, "Création du dossier des chaînes : "+DIR_CHAINES);
+        		file.mkdirs();
+        	}
+        	// Si on a pas de .nomedia dedans, on en met un (pour ne pas que les logos des chaînes apparaissent dans la gallerie photo)
+        	file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES+".nomedia");
+        	if (!file.exists())
+	        {
+    			Log.i(TAG, "Création du .nomedia");
+        		try
+        		{
+        			Log.i(TAG, "ok");
+        			file.createNewFile();
+        		}
+        		catch(IOException e)
+        		{
+        			Log.e(TAG, "Echec de la creation du .nomedia "+e.getMessage());
+        		}
 	        }
 
 	        Editor editor = mgr.edit();
