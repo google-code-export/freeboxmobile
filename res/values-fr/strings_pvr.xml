@@ -35,6 +35,11 @@ Par exemple, si vous voulez enregistrer une émission tous les mardi et mercredi
 	<string name="pvrTxtBtnProg">Ajouter</string>
 	<string name="pvrTxtBtnGrille">Programme TV</string>
 	
+	<string name="pvrDialogDateDebut">Date de début de l'enregistrement</string>
+	<string name="pvrDialogDateFin">Date de fin de l'enregistrement</string>
+	<string name="pvrDialogHeureDebut">Heure de début de l'enregistrement</string>
+	<string name="pvrDialogHeureFin">Heure de fin de l'enregistrement</string>
+	
 	<string name="pvrLundi">Lundi</string>
 	<string name="pvrMardi">Mardi</string>
 	<string name="pvrMercredi">Mercredi</string>

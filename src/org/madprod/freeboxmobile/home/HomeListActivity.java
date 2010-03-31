@@ -402,7 +402,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
             			getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_PASSWORD, null)
             			))
             	{
-            		FBMHttpConnection.initVars(HomeListActivity.this, null);
+            		FBMNetTask.register(this);
             	}
         		break;
         }
