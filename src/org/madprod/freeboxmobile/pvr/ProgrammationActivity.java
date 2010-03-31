@@ -504,19 +504,19 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 		cdate += y;
 		return cdate;
 	}
-	
+
 	private String makeDate(int y, int m, int d)
 	{
 		String cdate = "";
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		Calendar c = Calendar.getInstance();
 		try {
-			c.setTime(sdf.parse(y+"-"+m+"-"+d));
+			c.setTime(sdf.parse(y+"-"+(int)(m+1)+"-"+d));
 			c.setFirstDayOfWeek(Calendar.MONDAY);
 			cdate = jours[c.get(Calendar.DAY_OF_WEEK)]+" ";
 			cdate += d < 10 ? "0" : "";
 			cdate += d;
-			cdate += " "+mois[c.get(Calendar.MONTH)+1];
+			cdate += " "+mois[c.get(Calendar.MONTH)];
 		} catch (ParseException e) 
 		{
 			e.printStackTrace();
