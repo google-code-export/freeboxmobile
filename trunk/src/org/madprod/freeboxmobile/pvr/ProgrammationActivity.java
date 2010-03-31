@@ -439,29 +439,25 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 		Log.d(TAG,"ON CREATE FIN : "+choosen_year_fin+" "+choosen_month_fin+" "+choosen_day_fin+" "+choosen_hour_fin+" "+choosen_minute_fin);
 
         switch (id) {
-            case DIALOG_DATE_DEB: 
+            case DIALOG_DATE_DEB:
             	DatePickerDialog dpdd = new DatePickerDialog(this, mDateSetListenerDeb, choosen_year_deb, choosen_month_deb, choosen_day_deb);
             	dpdd.setIcon(R.drawable.fm_magnetoscope);
-            	// TODO : Migrer dans strings.xml
-            	dpdd.setTitle("Date de début de l'enregistrement");
+            	dpdd.setTitle(getString(R.string.pvrDialogDateDebut));
             	return dpdd;
 		    case DIALOG_TIME_DEB:
 	    		TimePickerDialog tpdd = new TimePickerDialog(this, mTimeSetListenerDeb, choosen_hour_deb, choosen_minute_deb, true);
 	    		tpdd.setIcon(R.drawable.fm_magnetoscope);
-            	// TODO : Migrer dans strings.xml
-	    		tpdd.setTitle("Heure de début de l'enregistrement");
+	    		tpdd.setTitle(getString(R.string.pvrDialogHeureDebut));
 		        return tpdd;
             case DIALOG_DATE_FIN: 
             	DatePickerDialog dpdf = new DatePickerDialog(this, mDateSetListenerFin, choosen_year_fin, choosen_month_fin, choosen_day_fin);
             	dpdf.setIcon(R.drawable.fm_magnetoscope);
-            	// TODO : Migrer dans strings.xml
-            	dpdf.setTitle("Date de fin de l'enregistrement");
+            	dpdf.setTitle(getString(R.string.pvrDialogDateFin));
             	return dpdf;
 		    case DIALOG_TIME_FIN:
 	    		TimePickerDialog tpdf = new TimePickerDialog(this, mTimeSetListenerFin, choosen_hour_fin, choosen_minute_fin, true);
 	    		tpdf.setIcon(R.drawable.fm_magnetoscope);
-            	// TODO : Migrer dans strings.xml
-	    		tpdf.setTitle("Heure de fin de l'enregistrement");
+	    		tpdf.setTitle(getString(R.string.pvrDialogHeureFin));
 		        return tpdf;
 		}
         return null;    

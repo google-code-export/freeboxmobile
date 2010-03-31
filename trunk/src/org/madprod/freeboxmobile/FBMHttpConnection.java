@@ -30,6 +30,7 @@ import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
+import android.widget.Toast;
  
 /**
 *
@@ -572,7 +573,7 @@ public class FBMHttpConnection implements Constants
 	}
 
 	// TODO : Remove ?
-	public static void makePost(HttpURLConnection h, boolean retour, String params) throws IOException
+	public static void makePost_unused(HttpURLConnection h, boolean retour, String params) throws IOException
 	{
 		h.setDoOutput(true);
 		if (retour)
