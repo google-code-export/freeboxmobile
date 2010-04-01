@@ -12,6 +12,7 @@ INFOLIGNE : Le module "Info Adsl"
 CONFIG : Les différents panneaux de configuration<br>
 SERVICES : tout ce qui tourne en tâche de fond
 RESEAU : les connexions réseau / authentifications sur la console Free...
+GUIDE : les guide TV
 
 = Versions publiques de !FreeboxMobile =
 == 0.32 ==
@@ -151,6 +152,14 @@ Release : 1
  * SERVICES : Notification de nouveaux messages
 
 = Versions beta de !FreeboxMobile =
+== 0.32.1rc1 ==
+Sortie le 01/04/2010<br>
+Release : 34<br>
+Revision : 
+ * INFOLIGNE : Debug [http://code.google.com/p/freeboxmobile/issues/detail?id=202 202]
+ * PVR : Debug [http://code.google.com/p/freeboxmobile/issues/detail?id=207 207]
+ * GUIDE : Debug [http://code.google.com/p/freeboxmobile/issues/detail?id=204 204]
+
 == 0.32rc1 ==
 Sortie le 23/03/2010<br>
 Release : 32<br>
