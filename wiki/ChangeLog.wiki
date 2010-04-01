@@ -155,7 +155,7 @@ Release : 1
 == 0.32.1rc1 ==
 Sortie le 01/04/2010<br>
 Release : 34<br>
-Revision : 
+Revision : 500
  * INFOLIGNE : Debug [http://code.google.com/p/freeboxmobile/issues/detail?id=202 202]
  * PVR : Debug [http://code.google.com/p/freeboxmobile/issues/detail?id=207 207]
  * GUIDE : Debug [http://code.google.com/p/freeboxmobile/issues/detail?id=204 204]
