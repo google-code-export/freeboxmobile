@@ -13,12 +13,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.net.ssl.HttpsURLConnection;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -30,7 +27,6 @@ import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
-import android.widget.Toast;
  
 /**
 *
@@ -69,8 +65,11 @@ public class FBMHttpConnection implements Constants
 		{
 			c = a.getBaseContext();
 		}
-		fbmversion = Utils.getFBMVersion(c);
-		USER_AGENT = c.getString(R.string.app_name)+"/"+fbmversion+" (Linux; U; Android "+Build.VERSION.RELEASE+"; fr-fr;)";
+		if (fbmversion.equals(""))
+		{
+			fbmversion = Utils.getFBMVersion(c);
+			USER_AGENT = c.getString(R.string.app_name)+"/"+fbmversion+" (Linux; U; Android "+Build.VERSION.RELEASE+"; fr-fr;)";
+		}
         title = c.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_TITLE, null);
 		login = c.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_USER, null);
 		password = c.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_PASSWORD, null);
