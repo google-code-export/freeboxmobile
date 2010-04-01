@@ -43,8 +43,6 @@ public class FBMNetTask extends AsyncTask<Void, Integer, Integer> implements Con
 	public static void register(Activity a)
 	{
 		Log.d(TAG, "FBMNetTask : REGISTER");
-		activity = a;
-		FBMHttpConnection.initVars(a, null);
 		if (iProgressDialog != null)
 		{
 			iProgressDialog.show();
@@ -57,6 +55,8 @@ public class FBMNetTask extends AsyncTask<Void, Integer, Integer> implements Con
 		{
 			alertDialog.show();
 		}
+		activity = a;
+		FBMHttpConnection.initVars(a, null);
 	}
 	
 	public static void unregister(Activity a)

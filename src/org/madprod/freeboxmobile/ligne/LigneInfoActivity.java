@@ -50,6 +50,7 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
 	private static boolean DSLAM_ok = false;
 	private static Object[] DSLAM_Histo = null;
 	private static String lineType = "";
+	private static String lastUser = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -75,6 +76,12 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
     {
     	super.onStart();
         SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
+        // Si l'utilisateur est différent de celui qui a lancé l'activity la dernière fois (changement de compte)
+        if (!lastUser.equals(mgr.getString(KEY_TITLE, "")))
+        {
+        	DSLAM_Info = "";
+        	lastUser = mgr.getString(KEY_TITLE, "");
+        }
         lineType = mgr.getString(KEY_LINETYPE, "");
         Log.i(TAG,"LineType : "+lineType);
         if (DSLAM_Info.equals(""))

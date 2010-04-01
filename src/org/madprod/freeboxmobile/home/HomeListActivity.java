@@ -394,6 +394,8 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     protected void onActivityResult(int requestCode, int resultCode, Intent intent)
     {
         super.onActivityResult(requestCode, resultCode, intent);
+        Log.d(TAG,"onActivityResult");
+		FBMNetTask.register(this);
         switch(requestCode)
         {
         	case ACTIVITY_COMPTES:
@@ -402,7 +404,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
             			getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_PASSWORD, null)
             			))
             	{
-            		FBMNetTask.register(this);
+//            		FBMNetTask.register(this);
             	}
         		break;
         }
