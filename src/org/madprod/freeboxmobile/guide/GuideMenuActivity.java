@@ -57,13 +57,24 @@ public class GuideMenuActivity extends Activity implements GuideConstants
 
         FBMNetTask.register(this);
         Log.i(TAG,"GUIDE MENU CREATE");
-		SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
         setContentView(R.layout.guide_menu);
 
         mDbHelper = new ChainesDbAdapter(this);
         mDbHelper.open();
         Log.d(TAG,"Nettoyage des anciens programmes effacés : "+mDbHelper.deleteOldProgs());
         Log.d(TAG,"Nettoyage de l'ancienne historique : "+mDbHelper.deleteOldHisto());
+
+    }
+	
+	@Override
+	protected void onStart()
+	{
+		super.onStart();
+		
+		Log.i(TAG,"GUIDE MENU START");
+		FBMNetTask.register(this);
+
+		SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 
     	if (mDbHelper.getNbChaines() == 0)
     	{

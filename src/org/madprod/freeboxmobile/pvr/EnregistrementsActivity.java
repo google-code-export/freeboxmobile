@@ -122,13 +122,12 @@ public class EnregistrementsActivity extends ExpandableListActivity implements C
         	}
         });
     }
-    
+
     @Override
 	protected void onDestroy()
     {
     	super.onDestroy();
     	FBMNetTask.unregister(this);
-//    	FBMHttpConnection.closeDisplay();
     	enrAct = null;
     }
 	
@@ -145,6 +144,8 @@ public class EnregistrementsActivity extends ExpandableListActivity implements C
 	protected void onStart()
 	{
 		super.onStart();
+		
+		FBMNetTask.register(this);
 		if (listeEnregistrements != null)
 		{
 			updateEnregistrementsFromDb();

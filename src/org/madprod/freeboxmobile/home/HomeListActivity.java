@@ -62,7 +62,8 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		Log.d(TAG,"MainActivity Create "+Utils.getFBMVersion(this)+"\n"+new Date().toString());
         super.onCreate(savedInstanceState);
 
-        FBMNetTask.register(this);
+//		Déplace vers onStart
+//        FBMNetTask.register(this);
 
         Utils.getFBMVersion(this);
 		// TESTS POUR TROUVER OU EST LE BUG HTTPS CHEZ FREE
@@ -114,6 +115,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     {
     	Log.i(TAG,"MainActivity Start");
     	super.onStart();
+    	FBMNetTask.register(this);
     	SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 		FBMHttpConnection.initVars(this, null);
 		// Si l'utilisateur n'a pas configuré de compte
