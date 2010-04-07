@@ -408,7 +408,14 @@ public class FBMHttpConnection implements Constants
         byte[] buffer = new byte[1024];
         int connected;
 
-        connected = checkConnected(CONNECT_CONNECTED);
+        if (auth)
+        {
+        	connected = checkConnected(CONNECT_CONNECTED);
+        }
+        else
+        {
+        	connected = CONNECT_CONNECTED;
+        }
 //		Log.d(TAG,"->DOWNLOADING FILE : "+url);
         try
         {
@@ -419,6 +426,10 @@ public class FBMHttpConnection implements Constants
 				c.setDoInput(true);
 				Log.d(TAG,"HEADERS : "+c.getHeaderFields());
 				Log.d(TAG,"RESPONSE : "+c.getResponseCode()+" "+c.getResponseMessage());
+				if (c.getResponseMessage() == null) // Contournement du bug https : si null, on reconnecte
+				{
+					c = prepareConnection(url+"?"+makeStringForPost(p, auth, null), "GET");
+				}
 				if (c.getHeaderFields().get("location") != null)
 				{
 					connected = CONNECT_NOT_CONNECTED;
@@ -440,6 +451,10 @@ public class FBMHttpConnection implements Constants
 					c.setDoInput(true);
 					Log.d(TAG,"HEADERS : "+c.getHeaderFields());
 					Log.d(TAG,"RESPONSE : "+c.getResponseCode()+" "+c.getResponseMessage());
+					if (c.getResponseMessage() == null) // Contournement du bug https : si null, on reconnecte
+					{
+						c = prepareConnection(url+"?"+makeStringForPost(p, auth, null), "GET");
+					}
 				}
 			}
 			else

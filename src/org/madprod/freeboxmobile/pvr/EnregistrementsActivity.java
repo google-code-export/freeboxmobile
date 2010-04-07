@@ -130,7 +130,7 @@ public class EnregistrementsActivity extends ExpandableListActivity implements C
     	FBMNetTask.unregister(this);
     	enrAct = null;
     }
-	
+
 	@Override
 	protected void onPause()
 	{
