@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string-array name="pvrListeDurees">
+		<item>5mn</item>
+		<item>10mn</item>
+		<item>15mn</item>
+		<item>20mn</item>
+		<item>25mn</item>
+		<item>30mn</item>
+		<item>1h</item>
+		<item>1h30</item>
+		<item>2h</item>
+		<item>2h30</item>
+		<item>3h</item>
+		<item>3h30</item>
+		<item>4h</item>
+	</string-array>
+	<string-array name="pvrValeursDurees">
+		<item>5</item>
+		<item>10</item>
+		<item>15</item>
+		<item>20</item>
+		<item>25</item>
+		<item>30</item>
+		<item>60</item>
+		<item>90</item>
+		<item>120</item>
+		<item>150</item>
+		<item>180</item>
+		<item>210</item>
+		<item>240</item>
+	</string-array>
+	<string-array name="entries_compte_type">
+		<item>Freebox ADSL</item>
+		<item>Freebox Optique</item>
+	</string-array>
+</resources>
