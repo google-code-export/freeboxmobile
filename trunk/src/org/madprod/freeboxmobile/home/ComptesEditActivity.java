@@ -108,18 +108,17 @@ public class ComptesEditActivity extends Activity implements Constants
             public void onClick(View view)
             {
                 String title = mTitleText.getText().toString();
-                String user = mUserText.getText().toString();
+                String user;
                 int type = mSpinnerType.getSelectedItemPosition();
-                String password;
+                String password = mPasswordText.getText().toString();
                 if (type == COMPTES_TYPE_FO)
                 {
-                	 password = "FO"+mPasswordText.getText().toString();
+                	user = "FO" + mUserText.getText().toString();
                 }
                 else
                 {
-                	password = mPasswordText.getText().toString();
+                	user = mUserText.getText().toString();
                 }
-
                 if (!title.equals("") && !user.equals("") && !password.equals(""))
                 {
                 	if (mDbHelper.isValuePresent(ComptesDbAdapter.KEY_TITLE, title) &&
