@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="pvrPVR">Magnéto</string>
+
+	<string name="pvrTxtChaine">Chaîne</string>
+	<string name="pvrTxtQualite">Qualité</string>
+	<string name="pvrTxtQualiteDisque">* : enregistrable seulement sur le disque interne</string>
+	<string name="pvrTxtDate">Date :</string>
+	<string name="pvrTxtHeure">Heure :</string>
+	<string name="pvrTxtDuree">Durée</string>
+	<string name="pvrTxtNom">Nom</string>
+	<string name="pvrTxtDisque">Disque dur</string>
+	<string name="pvrTxtRecurrence">Récurrence</string>
+	<string name="pvrTxtRecurrenceInfo">Veillez à ce que le(s) jour(s) choisi(s) correspondent bien à la date choisie.\n
+Si le premier jour de récurrence n\'est pas celui de la date choisie, l\'enregistrement ne sera pas validé.\n
+Par exemple, si vous voulez enregistrer une émission tous les mardi et mercredi, veillez à ce que la date choisie soit un mardi.</string>
+	<string name="pvrTxtPrgBtnOK">Enregistrer</string>
+	<string name="pvrTxtPrgBtnRecur">Récurrence</string>
+	<string name="pvrNomDefaut">Entrez le titre de l\'émission...</string>
+	
+	<string name="pvrTxtBoitier">Boitier HD</string>
+
+	<string name="pvrInfosDisque1">Nom du disque : #nom</string>
+	<string name="pvrInfosDisque2">Espace libre : #libre GiB</string>
+	<string name="pvrInfosDisque3">Espace total : #total GiB</string>
+	<string name="pvrInfosDisque4">Point de montage : #mount</string>
+	<string name="pvrInfosDisque4_2">Dossier : #mount</string>
+	<string name="pvrInfosDisqueEspaceFaible">Attention : espace disque faible !</string>
+	
+	<string name="pvrTxtQualiteParDefaut">Par défaut</string>
+	
+	<string name="pvrTxtModif">Modifier</string>
+	<string name="pvrTxtSuppr">Supprimer</string>
+	
+	<string name="pvrTxtBtnProg">Ajouter</string>
+	<string name="pvrTxtBtnGrille">Programme TV</string>
+	
+	<string name="pvrDialogDateDebut">Date de début de l'enregistrement</string>
+	<string name="pvrDialogDateFin">Date de fin de l'enregistrement</string>
+	<string name="pvrDialogHeureDebut">Heure de début de l'enregistrement</string>
+	<string name="pvrDialogHeureFin">Heure de fin de l'enregistrement</string>
+	
+	<string name="pvrLundi">Lundi</string>
+	<string name="pvrMardi">Mardi</string>
+	<string name="pvrMercredi">Mercredi</string>
+	<string name="pvrJeudi">Jeudi</string>
+	<string name="pvrVendredi">Vendredi</string>
+	<string name="pvrSamedi">Samedi</string>
+	<string name="pvrDimanche">Dimanche</string>
+	
+	<string name="pvrCMenuVoir">Voir les détails</string>
+	<string name="pvrCMenuModif">Éditer</string>
+	<string name="pvrCMenuSuppr">Supprimer</string>
+	
+	<string name="pvrChoixJours">Choisissez le(s) jour(s) de répétition</string>
+	<string name="pvrErreurInterne1">Cette erreur est provoquée lorsque vous choisissez des jours de récurrence qui ne correspondent pas à la date choisie.</string>
+	
+	<string name="pvrProgrammationEnCours">Programmation de l\'enregistrement en cours...</string>
+	<string name="pvrModificationEnCours">Modification de l\'enregistrement en cours...</string>
+	<string name="pvrModificationsEnregistrees">Enregistrement programmé !</string>
+	<string name="pvrErreurConsole">Message retourné par le serveur :</string>
+	
+	<string name="pvrNonEnregistrable">Non enregistrable</string>
+	<string name="pvrGioLibres">Gio libres</string>
+	<string name="pvrGoLibres">Go libres</string>
+	
+	<string name="pvrPatientez">Veuillez patienter</string>
+	<string name="pvrSuppressionEnCours">Suppression en cours...</string>
+	<string name="pvrTelechargementChaines">Chargement de la liste des chaînes disponibles...</string>
+	<string name="pvrTelechargementDonnees">Chargement des données...</string>
+	<string name="pvrErreurTelechargementChaines">Impossible de charger la liste des chaînes !\n\nSi vous n'avez pas de FreeboxHD active sur votre ligne ce message est normal.</string>
+	<string name="pvrErreurTelechargementDonnees">Impossible de télécharger les données !</string>
+	
+	<string name="pvrErreur">Erreur !</string>
+	
+	<string name="pvrErreurNomEmission">Veuillez entrer le nom de l\'émission</string>
+	<string name="pvrConfirmationSuppression">Êtes-vous sûr(e) de vouloir supprimer cet enregistrement ?</string>
+
+</resources>

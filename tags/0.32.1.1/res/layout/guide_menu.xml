@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical" android:layout_height="fill_parent" android:layout_width="fill_parent">
+		<ImageView 
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:id="@+id/LogoFreeboxMobile"
+			android:src="@drawable/freebox_mobile"
+			android:layout_gravity="center"
+			android:layout_marginBottom="5dip" android:layout_marginTop="5dip">
+		</ImageView>
+<ScrollView  android:id="@+id/ScrollViewLigneInfo" android:layout_height="fill_parent" android:layout_width="fill_parent">
+	
+<TableLayout android:id="@+id/TableLayout01" android:layout_height="wrap_content" android:layout_width="fill_parent" android:layout_marginBottom="10dip"><TextView android:id="@+id/TextView03" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Consultez le guide TV :" android:layout_marginBottom="5dip" android:layout_marginLeft="10dip"></TextView><TableRow android:id="@+id/TableRow01" android:layout_height="wrap_content" android:layout_width="fill_parent" android:gravity="center_vertical" android:background="#22BBBBBB" android:layout_marginBottom="5dip" android:paddingLeft="10dip" android:paddingRight="10dip"><TextView android:layout_height="wrap_content" android:textSize="16dip" android:textStyle="bold" android:text="Programmes en cours" android:id="@+id/textView01" android:layout_width="fill_parent" android:layout_weight="1"></TextView><Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Ok" android:id="@+id/ButtonEnCours"></Button>
+
+</TableRow>
+<TableRow android:id="@+id/TableRow02" android:layout_width="wrap_content" android:layout_height="wrap_content" android:gravity="center_vertical" android:background="#22BBBBBB" android:layout_marginBottom="5dip" android:paddingLeft="10dip" android:paddingRight="10dip"><TextView android:layout_height="wrap_content" android:textSize="16dip" android:textStyle="bold" android:layout_width="fill_parent" android:layout_weight="1" android:id="@+id/textView02" android:text="Ce soir"></TextView>
+<Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Ok" android:id="@+id/ButtonCeSoir"></Button>
+</TableRow><TableRow android:id="@+id/TableRow03" android:layout_width="wrap_content" android:layout_height="wrap_content" android:gravity="center_vertical" android:background="#22BBBBBB" android:layout_marginBottom="5dip" android:paddingLeft="10dip" android:paddingRight="10dip">
+<LinearLayout android:id="@+id/LinearLayout01" android:layout_height="wrap_content" android:layout_weight="1" android:layout_width="fill_parent" android:orientation="vertical"><TextView android:layout_height="wrap_content" android:textSize="16dip" android:textStyle="bold" android:layout_width="fill_parent" android:layout_weight="1" android:id="@+id/textView03" android:text="A une date"></TextView>
+<LinearLayout android:id="@+id/LinearLayout05" android:layout_height="wrap_content" android:layout_width="fill_parent" android:orientation="horizontal"><LinearLayout android:id="@+id/LinearLayout02" android:layout_height="wrap_content" android:layout_weight="1" android:layout_width="fill_parent"><Spinner android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/SpinnerDate"></Spinner><Spinner android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/SpinnerHeure"></Spinner>
+
+</LinearLayout><Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Ok" android:id="@+id/ButtonDate"></Button></LinearLayout>
+
+</LinearLayout>
+
+</TableRow><TableRow android:id="@+id/TableRow04" android:layout_height="wrap_content" android:layout_width="fill_parent" android:background="#22bbbbbb" android:layout_marginBottom="5dip" android:paddingLeft="10dip" android:paddingRight="10dip">
+
+<LinearLayout android:id="@+id/LinearLayout03" android:layout_height="wrap_content" android:layout_width="fill_parent" android:orientation="vertical" android:layout_weight="1"><LinearLayout android:id="@+id/LinearLayout06" android:layout_height="wrap_content" android:layout_width="fill_parent"><TextView android:layout_height="wrap_content" android:textSize="16dip" android:textStyle="bold" android:layout_width="fill_parent" android:layout_weight="1" android:id="@+id/textView04" android:text="La journée d'une chaîne" android:layout_gravity="center_vertical"></TextView><Spinner android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/SpinnerJourChaine" android:layout_gravity="center_vertical"></Spinner></LinearLayout><LinearLayout android:id="@+id/LinearLayout04" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_weight="1" android:layout_width="fill_parent"><HorizontalScrollView android:id="@+id/HorizontalScrollView01" android:layout_height="wrap_content" android:scrollbars="none" android:layout_width="fill_parent"><LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/ChoixSelectedLinearLayout">
+
+
+
+
+
+
+
+</LinearLayout>
+
+
+
+</HorizontalScrollView>
+
+</LinearLayout>
+
+</LinearLayout></TableRow><TextView android:id="@+id/TextView03" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="5dip" android:text="Favoris :" android:layout_marginLeft="10dip" android:layout_marginTop="5dip"></TextView><TableRow android:layout_height="wrap_content" android:layout_width="fill_parent" android:gravity="center_vertical" android:background="#22BBBBBB" android:layout_marginBottom="5dip" android:paddingLeft="10dip" android:paddingRight="10dip" android:id="@+id/TableRow06"><TextView android:layout_height="wrap_content" android:textSize="16dip" android:textStyle="bold" android:id="@+id/textView01" android:layout_width="fill_parent" android:layout_weight="1" android:text="Choisir les chaînes du guide"></TextView><Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Ok" android:id="@+id/ButtonFavoris"></Button>
+
+</TableRow>
+
+
+</TableLayout>
+</ScrollView>
+</LinearLayout>
