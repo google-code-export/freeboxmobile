@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical" android:layout_height="fill_parent" android:layout_width="fill_parent" android:paddingBottom="5dip" android:paddingLeft="10dip" android:paddingTop="5dip" android:paddingRight="5dip">
+		
+<TableLayout android:id="@+id/TableLayout01" android:layout_height="wrap_content" android:layout_width="fill_parent"><TableRow android:id="@+id/TableRow01" android:layout_width="wrap_content" android:layout_height="wrap_content"><Spinner android:layout_height="wrap_content" android:layout_width="fill_parent" android:layout_weight="1" android:id="@+id/DatesSpinner" android:layout_gravity="center_vertical"></Spinner><Spinner android:layout_height="wrap_content" android:layout_width="fill_parent" android:layout_weight="1" android:id="@+id/HeuresSpinner" android:layout_gravity="center_vertical"></Spinner><Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Ok" android:id="@+id/GuideButtonOk" android:layout_gravity="center_vertical"></Button>
+</TableRow>
+
+</TableLayout><ListView android:id="@android:id/list" android:layout_width="fill_parent" android:layout_height="fill_parent" android:background="#00000000" android:cacheColorHint="#00000000"></ListView>
+</LinearLayout>
