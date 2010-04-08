@@ -15,6 +15,12 @@ RESEAU : les connexions réseau / authentifications sur la console Free...
 GUIDE : les guide TV
 
 = Versions publiques de !FreeboxMobile =
+== 0.32.2 ==
+Sortie le 08/04/2010<br>
+Release : 36<br>
+Revision : 510
+ * Correction d'un bug pour les Freebox Optiques
+
 == 0.32.1 ==
 Sortie le 08/04/2010<br>
 Release : 35<br>
