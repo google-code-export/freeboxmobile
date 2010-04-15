@@ -47,7 +47,7 @@ public class SendlogActivity extends Activity implements HomeConstants
 	private EditText desc;
 	private String Wifi3G="";
 	private String fbmlog = "";
-
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
     {

@@ -16,7 +16,7 @@
 	
 	<!-- Messages utilisés dans la gestion des alertes (erreurs, succès etc...) -->
 	<string name="faxDemandOK">Demande de fax de %1$s prise en compte</string>
-	<string name="faxStartNotificationTicker">Nouveau fax en cours d'envoi</string>
+	<string name="faxStartNotificationTicker">Nouveau fax en cours d\'envoi</string>
 	<string name="faxSendingFile">Fax de %1$s vers %2$s en cours...</string>
 	<string name="faxSuccess">Fichier %1$s faxé !</string>
 	

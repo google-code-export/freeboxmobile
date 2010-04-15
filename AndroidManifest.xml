@@ -9,6 +9,7 @@
 			</intent-filter>
 		</activity>
 		<activity android:theme="@style/Theme.FreeboxMobile.TitleBar" android:name=".home.WhatsNewActivity"></activity>
+		<activity android:theme="@style/Theme.FreeboxMobile.TitleBar" android:name=".home.AssistanceActivity"></activity>
 		<activity android:theme="@style/Theme.FreeboxMobile.NoTitleBar" android:name=".home.ComptesActivity"></activity>
 		<activity android:theme="@style/Theme.FreeboxMobile.NoTitleBar" android:name=".home.ComptesEditActivity"></activity>
 		<activity android:theme="@style/Theme.FreeboxMobile.TitleBar" android:name=".home.SendlogActivity"></activity>
@@ -61,6 +62,6 @@
 	</support-screens>
 	<uses-sdk
 		android:minSdkVersion="3"
-		android:targetSdkVersion="4">
+		android:targetSdkVersion="6">
 	</uses-sdk>
 </manifest>

@@ -7,23 +7,18 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.webkit.WebView;
 
-/**
-*
-* @author Olivier Rosello
-* $Id$
-* 
-*/
-
-public class WhatsNewActivity extends Activity
+public class AssistanceActivity extends Activity
 {
 	@Override
 	public void onCreate(Bundle icile)
 	{
+		WebView viewAssistance;
 		super.onCreate(icile);
 		setContentView(R.layout.home_whatsnew);
 		setTitle(getString(R.string.app_name)+" "+getString(R.string.whatsnew_title));
-		WebView browser = (WebView)findViewById(R.id.webkit);
-		browser.getSettings().setJavaScriptEnabled(true);
-		browser.loadUrl("http://code.google.com/p/freeboxmobile/wiki/ChangeLog#"+Utils.getFBMVersion(this));
+		viewAssistance = (WebView)findViewById(R.id.webkit);
+		viewAssistance.getSettings().setJavaScriptEnabled(true);
+		byte[] postData= null;
+		viewAssistance.postUrl("https://assistance.free.fr/compte/auth_i.php", postData);
 	}
 }
