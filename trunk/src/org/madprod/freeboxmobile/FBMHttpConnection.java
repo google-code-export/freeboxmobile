@@ -50,6 +50,7 @@ public class FBMHttpConnection implements Constants
 	private static int connectionStatus = CONNECT_NOT_CONNECTED;
 	
 	private static final String serverUrl = "https://subscribes.free.fr/login/login.pl";
+	private static final String assistanceUrl = "https://assistance.free.fr/compte/auth_i.php";
 	private static final String suiviTechUrl = "https://adsls.free.fr/suivi/suivi_techgrrr.pl";
 	public static final String frimousseUrl = "http://www.frimousse.org/outils/xmlrpc";
 
@@ -122,15 +123,20 @@ public class FBMHttpConnection implements Constants
 	
 	public static int connect()
 	{
-		return (connectionFree(login, password));
+		return (connectionFree(login, password, false));
 	}
 
+	public static int connectAssistance()
+	{
+		return (connectionFree(login, password, true));
+	}
+	
 	public static int checkConnected(int defValue)
 	{
 		if ((id == null) || (idt == null))
 		{
 			Log.d(TAG,"checkConnected : ON A JAMAIS ETE AUTHENTIFIE - ON S'AUTHENTIFIE");
-			return (connectionFree(login, password));
+			return (connectionFree(login, password, false));
 		}
 		else
 			return (defValue);
@@ -144,7 +150,7 @@ public class FBMHttpConnection implements Constants
 		String mIdt;
 		ContentValues v = null;
 
-		if (FBMHttpConnection.connectionFree(l, p) == CONNECT_CONNECTED)
+		if (FBMHttpConnection.connectionFree(l, p, false) == CONNECT_CONNECTED)
 		{
 			// backup des données du compte loggué pour les restaurer après
 			mLogin = login;
@@ -304,7 +310,7 @@ public class FBMHttpConnection implements Constants
 	 * @param p : password (mot de passe Freebox)
 	 * @return CONNECT_CONNECTED || CONNECT_NOT_CONNECTED || CONNECT_LOGIN_FAILED
 	 */
-	private static int connectionFree(String l, String p)
+	private static int connectionFree(String l, String p, boolean assistance)
 	{
 		String m_id = null;
 		String m_idt = null;
@@ -317,7 +323,10 @@ public class FBMHttpConnection implements Constants
     		listParameter.add(new BasicNameValuePair("login",l));   		
     		listParameter.add(new BasicNameValuePair("pass",p));
 
-    		h = prepareConnection(serverUrl, "POST");
+    		if (!assistance)
+    			h = prepareConnection(serverUrl, "POST");
+    		else
+    			h = prepareConnection(assistanceUrl, "POST");
     		h.setDoOutput(true);
     		OutputStreamWriter o = new OutputStreamWriter(h.getOutputStream());
 			o.write(makeStringForPost(listParameter, false, null));
@@ -348,9 +357,12 @@ public class FBMHttpConnection implements Constants
 		{
 			Log.e(TAG,"connectFree : "+e.getMessage());
         	e.printStackTrace();
-        	connectionStatus = CONNECT_NOT_CONNECTED;
-        	id = null;
-        	idt = null;
+        	if (!assistance)
+        	{
+	        	connectionStatus = CONNECT_NOT_CONNECTED;
+	        	id = null;
+	        	idt = null;
+        	}
         	return connectionStatus;
 		}
 		finally
@@ -360,19 +372,22 @@ public class FBMHttpConnection implements Constants
 				h.disconnect();
 			}
 		}
-       	if (m_id != null && m_idt != null)
-       	{
-       		connectionStatus = CONNECT_CONNECTED;
-   			id = m_id;
-   			idt = m_idt;
-       	}
-       	else
-       	{
-       		Log.d(TAG,"MonCompeFree : AUTHENTIFICATION FAILED !");
-       		connectionStatus = CONNECT_LOGIN_FAILED;
-       		id = null;
-       		idt = null;
-       	}
+		if (!assistance)
+		{
+	       	if (m_id != null && m_idt != null)
+	       	{
+	       		connectionStatus = CONNECT_CONNECTED;
+	   			id = m_id;
+	   			idt = m_idt;
+	       	}
+	       	else
+	       	{
+	       		Log.d(TAG,"MonCompeFree : AUTHENTIFICATION FAILED !");
+	       		connectionStatus = CONNECT_LOGIN_FAILED;
+	       		id = null;
+	       		idt = null;
+	       	}
+		}
        	return connectionStatus;
     }
 
@@ -443,7 +458,7 @@ public class FBMHttpConnection implements Constants
 					c = null;
 				}
 				Log.d(TAG,"GETFILE : PAS AUTHENTIFIE SUR LA CONSOLE - SESSION EXPIREE");
-				connected = connectionFree(login, password);
+				connected = connectionFree(login, password, false);
 				if (connected == CONNECT_CONNECTED)
 				{
 					Log.d(TAG,"GETFILE : REAUTHENTIFICATION OK");
@@ -554,7 +569,7 @@ public class FBMHttpConnection implements Constants
 					h = null;
 				}
 				Log.d(TAG,"GETISR : PAS AUTHENTIFIE SUR LA CONSOLE - SESSION EXPIREE");
-				c = connectionFree(login, password);
+				c = connectionFree(login, password, false);
 				if (c == CONNECT_CONNECTED)
 				{
 					Log.d(TAG,"GETISR :  REAUTHENTIFICATION OK");
@@ -641,7 +656,7 @@ public class FBMHttpConnection implements Constants
 					h = null;
 				}
 				Log.d(TAG,"POST : PAS AUTHENTIFIE SUR LA CONSOLE - SESSION EXPIREE");
-				c = connectionFree(login, password);
+				c = connectionFree(login, password, false);
 				if (c == CONNECT_CONNECTED)
 				{
 					Log.d(TAG,"POST :  REAUTHENTIFICATION OK");

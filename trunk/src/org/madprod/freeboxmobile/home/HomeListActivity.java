@@ -274,6 +274,13 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		map.put(M_CLASS, org.madprod.freeboxmobile.ligne.LigneInfoActivity.class);
 		modulesList.add(map);
 		map = new HashMap<String,Object>();
+		map.put(M_ICON, R.drawable.fm_assistance);
+		map.put(M_TITRE, getString(R.string.buttonAssistance));
+		map.put(M_DESC, "Accédez au site web de l'assistance Free");
+//		map.put(M_CLASS, AssistanceActivity.class);
+		map.put(M_CLASS, null);
+		modulesList.add(map);
+		map = new HashMap<String,Object>();
 		map.put(M_ICON, R.drawable.fm_telecopie);
 		map.put(M_TITRE, getString(R.string.buttonFax));
 		String t = "Utilisez votre compte Freebox pour envoyer des Fax à partir de votre mobile";
@@ -336,6 +343,13 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 	        	showNonADSL();
 	        	return;
 	        }
+	    	if (moduleName.equals(getString(R.string.buttonAssistance)))
+	    	{
+	    		FBMHttpConnection.connectAssistance();
+	            Intent assistanceIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://assistance.free.fr/i/#_home"));
+	            assistanceIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+	            startActivity(assistanceIntent);
+	    	}
         }
     	if (moduleClass != null)
     	{
