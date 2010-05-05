@@ -23,20 +23,16 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
-import android.widget.LinearLayout.LayoutParams;
 
 /**
 *
@@ -114,7 +110,7 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
 		listeFavoris.clear();
 		
 		// On commence par récupérer la liste des chaines favorites
-    	Cursor chainesIds = mDbHelper.getChainesProg();
+    	Cursor chainesIds = mDbHelper.getFavoris();
     	startManagingCursor (chainesIds);
         if (chainesIds != null)
 		{
@@ -124,7 +120,7 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
 				Cursor chaineCursor;
 				boolean nochaine = false;
 				
-				int CI_progchannel_id = chainesIds.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_CHANNEL_ID);
+				int CI_progchannel_id = chainesIds.getColumnIndexOrThrow(ChainesDbAdapter.KEY_FAVORIS_ID);
 				do
 				{
 					f = new Favoris();
@@ -348,15 +344,12 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
         	{
 	        	case FAVORIS_COMMAND_RESET:
 	        		FBMNetTask.iProgressShow("Réinitialisation","",R.drawable.fm_guide_tv);
-//	            	showProgressDialog("Réinitialisation");
 	            	break;
 	        	case FAVORIS_COMMAND_ADD:
 	        		FBMNetTask.iProgressShow("Ajout","",R.drawable.fm_guide_tv);
-//	            	showProgressDialog("Ajout");
 	            	break;
 	        	case FAVORIS_COMMAND_SUPPR:
 	        		FBMNetTask.iProgressShow("Suppression","",R.drawable.fm_guide_tv);
-//	            	showProgressDialog("Suppression");
 	            	break;
         	}
         }
@@ -396,8 +389,6 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
         
         protected void onPostExecute(Boolean result)
         {
-//        	GuideActivity.dismissPd();
-//       		dismissPd();
         	FBMNetTask.iProgressDialogDismiss();
    			refresh();
         	switch (command)
@@ -456,7 +447,7 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
 	    		    				Log.e(TAG,res);
 	    		    				e.printStackTrace();
 	    		    				return false;
-	    		    			}    						
+	    		    			}
     						}
     						else
     							return false;

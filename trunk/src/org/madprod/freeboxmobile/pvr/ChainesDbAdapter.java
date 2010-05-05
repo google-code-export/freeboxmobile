@@ -22,7 +22,9 @@ import android.util.Log;
 
 public class ChainesDbAdapter implements GuideConstants
 {
-
+	public static final String KEY_FAVORIS_ID = "fav_id";
+	public static final String KEY_FAVORIS_TS = "fav_ts"; // timestamp of the last check
+	
     public static final String KEY_CHAINE_NAME = "name";
     public static final String KEY_CHAINE_ID = "chaine_id"; // = gc_canal (KEY_GUIDECHAINE_CANAL)
     public static final String KEY_CHAINE_BOITIER = "chaine_boitier";
@@ -32,6 +34,7 @@ public class ChainesDbAdapter implements GuideConstants
     public static final String KEY_GUIDECHAINE_ID = "gc_id"; // = channel_id (KEY_PROG_CHANNEL_ID)
     public static final String KEY_GUIDECHAINE_NAME = "gc_name";
     public static final String KEY_GUIDECHAINE_CANAL = "gc_canal"; // = chaine_id (KEY_CHAINE_ID)
+    public static final String KEY_GUIDECHAINE_FAVORIS = "gc_favoris"; // TODO : remove, unused
     
     public static final String KEY_SERVICE_DESC = "service_desc";
     public static final String KEY_SERVICE_ID = "service_id";
@@ -67,11 +70,15 @@ public class ChainesDbAdapter implements GuideConstants
      * Database creation sql statement
      */
     
-    private static final String TABLE_HISTOGUIDE = " ("
+    private static final String TABLE_FAVORIS = " ("
+    	+ KEY_FAVORIS_ID +" integer primary key, "
+    	+ KEY_FAVORIS_TS +" datetime not null);";
+    
+	private static final String TABLE_HISTOGUIDE = " ("
     	+ KEY_ROWID+" integer primary key autoincrement, "
     	+ KEY_PROG_DATETIME_DEB+" datetime not null);";
 
-    	private static final String TABLE_PROGRAMMES = " ("
+	private static final String TABLE_PROGRAMMES = " ("
     	+ KEY_ROWID+" integer primary key autoincrement, "
     	+ KEY_PROG_GENRE_ID+" integer not null,"
     	+ KEY_PROG_CHANNEL_ID+" integer not null,"
@@ -82,28 +89,29 @@ public class ChainesDbAdapter implements GuideConstants
         + KEY_PROG_DATETIME_DEB+" datetime not null,"
         + KEY_PROG_DATETIME_FIN+" datetime not null);";
     
-    private static final String TABLE_GUIDECHAINES = " ("
+	private static final String TABLE_GUIDECHAINES = " ("
     	+ KEY_ROWID+" integer primary key autoincrement, "
         + KEY_GUIDECHAINE_NAME+" text not null,"
         + KEY_GUIDECHAINE_IMAGE+" text not null,"
         + KEY_GUIDECHAINE_CANAL+" integer not null,"
         + KEY_GUIDECHAINE_ID+" integer not null,"
+        + KEY_GUIDECHAINE_FAVORIS+" integer not null,"
         + KEY_GUIDECHAINE_FBXID+" integer not null);";
 
-    private static final String TABLE_CHAINES = " ("
+	private static final String TABLE_CHAINES = " ("
     	+ KEY_ROWID+" integer primary key autoincrement, "
         + KEY_CHAINE_NAME+" text not null,"
         + KEY_CHAINE_ID+" integer not null,"
         + KEY_CHAINE_BOITIER+" integer not null);";
 
-    private static final String TABLE_SERVICES = " (_id integer primary key autoincrement, "
+	private static final String TABLE_SERVICES = " (_id integer primary key autoincrement, "
     	+ KEY_CHAINE_ID+" integer not null,"
     	+ KEY_CHAINE_BOITIER+" integer not null,"
         + KEY_SERVICE_DESC+" text not null,"
         + KEY_SERVICE_ID+" integer not null,"
         + KEY_PVR_MODE+" integer not null);";
 
-    private static final String TABLE_BOITIERSDISQUES = " (_id integer primary key autoincrement, "
+	private static final String TABLE_BOITIERSDISQUES = " (_id integer primary key autoincrement, "
     	+ KEY_BOITIER_NAME+" text not null,"
     	+ KEY_BOITIER_ID+" integer not null,"
         + KEY_DISQUE_FREE_SIZE+" integer not null,"
@@ -118,16 +126,17 @@ public class ChainesDbAdapter implements GuideConstants
 
     private static final String DATABASE_NAME = "pvrchaines";
     private static final String DATABASE_TABLE_CHAINES = "chaines";
-    public static final String DATABASE_TABLE_CHAINESTEMP = "chainestemp";
+    private static final String DATABASE_TABLE_CHAINESTEMP = "chainestemp";
     private static final String DATABASE_TABLE_SERVICES = "services";
-    public static final String DATABASE_TABLE_SERVICESTEMP = "servicestemp";
+    private static final String DATABASE_TABLE_SERVICESTEMP = "servicestemp";
     private static final String DATABASE_TABLE_BOITIERSDISQUES = "boitiersdisques";
     private static final String DATABASE_TABLE_BOITIERSDISQUESTEMP = "boitiersdisquestemp";
     private static final String DATABASE_TABLE_PROGRAMMES = "programmes";
     private static final String DATABASE_TABLE_GUIDECHAINES = "guidechaines";
     private static final String DATABASE_TABLE_HISTOGUIDE = "histoguide";
+    private static final String DATABASE_TABLE_FAVORIS = "favoris";
 
-    private static final int DATABASE_VERSION = 27;
+    private static final int DATABASE_VERSION = 29;
 
     private static final String DATABASE_CREATE_CHAINES =
         "create table "+DATABASE_TABLE_CHAINES+TABLE_CHAINES;
@@ -153,6 +162,9 @@ public class ChainesDbAdapter implements GuideConstants
     private static final String DATABASE_CREATE_HISTOGUIDE =
         "create table "+DATABASE_TABLE_HISTOGUIDE+TABLE_HISTOGUIDE;
 
+    private static final String DATABASE_CREATE_FAVORIS =
+        "create table "+DATABASE_TABLE_FAVORIS+TABLE_FAVORIS;
+
     private final Context mCtx;
 
     private static class DatabaseHelper extends SQLiteOpenHelper implements Constants
@@ -176,6 +188,7 @@ public class ChainesDbAdapter implements GuideConstants
             db.execSQL(DATABASE_CREATE_PROGRAMMES);
             db.execSQL(DATABASE_CREATE_GUIDECHAINES);
             db.execSQL(DATABASE_CREATE_HISTOGUIDE);
+            db.execSQL(DATABASE_CREATE_FAVORIS);
         }
 
         @Override
@@ -191,6 +204,7 @@ public class ChainesDbAdapter implements GuideConstants
             db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_PROGRAMMES);
             db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_GUIDECHAINES);
             db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_HISTOGUIDE);
+            db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_FAVORIS);
             onCreate(db);
         }
     }
@@ -227,6 +241,49 @@ public class ChainesDbAdapter implements GuideConstants
    		mDb.close();
     }
 
+    /*
+     * METHODES POUR LES FAVORIS
+     * PRINCIPE : lors du mise à jour :
+     * - on met à jour les timestamp des favoris qui existent déjà
+     * - on ajoute les nouveaux favoris
+     * - puis on supprime les vieux timestamp qui restent (qui correspondent aux chaînes qui ne sont plus en favoris)
+     */
+    
+	public long updateFavoris(int fav_id, String datetime)
+	{
+		Cursor c;
+		Log.d(TAG, "updateFavoris : "+fav_id+ " "+ datetime);
+		c = mDb.query(DATABASE_TABLE_FAVORIS, new String[] {KEY_FAVORIS_ID, KEY_FAVORIS_TS},
+				KEY_FAVORIS_ID + "=" + fav_id, null, null, null, null);
+		Log.d(TAG, "trouve : "+c.getCount());
+		if (c.getCount() == 0)
+		{
+			ContentValues initialValues = new ContentValues();
+			initialValues.put(KEY_FAVORIS_ID, fav_id);
+			initialValues.put(KEY_FAVORIS_TS, datetime);
+			mDb.insert(DATABASE_TABLE_FAVORIS, null, initialValues);
+		}
+		else
+		{
+			ContentValues updateValues = new ContentValues();
+			updateValues.put(KEY_FAVORIS_TS, datetime);
+			mDb.update(DATABASE_TABLE_FAVORIS, updateValues, KEY_FAVORIS_ID + " = "+fav_id, null);
+		}
+		c.close();
+		return 0;
+	}
+    
+	public long flushFavoris(String datetime)
+	{
+		return mDb.delete(DATABASE_TABLE_FAVORIS, KEY_FAVORIS_TS +" != '"+datetime+"'", null);
+	}
+    
+	public Cursor getFavoris()
+	{
+		return mDb.query(DATABASE_TABLE_FAVORIS, new String[] {KEY_FAVORIS_ID},
+		       null, null, null, null, KEY_FAVORIS_ID);    	
+	}
+    
     /*
      * METHODES POUR L'HISTORIQUE DU GUIDE
      * Histoguide permet de savoir si on a déjà chargé les programmes pour 
@@ -272,6 +329,7 @@ public class ChainesDbAdapter implements GuideConstants
         initialValues.put(KEY_GUIDECHAINE_CANAL, canal);
         initialValues.put(KEY_GUIDECHAINE_NAME, name);
         initialValues.put(KEY_GUIDECHAINE_IMAGE, image);
+        initialValues.put(KEY_GUIDECHAINE_FAVORIS, 0);
         return mDb.insert(DATABASE_TABLE_GUIDECHAINES, null, initialValues);
     }
 
@@ -374,6 +432,8 @@ public class ChainesDbAdapter implements GuideConstants
 	 * Get channels IDs of programs present in database
 	 * @return
 	 */
+	// TODO : Remove, replaced by getFavoris()
+	/*
 	public Cursor getChainesProg()
 	{
         return mDb.query(true, DATABASE_TABLE_PROGRAMMES,
@@ -383,7 +443,7 @@ public class ChainesDbAdapter implements GuideConstants
         		null,
         		null, null, null, KEY_PROG_CHANNEL_ID, null);
 	}
-	
+	*/
 	public int deleteProgsChaine(int id)
 	{
 		return mDb.delete(DATABASE_TABLE_PROGRAMMES, KEY_PROG_CHANNEL_ID+" = "+id, null);

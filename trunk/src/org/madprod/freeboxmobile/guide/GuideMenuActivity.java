@@ -208,7 +208,8 @@ public class GuideMenuActivity extends Activity implements GuideConstants
 
 		listeFavoris.clear();
 
-    	Cursor chainesIds = mDbHelper.getChainesProg();
+//    	Cursor chainesIds = mDbHelper.getChainesProg();
+    	Cursor chainesIds = mDbHelper.getFavoris();
     	startManagingCursor (chainesIds);
         if (chainesIds != null)
 		{
@@ -216,7 +217,8 @@ public class GuideMenuActivity extends Activity implements GuideConstants
 			if (chainesIds.moveToFirst())
 			{
 				Cursor chaineCursor;
-				int CI_progchannel_id = chainesIds.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_CHANNEL_ID);
+//				int CI_progchannel_id = chainesIds.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_CHANNEL_ID);
+				int CI_progchannel_id = chainesIds.getColumnIndexOrThrow(ChainesDbAdapter.KEY_FAVORIS_ID);
 				do
 				{
 					f = new Favoris();
@@ -228,6 +230,13 @@ public class GuideMenuActivity extends Activity implements GuideConstants
 						f.name = chaineCursor.getString(chaineCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_NAME));
 						f.image = chaineCursor.getString(chaineCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE));
 						chaineCursor.close();
+					}
+					else
+					{
+						if (chaineCursor != null)
+						{
+							chaineCursor.close();							
+						}
 					}
 					listeFavoris.add(f);
 				} while (chainesIds.moveToNext());

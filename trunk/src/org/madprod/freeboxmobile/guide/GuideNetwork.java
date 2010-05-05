@@ -26,7 +26,7 @@ import android.util.Log;
  * $Id$
  */
 
-public class GuideNetwork extends FBMNetTask implements GuideConstants //AsyncTask<Void, Integer, Integer> implements GuideConstants
+public class GuideNetwork extends FBMNetTask implements GuideConstants
 {
 	private Activity activity;
 	private String datetime;

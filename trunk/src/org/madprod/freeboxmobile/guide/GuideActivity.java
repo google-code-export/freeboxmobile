@@ -517,7 +517,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
 	    	}    	
 	    };
 	    listesChaines = new ArrayList<ListeChaines>();
-    	Cursor chainesIds = mDbHelper.getChainesProg();
+    	Cursor chainesIds = mDbHelper.getFavoris();
     	startManagingCursor (chainesIds);
         if (chainesIds != null)
 		{
@@ -525,7 +525,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
 			{
 				Cursor chaineCursor;
 				ListeChaines l;
-				int columnIndex = chainesIds.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_CHANNEL_ID);
+				int columnIndex = chainesIds.getColumnIndexOrThrow(ChainesDbAdapter.KEY_FAVORIS_ID);
 				do
 				{
 					l = new ListeChaines();
