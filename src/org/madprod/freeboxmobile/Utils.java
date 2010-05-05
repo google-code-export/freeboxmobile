@@ -38,7 +38,7 @@ public class Utils implements Constants
 	    	if (outChannel != null) outChannel.close();
 	    }
 	}
-	
+
 	public static String getFBMVersion(Context c)
 	{
 		if ((FBMVersion == null) && (c != null))

@@ -37,6 +37,8 @@ public interface Constants
     static final String OLDDIR_CHAINES = "chaines/";
     static final String DIR_CHAINES = ".chaines/";
 
+    static final String MAGNETO_URL = "https://adsls.free.fr/admin/magneto.pl";
+
     public static final int CONNECT_LOGIN_FAILED = -1;
     public static final int CONNECT_NOT_CONNECTED = 0;
     public static final int CONNECT_CONNECTED = 1;
