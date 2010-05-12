@@ -208,7 +208,6 @@ public class GuideMenuActivity extends Activity implements GuideConstants
 
 		listeFavoris.clear();
 
-//    	Cursor chainesIds = mDbHelper.getChainesProg();
     	Cursor chainesIds = mDbHelper.getFavoris();
     	startManagingCursor (chainesIds);
         if (chainesIds != null)
@@ -217,7 +216,6 @@ public class GuideMenuActivity extends Activity implements GuideConstants
 			if (chainesIds.moveToFirst())
 			{
 				Cursor chaineCursor;
-//				int CI_progchannel_id = chainesIds.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_CHANNEL_ID);
 				int CI_progchannel_id = chainesIds.getColumnIndexOrThrow(ChainesDbAdapter.KEY_FAVORIS_ID);
 				do
 				{

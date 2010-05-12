@@ -1,7 +1,9 @@
 package org.madprod.freeboxmobile.guide;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -9,6 +11,7 @@ import java.util.Map;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.madprod.freeboxmobile.FBMHttpConnection;
@@ -310,29 +313,7 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
 			});
 		d.show();
     }
-    
-    //TODO : Remove
-    /*
-	public void showProgressDialog(String title)
-	{
-		progressDialog = new ProgressDialog(this);
-		progressDialog.setIcon(R.drawable.icon_fbm_reverse);
-		progressDialog.setTitle(title);
-		progressDialog.setCancelable(false);
-		progressDialog.setMessage("En cours...");
-		progressDialog.show();
-	}
-
-    public void dismissPd()
-    {
-    	if (progressDialog != null)
-    	{
-    		progressDialog.dismiss();
-    		progressDialog = null;
-    	}
-    }
-*/
-    
+        
     private class GuideFavorisActivityNetwork extends AsyncTask<Void, Integer, Boolean>
     {
     	private int command;
@@ -381,7 +362,8 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
 	                new GuideNetwork(GuideChoixChainesActivity.this, null, false, true, param, true).getData();
 	            	break;
 	        	case FAVORIS_COMMAND_SUPPR:
-	                mDbHelper.deleteProgsChaine(param);
+	        		// TODO : check and remove this line
+//	                mDbHelper.deleteProgsChaine(param);
 	            	break;
         	}
         	return result;
@@ -422,6 +404,7 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
         
         private boolean Action(ArrayList<NameValuePair> params)
         {
+			Log.d(TAG, "===============> ACTION !");
         	String res = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(MAGNETO_URL, params, true, true, "UTF8"));
             if (res != null)
             {
@@ -430,16 +413,22 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
             		JSONObject jObject = new JSONObject(res);
     				if (jObject.has("redirect"))
     				{
+    					Log.d(TAG, "===============> REDIRECT !");
     					if (FBMHttpConnection.connect() == CONNECT_CONNECTED)
     					{
+        					Log.d(TAG, "===============> CONNECTED !");
     						res = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(MAGNETO_URL, params, true, true, "UTF8"));
     						if (res != null)
     						{
+            					Log.d(TAG, "===============> NOT  NULL !");
 	    						try
 	    						{
 	    							jObject = new JSONObject(res);
 	    		    				if (jObject.has("redirect"))
+	    		    				{
+	    		    					Log.d(TAG, "===============> REDIRECT ! "+res);
 	    		    					return (false);
+	    		    				}
 	    						}
 	    		            	catch (JSONException e)
 	    		            	{
@@ -450,13 +439,36 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
 	    		    			}
     						}
     						else
+    						{
+            					Log.d(TAG, "===============> NULL !");
     							return false;
+    						}
     					}
     					else
     					{
+        					Log.d(TAG, "===============> NOT CONNECTED !");
     						return (false);
     					}
     				}
+					Log.d(TAG, "CHECKING FAV "+res );
+					JSONArray jArray = jObject.getJSONArray("new_chaines");
+					int size = jArray.length();
+		    		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		    		String datetime = sdf.format(new Date());
+		    		ChainesDbAdapter db = new ChainesDbAdapter(GuideChoixChainesActivity.this);
+		    		if (db == null)
+		    		{
+		    			return (false);
+		    		}
+		    		db.open();
+
+					for (int i=0 ; i < size ; i++)
+					{
+//						Log.d(TAG, "fav : "+jArray.getString(i) );
+						db.updateFavoris(Integer.parseInt(jArray.getString(i)), datetime);
+					}
+					db.flushFavoris(datetime);
+					db.close();
             	}
             	catch (JSONException e)
             	{
@@ -467,6 +479,10 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
     			}
 //            	Log.d(TAG,"ACTION : "+res);
                 return true;
+            }
+            else
+            {
+            	Log.d(TAG, "===============> RES NULL !");
             }
             return false;
         }

@@ -251,11 +251,23 @@ public class ChainesDbAdapter implements GuideConstants
     
 	public long updateFavoris(int fav_id, String datetime)
 	{
+		ContentValues favValues = new ContentValues();
+		favValues.put(KEY_FAVORIS_TS, datetime);
+		if (mDb.update(DATABASE_TABLE_FAVORIS, favValues, KEY_FAVORIS_ID + " = "+fav_id, null) == 0)
+		{
+			favValues.put(KEY_FAVORIS_ID, fav_id);
+			mDb.insert(DATABASE_TABLE_FAVORIS, null, favValues);			
+		}
+		return 0;
+	}
+
+	public long updateFavoris_old(int fav_id, String datetime)
+	{
 		Cursor c;
-		Log.d(TAG, "updateFavoris : "+fav_id+ " "+ datetime);
+//		Log.d(TAG, "updateFavoris : "+fav_id+ " "+ datetime);
 		c = mDb.query(DATABASE_TABLE_FAVORIS, new String[] {KEY_FAVORIS_ID, KEY_FAVORIS_TS},
 				KEY_FAVORIS_ID + "=" + fav_id, null, null, null, null);
-		Log.d(TAG, "trouve : "+c.getCount());
+//		Log.d(TAG, "trouve : "+c.getCount());
 		if (c.getCount() == 0)
 		{
 			ContentValues initialValues = new ContentValues();
@@ -474,19 +486,25 @@ public class ChainesDbAdapter implements GuideConstants
     {
     	if (checkTable(DATABASE_TABLE_SERVICESTEMP) && checkTable(DATABASE_TABLE_CHAINESTEMP))
     	{
+    		mDb.beginTransaction();
 	        mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_SERVICES);
 	    	mDb.execSQL("ALTER TABLE "+DATABASE_TABLE_SERVICESTEMP+" RENAME TO "+DATABASE_TABLE_SERVICES);
 	        mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_CHAINES);
 	    	mDb.execSQL("ALTER TABLE "+DATABASE_TABLE_CHAINESTEMP+" RENAME TO "+DATABASE_TABLE_CHAINES);
+	    	mDb.setTransactionSuccessful();
+	    	mDb.endTransaction();
     	}
     }
 
     public void cleanTempChaines()
     {
+		mDb.beginTransaction();
         mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_SERVICESTEMP);
         mDb.execSQL(DATABASE_CREATE_SERVICESTEMP);
         mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_CHAINESTEMP);
         mDb.execSQL(DATABASE_CREATE_CHAINESTEMP);
+    	mDb.setTransactionSuccessful();
+    	mDb.endTransaction();
     }
 
     /**
@@ -561,8 +579,11 @@ public class ChainesDbAdapter implements GuideConstants
     {
     	if (checkTable(DATABASE_TABLE_BOITIERSDISQUESTEMP))
     	{
+    		mDb.beginTransaction();
 	        mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_BOITIERSDISQUES);
 	    	mDb.execSQL("ALTER TABLE "+DATABASE_TABLE_BOITIERSDISQUESTEMP+" RENAME TO "+DATABASE_TABLE_BOITIERSDISQUES);
+	    	mDb.setTransactionSuccessful();
+	    	mDb.endTransaction();
     	}
     }
 

@@ -133,6 +133,7 @@ public class GuideUtils implements Constants
     	params.setMargins(5,5,5,5);
         String filepath = Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES+image;
 		Bitmap bmp = BitmapFactory.decodeFile(filepath);
+		bmp.setDensity(128);
 		ImageView i = new ImageView(a);
 		i.setImageBitmap(bmp);
 		i.setLayoutParams(params);
@@ -141,7 +142,7 @@ public class GuideUtils implements Constants
         il.addView(i);
 		TextView t = new TextView(a);
 		t.setText(name);
-		t.setTextSize(8);
+		t.setTextSize(10);
 		t.setGravity(Gravity.CENTER);
 		il.addView(t);
 		il.setTag(tag);
