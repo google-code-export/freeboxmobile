@@ -260,30 +260,6 @@ public class ChainesDbAdapter implements GuideConstants
 		}
 		return 0;
 	}
-
-	public long updateFavoris_old(int fav_id, String datetime)
-	{
-		Cursor c;
-//		Log.d(TAG, "updateFavoris : "+fav_id+ " "+ datetime);
-		c = mDb.query(DATABASE_TABLE_FAVORIS, new String[] {KEY_FAVORIS_ID, KEY_FAVORIS_TS},
-				KEY_FAVORIS_ID + "=" + fav_id, null, null, null, null);
-//		Log.d(TAG, "trouve : "+c.getCount());
-		if (c.getCount() == 0)
-		{
-			ContentValues initialValues = new ContentValues();
-			initialValues.put(KEY_FAVORIS_ID, fav_id);
-			initialValues.put(KEY_FAVORIS_TS, datetime);
-			mDb.insert(DATABASE_TABLE_FAVORIS, null, initialValues);
-		}
-		else
-		{
-			ContentValues updateValues = new ContentValues();
-			updateValues.put(KEY_FAVORIS_TS, datetime);
-			mDb.update(DATABASE_TABLE_FAVORIS, updateValues, KEY_FAVORIS_ID + " = "+fav_id, null);
-		}
-		c.close();
-		return 0;
-	}
     
 	public long flushFavoris(String datetime)
 	{
@@ -440,23 +416,8 @@ public class ChainesDbAdapter implements GuideConstants
 		return mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE_PROGRAMMES + " WHERE "+KEY_PROG_CHANNEL_ID+" = "+channelId+" AND "+KEY_PROG_DATETIME_DEB+" = '"+horaire_deb+"'").simpleQueryForLong();
 	}
 	
-	/**
-	 * Get channels IDs of programs present in database
-	 * @return
-	 */
-	// TODO : Remove, replaced by getFavoris()
-	/*
-	public Cursor getChainesProg()
-	{
-        return mDb.query(true, DATABASE_TABLE_PROGRAMMES,
-        		new String[] {
-        		KEY_PROG_CHANNEL_ID,
-        		},
-        		null,
-        		null, null, null, KEY_PROG_CHANNEL_ID, null);
-	}
-	*/
-	public int deleteProgsChaine(int id)
+	// TODO : Remove
+	public int deleteProgsChaine_unused(int id)
 	{
 		return mDb.delete(DATABASE_TABLE_PROGRAMMES, KEY_PROG_CHANNEL_ID+" = "+id, null);
 	}

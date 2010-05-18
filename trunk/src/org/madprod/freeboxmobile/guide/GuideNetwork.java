@@ -33,18 +33,18 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants
 	private boolean getChaines;
 	private boolean getProg;
 	private boolean forceRefresh;
-	private int pnb;
+	private boolean progress;
 
     /**
      * GuideNetwork : refresh data for Guide
      * @param a : activity used to display progress bars
      * @param d : datetime to get programmes (if prog == true)
-     * @param chaine : wants to get chaines lits ?
+     * @param chaine : wants to get chaines list ?
      * @param prog : wants to get programs ?
-     * @param pnb : wants to get this particular program ?
+     * @param progress : display progress ?
      * @param force : force refresh programs event if they are already present in database
      */
-    public GuideNetwork(Activity a, String d, boolean chaine, boolean prog, int pnb, boolean force)
+    public GuideNetwork(Activity a, String d, boolean chaine, boolean prog, boolean progress, boolean force)
     {
     	activity = a;
     	if (d != null)
@@ -59,10 +59,60 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants
     	getChaines = chaine;
     	getProg = prog;
     	forceRefresh = force;
-    	this.pnb = pnb;
+    	this.progress = progress;
     	Log.d(TAG,"GUIDENETWORK START "+d+" "+chaine+" "+prog+" "+force);
     }
 
+    public int getDay()
+    {
+    	String dt = datetime;
+		dProgressMessage("Actualisation des données de la journée...", 24);
+    	publishProgress(0);
+    	datetime = dt + " 00:00:00";
+    	getData();
+    	publishProgress(4);
+    	datetime = dt + " 04:00:00";
+    	getData();
+    	publishProgress(8);
+    	datetime = dt + " 08:00:00";
+    	getData();
+    	publishProgress(12);
+    	datetime = dt + " 12:00:00";
+    	getData();
+    	publishProgress(16);
+    	datetime = dt + " 16:00:00";
+    	getData();
+    	publishProgress(20);
+    	datetime = dt + " 20:00:00";
+    	getData();
+    	publishProgress(24);
+    	setDayCache(dt);
+    	publishProgress(-1);
+    	return DATA_NEW_DATA;
+    }
+
+    private void setDayCache(String dt) // Create missing cache entries in case of a full day update
+    {
+    	ChainesDbAdapter db = new ChainesDbAdapter(activity);
+		db.open();
+		db.createHistoGuide(datetime+" 01:00:00");
+		db.createHistoGuide(datetime+" 02:00:00");
+		db.createHistoGuide(datetime+" 03:00:00");
+		db.createHistoGuide(datetime+" 05:00:00");
+		db.createHistoGuide(datetime+" 06:00:00");
+		db.createHistoGuide(datetime+" 07:00:00");
+		db.createHistoGuide(datetime+" 09:00:00");
+		db.createHistoGuide(datetime+" 10:00:00");
+		db.createHistoGuide(datetime+" 11:00:00");
+		db.createHistoGuide(datetime+" 13:00:00");
+		db.createHistoGuide(datetime+" 14:00:00");
+		db.createHistoGuide(datetime+" 15:00:00");
+		db.createHistoGuide(datetime+" 17:00:00");
+		db.createHistoGuide(datetime+" 18:00:00");
+		db.createHistoGuide(datetime+" 19:00:00");
+		db.close();
+    }
+    
     public int getData()
     {
     	JSONObject jObject;
@@ -76,7 +126,7 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants
 		int max = 0;
 		boolean ok = true;
 
-		if (pnb == 0)
+		if (progress)
 		{
 			dProgressSet("Importation", "Actualisation des données du guide", R.drawable.fm_guide_tv);
 			publishProgress(0);
@@ -84,8 +134,7 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants
 		db = new ChainesDbAdapter(activity);
 		db.open();
 
-		if ((pnb == 0) &&
-			(forceRefresh == false) &&
+		if ((forceRefresh == false) &&
 			(db.isHistoGuidePresent(datetime) > 0) &&
 			(getChaines == false))
 		{
@@ -124,23 +173,19 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants
 				if (getProg)
 				{
 					jChannelsObject = jObject.getJSONObject("progs");
-					max = jChannelsObject.length();
-					if (pnb == 0)
+					if (progress)
 					{
+						max = jChannelsObject.length();
 						dProgressMessage("Actualisation des programmes TV pour "+max+" chaînes favorites...",max);
 					}
 					String channelId;
 					for (Iterator <String> it = jChannelsObject.keys() ; it.hasNext() ;)
 					{
-						if (pnb != 0)
-						{
-							channelId = ((Integer)pnb).toString();
-						}
-						else
+						if (progress)
 						{
 							publishProgress(courant++);
-							channelId = it.next();
 						}
+						channelId = it.next();
 						jHorairesObject = jChannelsObject.getJSONObject(channelId);
 						for (Iterator <String> jt = jHorairesObject.keys(); jt.hasNext() ;)
 						{
@@ -165,15 +210,8 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants
 							}
 							// TODO : sinon rafraichir ?
 						}
-						if (pnb != 0)
-						{
-							break;
-						}
 					}
-					if (pnb == 0)
-					{
-						db.createHistoGuide(datetime);
-					}
+					db.createHistoGuide(datetime);
 				}
 				if (getChaines)
 				{
@@ -253,10 +291,12 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants
         {
         	ok = false;
         }
-   		publishProgress(max);
+        if (progress)
+        	publishProgress(max);
     	Log.d(TAG,"Guide Network end "+new Date());
     	db.close();
-    	publishProgress(-1);
+        if (progress)
+        	publishProgress(-1);
     	if (ok)
     	{
 	    	return DATA_NEW_DATA;

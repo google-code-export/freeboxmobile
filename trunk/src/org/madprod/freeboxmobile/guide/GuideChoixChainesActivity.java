@@ -359,7 +359,7 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
 	            	break;
 	        	case FAVORIS_COMMAND_ADD:
 	                mDbHelper.clearHistorique();
-	                new GuideNetwork(GuideChoixChainesActivity.this, null, false, true, param, true).getData();
+//	                new GuideNetwork(GuideChoixChainesActivity.this, null, false, true, param, true).getData();
 	            	break;
 	        	case FAVORIS_COMMAND_SUPPR:
 	        		// TODO : check and remove this line
