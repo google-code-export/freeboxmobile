@@ -30,6 +30,7 @@
 		<activity android:theme="@style/Theme.FreeboxMobile.TitleBar" android:name=".pvr.EnregistrementsActivity"></activity>
 		<activity android:theme="@style/Theme.FreeboxMobile.TitleBar" android:name=".pvr.ProgrammationActivity"></activity>
 		<activity android:theme="@style/Theme.FreeboxMobile.TitleBar" android:name=".guide.GuideActivity"></activity>
+		<activity android:theme="@style/Theme.FreeboxMobile.TitleBar" android:name=".guide.GuideChaineActivity"></activity>
 		<activity android:theme="@style/Theme.FreeboxMobile.TitleBar" android:name=".guide.GuideMenuActivity"></activity>
 		<activity android:theme="@style/Theme.FreeboxMobile.TitleBar" android:name=".guide.GuideChoixChainesActivity"></activity>
 		<activity android:theme="@style/Theme.FreeboxMobile.NoTitleBar" android:name=".guide.GuideDetailsActivity"></activity>

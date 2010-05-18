@@ -18,25 +18,18 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.LinearLayout.LayoutParams;
 
 /**
 *
@@ -49,6 +42,7 @@ public class GuideMenuActivity extends Activity implements GuideConstants
 {
 	private ArrayList<Favoris> listeFavoris = new ArrayList<Favoris>();
 	private ChainesDbAdapter mDbHelper;
+	private Spinner jourChaine;
 	
 	@Override
     protected void onCreate(Bundle savedInstanceState)
@@ -76,8 +70,10 @@ public class GuideMenuActivity extends Activity implements GuideConstants
 
 		SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 
+		// TODO : Remove that, useless
     	if (mDbHelper.getNbChaines() == 0)
     	{
+    		// TODO : Change GuideMenuActivityNetwork (it must use PvrNetwork)
     		new GuideMenuActivityNetwork().execute((Void[])null);    		
     	}
 
@@ -123,7 +119,7 @@ public class GuideMenuActivity extends Activity implements GuideConstants
         getFavoris();
         final Spinner datesSpinner = (Spinner) findViewById(R.id.SpinnerDate);
         final Spinner heuresSpinner = (Spinner) findViewById(R.id.SpinnerHeure);
-        Spinner jourChaine = (Spinner) findViewById(R.id.SpinnerJourChaine);
+        jourChaine = (Spinner) findViewById(R.id.SpinnerJourChaine);
 		ArrayAdapter<String> spinnerAdapter;
 		spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, GuideUtils.dates);
 		spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -201,7 +197,6 @@ public class GuideMenuActivity extends Activity implements GuideConstants
 		getFavoris();
 	}
 	
-	// TODO : rafraichir lors d'un retour de GuideChoixChainesActivity après modification des favoris
 	private void getFavoris()
     {
 		Log.d(TAG,"getFavoris");
@@ -249,14 +244,19 @@ public class GuideMenuActivity extends Activity implements GuideConstants
 	    	csly.setGravity(Gravity.CENTER);
 			while(it.hasNext())
 			{
-				f = it.next();
-				csly.addView(GuideUtils.addVisuelChaine(f.image, f.name, (Integer)f.guidechaine_id,
+				final Favoris ff = it.next();
+				csly.addView(GuideUtils.addVisuelChaine(ff.image, ff.name, (Integer)ff.guidechaine_id,
 					new View.OnClickListener()
             		{
             			public void onClick(View view)
             			{
             				Log.d(TAG, "click "+(Integer)view.getTag());
-            				Toast.makeText(GuideMenuActivity.this, "Fonctionnalité non disponible pour l'instant", Toast.LENGTH_SHORT).show();
+//            				Toast.makeText(GuideMenuActivity.this, "Fonctionnalité non disponible pour l'instant", Toast.LENGTH_SHORT).show();
+                			String selectedDate = GuideUtils.calDates.get(jourChaine.getSelectedItemPosition());
+        					Intent i = new Intent(GuideMenuActivity.this, GuideChaineActivity.class);
+        					i.putExtra("DATE", selectedDate);
+        					i.putExtra("CHAINE", ff.guidechaine_id);
+        			        startActivity(i);
             			}
             		},
             		this));
@@ -286,6 +286,7 @@ public class GuideMenuActivity extends Activity implements GuideConstants
 		d.show();
     }
 	
+	// TODO : Change that, must use PvrNetwork to get list
     private class GuideMenuActivityNetwork extends AsyncTask<Void, Integer, Integer>
     {
         protected void onPreExecute()
@@ -294,7 +295,7 @@ public class GuideMenuActivity extends Activity implements GuideConstants
 
         protected Integer doInBackground(Void... arg0)
         {
-        	return new GuideNetwork(GuideMenuActivity.this, null, true, true, 0, false).getData();
+        	return new GuideNetwork(GuideMenuActivity.this, null, true, true, true, false).getData();
         }
 
         protected void onPostExecute(Integer result)

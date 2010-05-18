@@ -38,7 +38,7 @@ public class ManageCompte extends FBMNetTask implements Constants// AsyncTask<Co
 	    	dProgressSet("Importation", "", R.drawable.fm_magnetoscope);
 			new PvrNetwork(true, true).getData();
 	    	ProgrammationActivity.lastUser = "";
-			new GuideNetwork(getActivity(), null, true, true, 0, false).getData();
+			new GuideNetwork(getActivity(), null, true, false, true, false).getData();
 		}
 		return (0);
 	}
