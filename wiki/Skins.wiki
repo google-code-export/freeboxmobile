@@ -1,0 +1,7 @@
+#summary One-sentence summary of this page.
+
+= Introduction =
+
+Documentation sur l'utilisation et la creation des skins (partie Telecommande)
+
+= Details =
