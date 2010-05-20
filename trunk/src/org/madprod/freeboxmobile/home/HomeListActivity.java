@@ -17,6 +17,7 @@ import org.madprod.freeboxmobile.fax.FaxActivity;
 import org.madprod.freeboxmobile.guide.GuideMenuActivity;
 import org.madprod.freeboxmobile.ligne.InfoAdslCheck;
 import org.madprod.freeboxmobile.mvv.MevoSync;
+import org.madprod.freeboxmobile.remotecontrol.RemoteControlActivity;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
@@ -267,6 +268,12 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		map.put(M_DESC, "Accédez à la messagerie vocale de votre Freebox");
 		map.put(M_CLASS, org.madprod.freeboxmobile.mvv.MevoActivity.class);
 		modulesList.add(map);
+		map = new HashMap<String,Object>();
+		map.put(M_ICON, R.drawable.fm_guide_tv);
+		map.put(M_TITRE, getString(R.string.buttonTelecommande));
+		map.put(M_DESC, "Amusez vous avec nos telecommandes");
+		map.put(M_CLASS, RemoteControlActivity.class);
+		modulesList.add(map);    	
 		map = new HashMap<String,Object>();
 		map.put(M_ICON, R.drawable.fm_infos_adsl);
 		map.put(M_TITRE, getString(R.string.buttonLigne));
