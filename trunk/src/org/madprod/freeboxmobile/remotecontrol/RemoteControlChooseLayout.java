@@ -115,14 +115,13 @@ public class RemoteControlChooseLayout extends Activity implements Constants, Re
 		case SAVE:
 
 			Editor editor = preferences.edit();
-
 			File dirSkins = new File(getFilesDir()+"/skins");
 			if (!dirSkins.exists())	dirSkins.mkdirs();
 
 			File skin;
 
 			Spinner spin = (Spinner)findViewById(R.id.MosaicLayoutHorizontalSpinner);		
-			skin = new File(dirSkins+"/mosaichorizontal");
+			skin = new File(getFilesDir()+PATHMOSAICHORIZONTAL);
 			if (skin.exists())  deleteFile(skin);
 			if (spin.getSelectedItem() != null){
 				skin.mkdirs();
@@ -134,7 +133,7 @@ public class RemoteControlChooseLayout extends Activity implements Constants, Re
 
 
 			spin = (Spinner)findViewById(R.id.MosaicLayoutVerticalSpinner);		
-			skin = new File(dirSkins+"/mosaicvertical");
+			skin = new File(getFilesDir()+PATHMOSAICVERTICAL);
 			if (skin.exists())  deleteFile(skin);
 			if (spin.getSelectedItem() != null){
 				skin.mkdirs();
@@ -145,7 +144,7 @@ public class RemoteControlChooseLayout extends Activity implements Constants, Re
 			}
 
 			spin = (Spinner)findViewById(R.id.TelecommandeLayoutHorizontalSpinner);		
-			skin = new File(dirSkins+"/telechorizontal");
+			skin = new File(getFilesDir()+PATHREMOTEHORIZONTAL);
 			if (skin.exists())  deleteFile(skin);
 			if (spin.getSelectedItem() != null){
 				skin.mkdirs();
@@ -156,7 +155,7 @@ public class RemoteControlChooseLayout extends Activity implements Constants, Re
 			}
 
 			spin = (Spinner)findViewById(R.id.TelecommandeLayoutVerticalSpinner);		
-			skin = new File(dirSkins+"/telecvertical");
+			skin = new File(getFilesDir()+PATHREMOTEVERTICAL);
 			if (skin.exists())  deleteFile(skin);
 			if (spin.getSelectedItem() != null){
 				skin.mkdirs();
