@@ -28,15 +28,19 @@ public class BroadCastManager implements Constants{
 				if (intent.getExtras() != null){
 					int repeat = intent.getIntExtra("repeat", -1);
 					boolean longClick = intent.getBooleanExtra("long", false);
-					String cmd = intent.getStringExtra("command");
+					String cmd = intent.getStringExtra("cmd");
+					Log.d(TAG, "Cmd = "+cmd);
 					if (cmd != null){
 						if (repeat != -1 && longClick){
 							cm.sendCommand(cmd, longClick, repeat);
-						}else if (!longClick) cm.sendCommand(cmd, repeat);
-						else cm.sendCommand(cmd, longClick);
+						}else if (!longClick&&repeat !=-1) cm.sendCommand(cmd, repeat);
+						else if (repeat<0&&longClick) cm.sendCommand(cmd, longClick);
+						else cm.sendCommand(cmd);
 					}
 				
 				
+				}else{
+					Log.d(TAG, "Pas de parametre passes a l intent");
 				}
 			}
 		}, new IntentFilter("REMOTECOMMAND"));		
@@ -58,6 +62,8 @@ public class BroadCastManager implements Constants{
 							else cm.sendCommand(""+channelS.charAt(i), true);
 						}
 					}
+				}else{
+					Log.d(TAG, "Pas de parametre passes a l intent");
 				}
 			}
 		}, new IntentFilter("REMOTECHANNEL"));		
@@ -77,6 +83,8 @@ public class BroadCastManager implements Constants{
 							cm.sendCommand(""+codeS.charAt(i));
 						}
 					}
+				}else{
+					Log.d(TAG, "Pas de parametre passes a l intent");
 				}
 			}
 		}, new IntentFilter("REMOTECODE"));		
