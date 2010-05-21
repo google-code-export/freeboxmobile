@@ -3,6 +3,7 @@ package org.madprod.freeboxmobile.remotecontrol;
 import java.io.IOException;   
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketOptions;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -53,6 +54,7 @@ public class CommandManager extends Activity{
 			Log.d(TAG, "Adresse "+adresse);
 			Socket s = new Socket();
 			try {
+				s.setSoTimeout(2000);
 				s.connect(new InetSocketAddress(adresse, 80), 2000);
 				adresses.put(adresse, true);
 				count++;
