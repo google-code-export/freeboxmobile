@@ -4,30 +4,25 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import org.madprod.freeboxmobile.Constants;
-import org.madprod.freeboxmobile.R;
-import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
+import org.madprod.freeboxmobile.WrapBitmap;
 
 import android.app.Activity;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.LinearLayout.LayoutParams;
 
 /**
@@ -42,6 +37,22 @@ public class GuideUtils implements Constants
 	// Cette liste sert à récupérer la date correspondant à l'indice du spinner
 	public static List<String> calDates = new ArrayList<String>();
 	public static List<String> dates;
+	private static boolean mNewBitmapAvailable;
+	
+	static
+	{
+		try
+		{
+			WrapBitmap.checkAvailable();
+			mNewBitmapAvailable = true;
+        	Log.d(TAG, "NEW VERSION OK");
+		}
+		catch (Throwable t)
+		{
+			mNewBitmapAvailable = false;
+        	Log.d(TAG, "NEW VERSION NOT OK");
+		}
+	}
 	
 	public static void makeCalDates()
 	{
@@ -131,11 +142,19 @@ public class GuideUtils implements Constants
 		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
     	params.gravity = (Gravity.CENTER);
     	params.setMargins(5,5,5,5);
-        String filepath = Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES+image;
-		Bitmap bmp = BitmapFactory.decodeFile(filepath);
-		bmp.setDensity(128);
 		ImageView i = new ImageView(a);
-		i.setImageBitmap(bmp);
+        String filepath = Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES+image;
+        if (mNewBitmapAvailable)
+        {
+			WrapBitmap bmp = new WrapBitmap(filepath);
+			bmp.setDensity(128);
+			i.setImageBitmap(bmp.getBitmap());        	
+        }
+        else
+        {
+			Bitmap bmp = BitmapFactory.decodeFile(filepath);
+			i.setImageBitmap(bmp);
+        }
 		i.setLayoutParams(params);
 //		i.setTag(tag);
 //        i.setOnClickListener(o);
