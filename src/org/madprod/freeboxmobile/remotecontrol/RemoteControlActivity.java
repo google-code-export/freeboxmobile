@@ -71,7 +71,7 @@ public class RemoteControlActivity extends Activity implements Constants, Remote
 		FBMNetTask.register(this);
 
 
-//		new RefreshBoxes().execute();
+		new RefreshBoxes().execute();
 
 		new BroadCastManager(getApplicationContext());
 
