@@ -82,6 +82,8 @@ public class RemoteControlActivity extends Activity implements Constants, Remote
 		if (currentTag != null){
 			Log.i(TAG, "On remet le tabhost sur l onglet "+currentTag);
 			th.setCurrentTabByTag(currentTag);
+		}else{
+			currentTag = th.getCurrentTabTag();
 		}
 		th.setOnTabChangedListener(new OnTabChangeListener(){
 
@@ -99,8 +101,7 @@ public class RemoteControlActivity extends Activity implements Constants, Remote
 
 
 	private void chooseView() {
-		if (fullscreen){
-			
+		if (fullscreen && currentTag != null){
 			if (currentTag.compareTo("mosaic") == 0){
 				setContentView(createMosaicViewForTab(getFilesDir()+PATHMOSAICHORIZONTAL, getFilesDir()+ PATHMOSAICVERTICAL));					
 			}else{
@@ -386,7 +387,8 @@ public class RemoteControlActivity extends Activity implements Constants, Remote
 			}
 			
 			copyRemoteFile("http://freeboxmobile.googlecode.com/files/skins.xml", f.getPath());
-		
+//			copyRemoteFile("http://freeboxmobile.googlecode.com/files/skins-v1.xml", f.getPath());
+//			copyRemoteFile("http://docs.google.com/leaf?id=0B2bYirP_YRbcNzY2MzY2ZWItNmE2OS00N2MxLTlmNzMtYWU5ZWQ1OWU3N2U3&hl=fr", f.getPath());
 		SAXParserFactory fabrique = SAXParserFactory.newInstance();
 			List<Skin> skins = null;
 
@@ -523,7 +525,7 @@ public class RemoteControlActivity extends Activity implements Constants, Remote
 
 
 		spec = th.newTabSpec("remote").setIndicator("Telecommande",
-				res.getDrawable(R.drawable.bouton_pause))
+				res.getDrawable(R.drawable.fm_telecommande))
 				.setContent(new TabContentFactory() {
 
 					@Override
