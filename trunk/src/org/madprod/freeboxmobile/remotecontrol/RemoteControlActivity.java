@@ -12,16 +12,22 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map.Entry;
+import java.util.List;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
 import org.madprod.freeboxmobile.Constants;
 import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
 
 import dalvik.system.DexClassLoader;
 
-import android.app.TabActivity;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -39,6 +45,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabHost.TabContentFactory;
 
 /**
@@ -48,10 +55,14 @@ import android.widget.TabHost.TabContentFactory;
  * 
  */
 
-public class RemoteControlActivity extends TabActivity implements Constants, RemoteControlActivityConstants
+public class RemoteControlActivity extends Activity implements Constants, RemoteControlActivityConstants
 {
 
 	static final CommandManager cm = CommandManager.getCommandManager();
+	private static TabHost th;
+	private static boolean fullscreen;
+	private static String currentTag;
+
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -60,20 +71,50 @@ public class RemoteControlActivity extends TabActivity implements Constants, Rem
 		FBMNetTask.register(this);
 
 
-		new RefreshBoxes().execute();
-		setContentView(R.layout.remotecontrol);
+//		new RefreshBoxes().execute();
 
 		new BroadCastManager(getApplicationContext());
+
+
+
+		Log.e(TAG, "th = "+th);
 		loadUI();
+		if (currentTag != null){
+			Log.i(TAG, "On remet le tabhost sur l onglet "+currentTag);
+			th.setCurrentTabByTag(currentTag);
+		}
+		th.setOnTabChangedListener(new OnTabChangeListener(){
 
-
-//		intent = new Intent().setClass(this, SchedulerActivity.class);
-//		spec = tabHost.newTabSpec("scheduler").setIndicator("Organiseur",
-//		res.getDrawable(R.drawable.bouton_pause))
-//		.setContent(intent);
-//		tabHost.addTab(spec); 
-
+			@Override
+			public void onTabChanged(String tag) {
+				currentTag = tag;
+			}
+			
+		});
+		chooseView();
 	}	
+
+	
+
+
+
+	private void chooseView() {
+		if (fullscreen){
+			
+			if (currentTag.compareTo("mosaic") == 0){
+				setContentView(createMosaicViewForTab(getFilesDir()+PATHMOSAICHORIZONTAL, getFilesDir()+ PATHMOSAICVERTICAL));					
+			}else{
+				setContentView(createRemoteViewForTab(getFilesDir()+PATHREMOTEHORIZONTAL, getFilesDir()+ PATHREMOTEVERTICAL));										
+			}
+		}else{
+			setContentView(th);		
+			if (currentTag != null){
+				th.setCurrentTabByTag(currentTag);
+			}
+		}
+		Log.e(TAG, "view : "+th.getCurrentTabTag());
+	}
+
 
 
 
@@ -86,6 +127,7 @@ public class RemoteControlActivity extends TabActivity implements Constants, Rem
 	}
 
 
+	
 	@Override
 	public void onStop()
 	{
@@ -118,11 +160,31 @@ public class RemoteControlActivity extends TabActivity implements Constants, Rem
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
 		super.onCreateOptionsMenu(menu);
+		menu.add(0, FULLSCREEN, 0, "Mode plein ecran");
 		menu.add(0, SEARCHBOXES, 0, "Rechercher les boitiers");
 		menu.add(0, BOXESMANAGER, 0, "Gestion des boitiers");
 		menu.add(0, LAYOUTMANAGER, 0, "Changer le skin");
 		menu.add(0, LAYOUTDOWNLOAD, 0, "Telecharger les skins par defaut");
 		return true;
+	}
+
+
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		Log.e(TAG, "current Tab = "+th.getCurrentTabTag());
+		if (th.getCurrentTabTag().compareTo("remote") != 0 && th.getCurrentTabTag().compareTo("mosaic") != 0 ){
+			menu.findItem(FULLSCREEN).setEnabled(false);
+			menu.findItem(FULLSCREEN).setTitle("Mode plein ecran");
+		}else{
+			menu.findItem(FULLSCREEN).setEnabled(true);
+
+			if (fullscreen){
+				menu.findItem(FULLSCREEN).setTitle("Quittez mode plein ecran");
+			}else{
+				menu.findItem(FULLSCREEN).setTitle("Mode plein ecran");
+			}
+		}
+		return super.onPrepareOptionsMenu(menu);
 	}
 
 
@@ -143,6 +205,10 @@ public class RemoteControlActivity extends TabActivity implements Constants, Rem
 		case LAYOUTDOWNLOAD:
 			new DownloadLayout().execute();
 			break;
+		case FULLSCREEN:
+			fullscreen = !fullscreen;
+			chooseView();
+			break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -150,10 +216,15 @@ public class RemoteControlActivity extends TabActivity implements Constants, Rem
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == CHOOSELAYOUTREQUESTCODE && resultCode == SAVE){
-			TabHost tabHost = getTabHost();
-			tabHost.invalidate();
-			finish();	
-			Toast.makeText(getApplicationContext(), "Nouveau skin installé", Toast.LENGTH_SHORT).show();
+
+			
+			loadUI();
+			if (currentTag != null){
+				th.setCurrentTabByTag(currentTag);
+			}
+//			TabHost tabHost = getTabHost();
+//			finish();	
+//			Toast.makeText(getApplicationContext(), "Nouveau skin installé", Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -307,71 +378,110 @@ public class RemoteControlActivity extends TabActivity implements Constants, Rem
 		@Override
 		protected Void doInBackground(Void... arg0) {
 
+			File f = null;
+			try {
+				f = File.createTempFile("tmp", "fbm");
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+			
+			copyRemoteFile("http://freeboxmobile.googlecode.com/files/skins.xml", f.getPath());
+		
+		SAXParserFactory fabrique = SAXParserFactory.newInstance();
+			List<Skin> skins = null;
 
-			HashMap<String, String> files = new HashMap<String, String>();
-			files.put("SkinMosaicSlideView.zip", "mosaic");
-			files.put("SkinMosaicGridView.zip", "mosaic");
-			files.put("SkinRemote1.zip", "remote");
-			files.put("SkinRemote2.zip", "remote");
+			try {
 
-			Iterator<Entry<String, String>> it = files.entrySet().iterator();
-			while (it.hasNext()){
-				
-				Entry<String, String> entry = it.next();
-				String pathDest;
-				String repDest; 
-				if (entry.getValue().compareTo("remote") == 0){
-					repDest = Environment.getExternalStorageDirectory().getAbsolutePath()+DIR_FBM+PATHREMOTESDCARD;
-					pathDest = repDest+"/"+entry.getKey();
-				}else{
-					repDest = Environment.getExternalStorageDirectory().getAbsolutePath()+DIR_FBM+PATHMOSAICSDCARD;
-					pathDest = repDest+"/"+entry.getKey();
-				}
-				String urlPath = "http://freeboxmobile.googlecode.com/files/"+entry.getKey();
-				Log.d(TAG, "Fichier src = "+urlPath);
-				Log.d(TAG, "Fichier dst = "+pathDest);
-				try {
-
-					URL url = new URL(urlPath);
-					URLConnection urlConn = url.openConnection(); 
-					urlConn.setDoInput(true); 
-					urlConn.setUseCaches(false);
-					int length = urlConn.getContentLength();
-					if(length == -1){
-						throw new IOException("Fichier vide");
-					}
-					InputStream is = new BufferedInputStream(urlConn.getInputStream());
-					byte[] data = new byte[length];
-					int currentBit = 0;
-					int deplacement = 0;
-					while(deplacement < length){
-						currentBit = is.read(data, deplacement, data.length-deplacement); 
-						if(currentBit == -1)break; 
-						deplacement += currentBit;
-					}
-
-					is.close();
-					if(deplacement != length){
-						throw new IOException("Le fichier n'a pas été lu en entier (seulement "
-								+ deplacement + " sur " + length + ")");
-					}  
-					File fileRepDest = new File(repDest);
-					if (!fileRepDest.exists()) fileRepDest.mkdirs();
-					File fileDest = new File(pathDest);
-					if (!fileDest.exists()) fileDest.createNewFile();
-					FileOutputStream destinationFile = new FileOutputStream(fileDest); 
-					destinationFile.write(data);
-					destinationFile.flush();
-					destinationFile.close();
-
-				} catch (MalformedURLException e) { 
-					e.printStackTrace();
-				} catch (IOException e) { 
-					e.printStackTrace();
-				}   
+				SAXParser parseur = fabrique.newSAXParser();
+				XMLReader xr = parseur.getXMLReader();
+				SkinHandler gestionnaire = new SkinHandler();
+				xr.setContentHandler(gestionnaire);
+				xr.parse(new InputSource(new FileInputStream(f)));
+				skins = gestionnaire.getSkins();
+			} catch (SAXException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (ParserConfigurationException e) {
+				e.printStackTrace();
 			}
 
+			if (skins != null){
+				for (Skin s:skins){
+					Log.e(TAG, "Skins = "+s);
+
+					downloadSkin(s);
+				}
+			}else{
+				Log.e(TAG, "Liste des skins vide");
+			}
+
+			
+			f.delete();
+
 			return null;
+		}
+
+
+		public void downloadSkin(Skin s){
+			String pathDest;
+			String repDest; 
+			if (s.getType().compareTo("remote") == 0){
+				repDest = Environment.getExternalStorageDirectory().getAbsolutePath()+DIR_FBM+PATHREMOTESDCARD;
+			}else{
+				repDest = Environment.getExternalStorageDirectory().getAbsolutePath()+DIR_FBM+PATHMOSAICSDCARD;
+			}
+			pathDest = repDest+"/"+s.getName();
+			String urlPath = s.getPath();
+			Log.d(TAG, "Fichier src = "+urlPath);
+			Log.d(TAG, "Fichier dst = "+pathDest);
+
+			copyRemoteFile(urlPath, pathDest);
+		}
+
+		private void copyRemoteFile(String remoteFile, String localfile){
+			try {
+
+				URL url = new URL(remoteFile);
+				URLConnection urlConn = url.openConnection(); 
+				urlConn.setDoInput(true); 
+				urlConn.setUseCaches(false);
+				int length = urlConn.getContentLength();
+				if(length == -1){
+					throw new IOException("Fichier vide");
+				}
+				InputStream is = new BufferedInputStream(urlConn.getInputStream());
+				byte[] data = new byte[length];
+				int currentBit = 0;
+				int deplacement = 0;
+				while(deplacement < length){
+					currentBit = is.read(data, deplacement, data.length-deplacement); 
+					if(currentBit == -1)break; 
+					deplacement += currentBit;
+				}
+
+				is.close();
+				if(deplacement != length){
+					throw new IOException("Le fichier n'a pas été lu en entier (seulement "
+							+ deplacement + " sur " + length + ")");
+				}  
+				
+				
+				File fileRepDest = new File(localfile.substring(0, localfile.lastIndexOf("/")));
+				
+				if (!fileRepDest.exists()) fileRepDest.mkdirs();
+				File fileDest = new File(localfile);
+				if (!fileDest.exists()) fileDest.createNewFile();
+				FileOutputStream destinationFile = new FileOutputStream(fileDest); 
+				destinationFile.write(data);
+				destinationFile.flush();
+				destinationFile.close();
+			} catch (MalformedURLException e) { 
+				e.printStackTrace();
+			} catch (IOException e) { 
+				e.printStackTrace();
+			}   
+			
 		}
 
 		@Override
@@ -393,8 +503,12 @@ public class RemoteControlActivity extends TabActivity implements Constants, Rem
 	private void loadUI(){
 		Resources res = getResources(); 
 		TabHost.TabSpec spec;  
-		TabHost tabHost = getTabHost();  
-		spec = tabHost.newTabSpec("mosaic").setIndicator("Mosaique",
+		
+		
+		th = (TabHost)LayoutInflater.from(getApplication()).inflate(R.layout.remotecontrol, null);
+		th.setup();
+
+		spec = th.newTabSpec("mosaic").setIndicator("Mosaique",
 				res.getDrawable(R.drawable.bouton_pause))
 				.setContent(new TabContentFactory() {
 
@@ -405,10 +519,10 @@ public class RemoteControlActivity extends TabActivity implements Constants, Rem
 				});
 
 
-		tabHost.addTab(spec); 
+		th.addTab(spec); 
 
 
-		spec = tabHost.newTabSpec("telecommande").setIndicator("Telecommande",
+		spec = th.newTabSpec("remote").setIndicator("Telecommande",
 				res.getDrawable(R.drawable.bouton_pause))
 				.setContent(new TabContentFactory() {
 
@@ -419,15 +533,16 @@ public class RemoteControlActivity extends TabActivity implements Constants, Rem
 				});
 
 
-		tabHost.addTab(spec); 
+		th.addTab(spec); 
 
 	}
 
 	private String afficheAide(){
 		return "Aucun skin n est selectionne pour cette vue\n\n"+
-		 "Pour telecharger les skins par defaut, cliquer sur menu -> Telecharger les layouts par defaut\n"+
-		 "Pour selectionner les skins, cliquer sur menu -> Changer le skin\n"+
-		 "Pour les reglages des boitiers (codes, activations), cliquer sur menu -> Gestion des boitiers\n";
+		"Pour telecharger les skins par defaut, cliquer sur menu -> Telecharger les layouts par defaut\n"+
+		"Pour selectionner les skins, cliquer sur menu -> Changer le skin\n"+
+		"Pour les reglages des boitiers (codes, activations), cliquer sur menu -> Gestion des boitiers\n";
 	}
+	
 
 }

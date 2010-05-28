@@ -3,7 +3,6 @@ package org.madprod.freeboxmobile.remotecontrol;
 import java.io.IOException;   
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketOptions;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
