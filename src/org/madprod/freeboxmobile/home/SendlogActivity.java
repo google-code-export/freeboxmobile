@@ -74,7 +74,7 @@ public class SendlogActivity extends Activity implements HomeConstants
         {
         	public void onClick(View view)
         	{
-        		String description = desc.getText().toString(); 
+        		String description = desc.getText().toString();
         		if ((!description.equals(getString(R.string.sendlog_pbdesc))) && (!description.equals("")))
         		{
 	        		TelephonyManager telephonyManager =(TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);

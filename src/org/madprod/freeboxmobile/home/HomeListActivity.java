@@ -2,6 +2,7 @@ package org.madprod.freeboxmobile.home;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -25,6 +26,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -255,7 +258,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		map.put(M_TITRE, getString(R.string.buttonGuide));
 		map.put(M_DESC, "Consultez le guide TV, programmez des enregistrements");
 		map.put(M_CLASS, GuideMenuActivity.class);
-		modulesList.add(map);    	
+		modulesList.add(map);
     	map = new HashMap<String,Object>();
 		map.put(M_ICON, R.drawable.fm_magnetoscope);
 		map.put(M_TITRE, getString(R.string.buttonPvr));
@@ -271,9 +274,9 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		map = new HashMap<String,Object>();
 		map.put(M_ICON, R.drawable.fm_telecommande);
 		map.put(M_TITRE, getString(R.string.buttonTelecommande));
-		map.put(M_DESC, "Amusez vous avec nos telecommandes");
+		map.put(M_DESC, "Amusez vous avec nos télécommandes");
 		map.put(M_CLASS, RemoteControlActivity.class);
-		modulesList.add(map);    	
+		modulesList.add(map);
 		map = new HashMap<String,Object>();
 		map.put(M_ICON, R.drawable.fm_infos_adsl);
 		map.put(M_TITRE, getString(R.string.buttonLigne));
@@ -284,6 +287,13 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		map.put(M_ICON, R.drawable.fm_assistance);
 		map.put(M_TITRE, getString(R.string.buttonAssistance));
 		map.put(M_DESC, "Accédez au site web de l'assistance Free");
+//		map.put(M_CLASS, AssistanceActivity.class);
+		map.put(M_CLASS, null);
+		modulesList.add(map);
+		map = new HashMap<String,Object>();
+		map.put(M_ICON, R.drawable.fm_webmail);
+		map.put(M_TITRE, getString(R.string.buttonWebmail));
+		map.put(M_DESC, "Si vous avez une adresse email en @free.fr, accèdez au webmail ici\n\nCette fonctionnalité sera bientot disponible");
 //		map.put(M_CLASS, AssistanceActivity.class);
 		map.put(M_CLASS, null);
 		modulesList.add(map);
@@ -352,10 +362,15 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 	        }
 	    	if (moduleName.equals(getString(R.string.buttonAssistance)))
 	    	{
-	    		FBMHttpConnection.connectAssistance();
+//	    		FBMHttpConnection.connectAssistance();
 	            Intent assistanceIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://assistance.free.fr/i/#_home"));
 	            assistanceIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 	            startActivity(assistanceIntent);
+	    	}
+	    	else if (moduleName.equals(getString(R.string.buttonAssistance)))
+	    	{
+	    		//org.geeek.free
+	    		openWebmail();
 	    	}
         }
     	if (moduleClass != null)
@@ -433,6 +448,39 @@ public class HomeListActivity extends ListActivity implements HomeConstants
         }
     }
     
+    private void openWebmail()
+    {
+    	final String PACKAGE_NAME = "org.geeek.free";
+
+        final PackageManager packageManager = getPackageManager();
+        final Intent intent = new Intent("org.geeek.free");
+        List<ResolveInfo> list = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        final boolean isInstalled = list.size() > 0;
+        
+        if (!isInstalled)
+        {
+            new AlertDialog.Builder(this)
+            .setTitle(getString(R.string.app_name))
+            .setIcon(android.R.drawable.ic_dialog_info)
+            .setMessage("Pour pouvoir nous envoyer le log d'erreur, vous devez installer l'application Log Collector (gratuite et open source).")
+            .setPositiveButton("Installer", new DialogInterface.OnClickListener()
+            {
+                public void onClick(DialogInterface dialog, int whichButton)
+                {
+                    Intent marketIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://search?q=pname:" + PACKAGE_NAME));
+                    marketIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(marketIntent); 
+                }
+            })
+            .setNegativeButton(android.R.string.cancel, null)
+            .show();
+        }
+        else
+        {
+//	        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+	        startActivityForResult(intent, 0);
+        }
+    }
     private void shareApp()
     {
     	SpannableString ss = new SpannableString(getResources().getString(R.string.mail_link));
