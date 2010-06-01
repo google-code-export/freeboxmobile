@@ -77,7 +77,12 @@
 					android:layout_height="wrap_content"
 				/>
 
+			<LinearLayout android:id="@+id/LinearLayout01" android:layout_height="wrap_content" android:layout_width="fill_parent" android:gravity="right">
+				<Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/comptes_button_cancel" android:id="@+id/layout_button_cancel"></Button>
+				<Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/layout_button_ok" android:text="@string/button_valider"></Button>
 			</LinearLayout>
+			</LinearLayout>
+			
 		</ScrollView>
 	
 </LinearLayout>

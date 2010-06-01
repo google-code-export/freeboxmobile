@@ -25,7 +25,10 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -98,84 +101,26 @@ public class RemoteControlChooseLayout extends Activity implements Constants, Re
 				spin.setSelection(position);
 			}					
 		}
+		
+		Button cancel = (Button)findViewById(R.id.layout_button_cancel);
+		cancel.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View arg0) {
+				cancel();
+			}
+		});
+
+		
+		Button valider = (Button)findViewById(R.id.layout_button_ok);
+		valider.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View arg0) {
+				save();
+			}
+		});
+
 	}
 
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(0, SAVE, 0, "Sauvegarder");
-		menu.add(0, CANCEL, 0, "Annuler");
-		return super.onCreateOptionsMenu(menu);
-	}
-
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case SAVE:
-
-			Editor editor = preferences.edit();
-			File dirSkins = new File(getFilesDir()+"/skins");
-			if (!dirSkins.exists())	dirSkins.mkdirs();
-
-			File skin;
-
-			Spinner spin = (Spinner)findViewById(R.id.MosaicLayoutHorizontalSpinner);		
-			skin = new File(getFilesDir()+PATHMOSAICHORIZONTAL);
-			if (skin.exists())  deleteFile(skin);
-			if (spin.getSelectedItem() != null){
-				skin.mkdirs();
-				new UnzipFile().execute(Environment.getExternalStorageDirectory()+DIR_FBM+".skins/mosaic/"+spin.getSelectedItem(), skin.getAbsolutePath());
-				editor.putString("mosaicHorizontal", ""+spin.getSelectedItem());
-			}else{
-				editor.remove("mosaicHorizontal");
-			}
-
-
-			spin = (Spinner)findViewById(R.id.MosaicLayoutVerticalSpinner);		
-			skin = new File(getFilesDir()+PATHMOSAICVERTICAL);
-			if (skin.exists())  deleteFile(skin);
-			if (spin.getSelectedItem() != null){
-				skin.mkdirs();
-				new UnzipFile().execute(Environment.getExternalStorageDirectory()+DIR_FBM+".skins/mosaic/"+spin.getSelectedItem(), skin.getAbsolutePath());
-				editor.putString("mosaicVertical", ""+spin.getSelectedItem());
-			}else{
-				editor.remove("mosaicVertical");
-			}
-
-			spin = (Spinner)findViewById(R.id.TelecommandeLayoutHorizontalSpinner);		
-			skin = new File(getFilesDir()+PATHREMOTEHORIZONTAL);
-			if (skin.exists())  deleteFile(skin);
-			if (spin.getSelectedItem() != null){
-				skin.mkdirs();
-				new UnzipFile().execute(Environment.getExternalStorageDirectory()+DIR_FBM+".skins/remote/"+spin.getSelectedItem(), skin.getAbsolutePath());
-				editor.putString("telecHorizontal", ""+spin.getSelectedItem());
-			}else{
-				editor.remove("telecHorizontal");
-			}
-
-			spin = (Spinner)findViewById(R.id.TelecommandeLayoutVerticalSpinner);		
-			skin = new File(getFilesDir()+PATHREMOTEVERTICAL);
-			if (skin.exists())  deleteFile(skin);
-			if (spin.getSelectedItem() != null){
-				skin.mkdirs();
-				new UnzipFile().execute(Environment.getExternalStorageDirectory()+DIR_FBM+".skins/remote/"+spin.getSelectedItem(), skin.getAbsolutePath());
-				editor.putString("telecVertical", ""+spin.getSelectedItem());
-			}else{
-				editor.remove("telecVertical");
-			}
-			editor.commit();
-
-			setResult(SAVE);
-			break;
-		case CANCEL:
-			setResult(CANCEL);
-			break;
-
-		}
-		finish();
-		return super.onOptionsItemSelected(item);
-	}
 
 
 
@@ -205,6 +150,68 @@ public class RemoteControlChooseLayout extends Activity implements Constants, Re
 	}
 
 
+	private void save(){
+		Editor editor = preferences.edit();
+		File dirSkins = new File(getFilesDir()+"/skins");
+		if (!dirSkins.exists())	dirSkins.mkdirs();
+
+		File skin;
+
+		Spinner spin = (Spinner)findViewById(R.id.MosaicLayoutHorizontalSpinner);		
+		skin = new File(getFilesDir()+PATHMOSAICHORIZONTAL);
+		if (skin.exists())  deleteFile(skin);
+		if (spin.getSelectedItem() != null){
+			skin.mkdirs();
+			new UnzipFile().execute(Environment.getExternalStorageDirectory()+DIR_FBM+".skins/mosaic/"+spin.getSelectedItem(), skin.getAbsolutePath());
+			editor.putString("mosaicHorizontal", ""+spin.getSelectedItem());
+		}else{
+			editor.remove("mosaicHorizontal");
+		}
+
+
+		spin = (Spinner)findViewById(R.id.MosaicLayoutVerticalSpinner);		
+		skin = new File(getFilesDir()+PATHMOSAICVERTICAL);
+		if (skin.exists())  deleteFile(skin);
+		if (spin.getSelectedItem() != null){
+			skin.mkdirs();
+			new UnzipFile().execute(Environment.getExternalStorageDirectory()+DIR_FBM+".skins/mosaic/"+spin.getSelectedItem(), skin.getAbsolutePath());
+			editor.putString("mosaicVertical", ""+spin.getSelectedItem());
+		}else{
+			editor.remove("mosaicVertical");
+		}
+
+		spin = (Spinner)findViewById(R.id.TelecommandeLayoutHorizontalSpinner);		
+		skin = new File(getFilesDir()+PATHREMOTEHORIZONTAL);
+		if (skin.exists())  deleteFile(skin);
+		if (spin.getSelectedItem() != null){
+			skin.mkdirs();
+			new UnzipFile().execute(Environment.getExternalStorageDirectory()+DIR_FBM+".skins/remote/"+spin.getSelectedItem(), skin.getAbsolutePath());
+			editor.putString("telecHorizontal", ""+spin.getSelectedItem());
+		}else{
+			editor.remove("telecHorizontal");
+		}
+
+		spin = (Spinner)findViewById(R.id.TelecommandeLayoutVerticalSpinner);		
+		skin = new File(getFilesDir()+PATHREMOTEVERTICAL);
+		if (skin.exists())  deleteFile(skin);
+		if (spin.getSelectedItem() != null){
+			skin.mkdirs();
+			new UnzipFile().execute(Environment.getExternalStorageDirectory()+DIR_FBM+".skins/remote/"+spin.getSelectedItem(), skin.getAbsolutePath());
+			editor.putString("telecVertical", ""+spin.getSelectedItem());
+		}else{
+			editor.remove("telecVertical");
+		}
+		editor.commit();
+
+		setResult(SAVE);
+		finish();
+	}
+
+	private void cancel(){		
+		setResult(CANCEL);
+		finish();
+	}
+	
 	public String[] listFiles(String path){
 		File rep = new File(path);
 		Log.e(TAG, "path = "+path);

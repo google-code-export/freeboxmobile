@@ -3,10 +3,9 @@ package org.madprod.freeboxmobile.remotecontrol;
 public interface RemoteControlActivityConstants {
 
 	public static int SEARCHBOXES = 100;
-	public static int BOXESMANAGER = 101;
+	public static int FULLSCREEN = 101;
 	public static int LAYOUTMANAGER = 102;
 	public static int LAYOUTDOWNLOAD = 103;
-	public static int FULLSCREEN = 104;
 	public static int CHOOSELAYOUTREQUESTCODE = 1000;
 	public static int SAVE = 2000;
 	public static int CANCEL = 2001;
@@ -20,7 +19,8 @@ public interface RemoteControlActivityConstants {
 	public static String PATHREMOTESDCARD = "/.skins/remote";
 
 
-	
+	static final String KEY_SPLASH_REMOTE = "splashscreen_remote";
+
 	
 	public static String SKINFILE = "/sdcard/freeboxmobile/skins.xml";
 }

@@ -10,6 +10,7 @@ import java.util.HashMap;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.madprod.freeboxmobile.Constants;
 
 import android.app.Activity;
 import android.content.Context;
@@ -18,7 +19,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 @SuppressWarnings("serial")
-public class CommandManager extends Activity{
+public class CommandManager extends Activity implements Constants{
 	private static CommandManager cm = new CommandManager();
 	private final DefaultHttpClient httpClient = new DefaultHttpClient();
 	static final String TAG	= "FBM";
@@ -102,17 +103,28 @@ public class CommandManager extends Activity{
 
 	public void refreshCodes(Context c){
 		Log.d(TAG, "Rafraichissement des codes");
-		preferences = PreferenceManager.getDefaultSharedPreferences(c);
 		
-		for (String adresse : adresses.keySet()){
-			Log.d(TAG, "Adresse "+adresse);
-			if (preferences.getBoolean(adresse+"_state", false)){
-				codes.put(adresse, preferences.getString(adresse+"_code", null));
-			}else{
-				codes.put(adresse, null);				
-			}
-			Log.d(TAG, "Result : "+codes.get(adresse));
+		preferences = c.getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
+//		.getDefaultSharedPreferences(c);
+
+		
+		
+		if (preferences.getBoolean("boitier1_state", false)){
+			codes.put("hd1.freebox.fr", preferences.getString("boitier1_code", null));
+		}else{
+			codes.put("hd1.freebox.fr", null);				
 		}
+		Log.d(TAG, "Result : "+codes.get("hd1.freebox.fr"));
+
+		if (preferences.getBoolean("boitier2_state", false)){
+			codes.put("hd2.freebox.fr", preferences.getString("boitier2_code", null));
+		}else{
+			codes.put("hd2.freebox.fr", null);				
+		}
+		Log.d(TAG, "Result : "+codes.get("hd2.freebox.fr"));
+		
+		
+		
 	}
 
 	public static HashMap<String, Boolean> getAdresses(){

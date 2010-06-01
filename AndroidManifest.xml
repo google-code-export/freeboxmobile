@@ -35,7 +35,6 @@
 		<activity android:theme="@style/Theme.FreeboxMobile.TitleBar" android:name=".guide.GuideChoixChainesActivity"></activity>
 		<activity android:theme="@style/Theme.FreeboxMobile.NoTitleBar" android:name=".guide.GuideDetailsActivity"></activity>
 		<activity android:theme="@style/Theme.FreeboxMobile.TitleBar" android:name=".remotecontrol.RemoteControlActivity"></activity>
-		<activity android:theme="@style/Theme.FreeboxMobile.NoTitleBar" android:name=".remotecontrol.RemoteControlPreferences"></activity>
 		<activity android:theme="@style/Theme.FreeboxMobile.TitleBar" android:name=".remotecontrol.RemoteControlChooseLayout"></activity>
 
 		<service android:name=".mvv.MevoSync"></service>
@@ -68,4 +67,8 @@
 		android:minSdkVersion="3"
 		android:targetSdkVersion="6">
 	</uses-sdk>
+<uses-permission android:name="android.permission.ACCESS_WIFI_STATE"></uses-permission>
+<uses-permission android:name="android.permission.CHANGE_WIFI_STATE"></uses-permission>
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
+<uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"></uses-permission>
 </manifest>
