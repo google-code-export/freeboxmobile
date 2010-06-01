@@ -18,9 +18,11 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.madprod.freeboxmobile.Config;
 import org.madprod.freeboxmobile.Constants;
 import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
+import org.madprod.freeboxmobile.Utils;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -28,13 +30,21 @@ import org.xml.sax.XMLReader;
 import dalvik.system.DexClassLoader;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.net.ConnectivityManager;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -71,32 +81,13 @@ public class RemoteControlActivity extends Activity implements Constants, Remote
 		FBMNetTask.register(this);
 
 
-		new RefreshBoxes().execute();
-
 		new BroadCastManager(getApplicationContext());
 
 
 
-		Log.e(TAG, "th = "+th);
-		loadUI();
-		if (currentTag != null){
-			Log.i(TAG, "On remet le tabhost sur l onglet "+currentTag);
-			th.setCurrentTabByTag(currentTag);
-		}else{
-			currentTag = th.getCurrentTabTag();
-		}
-		th.setOnTabChangedListener(new OnTabChangeListener(){
-
-			@Override
-			public void onTabChanged(String tag) {
-				currentTag = tag;
-			}
-			
-		});
-		chooseView();
 	}	
 
-	
+
 
 
 
@@ -123,12 +114,109 @@ public class RemoteControlActivity extends Activity implements Constants, Remote
 	@Override
 	public void onStart()
 	{
+		boolean confOk = false;
 		super.onStart();
 		Log.i(TAG,"RemoteControlActivity Start");
+		SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
+
+
+
+
+		if (!isWifiConnected() || getNbCodes()==0){
+
+			AlertDialog d = new AlertDialog.Builder(this).create();
+			d.setTitle(getString(R.string.app_name)+" - Telecommande");
+			d.setIcon(R.drawable.fm_telecommande);
+			d.setMessage(
+					"Avant d'utiliser la télécommande, vous devez paramètrer les éléments suivants :\n\n"+
+					((!isWifiConnected())?"- Connectez vous en wifi à votre Freebox\n":"")+
+					((getNbCodes() == 0)?"- Paramètrer le(s) code(s) du(des) boitier(s)\n":"")+
+					"\nQue souhaitez vous faire ?"+
+					"\n\n"
+			);
+
+
+			if (!isWifiConnected()){
+				d.setButton(DialogInterface.BUTTON_POSITIVE, "Configurer Wifi", new DialogInterface.OnClickListener()
+				{
+					public void onClick(DialogInterface dialog, int which)
+					{
+						startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+						dialog.dismiss();
+					}
+				}
+				);
+			}
+			if (getNbCodes() == 0){
+				d.setButton(DialogInterface.BUTTON_NEUTRAL, "Configurer Télécommande", new DialogInterface.OnClickListener()
+				{
+					public void onClick(DialogInterface dialog, int which)
+					{
+						dialog.dismiss();
+						startActivity(new Intent(getApplicationContext(), Config.class));
+					}
+				}
+				);
+			}
+			d.setButton(DialogInterface.BUTTON_NEGATIVE, "Retour à l'accueil", new DialogInterface.OnClickListener()
+			{
+				public void onClick(DialogInterface dialog, int which)
+				{
+					dialog.dismiss();
+					finish();
+				}
+			}
+			);
+			d.setCancelable(false);
+			d.show();
+
+		}else{
+			confOk = true;
+		}
+
+
+
+		if (!mgr.getString(KEY_SPLASH_REMOTE, "0").equals(Utils.getFBMVersion(this)))
+		{
+			Editor editor = mgr.edit();
+			editor.putString(KEY_SPLASH_REMOTE, Utils.getFBMVersion(this));
+			editor.commit();
+			displayAboutRemote();
+			new DownloadLayout().execute();
+		}
+		
+		
+		if (confOk)
+		{
+			new RefreshBoxes().execute();
+			Log.e(TAG, "th = "+th);
+			loadUI();
+			if (currentTag != null){
+				Log.i(TAG, "On remet le tabhost sur l onglet "+currentTag);
+				th.setCurrentTabByTag(currentTag);
+			}else{
+				currentTag = th.getCurrentTabTag();
+			}
+			th.setOnTabChangedListener(new OnTabChangeListener(){
+
+				@Override
+				public void onTabChanged(String tag) {
+					currentTag = tag;
+				}
+
+			});
+			chooseView();
+		}		
+
 	}
 
 
-	
+
+
+
+
+
+
 	@Override
 	public void onStop()
 	{
@@ -163,7 +251,6 @@ public class RemoteControlActivity extends Activity implements Constants, Remote
 		super.onCreateOptionsMenu(menu);
 		menu.add(0, FULLSCREEN, 0, "Mode plein ecran");
 		menu.add(0, SEARCHBOXES, 0, "Rechercher les boitiers");
-		menu.add(0, BOXESMANAGER, 0, "Gestion des boitiers");
 		menu.add(0, LAYOUTMANAGER, 0, "Changer le skin");
 		menu.add(0, LAYOUTDOWNLOAD, 0, "Telecharger les skins par defaut");
 		return true;
@@ -197,9 +284,6 @@ public class RemoteControlActivity extends Activity implements Constants, Remote
 		case SEARCHBOXES:
 			new RefreshBoxes().execute();
 			break;
-		case BOXESMANAGER:
-			startActivity(new Intent(this, RemoteControlPreferences.class));
-			break;
 		case LAYOUTMANAGER:
 			startActivityForResult(new Intent(this, RemoteControlChooseLayout.class), CHOOSELAYOUTREQUESTCODE);
 			break;
@@ -218,14 +302,11 @@ public class RemoteControlActivity extends Activity implements Constants, Remote
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == CHOOSELAYOUTREQUESTCODE && resultCode == SAVE){
 
-			
+
 			loadUI();
 			if (currentTag != null){
 				th.setCurrentTabByTag(currentTag);
 			}
-//			TabHost tabHost = getTabHost();
-//			finish();	
-//			Toast.makeText(getApplicationContext(), "Nouveau skin installé", Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -385,11 +466,9 @@ public class RemoteControlActivity extends Activity implements Constants, Remote
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
-			
+
 			copyRemoteFile("http://freeboxmobile.googlecode.com/files/skins.xml", f.getPath());
-//			copyRemoteFile("http://freeboxmobile.googlecode.com/files/skins-v1.xml", f.getPath());
-//			copyRemoteFile("http://docs.google.com/leaf?id=0B2bYirP_YRbcNzY2MzY2ZWItNmE2OS00N2MxLTlmNzMtYWU5ZWQ1OWU3N2U3&hl=fr", f.getPath());
-		SAXParserFactory fabrique = SAXParserFactory.newInstance();
+			SAXParserFactory fabrique = SAXParserFactory.newInstance();
 			List<Skin> skins = null;
 
 			try {
@@ -418,7 +497,7 @@ public class RemoteControlActivity extends Activity implements Constants, Remote
 				Log.e(TAG, "Liste des skins vide");
 			}
 
-			
+
 			f.delete();
 
 			return null;
@@ -467,10 +546,10 @@ public class RemoteControlActivity extends Activity implements Constants, Remote
 					throw new IOException("Le fichier n'a pas été lu en entier (seulement "
 							+ deplacement + " sur " + length + ")");
 				}  
-				
-				
+
+
 				File fileRepDest = new File(localfile.substring(0, localfile.lastIndexOf("/")));
-				
+
 				if (!fileRepDest.exists()) fileRepDest.mkdirs();
 				File fileDest = new File(localfile);
 				if (!fileDest.exists()) fileDest.createNewFile();
@@ -483,7 +562,7 @@ public class RemoteControlActivity extends Activity implements Constants, Remote
 			} catch (IOException e) { 
 				e.printStackTrace();
 			}   
-			
+
 		}
 
 		@Override
@@ -505,11 +584,19 @@ public class RemoteControlActivity extends Activity implements Constants, Remote
 	private void loadUI(){
 		Resources res = getResources(); 
 		TabHost.TabSpec spec;  
-		
-		
+
+
 		th = (TabHost)LayoutInflater.from(getApplication()).inflate(R.layout.remotecontrol, null);
+		
+		if (th.getCurrentTabTag() != null){
+			th.clearAllTabs();
+		}
+		
 		th.setup();
 
+		
+		
+		
 		spec = th.newTabSpec("mosaic").setIndicator("Mosaique",
 				res.getDrawable(R.drawable.bouton_pause))
 				.setContent(new TabContentFactory() {
@@ -545,6 +632,63 @@ public class RemoteControlActivity extends Activity implements Constants, Remote
 		"Pour selectionner les skins, cliquer sur menu -> Changer le skin\n"+
 		"Pour les reglages des boitiers (codes, activations), cliquer sur menu -> Gestion des boitiers\n";
 	}
-	
+
+
+
+	private void displayAboutRemote()
+	{	
+		AlertDialog d = new AlertDialog.Builder(this).create();
+		d.setTitle(getString(R.string.app_name)+" - Telecommande");
+		d.setIcon(R.drawable.fm_telecommande);
+		d.setMessage(
+				"La telecommande est en version beta.\n\n"+
+				"Vous pouvez personnaliser la télécommande comme bon vous semble grâce à l'utilisation de skins."+
+				"\n\n"+
+				"Pour plus d'infos sur les skins : http://code.google.com/p/freeboxmobile/ (Rubrique Wiki)"+
+				"\n\n"+
+				"Enjoy :)"
+		);
+		d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
+		{
+			public void onClick(DialogInterface dialog, int which)
+			{
+				dialog.dismiss();
+			}
+		}
+		);
+		d.show();
+
+	}
+
+	private boolean isWifiConnected(){
+		WifiManager wifi = (WifiManager)getSystemService(Context.WIFI_SERVICE);
+		if (wifi.isWifiEnabled()){
+			WifiInfo infos = wifi.getConnectionInfo();
+			return (infos.getSSID()==null)?false:true;
+		}
+
+		return false;
+	}
+
+
+	private int getNbCodes() {
+
+		String boitier1_code = getApplicationContext().getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(BOITIER1_CODE, null);
+		Log.e(TAG, "boitier1_code = "+boitier1_code);
+		Boolean boitier1_state = getApplicationContext().getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getBoolean(BOITIER1_STATE, false);
+		Log.e(TAG, "boitier1_state = "+boitier1_state);
+		String boitier2_code = getApplicationContext().getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(BOITIER2_CODE, null);
+		Log.e(TAG, "boitier2_code = "+boitier2_code);
+		Boolean boitier2_state = getApplicationContext().getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getBoolean(BOITIER2_STATE, false);
+		Log.e(TAG, "boitier2_state = "+boitier2_state);
+		int nb = 0;
+		if (boitier1_state && boitier1_code != null)
+			nb++;
+		if (boitier2_state && boitier2_code != null)
+			nb++;
+
+		return nb;
+	}
+
 
 }

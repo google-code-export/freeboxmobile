@@ -31,8 +31,13 @@ public interface Constants
     static final String KEY_MEVO_PREFS_FREQ	= "mevo_freq";
     static final String KEY_INFOADSL_PREFS_FREQ	= "infoadsl_freq";
     static final String KEY_LAST_DSLAM_CHECK = "last_dslam_check";
+    static final String BOITIER1_STATE = "boitier1_state";
+    static final String BOITIER1_CODE = "boitier1_code";
+    static final String BOITIER2_STATE = "boitier2_state";
+    static final String BOITIER2_CODE = "boitier2_code";
 
-	static final String TAG		= "FBM";
+    
+    static final String TAG		= "FBM";
 	static final String DIR_FBM			= "/freeboxmobile/";
     static final String OLDDIR_CHAINES = "chaines/";
     static final String DIR_CHAINES = ".chaines/";

@@ -1,5 +1,96 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" android:summary="Configuration" android:title="Configuration">
-	<PreferenceCategory android:summary="Modules" android:title="Modules" android:order="1"></PreferenceCategory>
-	<PreferenceScreen android:title="@string/buttonMevo" android:summary="Configuration de la messagerie vocale" android:order="2"><ListPreference android:entries="@array/entries_list_pref_pollinterval" android:entryValues="@array/entryvalue_list_pref_pollinterval" android:title="Fréquence de vérification" android:order="4" android:shouldDisableView="true" android:enabled="true" android:key="mevo_freq" android:summary="Fréquence de vérification de nouveaux messages" android:defaultValue="3600000"></ListPreference></PreferenceScreen>
-	<PreferenceScreen android:summary="Configuration du module Info Adsl" android:title="@string/buttonLigne" android:order="3"><ListPreference android:entries="@array/entries_list_pref_pollinterval" android:entryValues="@array/entryvalue_list_pref_pollinterval" android:title="Fréquence de vérification" android:order="4" android:shouldDisableView="true" android:enabled="true" android:key="infoadsl_freq" android:summary="Fréquence de vérification d'un éventuel problème réseau" android:defaultValue="1800000"></ListPreference></PreferenceScreen>
+	<PreferenceCategory 
+		android:summary="Modules" 
+		android:title="Modules" 
+		android:order="1">
+	</PreferenceCategory>
+	
+	<PreferenceScreen 
+		android:title="@string/buttonMevo" 
+		android:summary="Configuration de la messagerie vocale" 
+		android:order="2"
+	>
+		<ListPreference 
+			android:entries="@array/entries_list_pref_pollinterval" 
+			android:entryValues="@array/entryvalue_list_pref_pollinterval" 
+			android:title="Fréquence de vérification" 
+			android:order="4" 
+			android:shouldDisableView="true" 
+			android:enabled="true" 
+			android:key="mevo_freq" 
+			android:summary="Fréquence de vérification de nouveaux messages" 
+			android:defaultValue="3600000"
+		>
+		</ListPreference>
+	</PreferenceScreen>
+	
+	<PreferenceScreen 
+		android:summary="Configuration du module Info Adsl" 
+		android:title="@string/buttonLigne" 
+		android:order="3"
+	>
+		<ListPreference 
+			android:entries="@array/entries_list_pref_pollinterval" 
+			android:entryValues="@array/entryvalue_list_pref_pollinterval" 
+			android:title="Fréquence de vérification" 
+			android:order="4" 
+			android:shouldDisableView="true" 
+			android:enabled="true" 
+			android:key="infoadsl_freq" 
+			android:summary="Fréquence de vérification d'un éventuel problème réseau" 
+			android:defaultValue="1800000"
+		>
+		</ListPreference>
+	</PreferenceScreen>
+	
+	<PreferenceScreen 
+		android:summary="Configuration des codes de la télécommande" 
+		android:title="@string/buttonTelecommande" 
+		android:order="4"
+	>
+		<PreferenceCategory
+			android:title="Boitier 1 : hd1.freebox.fr"
+		>
+			<CheckBoxPreference
+				android:title="Activer (si présent)"
+				android:defaultValue="false"
+				android:shouldDisableView="true" 
+				android:enabled="true" 
+				android:key="boitier1_state"
+			/>
+			<EditTextPreference
+				android:title="Code"
+				android:defaultValue="0000"
+				android:shouldDisableView="true" 
+				android:enabled="true" 
+				android:key="boitier1_code"
+				android:digits="0123456789"
+				android:inputType="phone"/>
+		
+		</PreferenceCategory>
+
+		<PreferenceCategory
+			android:title="Boitier 2 : hd2.freebox.fr"
+		>
+			<CheckBoxPreference
+				android:title="Activer (si présent)"
+				android:defaultValue="false"
+				android:shouldDisableView="true" 
+				android:enabled="true" 
+				android:key="boitier2_state"
+			/>
+			<EditTextPreference
+				android:title="Code"
+				android:defaultValue="0000"
+				android:shouldDisableView="true" 
+				android:enabled="true" 
+				android:key="boitier2_code"				
+				android:inputType="phone"
+				android:digits="0123456789"
+			/>
+		
+		</PreferenceCategory>
+
+
+	</PreferenceScreen>
 </PreferenceScreen>

@@ -11,6 +11,7 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
 import android.util.Log;
+import android.widget.Toast;
 
 /**
 *
@@ -28,19 +29,22 @@ public class Config extends PreferenceActivity implements OnSharedPreferenceChan
     {
         super.onCreate(savedInstanceState);
 
-        getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
         addPreferencesFromResource(R.xml.config_prefs);
+
+        getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
 
         FBMHttpConnection.initVars(this, null);
         // Pas beau sur les prefs suite bug : http://code.google.com/p/android/issues/detail?id=922
         // TODO : try workaround évoqué dans le rapport de bug
         //setTheme(android.R.style.Theme_Light);
-    	if (myAlertDialog != null)
+
+        if (myAlertDialog != null)
     	{
     		myAlertDialog.show();
     	}
     }
 
+    
     @Override
     protected void onDestroy()
     {
@@ -52,6 +56,7 @@ public class Config extends PreferenceActivity implements OnSharedPreferenceChan
     	super.onDestroy();
     }
 
+    
     private SharedPreferences getSharedPreferences()
     {
         return super.getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
@@ -68,11 +73,15 @@ public class Config extends PreferenceActivity implements OnSharedPreferenceChan
     {
     	updateLibelle(key);
     }
+    
 
     private void updateLibelle(String key)
     {
     	String summary = null;
-    	String value = notEmpty(getSharedPreferences().getString(key, null));
+    	Object value = getSharedPreferences().getAll().get(key);
+    	if (value != null && value instanceof String)
+    		value = notEmpty(getSharedPreferences().getString(key, null));
+    	
     	if (KEY_USER.equals(key))
     	{
     		summary = "Actuellement : "+(value==null?"Non renseigné":value);
@@ -81,18 +90,34 @@ public class Config extends PreferenceActivity implements OnSharedPreferenceChan
 		{
 			summary = "Acuellement : "+(value==null?"Non renseigné":"Renseigné");
 		}
+    	else if (BOITIER1_CODE.equals(key))
+		{
+			summary = "Acuellement : "+(value==null?"Non renseigné":"Renseigné");
+		}
+    	else if (BOITIER1_STATE.equals(key))
+		{
+			summary = "Acuellement : "+(value==null?"Non renseigné":"Renseigné");
+		}
+    	else if (BOITIER2_CODE.equals(key))
+		{
+			summary = "Acuellement : "+(value==null?"Non renseigné":"Renseigné");
+		}
+    	else if (BOITIER2_STATE.equals(key))
+		{
+			summary = "Acuellement : "+(value==null?"Non renseigné":"Renseigné");
+		}
     	else if (KEY_MEVO_PREFS_FREQ.equals(key))
 		{
     		if (value != null)
     		{
-    			MevoSync.changeTimer(Integer.parseInt(value), this);
+    			MevoSync.changeTimer(Integer.parseInt((String)value), this);
     		}
 		}
     	else if (KEY_INFOADSL_PREFS_FREQ.equals(key))
 		{
     		if (value != null)
     		{
-    			InfoAdslCheck.changeTimer(Integer.parseInt(value), this);
+    			InfoAdslCheck.changeTimer(Integer.parseInt((String)value), this);
     		}
 		}
 
@@ -118,4 +143,7 @@ public class Config extends PreferenceActivity implements OnSharedPreferenceChan
         }
         return s;
     }
+
+
+
 }
