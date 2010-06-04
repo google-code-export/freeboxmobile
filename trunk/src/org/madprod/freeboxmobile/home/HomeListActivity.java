@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -22,10 +23,13 @@ import org.madprod.freeboxmobile.remotecontrol.RemoteControlActivity;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
@@ -367,7 +371,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 	            assistanceIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 	            startActivity(assistanceIntent);
 	    	}
-	    	else if (moduleName.equals(getString(R.string.buttonAssistance)))
+	    	else if (moduleName.equals(getString(R.string.buttonWebmail)))
 	    	{
 	    		//org.geeek.free
 	    		openWebmail();
@@ -450,37 +454,48 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     
     private void openWebmail()
     {
-    	final String PACKAGE_NAME = "org.geeek.free";
+		final String packageName = "org.geeek.free";
+		final String className = "org.geeek.free.activity.WebmailActivity";
 
-        final PackageManager packageManager = getPackageManager();
-        final Intent intent = new Intent("org.geeek.free");
-        List<ResolveInfo> list = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-        final boolean isInstalled = list.size() > 0;
-        
-        if (!isInstalled)
-        {
-            new AlertDialog.Builder(this)
-            .setTitle(getString(R.string.app_name))
-            .setIcon(android.R.drawable.ic_dialog_info)
-            .setMessage("Pour pouvoir nous envoyer le log d'erreur, vous devez installer l'application Log Collector (gratuite et open source).")
-            .setPositiveButton("Installer", new DialogInterface.OnClickListener()
-            {
-                public void onClick(DialogInterface dialog, int whichButton)
-                {
-                    Intent marketIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://search?q=pname:" + PACKAGE_NAME));
-                    marketIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(marketIntent); 
-                }
-            })
-            .setNegativeButton(android.R.string.cancel, null)
-            .show();
-        }
-        else
-        {
-//	        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-	        startActivityForResult(intent, 0);
-        }
+		Intent i = new Intent(Intent.ACTION_MAIN);
+		i.setClassName(packageName, className);
+		
+		try
+		{
+			startActivity(i);
+		}
+		catch (ActivityNotFoundException e)
+		{
+	    	AlertDialog d = new AlertDialog.Builder(this).create();
+			d.setTitle(getString(R.string.app_name));
+			d.setIcon(R.drawable.icon_fbm_reverse);
+	    	d.setMessage(
+				"Pour utiliser la fonctionnalité Webmail, vous devez installer l'application 'Webmail Free.fr'.\n\n"+
+				"Cliquez sur 'Continuer' pour l'installer ou sur 'Plus tard' pour continuer à utiliser Freebox Mobile "+
+				"sans 'Webmail'.\n"
+			);
+			d.setButton(DialogInterface.BUTTON_POSITIVE, "Continuer", new DialogInterface.OnClickListener()
+				{
+					public void onClick(DialogInterface dialog, int which)
+					{
+						dialog.dismiss();
+			            Intent marketIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + packageName));
+			            marketIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			            startActivity(marketIntent); 
+					}
+				});
+			d.setButton(DialogInterface.BUTTON_NEGATIVE, "Plus tard", new DialogInterface.OnClickListener()
+			{
+				public void onClick(DialogInterface dialog, int which)
+				{
+					dialog.dismiss();
+				}
+			});
+			d.show();
+
+		}		
     }
+    
     private void shareApp()
     {
     	SpannableString ss = new SpannableString(getResources().getString(R.string.mail_link));
@@ -511,7 +526,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 				public void onClick(DialogInterface dialog, int which)
 				{
 					dialog.dismiss();
-					startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://market.android.com/details?id=org.madprod.freeboxmobile")));
+					startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=org.madprod.freeboxmobile")));
 				}
 			});
 		d.setButton(DialogInterface.BUTTON_NEGATIVE, "Plus tard", new DialogInterface.OnClickListener()
