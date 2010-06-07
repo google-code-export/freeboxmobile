@@ -455,11 +455,24 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     private void openWebmail()
     {
 		final String packageName = "org.geeek.free";
-		final String className = "org.geeek.free.activity.WebmailActivity";
+//		final String className = "org.geeek.free.activity.WebmailActivity";
+		final String className = "org.geeek.free.activity.SplashScreenActivity";
 
 		Intent i = new Intent(Intent.ACTION_MAIN);
 		i.setClassName(packageName, className);
-		
+
+/*
+		final Intent intent = new Intent(Intent.ACTION_MAIN, null);
+		intent.addCategory(Intent.CATEGORY_LAUNCHER);
+
+		final ComponentName cn = new ComponentName(packageName,
+		className);
+
+		intent.setComponent(cn);
+		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		startActivity( intent);
+		*/
+		// Works 
 		try
 		{
 			startActivity(i);
@@ -492,8 +505,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 				}
 			});
 			d.show();
-
-		}		
+		}
     }
     
     private void shareApp()
