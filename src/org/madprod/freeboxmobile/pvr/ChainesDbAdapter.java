@@ -272,6 +272,11 @@ public class ChainesDbAdapter implements GuideConstants
 		       null, null, null, null, KEY_FAVORIS_ID);    	
 	}
     
+	public long getNbFavoris()
+	{
+		return mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE_FAVORIS).simpleQueryForLong();
+	}
+
     /*
      * METHODES POUR L'HISTORIQUE DU GUIDE
      * Histoguide permet de savoir si on a déjà chargé les programmes pour 

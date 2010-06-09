@@ -10,6 +10,7 @@ import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.Utils;
 import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
+import org.madprod.freeboxmobile.pvr.PvrNetwork;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -18,7 +19,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -69,10 +69,8 @@ public class GuideMenuActivity extends Activity implements GuideConstants
 
 		SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 
-		// TODO : Remove that, useless
-    	if (mDbHelper.getNbChaines() == 0)
+    	if (mDbHelper.getNbFavoris() == 0)
     	{
-    		// TODO : Change GuideMenuActivityNetwork (it must use PvrNetwork)
     		new GuideMenuActivityNetwork().execute((Void[])null);    		
     	}
 
@@ -284,39 +282,38 @@ public class GuideMenuActivity extends Activity implements GuideConstants
 			);
 		d.show();
     }
-	
-	// TODO : Change that, must use PvrNetwork to get list
-    private class GuideMenuActivityNetwork extends AsyncTask<Void, Integer, Integer>
+
+    private class GuideMenuActivityNetwork extends FBMNetTask //AsyncTask<Void, Integer, Integer>
     {
         protected void onPreExecute()
         {
+    		iProgressShow("Mon compte Freebox", "Veuillez patienter,\n\nChargement / rafraichissement des données en cours...", R.drawable.icon_fbm_reverse);
         }
 
         protected Integer doInBackground(Void... arg0)
         {
-        	return new GuideNetwork(GuideMenuActivity.this, null, true, true, true, false).getData();
+        	new GuideNetwork(GuideMenuActivity.this, null, true, false, true, false).getData(); // To get chaines logos
+        	// TODO : handle return type
+        	new PvrNetwork(false, false).getData(); // to get favoris list
+        	return 1;
         }
 
         protected void onPostExecute(Integer result)
         {
+    		setProgressBarIndeterminateVisibility(false);
         	if (result != DATA_NOT_DOWNLOADED)
         	{
         		getFavoris();
         	}
+        	dismissAll();
         }
 
         /**
          * GuideactivityNetwork
-         * @param d : datetime début
-         * @param chaine : récupérer liste des chaines (+ logos) ?
-         * @param prog : récupérer liste des programmes ?
-         * @param force : forcer la récupération des programmes (ne pas tenir compte du cache) ?
-         * @param refreshactivity : pour rafraichir toute l'activité après un onActivityResult du choix des favoris
          */
         public GuideMenuActivityNetwork()
         {
         	Log.d(TAG,"GUIDEMENUACTIVITYNETWORK START");
         }
     }
-
 }
