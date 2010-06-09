@@ -460,7 +460,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 
 		Intent i = new Intent(Intent.ACTION_MAIN);
 		i.setClassName(packageName, className);
-
+		i.putExtra("nosplashscreen", true);
 /*
 		final Intent intent = new Intent(Intent.ACTION_MAIN, null);
 		intent.addCategory(Intent.CATEGORY_LAUNCHER);

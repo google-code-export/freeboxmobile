@@ -164,7 +164,7 @@ public class GuideChaineActivity extends ListActivity implements GuideConstants
         			selectedDate = GuideUtils.calDates.get(datesSpinner.getSelectedItemPosition());
     				setFinDateHeure();
     				// TODO : corriger ligne suivante
-//        			new GuideChaineActivityNetwork(selectedDate+" 00:00:00", false, true, false, false).execute((Void[])null);
+					new GuideChaineActivityNetwork(selectedDate+" 00:00:00", false, true, false, true).execute((Void[])null);
         		}
         	}
         );
@@ -203,7 +203,7 @@ public class GuideChaineActivity extends ListActivity implements GuideConstants
 	    	// TODO : corriger ligne suivante
 //    		new GuideChaineActivityNetwork(dt+" 00:00:00", false, true, false, true).execute((Void[])null);
     	}
-    	new GuideChaineActivityNetwork(dt, false, true, false, true, 0).execute((Void[])null);
+   		new GuideChaineActivityNetwork(dt, false, true, false, true).execute((Void[])null);
     	
     	setTitle(getString(R.string.app_name)+" Guide TV - "+FBMHttpConnection.getTitle());
 		if (!mgr.getString(KEY_SPLASH_GUIDE, "0").equals(Utils.getFBMVersion(this)))
@@ -765,7 +765,6 @@ public class GuideChaineActivity extends ListActivity implements GuideConstants
     private class GuideChaineActivityNetwork extends AsyncTask<Void, Integer, Integer>
     {
     	private String debdatetime;
-    	private int chainenb;
     	private boolean getChaines;
     	private boolean getProg;
     	private boolean forceRefresh;
@@ -806,14 +805,13 @@ public class GuideChaineActivity extends ListActivity implements GuideConstants
          * @param force : forcer la récupération des programmes (ne pas tenir compte du cache) ?
          * @param refreshactivity : pour rafraichir toute l'activité après un onActivityResult du choix des favoris
          */
-        public GuideChaineActivityNetwork(String d, boolean chaine, boolean prog, boolean force, boolean refreshactivity, int chaine_nb)
+        public GuideChaineActivityNetwork(String d, boolean chaine, boolean prog, boolean force, boolean refreshactivity)
         {
        		debdatetime = d;
         	getChaines = chaine;
         	getProg = prog;
         	forceRefresh = force;
         	refreshActivity = refreshactivity;
-        	chainenb = chaine_nb;
         	Log.d(TAG,"GUIDECHAINEACTIVITYNETWORK START "+d+" "+chaine+" "+prog);
         }
     }
