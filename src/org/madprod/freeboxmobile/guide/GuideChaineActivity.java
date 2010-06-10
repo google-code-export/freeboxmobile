@@ -164,7 +164,7 @@ public class GuideChaineActivity extends ListActivity implements GuideConstants
         			selectedDate = GuideUtils.calDates.get(datesSpinner.getSelectedItemPosition());
     				setFinDateHeure();
     				// TODO : corriger ligne suivante
-					new GuideChaineActivityNetwork(selectedDate+" 00:00:00", false, true, false, true).execute((Void[])null);
+					new GuideChaineActivityNetwork(selectedDate, false, true, false, true).execute((Void[])null);
         		}
         	}
         );

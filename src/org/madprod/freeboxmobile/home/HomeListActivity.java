@@ -70,9 +70,6 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		Log.d(TAG,"MainActivity Create "+Utils.getFBMVersion(this)+"\n"+new Date().toString());
         super.onCreate(savedInstanceState);
 
-//		Déplace vers onStart
-//        FBMNetTask.register(this);
-
         Utils.getFBMVersion(this);
 		// TESTS POUR TROUVER OU EST LE BUG HTTPS CHEZ FREE
 		/*
