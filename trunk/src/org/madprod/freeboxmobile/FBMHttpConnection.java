@@ -43,7 +43,7 @@ public class FBMHttpConnection implements Constants
 	private static String login = null;
 	private static String password = null;
 	private static String fbmversion = "";
-	// Variables id et idt d'accès à  MonCompteFree
+	// Variables id et idt d'accï¿½s ï¿½ MonCompteFree
 	private static String id = null;
 	private static String idt = null;
 
@@ -56,8 +56,8 @@ public class FBMHttpConnection implements Constants
 
 	/**
 	 * Init les variables statiques
-	 * Ferme le progressdialog si il était ouvert (arrive dans le cas d'un screen rotation)
-	 * Doit être appelé dans le onCreate de chaque Activity
+	 * Ferme le progressdialog si il Ã©tait ouvert (arrive dans le cas d'un screen rotation)
+	 * Doit Ãªtre appelÃ© dans le onCreate de chaque Activity
 	 * @param a activity
 	 */
 	public static void initVars(Activity a, Context c)
@@ -99,14 +99,14 @@ public class FBMHttpConnection implements Constants
 	}
 
     /**
-     * Vérifie si le login et le pass ont bougé
+     * VÃ©rifie si le login et le pass ont bougÃ©
      * @param l nouveau login
      * @param p nouveau mot de passe
-     * @return 1 si ils ont bougé et qu'ils ne sont pas null, 0 sinon
+     * @return 1 si ils ont bougÃ© et qu'ils ne sont pas null, 0 sinon
      */
 	public static boolean checkUpdated(String l, String p)
 	{
-		// Si les prefs ont bougé
+		// Si les prefs ont bougÃ©
 		if (( l!=null && p!= null) && ((!l.equals(login)) || (!p.equals(password))))
 		{
 			Log.d(TAG, "UPDATE: " + login + " / " + l);
@@ -152,13 +152,13 @@ public class FBMHttpConnection implements Constants
 
 		if (FBMHttpConnection.connectionFree(l, p, false) == CONNECT_CONNECTED)
 		{
-			// backup des données du compte loggué pour les restaurer après
+			// backup des donnÃ©es du compte logguÃ© pour les restaurer aprÃ©s
 			mLogin = login;
 			mPassword = password;
 			mId = id;
 			mIdt = idt;
-			// Reset de id & idt afin que ce compte (qui n'est peut etre pas celui sélectionné comme actif)
-			// ne reste pas connecté
+			// Reset de id & idt afin que ce compte (qui n'est peut etre pas celui sÃ©lectionnÃ© comme actif)
+			// ne reste pas connectÃ©
 			initCompte(null);
 
 			login = l;
@@ -167,7 +167,7 @@ public class FBMHttpConnection implements Constants
 			v.put(KEY_FBMVERSION, fbmversion);
 			Log.d(TAG,"connectFreeCheck : "+v);
 
-			// restauration des données présentes avant
+			// restauration des donnÃ©es prÃ©sentes avant
 			login = mLogin;
 			password = mPassword;
 			id = mId;
@@ -214,7 +214,7 @@ public class FBMHttpConnection implements Constants
 		{
 			Log.d(TAG,"parsePage : page null !");
 		}
-		// On supprimer les éventuels tags HTML qui seraient dans la chaine découpée
+		// On supprimer les Ã©ventuels tags HTML qui seraient dans la chaine dÃ©coupÃ©e
 		String dest="";
 		int l = r.length();
 		int i = 0;
@@ -241,8 +241,8 @@ public class FBMHttpConnection implements Constants
 	
 	/**
 	 * Parse suiviTechUrl
-	 * @param l : login du compte à  parser
-	 * @param p : mot de passe du compte à  parser
+	 * @param l : login du compte Ã  parser
+	 * @param p : mot de passe du compte Ã  parser
 	 */
 	private static ContentValues parseConsole(String l, String p, int type)
 	{
@@ -250,11 +250,11 @@ public class FBMHttpConnection implements Constants
 		{
 			ContentValues consoleValues = new ContentValues();
 			String br = getPage(getAuthRequest(suiviTechUrl, null, true, true, "ISO8859_1"));
-			String offre = parsePage(br, "Raccordée actuellement en offre", "<font", "</font>");
+			String offre = parsePage(br, "RaccordÃ©e actuellement en offre", "<font", "</font>");
 			switch (type)
 			{
 				case COMPTES_TYPE_ADSL :
-					if (offre.contains("Freebox dégroupé"))
+					if (offre.contains("Freebox dÃ©groupÃ©"))
 				    	consoleValues.put(KEY_LINETYPE, LINE_TYPE_FBXDEGROUPE);
 					else
 						consoleValues.put(KEY_LINETYPE, LINE_TYPE_FBXIPADSL);
@@ -263,15 +263,15 @@ public class FBMHttpConnection implements Constants
 					consoleValues.put(KEY_LINETYPE, LINE_TYPE_FBXOPTIQUE);
 					break;
 			}
-	    	// TODO : enlever la ligne suivante après debug
+	    	// TODO : enlever la ligne suivante aprÃ¨s debug
 	    	if (consoleValues.get(KEY_LINETYPE).equals(LINE_TYPE_FBXIPADSL))
 				Log.d(TAG,"DEBUG INFO TECHNIQUES : "+br);		    		
 	    	Log.d(TAG,"type:"+consoleValues.get(KEY_LINETYPE));
 	    	consoleValues.put(KEY_NRA, parsePage(br, "NRA :", "\">", "</"));
-	    	consoleValues.put(KEY_LINELENGTH, parsePage(br, "Longueur :", "red\">", " mètres"));
+	    	consoleValues.put(KEY_LINELENGTH, parsePage(br, "Longueur :", "red\">", " mÃ¨tres"));
 	    	consoleValues.put(KEY_ATTN, parsePage(br, "Affaiblissement :", "red\">", " dB"));
 	    	consoleValues.put(KEY_IP, parsePage(br, "Votre adresse IP", "<b>", " / "));
-	    	consoleValues.put(KEY_TEL, parsePage(br, "téléphone Freebox", "<b>", "</b>"));
+	    	consoleValues.put(KEY_TEL, parsePage(br, "tÃ©lÃ©phone Freebox", "<b>", "</b>"));
 			if (consoleValues.get(KEY_IP) != "")
 			{
 				URI uri = URI.create(frimousseUrl);
@@ -285,7 +285,7 @@ public class FBMHttpConnection implements Constants
 				else
 				{
 					consoleValues.put(KEY_DSLAM,"");
-					Log.d(TAG,"DSLAM pas trouvé");
+					Log.d(TAG,"DSLAM pas trouvÃ©");
 				}
 			}
 			else
@@ -302,11 +302,11 @@ public class FBMHttpConnection implements Constants
 		return (null);
 	}
 
-	// En cas de résussite : http://adsl.free.fr/compte/console.pl?id=417389&idt=10eb38933107f10c
+	// En cas de rÃ©sussite : http://adsl.free.fr/compte/console.pl?id=417389&idt=10eb38933107f10c
 	// En cas d'erreur de login/pass : /login/login.pl?login=0909090909&error=1
 	/**
-	 * connectionFree : identifie sur le portail de Free avec le login/pass demandé
-	 * @param l : login (identifiant = numéro de téléphone Freebox)
+	 * connectionFree : identifie sur le portail de Free avec le login/pass demandÃ©
+	 * @param l : login (identifiant = numÃ©ro de tÃ©lÃ©phone Freebox)
 	 * @param p : password (mot de passe Freebox)
 	 * @return CONNECT_CONNECTED || CONNECT_NOT_CONNECTED || CONNECT_LOGIN_FAILED
 	 */
@@ -786,7 +786,7 @@ public class FBMHttpConnection implements Constants
 	 * Post d'un fichier en multipart
 	 * 
 	 * @throws IOException
-	 * @return Le contenu de la réponse si le post a fonctionné, null sinon
+	 * @return Le contenu de la rÃ©ponse si le post a fonctionnÃ©, null sinon
 	 */
 	public static String postFileAuthRequest(String uploadFaxUrl, List<NameValuePair> params, File fileToPost, int expectedHttpStatus, boolean auth) throws IOException{
 		final String END 		= "\r\n";
@@ -817,7 +817,7 @@ public class FBMHttpConnection implements Constants
 			conn.setUseCaches(false);
 			conn.setRequestMethod("POST");
 	
-			/* Properties spécifique au multipart */
+			/* Properties spÃ©cifique au multipart */
 			conn.setRequestProperty("Connection", "Keep-Alive");
 			conn.setRequestProperty("Charset", "UTF-8");
 			conn.setRequestProperty("Content-Type", "multipart/form-data;boundary="+ BOUNDARY);
@@ -867,11 +867,11 @@ public class FBMHttpConnection implements Constants
 	
 			//Test du code de retour
 			if (conn.getResponseCode() != expectedHttpStatus){
-				Log.d(TAG,"Mauvais code Http retourné lors du post multipart : "+conn.getResponseCode()+" au lieu de "+expectedHttpStatus);
+				Log.d(TAG,"Mauvais code Http retournÃ© lors du post multipart : "+conn.getResponseCode()+" au lieu de "+expectedHttpStatus);
 				return null;
 			}
 			
-			//Le code de retour est correct on retourne le contenu de la réponse Http
+			//Le code de retour est correct on retourne le contenu de la rÃ©ponse Http
 			final StringBuffer b = new StringBuffer();
 			final InputStream is = conn.getInputStream();
 			final byte[] data = new byte[bufferSize];
@@ -880,7 +880,7 @@ public class FBMHttpConnection implements Constants
 				b.append(new String(data, 0, leng));
 			}
 			final String result = b.toString();
-			Log.d(TAG,"Reponse FAX lue : "+result);
+			Log.d(TAG,"RÃ©ponse FAX lue : "+result);
 			return result;
 		}
 		Log.d(TAG,"Connexion impossible pour faxer le fichier "+fileToPost.getName());
