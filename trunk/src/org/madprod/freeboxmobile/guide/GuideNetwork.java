@@ -2,7 +2,6 @@ package org.madprod.freeboxmobile.guide;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -30,87 +29,29 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants
 {
 	private Activity activity;
 	private String datetime;
+	private Integer duree_h;
 	private boolean getChaines;
-	private boolean getProg;
 	private boolean forceRefresh;
 	private boolean progress;
 
     /**
      * GuideNetwork : refresh data for Guide
      * @param a : activity used to display progress bars
-     * @param d : datetime to get programmes (if prog == true)
+     * @param d : datetime to get programmes or null if you don't want to get programs
      * @param chaine : wants to get chaines list ?
-     * @param prog : wants to get programs ?
      * @param progress : display progress ?
      * @param force : force refresh programs event if they are already present in database
      */
-    public GuideNetwork(Activity a, String d, boolean chaine, boolean prog, boolean progress, boolean force)
+    public GuideNetwork(Activity a, String d, Integer duree, boolean chaine, boolean progress, boolean force)
     {
     	activity = a;
-    	if (d != null)
-    	{
-    		datetime = d;
-    	}
-    	else
-    	{
-    		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:00:00");
-    		datetime = sdf.format(new Date());
-    	}
+    	datetime = d;
+    	duree_h = duree;
     	getChaines = chaine;
-    	getProg = prog;
     	forceRefresh = force;
     	this.progress = progress;
-    	Log.d(TAG,"GUIDENETWORK START "+d+" "+chaine+" "+prog+" "+force);
-    }
+    	Log.d(TAG,"GUIDENETWORK START "+d+" "+chaine+" "+force);
 
-    public int getDay()
-    {
-    	String dt = datetime;
-		dProgressMessage("Actualisation des donnÈes de la journÈe...", 24);
-    	publishProgress(0);
-    	datetime = dt + " 00:00:00";
-    	getData();
-    	publishProgress(4);
-    	datetime = dt + " 04:00:00";
-    	getData();
-    	publishProgress(8);
-    	datetime = dt + " 08:00:00";
-    	getData();
-    	publishProgress(12);
-    	datetime = dt + " 12:00:00";
-    	getData();
-    	publishProgress(16);
-    	datetime = dt + " 16:00:00";
-    	getData();
-    	publishProgress(20);
-    	datetime = dt + " 20:00:00";
-    	getData();
-    	publishProgress(24);
-    	setDayCache(dt);
-    	publishProgress(-1);
-    	return DATA_NEW_DATA;
-    }
-
-    private void setDayCache(String dt) // Create missing cache entries in case of a full day update
-    {
-    	ChainesDbAdapter db = new ChainesDbAdapter(activity);
-		db.open();
-		db.createHistoGuide(datetime+" 01:00:00");
-		db.createHistoGuide(datetime+" 02:00:00");
-		db.createHistoGuide(datetime+" 03:00:00");
-		db.createHistoGuide(datetime+" 05:00:00");
-		db.createHistoGuide(datetime+" 06:00:00");
-		db.createHistoGuide(datetime+" 07:00:00");
-		db.createHistoGuide(datetime+" 09:00:00");
-		db.createHistoGuide(datetime+" 10:00:00");
-		db.createHistoGuide(datetime+" 11:00:00");
-		db.createHistoGuide(datetime+" 13:00:00");
-		db.createHistoGuide(datetime+" 14:00:00");
-		db.createHistoGuide(datetime+" 15:00:00");
-		db.createHistoGuide(datetime+" 17:00:00");
-		db.createHistoGuide(datetime+" 18:00:00");
-		db.createHistoGuide(datetime+" 19:00:00");
-		db.close();
     }
     
     public int getData()
@@ -128,17 +69,30 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants
 
 		if (progress)
 		{
-			dProgressSet("Importation", "Actualisation des donnÈes du guide", R.drawable.fm_guide_tv);
+			dProgressSet("Importation", "Actualisation des donn√©es du guide", R.drawable.fm_guide_tv);
 			publishProgress(0);
 		}
 		db = new ChainesDbAdapter(activity);
 		db.open();
 
-		if ((forceRefresh == false) &&
-			(db.isHistoGuidePresent(datetime) > 0) &&
-			(getChaines == false))
+		if	(
+				(
+					(forceRefresh == false) &&
+					(getChaines == false)
+				) &&
+				(
+					(
+						(duree_h == 4) &&
+						(db.isHistoGuidePresent(datetime) > 0)
+					) ||
+					(
+						(duree_h == 24) &&
+						(db.isDayHistoGuidePresent(datetime) > 0)
+					)
+				)
+			)
 		{
-			// On a dÈj√† les donnÈes, on les charge donc pas
+			// On a d√©j√† les donn√©es, on les charge donc pas
 			Log.d(TAG,"ON A DEJA LES DONNEES");
 			db.close();
 			publishProgress(-1);
@@ -146,7 +100,15 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants
 		}
         List<NameValuePair> param = new ArrayList<NameValuePair>();
         param.add(new BasicNameValuePair("ajax","get_chaines"));
-        param.add(new BasicNameValuePair("date", datetime));
+        if (duree_h == 24)
+        {
+            param.add(new BasicNameValuePair("date", datetime+" 00:00:00"));	
+        }
+        else
+        {
+        	param.add(new BasicNameValuePair("date", datetime));
+        }
+        param.add(new BasicNameValuePair("duree_h", duree_h.toString()));
 
         String resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(MAGNETO_URL, param, true, true, "UTF8"));
         if (resultat != null)
@@ -157,7 +119,7 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants
 				jObject = new JSONObject(resultat);
 				if (jObject.has("redirect"))
 				{
-					Log.d(TAG,"Authentification expirÈe");
+					Log.d(TAG,"Authentification expir√©e");
 					if (FBMHttpConnection.connect() == CONNECT_CONNECTED)
 					{
 						resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(MAGNETO_URL, param, true, true, "UTF8"));
@@ -170,7 +132,7 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants
 						return (DATA_NOT_DOWNLOADED);
 					}
 				}
-				if (getProg)
+				if (datetime != null)
 				{
 					jChannelsObject = jObject.getJSONObject("progs");
 					if (progress)
@@ -211,7 +173,35 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants
 							// TODO : sinon rafraichir ?
 						}
 					}
-					db.createHistoGuide(datetime);
+					if (duree_h == 4)
+					{
+						db.createHistoGuide(datetime);
+					}
+					else
+					{
+						db.createDayHistoGuide(datetime);
+						db.createHistoGuide(datetime+" 00:00:00");
+						db.createHistoGuide(datetime+" 01:00:00");
+						db.createHistoGuide(datetime+" 02:00:00");
+						db.createHistoGuide(datetime+" 03:00:00");
+						db.createHistoGuide(datetime+" 04:00:00");
+						db.createHistoGuide(datetime+" 05:00:00");
+						db.createHistoGuide(datetime+" 06:00:00");
+						db.createHistoGuide(datetime+" 07:00:00");
+						db.createHistoGuide(datetime+" 08:00:00");
+						db.createHistoGuide(datetime+" 09:00:00");
+						db.createHistoGuide(datetime+" 10:00:00");
+						db.createHistoGuide(datetime+" 11:00:00");
+						db.createHistoGuide(datetime+" 12:00:00");
+						db.createHistoGuide(datetime+" 13:00:00");
+						db.createHistoGuide(datetime+" 14:00:00");
+						db.createHistoGuide(datetime+" 15:00:00");
+						db.createHistoGuide(datetime+" 16:00:00");
+						db.createHistoGuide(datetime+" 17:00:00");
+						db.createHistoGuide(datetime+" 18:00:00");
+						db.createHistoGuide(datetime+" 19:00:00");
+						db.createHistoGuide(datetime+" 20:00:00");
+					}
 				}
 				if (getChaines)
 				{
@@ -238,7 +228,7 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants
 						jChannelObject = jChannelsObject.getJSONObject(channelId);
 						image = getJSONString(jChannelObject, "image");
 						canal = getJSONString(jChannelObject, "canal");
-						// TODO : si chaine dÈj√† prÈsente -> update
+						// TODO : si chaine d√©j√† pr√©sente -> update
 						
 						// On teste si on a le fichier qui correspond √† la chaine
 				        file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES, image);
@@ -301,7 +291,7 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants
     	{
 	    	return DATA_NEW_DATA;
     	}
-        Log.d(TAG,"==> Impossible de tÈlÈcharger les programmes");
+        Log.d(TAG,"==> Impossible de t√©l√©charger les programmes");
         return DATA_NOT_DOWNLOADED;
     }
 }
