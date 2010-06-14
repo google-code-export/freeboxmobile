@@ -31,7 +31,7 @@ public class MevoDbAdapter implements MevoConstants
 	/**
 	 * Database creation sql statement
 	 */
-	// TODO : Utiliser les constantes de MevoConstantes l‡† dedans...
+	// TODO : Utiliser les constantes de MevoConstantes l√† dedans...
 	private static final String DATABASE_CREATE =
 		"create table "+DATABASE_TABLE+" (_id integer primary key autoincrement, "
 			+ "status integer not null, presence integer not null, source text not null, quand datetime not null, "
@@ -193,10 +193,10 @@ public class MevoDbAdapter implements MevoConstants
 	}
 
 	/**
-	 * Met ‡† jour une valeur int d'un message
+	 * Met √† jour une valeur int d'un message
 	 * @param name nom du fichier du message
-	 * @param k    colonne ‡† mettre ‡† jour
-	 * @param val  valeur ‡† mettre ‡† jour
+	 * @param k    colonne √† mettre √† jour
+	 * @param val  valeur √† mettre √† jour
 	 * @return valeur de mDb.update
 	 */
 	public boolean updateIntValue(String name, String k, int val)

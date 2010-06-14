@@ -112,14 +112,14 @@ public class MevoMessage implements MevoConstants
 				}
 				c.close();
 			}
-			else // Si pas de contact avec ce numéro
+			else // Si pas de contact avec ce numÃ©ro
 			{
 				c.close();
 				msgValues.put(KEY_CALLER, number);
 				msgValues.put(KEY_NB_TYPE, _context.getString(R.string.unknown));
 			}
 		}
-		else // Si numéro inconnu
+		else // Si numÃ©ro inconnu
 		{
 			msgValues.put(KEY_CALLER, _context.getString(R.string.unknown));
 			msgValues.put(KEY_NB_TYPE, _context.getString(R.string.mevo_hidden_number));
