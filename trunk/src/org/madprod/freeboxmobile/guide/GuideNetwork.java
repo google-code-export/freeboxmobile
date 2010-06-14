@@ -66,7 +66,7 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants
     public int getDay()
     {
     	String dt = datetime;
-		dProgressMessage("Actualisation des donnÃ©es de la journÃ©e...", 24);
+		dProgressMessage("Actualisation des données de la journée...", 24);
     	publishProgress(0);
     	datetime = dt + " 00:00:00";
     	getData();
@@ -128,7 +128,7 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants
 
 		if (progress)
 		{
-			dProgressSet("Importation", "Actualisation des donnÃ©es du guide", R.drawable.fm_guide_tv);
+			dProgressSet("Importation", "Actualisation des données du guide", R.drawable.fm_guide_tv);
 			publishProgress(0);
 		}
 		db = new ChainesDbAdapter(activity);
@@ -138,7 +138,7 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants
 			(db.isHistoGuidePresent(datetime) > 0) &&
 			(getChaines == false))
 		{
-			// On a dÃ©jÃ  les donnÃ©es, on les charge donc pas
+			// On a déjÃ  les données, on les charge donc pas
 			Log.d(TAG,"ON A DEJA LES DONNEES");
 			db.close();
 			publishProgress(-1);
@@ -157,7 +157,7 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants
 				jObject = new JSONObject(resultat);
 				if (jObject.has("redirect"))
 				{
-					Log.d(TAG,"Authentification expirÃ©e");
+					Log.d(TAG,"Authentification expirée");
 					if (FBMHttpConnection.connect() == CONNECT_CONNECTED)
 					{
 						resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(MAGNETO_URL, param, true, true, "UTF8"));
@@ -238,7 +238,7 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants
 						jChannelObject = jChannelsObject.getJSONObject(channelId);
 						image = getJSONString(jChannelObject, "image");
 						canal = getJSONString(jChannelObject, "canal");
-						// TODO : si chaine dÃ©jÃ  prÃ©sente -> update
+						// TODO : si chaine déjÃ  présente -> update
 						
 						// On teste si on a le fichier qui correspond Ã  la chaine
 				        file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES, image);
@@ -301,7 +301,7 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants
     	{
 	    	return DATA_NEW_DATA;
     	}
-        Log.d(TAG,"==> Impossible de tÃ©lÃ©charger les programmes");
+        Log.d(TAG,"==> Impossible de télécharger les programmes");
         return DATA_NOT_DOWNLOADED;
     }
 }

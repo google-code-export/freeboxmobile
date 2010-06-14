@@ -76,7 +76,7 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
     {
     	super.onStart();
         SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
-        // Si l'utilisateur est diff√©rent de celui qui a lanc√© l'activity la derni√®re fois (changement de compte)
+        // Si l'utilisateur est diffÈrent de celui qui a lancÈ l'activity la derniËre fois (changement de compte)
         if (!lastUser.equals(mgr.getString(KEY_TITLE, "")))
         {
         	DSLAM_Info = "";
@@ -123,7 +123,7 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
     	startManagingCursor(c);
     	AlertDialog d = new AlertDialog.Builder(this).create();
 		d.setTitle(c.getString(c.getColumnIndexOrThrow(KEY_TITLE)));
-    	d.setMessage("D√©but : "+MevoMessage.convertDateTimeHR(c.getString(c.getColumnIndexOrThrow(KEY_START)))+"\n"+
+    	d.setMessage("DÈbut : "+MevoMessage.convertDateTimeHR(c.getString(c.getColumnIndexOrThrow(KEY_START)))+"\n"+
     			"Fin : "+MevoMessage.convertDateTimeHR(c.getString(c.getColumnIndexOrThrow(KEY_END)))+"\n\n"+
     			c.getString(c.getColumnIndexOrThrow(KEY_DESC)));
 		d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
@@ -155,16 +155,16 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
         TextView t1_2 = (TextView) findViewById(R.id.infoLigne1_2);
         TextView t2 = (TextView) findViewById(R.id.infoLigne2);
         TextView t3 = (TextView) findViewById(R.id.infoLigne3);
-        text1_1 = "\tVotre ligne "+mgr.getString(KEY_USER, "")+" est connect√©e au central ADSL \"NRA\" "+mgr.getString(KEY_NRA, "")+" ";
+        text1_1 = "\tVotre ligne "+mgr.getString(KEY_USER, "")+" est connectÈe au central ADSL \"NRA\" "+mgr.getString(KEY_NRA, "")+" ";
         if (!DSLAM_Info.equals(""))
         {
         	text1_1 += "("+DSLAM_Info+") ";
         }
-        text1_1 += "situ√© √† "+mgr.getString(KEY_LINELENGTH, "0")+" m√®tres de votre Freebox.";
+        text1_1 += "situÈ ‡† "+mgr.getString(KEY_LINELENGTH, "0")+" mËtres de votre Freebox.";
 
         if (lineType.equals("1"))
         {
-	        text1_2 = "\tActuellement ("+DSLAM_Date+") les √©quipements dont vous d√©pendez ("+mgr.getString(KEY_DSLAM, "")+") ";
+	        text1_2 = "\tActuellement ("+DSLAM_Date+") les Èquipements dont vous dÈpendez ("+mgr.getString(KEY_DSLAM, "")+") ";
 	        if (DSLAM_ok)
 	        {
 	        	text1_2 += "fonctionnent correctement.";
@@ -176,7 +176,7 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
 	        	t1_2.setTextColor(0xffff0000);
 	        }
 	        text2 = "Liste des tickets de "+mgr.getString(KEY_DSLAM, "")+" :";
-	        text3 = "Historique de l'√©tat de "+mgr.getString(KEY_DSLAM, "")+" :";
+	        text3 = "Historique de l'Ètat de "+mgr.getString(KEY_DSLAM, "")+" :";
 	        
 	        LinearLayout lt = (LinearLayout) findViewById(R.id.LinearLayoutTickets);
 	        lt.removeAllViews();
@@ -208,7 +208,7 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
 	        else
 	        {
 	        	TextView t = new TextView(this);
-	    		t.setText("Pas de ticket pour cet √©quipement.");
+	    		t.setText("Pas de ticket pour cet Èquipement.");
 	    		t.setTextSize(16);
 	    		t.setPadding(10, 0, 0, 0);
 	    		lt.addView(t);        	
@@ -396,8 +396,8 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
         private String password;
         private String nra;
         private ContentValues result = null;
-        // refresh est demand√© si NRA n'existe pas dans les prefs, donc si on est dans le cas d'un compte
-		// configur√© avec Freeboxmobile <= 0.16 
+        // refresh est demandÈ si NRA n'existe pas dans les prefs, donc si on est dans le cas d'un compte
+		// configurÈ avec Freeboxmobile <= 0.16 
         private boolean refresh;
         
         public Payload(boolean refresh, String title, String login, String password, String nra)
@@ -410,15 +410,15 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
         }
     }
 
-    // TODO : Nettoyer plus bas les lignes de code comment√©es
+    // TODO : Nettoyer plus bas les lignes de code commentÈes
     private class UpdateCompte extends AsyncTask<Payload, Void, Payload> implements Constants
     {
     	@Override
     	protected Payload doInBackground(Payload... payload)
     	{
     		// TODO : Remove tout ca
-    		// refresh est demand√© si NRA n'existe pas dans les prefs, donc si on est dans le cas d'un compte
-    		// configur√© avec Freeboxmobile <= 0.16 
+    		// refresh est demandÈ si NRA n'existe pas dans les prefs, donc si on est dans le cas d'un compte
+    		// configurÈ avec Freeboxmobile <= 0.16 
 //    		if (payload[0].refresh)
 //    		{
 //    			payload[0].result = FBMHttpConnection.connectFreeCheck(payload[0].login, payload[0].password);
@@ -436,7 +436,7 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
     	protected void onPreExecute()
     	{
 			FBMNetTask.iProgressShow(
-					"Mise √† jour des donn√©es",
+					"Mise ‡† jour des donnÈes",
 					"Connexion en cours...",
 					R.drawable.fm_infos_adsl);
     	}
@@ -452,9 +452,9 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
     				FBMNetTask.alertDialogShow(
     						"Connexion impossible",
     						"Impossible de se connecter au portail de Free.\n"+
-    						"V√©rifiez votre identifiant, " +
+    						"VÈrifiez votre identifiant, " +
     						"votre mot de passe et votre "+	
-    						"connexion √† Internet (Wifi, 3G...).",
+    						"connexion ‡† Internet (Wifi, 3G...).",
     						R.drawable.fm_infos_adsl);
     			}
     		}

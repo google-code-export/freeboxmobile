@@ -135,7 +135,7 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 			}
 			mNotificationManager= (NotificationManager) activity.getSystemService(NOTIFICATION_SERVICE);
 
-	        // Si l'application a Ã©tÃ© utilisÃ©e avant le support du multicomptes, on migre les donnÃ©es
+	        // Si l'application a été utilisée avant le support du multicomptes, on migre les données
 	        File f = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_MEVO);
 	        if (f.exists())
 	        {
@@ -154,7 +154,7 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 	        File old_db = activity.getDatabasePath(MevoDbAdapter.DATABASE_NAME);
 	        if (old_db.exists())
 	        {
-	        	Log.w(TAG,"Ancienne config sans multicomptes : migration base de donnÃ©es... "+FBMHttpConnection.getIdentifiant());
+	        	Log.w(TAG,"Ancienne config sans multicomptes : migration base de données... "+FBMHttpConnection.getIdentifiant());
 	        	if (old_db.renameTo(activity.getDatabasePath(MevoDbAdapter.DATABASE_NAME+"_"+FBMHttpConnection.getIdentifiant())))
 	        	{
 	        		Log.w(TAG, "ok");
@@ -239,7 +239,7 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 						myProgressDialog = new ProgressDialog(CUR_ACTIVITY);
 						myProgressDialog.setIcon(R.drawable.fm_repondeur);
 						myProgressDialog.setTitle("Messagerie Vocale Freebox");
-						myProgressDialog.setMessage("VÃ©rification des nouveaux messages ...");
+						myProgressDialog.setMessage("Vérification des nouveaux messages ...");
 						myProgressDialog.show();
 					}
 				});
@@ -261,9 +261,9 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
     				FBMNetTask.alertDialogShow(
     						"Connexion impossible",
     						"Impossible de se connecter au portail de Free.\n"+
-    						"VÃ©rifiez votre identifiant, " +
+    						"Vérifiez votre identifiant, " +
     						"votre mot de passe et votre "+	
-    						"connexion Ã  Internet (Wifi, 3G...).",
+    						"connexion à  Internet (Wifi, 3G...).",
     						R.drawable.fm_repondeur);
 //					myAlertDialog = FBMHttpConnection.showError(CUR_ACTIVITY);
 				}
@@ -304,9 +304,9 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 	// ------------------------------------------------------------------------
 
     /**
-     * VÃ©rifie s'il n'y a pas de nouveau messages sur les serveurs de Free
+     * Vérifie s'il n'y a pas de nouveau messages sur les serveurs de Free
      * (et les download s'il y en a)
-     * Doit Ãªtre appelÃ© Ã  partir d'une Activity (qui aura appelÃ© setActivity dans son onCreate()
+     * Doit être appelé à  partir d'une Activity (qui aura appelé setActivity dans son onCreate()
      * 
      */
     public static void refresh()
@@ -343,11 +343,11 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 		curs = mDbHelper.fetchMessage(name);
 		if (curs.moveToFirst() == false)
 		{
-			Log.d(TAG, "delete : message non trouvÃ© !!!!");
+			Log.d(TAG, "delete : message non trouvé !!!!");
 		}
 		else
 		{
-			// Si le message est prÃ©sent sur le serveur de Free
+			// Si le message est présent sur le serveur de Free
 			if (!(curs.getString(curs.getColumnIndex(KEY_DEL)).equals("")))
 			{
 	    		String tel = curs.getString(curs.getColumnIndex(KEY_DEL));
@@ -368,8 +368,8 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 				FBMHttpConnection.getAuthRequest(mevoUrl+mevoDelPage, params, true, false, "ISO8859_1");
 			}
 		}
-		// Puis on marque le message comme effacÃ© dans la base
-		// (on l'efface pas Ã  proprement dit de la base, ca pourrait servir pour un historique)
+		// Puis on marque le message comme effacé dans la base
+		// (on l'efface pas à  proprement dit de la base, ca pourrait servir pour un historique)
 		Log.d(TAG, "Updating DB : "+mDbHelper.updateMessage(0, "", "", name));
 
 		if (UI_UPDATE_LISTENER != null)

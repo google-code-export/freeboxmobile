@@ -22,7 +22,7 @@ import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 
 /**
- * ActivitÃ© de selection d'un fichier dans le dossier de la SDCard
+ * Activité de selection d'un fichier dans le dossier de la SDCard
  * @author Ludovic Meurillon
  */
 public class FileChooserActivity extends Activity {
@@ -73,13 +73,13 @@ public class FileChooserActivity extends Activity {
 				}
 			});
 
-			//Fichiers pouvant Ãªtre sÃ©lÃ©ctionnÃ©s par l'activitÃ©
+			//Fichiers pouvant être séléctionnés par l'activité
 			final String[] fileNames = currentDir.list(new FilenameFilter() {
 				@Override
 				public boolean accept(File parent, String filename) {
-					//Extensions gÃ©rÃ©es par le FileChooser
+					//Extensions gérées par le FileChooser
 					final String[] matchingExtensions = new String[]{".pdf",".jpg",".jpeg"};
-					//Issue 134 : On compare dorÃ©navant le filename en lettre minuscule
+					//Issue 134 : On compare dorénavant le filename en lettre minuscule
 					final String lowercaseFilename = filename.toLowerCase();
 					for(int i=0;i<matchingExtensions.length;i++){
 						if(lowercaseFilename.toLowerCase().endsWith(matchingExtensions[i])){

@@ -59,6 +59,9 @@ public class SkinHandler extends DefaultHandler implements Constants{
 		}else if(localName.equals("skin")){
 			Log.d(TAG, "SkinHandler : end balise skin");
 			skins.add(skin);
+		}else if(localName.equals("default")){
+			Log.d(TAG, "SkinHandler : end balise default");
+			skin.setDefault(buffer.toString());
 		}else{
 			Log.d(TAG, "SkinHandler : end balise autre : "+localName);
 		}

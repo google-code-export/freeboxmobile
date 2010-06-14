@@ -314,17 +314,17 @@ public class MevoActivity extends ListActivity implements MevoConstants
     			mAdapter.updateMessageCount();
     		break;
     		case MEVO_CONTEXT_VIEWDETAILS:
-    			Toast.makeText(this, "Fonctionnalit√© non encore disponible", Toast.LENGTH_LONG).show();
+    			Toast.makeText(this, "FonctionnalitÈ non encore disponible", Toast.LENGTH_LONG).show();
     			logMsgDetails(info.id);
     		break;
     		case MEVO_CONTEXT_DELETE:
     			mAdapter.supprMsg((int)info.id);
     		break;
     		case MEVO_CONTEXT_DELETEFRMSRV:
-    			Toast.makeText(this, "Fonctionnalit√© non encore disponible", Toast.LENGTH_LONG).show();
+    			Toast.makeText(this, "FonctionnalitÈ non encore disponible", Toast.LENGTH_LONG).show();
     		break;
     		case MEVO_CONTEXT_SEND:
-    			Toast.makeText(this, "Fonctionnalit√© non encore disponible", Toast.LENGTH_LONG).show();
+    			Toast.makeText(this, "FonctionnalitÈ non encore disponible", Toast.LENGTH_LONG).show();
     		break;
     	}
     	return super.onContextItemSelected(item);
@@ -381,9 +381,9 @@ public class MevoActivity extends ListActivity implements MevoConstants
     	AlertDialog d = new AlertDialog.Builder(this).create();
 		d.setTitle(getString(R.string.app_name)+" - Messagerie Vocale");
 		d.setMessage(
-			"Incitez vos correspondants √† vous laisser des messages !\n\n"+
-			"Cr√©ez une annonce d'accueil en composant **1 sur "+
-			"le t√©l√©phone de votre Freebox."
+			"Incitez vos correspondants ‡† vous laisser des messages !\n\n"+
+			"CrÈez une annonce d'accueil en composant **1 sur "+
+			"le tÈlÈphone de votre Freebox."
 			);
 		d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
 			{
@@ -422,7 +422,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
 			{
 				public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
 				{
-						// Si on modifie la position du player sur cet event, on le fait √† chaque timer (250ms)
+						// Si on modifie la position du player sur cet event, on le fait ‡† chaque timer (250ms)
                 }
 				
 				public void onStartTrackingTouch(SeekBar seekBar)
@@ -603,7 +603,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
     	public void sendSMS(int id)
     	{
     		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("smsto:"+((MevoMessage)this.getItem(id)).getStringValue(KEY_SOURCE)));
-			intent.putExtra("sms_body", "Suite √† ton message "); 
+			intent.putExtra("sms_body", "Suite ‡† ton message "); 
 			intent.setClassName("com.android.mms", "com.android.mms.ui.ComposeMessageActivity");
 			mevoActivity.startActivity(intent);		
 
@@ -611,7 +611,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
 // 			Mais ca ne foncionne pas :-(
 /*
     		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("tel:"+((MevoMessage)this.getItem(id)).getStringValue(KEY_SOURCE)));
-			intent.putExtra("sms_body", "Suite √† ton message "); 
+			intent.putExtra("sms_body", "Suite ‡† ton message "); 
 			intent.setType("vnd.android-dir/mms-sms");
 			mevoActivity.startActivity(intent);
 */		
@@ -671,7 +671,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
 			holder.quand.setText(curMsg.getStringValue(KEY_QUAND_HR));
 			holder.length.setText(curMsg.getStringValue(KEY_LENGTH)+" "+this.msg_unit);
 
-			// Ici je mettais en gras les messages pr√©sents sur le serveur. Mais inutile, pas joli.
+			// Ici je mettais en gras les messages prÈsents sur le serveur. Mais inutile, pas joli.
 /* 			if (curMsg.getStringValue(KEY_DEL).compareTo("") != 0)
 			{
 				holder.qui.setTypeface(Typeface.DEFAULT_BOLD);
@@ -710,7 +710,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
 			{
 					if (!curMsg.setMsgSource(Environment.getExternalStorageDirectory().toString()+DIR_FBM+FBMHttpConnection.getIdentifiant()+DIR_MEVO+curMsg.getStringValue(KEY_NAME)))
 					{
-						Toast t = Toast.makeText(MevoActivity.mevoActivity, "Probl√®me avec le fichier du message !", Toast.LENGTH_LONG);
+						Toast t = Toast.makeText(MevoActivity.mevoActivity, "ProblËme avec le fichier du message !", Toast.LENGTH_LONG);
 						t.show();
 					}
 			}
@@ -751,7 +751,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
 		
 		public void stopPlay()
 		{
-			// Si on √©tait pas dans le cas d'un premier play
+			// Si on Ètait pas dans le cas d'un premier play
 			if (play_current_mp != null)
 			{
 				if (play_current_mp.isPlaying())
@@ -773,7 +773,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
 			MevoMessage m = messages.get(pos);
 			Log.d(TAG,"onITEMClick v:"+view+" pos:"+pos+" id:"+id+" cp:"+play_current_pos);
 			// Si on jouait un message d'une autre ligne,
-			// on lance le message de cette ligne √† la place
+			// on lance le message de cette ligne ‡† la place
 			if ((play_current_pos != pos) || (play_current_mp == null))
 			{
 				stopPlay();
@@ -805,7 +805,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
 			// sinon, l'utilisateur voulait juste arreter ou reprendre le message courant
 			else
 			{
-				// Si on √©tait d√©j√† en train de jouer un message, on le pause
+				// Si on Ètait dÈj‡† en train de jouer un message, on le pause
 				if (play_current_mp.isPlaying())
 				{
 					play_current_mp.pause();

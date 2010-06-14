@@ -48,6 +48,13 @@
 		android:title="@string/buttonTelecommande" 
 		android:order="4"
 	>
+		<PreferenceScreen 
+			android:summary="Configuration des codes de la télécommande" 
+			android:title="Skins" 
+			android:order="5"
+			
+			
+		/>
 		<PreferenceCategory
 			android:title="Boitier 1 : hd1.freebox.fr"
 		>
@@ -60,12 +67,12 @@
 			/>
 			<EditTextPreference
 				android:title="Code"
-				android:defaultValue="0000"
 				android:shouldDisableView="true" 
 				android:enabled="true" 
 				android:key="boitier1_code"
 				android:digits="0123456789"
-				android:inputType="phone"/>
+				android:inputType="phone"
+				/>
 		
 		</PreferenceCategory>
 
@@ -81,7 +88,6 @@
 			/>
 			<EditTextPreference
 				android:title="Code"
-				android:defaultValue="0000"
 				android:shouldDisableView="true" 
 				android:enabled="true" 
 				android:key="boitier2_code"				

@@ -124,13 +124,13 @@ public class ComptesEditActivity extends Activity implements Constants
                 	if (mDbHelper.isValuePresent(ComptesDbAdapter.KEY_TITLE, title) &&
                 		!mDbHelper.isMatch(mRowId, ComptesDbAdapter.KEY_TITLE, title))
                 	{
-                    	Toast t = Toast.makeText(ComptesEditActivity.this, "Un compte avec ce nom existe d√©j√† !",Toast.LENGTH_LONG);
+                    	Toast t = Toast.makeText(ComptesEditActivity.this, "Un compte avec ce nom existe dÈj‡† !",Toast.LENGTH_LONG);
                     	t.show();
                 	}
                 	else if (mDbHelper.isValuePresent(ComptesDbAdapter.KEY_USER, user) &&
                 			!mDbHelper.isMatch(mRowId, ComptesDbAdapter.KEY_USER, user))
                 	{
-                    	Toast t = Toast.makeText(ComptesEditActivity.this, "Un compte avec cet identifiant existe d√©j√† !",Toast.LENGTH_LONG);
+                    	Toast t = Toast.makeText(ComptesEditActivity.this, "Un compte avec cet identifiant existe dÈj‡† !",Toast.LENGTH_LONG);
                     	t.show();                		
                 	}
                 	else
@@ -201,7 +201,7 @@ public class ComptesEditActivity extends Activity implements Constants
     protected void onPause()
     {
         super.onPause();
-        // TODO : checker si on fait un screen rotation, est-ce que ca efface les donn√©es ?
+        // TODO : checker si on fait un screen rotation, est-ce que ca efface les donnÈes ?
     }
 
     @Override

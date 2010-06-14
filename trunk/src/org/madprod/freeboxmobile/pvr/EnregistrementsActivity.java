@@ -35,8 +35,8 @@ import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
 
 /**
- * ActivitÃ© Enregistrements
- * GÃ¨re l'onglet enregistrement avec la liste des programmation d'enregistrements
+ * Activité Enregistrements
+ * Gère l'onglet enregistrement avec la liste des programmation d'enregistrements
  * 
  * Sous-classe: ListeEnregistrements
  * 
@@ -194,7 +194,7 @@ public class EnregistrementsActivity extends ExpandableListActivity implements C
     }
 
 	/**
-	 * tÃ©lÃ©charge la liste des enregistrements, et l'affiche
+	 * télécharge la liste des enregistrements, et l'affiche
 	 * @author bduffez
 	 *
 	 */
@@ -234,7 +234,7 @@ public class EnregistrementsActivity extends ExpandableListActivity implements C
 	            afficherEnregistrements();
         	}
         	else {
-            	erreur("Impossible de se connecter Ã  la console Free\n");
+            	erreur("Impossible de se connecter à  la console Free\n");
         	}
         	
     		setProgressBarIndeterminateVisibility(false);
@@ -248,7 +248,7 @@ public class EnregistrementsActivity extends ExpandableListActivity implements C
     
     /**
      * DB --> RAM
-     * Se connecte Ã  sqlite, rÃ©cupÃ¨re le contenu et stocke Ã§a dans l'objet listeEnregistrements
+     * Se connecte à  sqlite, récupère le contenu et stocke à§a dans l'objet listeEnregistrements
      */
     private void updateEnregistrementsFromDb() {
         EnregistrementsDbAdapter db = new EnregistrementsDbAdapter(this);
@@ -277,13 +277,13 @@ public class EnregistrementsActivity extends ExpandableListActivity implements C
      			" "+ listCursor.getString(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_HEURE)) + "]";
      			
      			List<String> details = new ArrayList<String>();
-     			details.add("ChaÃ®ne");
+     			details.add("Chaîne");
      			details.add(listCursor.getString(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_CHAINE)));
 //     			details.add("Date");
 //     			details.add(listCursor.getString(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_DATE)));
 //     			details.add("Heure");
 //     			details.add(listCursor.getString(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_HEURE)));
-     			details.add("DurÃ©e");
+     			details.add("Durée");
      			details.add(listCursor.getString(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_DUREE)));
 //     			details.add("Nom");
 //     			details.add(listCursor.getString(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_NOM)));
@@ -315,7 +315,7 @@ public class EnregistrementsActivity extends ExpandableListActivity implements C
 				new String[] { "enregistrement" },
 				new int[] { R.id.pvr_enr_list_item },
 				
-				// Child: liste des dÃ©tails pour chaque enregistrement
+				// Child: liste des détails pour chaque enregistrement
 				listeEnregistrements.createChildList(),
 				R.layout.pvr_enregistrements_details,
 				new String[] { "key", "value" },
@@ -379,11 +379,11 @@ public class EnregistrementsActivity extends ExpandableListActivity implements C
 				c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_NOM))+"' "+
 				"sur "+c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_CHAINE))+
 				" le "+c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_DATE))+
-				" Ã  "+c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_HEURE))+
-				"\n\nPartagÃ© par FreeboxMobile pour Android.";
+				" à  "+c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_HEURE))+
+				"\n\nPartagé par FreeboxMobile pour Android.";
         Intent i = new Intent(Intent.ACTION_SEND)
 		.putExtra(Intent.EXTRA_TEXT, text).setType("text/plain")
-		.putExtra(Intent.EXTRA_SUBJECT, "EnregistrementTV partagÃ© par FreeboxMobile")
+		.putExtra(Intent.EXTRA_SUBJECT, "EnregistrementTV partagé par FreeboxMobile")
 //			    		.addCategory(Intent.CATEGORY_DEFAULT)
 		;
         c.close();
@@ -393,7 +393,7 @@ public class EnregistrementsActivity extends ExpandableListActivity implements C
     
     private long getRowIdFromItemId(int itemId)
     {
-    	// RÃ©cupÃ©ration de l'id
+    	// Récupération de l'id
         EnregistrementsDbAdapter db = new EnregistrementsDbAdapter(this);
         db.open();
         Cursor c = db.fetchAllEnregistrements(new String[] { EnregistrementsDbAdapter.KEY_ROWID , EnregistrementsDbAdapter.KEY_IDE},
@@ -412,7 +412,7 @@ public class EnregistrementsActivity extends ExpandableListActivity implements C
 
     private void afficherEnregistrementActivity(Intent i, int itemId, int action)
     {
-        // Lancement de l'activitÃ©
+        // Lancement de l'activité
         i.putExtra(EnregistrementsDbAdapter.KEY_ROWID, getRowIdFromItemId(itemId));
         startActivityForResult(i, action);
     }
@@ -438,7 +438,7 @@ public class EnregistrementsActivity extends ExpandableListActivity implements C
     
     /* Creates the menu items */
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, MENU_UPDATE, 0, "Mettre Ã  jour la liste").setIcon(android.R.drawable.ic_menu_rotate);
+        menu.add(0, MENU_UPDATE, 0, "Mettre à  jour la liste").setIcon(android.R.drawable.ic_menu_rotate);
         menu.add(0, MENU_ADD, 1, "Ajouter").setIcon(android.R.drawable.ic_menu_add);
         return true;
     }
@@ -463,8 +463,8 @@ public class EnregistrementsActivity extends ExpandableListActivity implements C
     }
 
     /**
-     * classe de stockage de donnÃ©es, avec la liste des enregistrements programmÃ©s
-     * ainsi que des dÃ©tails sur ceux-ci (date, heure...)
+     * classe de stockage de données, avec la liste des enregistrements programmés
+     * ainsi que des détails sur ceux-ci (date, heure...)
      * 
      * @author bduffez
      *
@@ -498,14 +498,14 @@ public class EnregistrementsActivity extends ExpandableListActivity implements C
 	    	detailsEnregistrements.clear();
 	    }
 	    
-	    // Ajout d'un enregistrement Ã  la liste, avec dÃ©tails
+	    // Ajout d'un enregistrement à  la liste, avec détails
 	    public void ajouter(String nom, List<String> details)
 	    {
 	    	listeEnregistrements.add(nom);
 	    	detailsEnregistrements.add(details);
 	    }
 	    
-	    // CrÃ©e la liste des enregistrements
+	    // Crée la liste des enregistrements
 		public List<HashMap<String, String>> createGroupList()
 		{
 			ArrayList<HashMap<String, String>> result = new ArrayList<HashMap<String, String>>();
@@ -518,7 +518,7 @@ public class EnregistrementsActivity extends ExpandableListActivity implements C
 			return result;
 		}
 		
-		// CrÃ©e la liste des dÃ©tails pour chaque enregistrement
+		// Crée la liste des détails pour chaque enregistrement
 		public List<ArrayList<HashMap<String, String>>> createChildList()
 		{
 			ArrayList<ArrayList<HashMap<String, String>>> result = new ArrayList<ArrayList<HashMap<String, String>>>();
@@ -644,8 +644,8 @@ public class EnregistrementsActivity extends ExpandableListActivity implements C
 			rowId = params[0];
 			doSuppression(activity, rowId);
 			
-			// TODO: vÃ©rifier la rÃ©ponse de free, si la suppression a bien
-			// Ã©tÃ© faite!
+			// TODO: vérifier la réponse de free, si la suppression a bien
+			// été faite!
 			
 			EnregistrementsDbAdapter db = new EnregistrementsDbAdapter(activity);
 			db.open();

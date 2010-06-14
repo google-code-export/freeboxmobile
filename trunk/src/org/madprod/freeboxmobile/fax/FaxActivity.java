@@ -56,7 +56,7 @@ public class FaxActivity extends Activity implements FaxConstants {
 	
 	
 	/**
-	 * Cr√©ation de l'activit√© d'envoi d'un fax via le compte Free actuellement utilis√©
+	 * CrÈation de l'activitÈ d'envoi d'un fax via le compte Free actuellement utilisÈ
 	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -105,13 +105,13 @@ public class FaxActivity extends Activity implements FaxConstants {
 	}
 
 	/**
-	 * Filtre l'action demand√©e par une autre application si elle existe
+	 * Filtre l'action demandÈe par une autre application si elle existe
 	 */
 	private final void filterIntent(){
 		if(getIntent()!=null && getIntent().getAction() != null){
 			if(getIntent().getAction().equals(Intent.ACTION_SEND)){
 				if("text/plain".equals(getIntent().getType())){
-					//Cas de l'envoi d'un texte saisi par l'utilisateur ou copi√© depuis une application
+					//Cas de l'envoi d'un texte saisi par l'utilisateur ou copiÈ depuis une application
 					final String text = (String) getIntent().getExtras().get(Intent.EXTRA_TEXT);
 					Log.d(TAG,"Fax du texte : "+text);
 					try {
@@ -136,7 +136,7 @@ public class FaxActivity extends Activity implements FaxConstants {
 	
 	/**
 	 * Traitement d'une URI fournie avec dans l'EXTRA_STREAM d'un Intent SEND 
-	 * (pointeur vers un fichier √† faxer)
+	 * (pointeur vers un fichier ‡† faxer)
 	 * @param uri
 	 */
 	private void filterUriIntent(Uri uri){
@@ -189,12 +189,12 @@ public class FaxActivity extends Activity implements FaxConstants {
 		d.setTitle(getString(R.string.app_name)+" Fax");
 		d.setIcon(R.drawable.icon_fbm_reverse);
     	d.setMessage(
-			"Le module Fax de Freebox Mobile vous permet d'envoyer des Fax en utilisant votre compte Freebox (donc gratuit vers les num√©ros de fixe).\n\n"+
-			"Vous devez choisir ou saisir un num√©ro de fax ainsi qu'un fichier pr√©sent sur votre carte m√©moire. Les formats support√©s sont :\n"+
+			"Le module Fax de Freebox Mobile vous permet d'envoyer des Fax en utilisant votre compte Freebox (donc gratuit vers les numÈros de fixe).\n\n"+
+			"Vous devez choisir ou saisir un numÈro de fax ainsi qu'un fichier prÈsent sur votre carte mÈmoire. Les formats supportÈs sont :\n"+
 			"- pdf\n"+
 			"- jpeg / jpg\n"+
 			"- txt\n\n"+
-			"Gr√¢ce √† Freebox Mobile vous pouvez aussi envoyer des fax directement √† partir d'autres applications comme :\n"+
+			"Gr‡¢ce ‡† Freebox Mobile vous pouvez aussi envoyer des fax directement ‡† partir d'autres applications comme :\n"+
 			"- OI File Manage\n"+
 			"- Chrome (Navigateur)\n"+
 			"- K9 Mail\n"+
@@ -212,7 +212,7 @@ public class FaxActivity extends Activity implements FaxConstants {
     }
     
 	/*
-	 * Traitement du retour de l'activit√© de selection d'un fichier sur la carte SD
+	 * Traitement du retour de l'activitÈ de selection d'un fichier sur la carte SD
 	 * (non-Javadoc)
 	 * @see android.app.Activity#onActivityResult(int, int, android.content.Intent)
 	 */
@@ -263,7 +263,7 @@ public class FaxActivity extends Activity implements FaxConstants {
 	}
 
 	/*
-	 * Envoi du fichier actuellement selectionn√©
+	 * Envoi du fichier actuellement selectionnÈ
 	 */
 	private void send() {
 		if (validate()) {

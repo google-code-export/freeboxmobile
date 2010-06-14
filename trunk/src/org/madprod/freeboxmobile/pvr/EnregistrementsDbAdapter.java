@@ -29,7 +29,7 @@ public class EnregistrementsDbAdapter {
     public static final String KEY_WHERE_ID = "where_id";
     public static final String KEY_REPEAT_A = "repeat_a";
     public static final String KEY_ROWID = "_id";
-    public static final String KEY_STATUS = "status"; // 0:pas prÃ©sent sur la console - 1:prÃ©sent sur la console - 2:effacÃ© par l'utilisateur
+    public static final String KEY_STATUS = "status"; // 0:pas présent sur la console - 1:présent sur la console - 2:effacé par l'utilisateur
 
     private static final String TAG = "EnregistrementsDbAdapter";
     private DatabaseHelper mDbHelper;
@@ -196,7 +196,7 @@ public class EnregistrementsDbAdapter {
 
     /**
      * Delete the enregistrement with the given rowId
-     * En pratique, l'enregistrement voit juste son statut passer Ã  2
+     * En pratique, l'enregistrement voit juste son statut passer à  2
      * ca peut permettre un jour d'afficher l'historique
      * 
      * @param rowId id of enregistrement to delete

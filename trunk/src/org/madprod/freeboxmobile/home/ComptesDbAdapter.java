@@ -354,8 +354,8 @@ public class ComptesDbAdapter implements Constants
     }
 
     /**
-     * getCompteNumber : retourne le nombre de comptes prÃ©sents dans la bdd
-     * @return nombre de comptes prÃ©sents ds la bdd
+     * getCompteNumber : retourne le nombre de comptes présents dans la bdd
+     * @return nombre de comptes présents ds la bdd
      */
     public int getComptesNumber()
     {

@@ -2,7 +2,7 @@ package org.madprod.freeboxmobile.remotecontrol;
 
 public interface RemoteControlActivityConstants {
 
-	public static int SEARCHBOXES = 100;
+//	public static int SEARCHBOXES = 100;
 	public static int FULLSCREEN = 101;
 	public static int LAYOUTMANAGER = 102;
 	public static int LAYOUTDOWNLOAD = 103;

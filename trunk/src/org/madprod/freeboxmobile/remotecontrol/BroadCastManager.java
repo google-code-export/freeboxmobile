@@ -11,6 +11,10 @@ import android.util.Log;
 public class BroadCastManager implements Constants{
 	static final CommandManager cm = CommandManager.getCommandManager();
 	private final Context context;
+	private BroadcastReceiver remoteCommandRec ;
+	private BroadcastReceiver remoteChannelRec ;
+	private BroadcastReceiver remoteCodeRec ;
+
 	
 	public BroadCastManager(Context c) {
 		context = c;
@@ -19,8 +23,8 @@ public class BroadCastManager implements Constants{
 	
 	private void initReceivers(){
 
-
-		context.registerReceiver(new BroadcastReceiver() {
+		
+		remoteCommandRec = new BroadcastReceiver() {
 			@Override
 			public void onReceive(Context context, Intent intent) {
 				cm.refreshCodes(context);
@@ -43,10 +47,12 @@ public class BroadCastManager implements Constants{
 					Log.d(TAG, "Pas de parametre passes a l intent");
 				}
 			}
-		}, new IntentFilter("REMOTECOMMAND"));		
+		};
+
+		context.registerReceiver(remoteCommandRec, new IntentFilter("REMOTECOMMAND"));		
 		
 
-		context.registerReceiver(new BroadcastReceiver() {
+		remoteChannelRec = new BroadcastReceiver() {
 			@Override
 			public void onReceive(Context context, Intent intent) {
 				cm.refreshCodes(context);
@@ -66,10 +72,12 @@ public class BroadCastManager implements Constants{
 					Log.d(TAG, "Pas de parametre passes a l intent");
 				}
 			}
-		}, new IntentFilter("REMOTECHANNEL"));		
+		};
+		
+		
+		context.registerReceiver(remoteChannelRec, new IntentFilter("REMOTECHANNEL"));		
 
-	
-		context.registerReceiver(new BroadcastReceiver() {
+		remoteCodeRec = new BroadcastReceiver() {
 			@Override
 			public void onReceive(Context context, Intent intent) {
 				cm.refreshCodes(context);
@@ -87,11 +95,18 @@ public class BroadCastManager implements Constants{
 					Log.d(TAG, "Pas de parametre passes a l intent");
 				}
 			}
-		}, new IntentFilter("REMOTECODE"));		
+		};
+		context.registerReceiver(remoteCodeRec, new IntentFilter("REMOTECODE"));		
 
 	
 	
 	
 	}
 	
+	
+	public void destroy(){
+		context.unregisterReceiver(remoteChannelRec);
+		context.unregisterReceiver(remoteCodeRec);
+		context.unregisterReceiver(remoteCommandRec);
+	}
 }

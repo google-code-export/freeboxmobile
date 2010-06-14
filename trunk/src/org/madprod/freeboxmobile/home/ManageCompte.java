@@ -52,7 +52,7 @@ public class ManageCompte extends FBMNetTask implements Constants// AsyncTask<Co
 	@Override
 	protected void onPreExecute()
 	{
-		iProgressShow("Mon compte Freebox", "Veuillez patienter,\n\nChargement / rafraichissement des donnÃ©es en cours...", R.drawable.icon_fbm_reverse);
+		iProgressShow("Mon compte Freebox", "Veuillez patienter,\n\nChargement / rafraichissement des données en cours...", R.drawable.icon_fbm_reverse);
 	}
 
 	@Override
@@ -73,9 +73,9 @@ public class ManageCompte extends FBMNetTask implements Constants// AsyncTask<Co
 		{
 			alertDialogShow("Connexion impossible",
 					"Impossible de se connecter au portail de Free.\n"+
-					"VÃ©rifiez votre identifiant, " +
+					"Vérifiez votre identifiant, " +
 					"votre mot de passe et votre "+	
-					"connexion Ã  Internet (Wifi, 3G...).",
+					"connexion à  Internet (Wifi, 3G...).",
 					R.drawable.icon_fbm_reverse);
 				payload.exit = Activity.RESULT_CANCELED;
 		}
@@ -134,7 +134,7 @@ public class ManageCompte extends FBMNetTask implements Constants// AsyncTask<Co
 	        getActivity().setResult(p.exit, mIntent);
     	}
 		Cursor c = mDbHelper.fetchCompte(p.rowid);
-		// On met Ã  jour les parametres de conf avec les nouvelles donnÃ©es
+		// On met à  jour les parametres de conf avec les nouvelles données
     	if ((p.refresh) || (c.getString(c.getColumnIndexOrThrow(KEY_USER)).equals(FBMHttpConnection.getIdentifiant())))
     	{
     		Log.d(TAG,"REFRESH !");

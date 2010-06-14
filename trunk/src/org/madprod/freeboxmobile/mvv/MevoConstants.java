@@ -19,7 +19,7 @@ public interface MevoConstants extends Constants
 	static final int MSG_STATUS_UNLISTENED = 0;
 	static final int MSG_STATUS_LISTENED = 1;
 
-	// ChaÃ®ne affichÃ©e par Free sur la page mevo en cas de nouveau message
+	// Chaîne affichée par Free sur la page mevo en cas de nouveau message
 	static final String STR_NEWMESSAGE  = "Nouveau message";
 
 	// Menu contextuel
@@ -55,7 +55,7 @@ public interface MevoConstants extends Constants
 	public static final String KEY_NAME = "name";
 	public static final String KEY_ROWID = "_id";
 
-	// utilisÃ© dans MevoMessage.java
+	// utilisé dans MevoMessage.java
 	public static final String KEY_CALLER = "caller";
 	public static final String KEY_PLAY_STATUS = "img_status";
 	public static final String KEY_NB_TYPE = "nb_type";

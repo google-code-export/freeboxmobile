@@ -34,7 +34,7 @@ import android.widget.LinearLayout.LayoutParams;
 
 public class GuideUtils implements Constants
 {
-	// Cette liste sert Ã  rÃ©cupÃ©rer la date correspondant Ã  l'indice du spinner
+	// Cette liste sert à  récupérer la date correspondant à  l'indice du spinner
 	public static List<String> calDates = new ArrayList<String>();
 	public static List<String> dates;
 	private static boolean mNewBitmapAvailable;
@@ -103,8 +103,8 @@ public class GuideUtils implements Constants
     }
 
     /**
-     * Calcule la fin de la plage (de 4h) Ã  rÃ©cupÃ©rer sur le serveur
-     * @param selectedHeure : heure de dÃ©but
+     * Calcule la fin de la plage (de 4h) à  récupérer sur le serveur
+     * @param selectedHeure : heure de début
      * @param datefin : datesSpinner.getSelectedItemId();
      */
 	public static String setFinDateHeure_unused(String selectedHeure, long datefin)

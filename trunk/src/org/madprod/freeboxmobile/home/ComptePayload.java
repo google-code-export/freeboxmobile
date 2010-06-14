@@ -19,7 +19,7 @@ public class ComptePayload
     public ContentValues result;
     public Long rowid;
     public int exit = Activity.RESULT_CANCELED;
-    // refresh est utilisé pour savoir s'il s'agit d'une édition provenant de CompteEditActivity
+    // refresh est utilis� pour savoir s'il s'agit d'une �dition provenant de CompteEditActivity
     // ou d'un refresh provenant de HomeActivity
     // refresh == true s'il s'agit d'un refresh des données
     // refresh == false s'il s'agit de la création d'un compte

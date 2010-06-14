@@ -39,32 +39,32 @@ public interface GuideConstants extends Constants
     static final String genres[] = {
     	"",						// 0
     	"Film",					// 1
-    	"T√©l√©film",				// 2
-    	"S√©rie/Feuilleton",		// 3
+    	"TÈlÈfilm",				// 2
+    	"SÈrie/Feuilleton",		// 3
     	"Feuilleton",			// 4
     	"Documentaire",			// 5
-    	"Th√©√¢tre",				// 6
-    	"Op√©ra",				// 7
+    	"ThÈ‡¢tre",				// 6
+    	"OpÈra",				// 7
     	"Ballet",				// 8
-    	"Vari√©t√©s",				// 9
+    	"VariÈtÈs",				// 9
     	"Magazine",				// 10
     	"Jeunesse",				// 11
     	"Jeu",					// 12
     	"Musique",				// 13
     	"Divertissement",		// 14
-    	"Court-m√©trage",		// 15
-    	"Dessin anim√©",			// 16
+    	"Court-mÈtrage",		// 15
+    	"Dessin animÈ",			// 16
     	"",						// 17
     	"",						// 18
     	"Sport",				// 19
     	"Journal",				// 20
     	"Information",			// 21
-    	"D√©bat",				// 22
+    	"DÈbat",				// 22
     	"Danse",				// 23
     	"Spectacle",			// 24
     	"Gala",					// 25
     	"Reportage",			// 26
-    	"Fin des √©missions",	// 27
+    	"Fin des Èmissions",	// 27
     	"",						// 28
     	"",						// 29
     	"",						// 30

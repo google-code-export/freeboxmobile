@@ -205,7 +205,7 @@ public class ComptesActivity extends ListActivity implements HomeConstants
         String selected = getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_USER, null);
         if (selected == null)
         {
-        	liste.add("-- pas de compte selectionnÃ© --");
+        	liste.add("-- pas de compte selectionné --");
         }
 
         if (mComptesCursor.moveToFirst())
@@ -234,7 +234,7 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 						SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 						Long duree = (new Date()).getTime() - getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getLong(KEY_LAST_REFRESH+c.getString(c.getColumnIndexOrThrow(KEY_USER)), 0);
 						Log.d(TAG,"TEMPS : "+c.getString(c.getColumnIndexOrThrow(KEY_USER))+" - "+getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getLong(KEY_LAST_REFRESH+c.getString(c.getColumnIndexOrThrow(KEY_USER)), 0)+" "+duree);
-						// Si ca fait + de 30 jours on met Ã  jour (2592000000 )
+						// Si ca fait + de 30 jours on met à  jour (2592000000 )
 						if (duree > 2592000000L)
 						{
 							updatePrefs(mgr.edit(), c);
@@ -291,7 +291,7 @@ public class ComptesActivity extends ListActivity implements HomeConstants
         
         Log.d(TAG, "onActivityResult");
         FBMNetTask.register(this);
-        // Si il n'y avait pas de compte dÃ©finit et qu'un compte vient d'Ãªtre crÃ©Ã©, on le selectionne par dÃ©faut
+        // Si il n'y avait pas de compte définit et qu'un compte vient d'être créé, on le selectionne par défaut
         if ((getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_USER, null) == null) && (resultCode != 0))
         {
        		Long id = intent.getLongExtra(ComptesDbAdapter.KEY_ROWID, 0);
@@ -303,7 +303,7 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 				{
 					SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 					updatePrefs(mgr.edit(), c);
-	            	Toast t = Toast.makeText(ComptesActivity.this, "Compte "+c.getString(c.getColumnIndexOrThrow(KEY_TITLE))+" selectionnÃ©",Toast.LENGTH_LONG);
+	            	Toast t = Toast.makeText(ComptesActivity.this, "Compte "+c.getString(c.getColumnIndexOrThrow(KEY_TITLE))+" selectionné",Toast.LENGTH_LONG);
 	            	t.show();
 				}
 				c.close();
