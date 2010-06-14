@@ -731,9 +731,19 @@ public class RemoteControlActivity extends Activity implements GuideConstants, H
 
 		@Override
 		protected void onPostExecute(Integer result) {
+			FBMNetTask.iProgressDialogDismiss();
+			chooseView();
 			super.onPostExecute(result);
 		}
 
+		@Override
+		protected void onPreExecute()
+		{
+			FBMNetTask.iProgressShow(
+					"Mise à jour des chaines",
+					"Veuillez patienter svp...",
+					R.drawable.fm_infos_adsl);
+		}
 
 		private void updateChaine(){
 			File file, filen;
