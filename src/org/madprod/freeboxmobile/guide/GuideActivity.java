@@ -325,7 +325,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
 		Programme p = (Programme) adapter.getItem((int)info.id);
 	    menu.setHeaderTitle(p.titre);
 	    menu.add(0, GUIDE_CONTEXT_ENREGISTRER, 0, "Enregistrer");
-	    menu.add(0, GUIDE_CONTEXT_DETAILS, 1, "DÃ©tails");
+	    menu.add(0, GUIDE_CONTEXT_DETAILS, 1, "Détails");
 	}
 	
 	@Override
@@ -377,12 +377,12 @@ public class GuideActivity extends ListActivity implements GuideConstants
     	Log.i(TAG,"ON ACTIVITY RESULT : "+resultCode);
     	switch (resultCode)
     	{
-    		// Si on a supprimÃ© un favori sans en ajouter, pas besoin d'une mise Ã  jour rÃ©seau
+    		// Si on a supprimé un favori sans en ajouter, pas besoin d'une mise à  jour réseau
     		case -1 :
     	    	Log.d(TAG,"RESULT SUPPR");
     			getFromDb();
     			break;
-    		// Si on a ajoutÃ© un favori -> mise Ã  jour rÃ©seau
+    		// Si on a ajouté un favori -> mise à  jour réseau
     		case 1:
     	    	Log.d(TAG,"RESULT ADD");
     	    	new GuideActivityNetwork(selectedDate+" "+selectedHeure, false, true, true, true).execute((Void[])null);
@@ -461,7 +461,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
             			}
             		})
             		*/
-        	.setTitle("CatÃ©gories Ã  afficher dans le guide :")
+        	.setTitle("Catégories à  afficher dans le guide :")
             .setIcon(R.drawable.fm_guide_tv)
             .create();
 		alertDialog.show();
@@ -572,15 +572,15 @@ public class GuideActivity extends ListActivity implements GuideConstants
 					listesChaines.add(l);
 				} while (chainesIds.moveToNext());
 				
-				// TODO : si nochaine == true, il manque une chaine, lancer un tÃ©lÃ©chargement des chaines du guide
+				// TODO : si nochaine == true, il manque une chaine, lancer un téléchargement des chaines du guide
 				if (nochaine == true)
 				{
 					Log.d(TAG,"IL MANQUE AU MOINS UNE CHAINE");
 				}
-				// Ici on trie pour avoir les listes de programmes dans l'ordre des numÃ©ros de chaine
+				// Ici on trie pour avoir les listes de programmes dans l'ordre des numéros de chaine
 				Collections.sort(listesChaines);
 				
-				// Puis on crÃ©Ã© les diffÃ©rentes sous-listes (une par chaine)
+				// Puis on créé les différentes sous-listes (une par chaine)
 				ga = new ArrayList<GuideAdapter>();
 				Iterator<ListeChaines> it = listesChaines.iterator();
 				String filepath;
@@ -792,7 +792,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
 		d.setTitle(getString(R.string.app_name)+" - GuideTV");
 		d.setIcon(R.drawable.fm_guide_tv);
 		d.setMessage(
-			"Pour filtrer les programmes par catÃ©gorie, utilisez l'option 'Choisir les catÃ©gories' disponible dans le menu.");
+			"Pour filtrer les programmes par catégorie, utilisez l'option 'Choisir les catégories' disponible dans le menu.");
 		d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
 			{
 				public void onClick(DialogInterface dialog, int which)
@@ -808,7 +808,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
     {	
     	AlertDialog d = new AlertDialog.Builder(this).create();
 		d.setTitle(getString(R.string.app_name)+" - Guide TV");
-		d.setMessage("ProblÃ¨me rÃ©seau, veuillez rÃ©essayer.");
+		d.setMessage("Problème réseau, veuillez réessayer.");
 		d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
 			{
 				public void onClick(DialogInterface dialog, int which)
@@ -855,11 +855,11 @@ public class GuideActivity extends ListActivity implements GuideConstants
 
         /**
          * GuideactivityNetwork
-         * @param d : datetime dÃ©but
-         * @param chaine : rÃ©cupÃ©rer liste des chaines (+ logos) ?
-         * @param prog : rÃ©cupÃ©rer liste des programmes ?
-         * @param force : forcer la rÃ©cupÃ©ration des programmes (ne pas tenir compte du cache) ?
-         * @param refreshactivity : pour rafraichir toute l'activitÃ© aprÃ¨s un onActivityResult du choix des favoris
+         * @param d : datetime début
+         * @param chaine : récupérer liste des chaines (+ logos) ?
+         * @param prog : récupérer liste des programmes ?
+         * @param force : forcer la récupération des programmes (ne pas tenir compte du cache) ?
+         * @param refreshactivity : pour rafraichir toute l'activité après un onActivityResult du choix des favoris
          */
         public GuideActivityNetwork(String d, boolean chaine, boolean prog, boolean force, boolean refreshactivity)
         {

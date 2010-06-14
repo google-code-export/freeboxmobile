@@ -64,12 +64,18 @@ public class FBMNetTask extends AsyncTask<Void, Integer, Integer> implements Con
 		Log.d(TAG, "FBMNetTask : UNREGISTER");
 		if (activity == a)
 		{
-			if (dProgressDialog != null)
+			if (dProgressDialog != null){
 				dProgressDialog.dismiss();
-			if (iProgressDialog != null)
+				dProgressDialog = null;
+			}
+			if (iProgressDialog != null){
 				iProgressDialog.dismiss();
-			if (alertDialog != null)
+				iProgressDialog = null;
+			}
+			if (alertDialog != null){
 				alertDialog.dismiss();
+				alertDialog = null;
+			}
 			activity = null;
 		}
 	}

@@ -243,10 +243,10 @@ public class ChainesDbAdapter implements GuideConstants
 
     /*
      * METHODES POUR LES FAVORIS
-     * PRINCIPE : lors du mise √† jour :
-     * - on met √† jour les timestamp des favoris qui existent d√©j√†
+     * PRINCIPE : lors du mise ‡† jour :
+     * - on met ‡† jour les timestamp des favoris qui existent dÈj‡†
      * - on ajoute les nouveaux favoris
-     * - puis on supprime les vieux timestamp qui restent (qui correspondent aux cha√Ænes qui ne sont plus en favoris)
+     * - puis on supprime les vieux timestamp qui restent (qui correspondent aux chaÓnes qui ne sont plus en favoris)
      */
     
 	public long updateFavoris(int fav_id, String datetime)
@@ -279,8 +279,8 @@ public class ChainesDbAdapter implements GuideConstants
 
     /*
      * METHODES POUR L'HISTORIQUE DU GUIDE
-     * Histoguide permet de savoir si on a d√©j√† charg√© les programmes pour 
-     * un timestamp donn√©
+     * Histoguide permet de savoir si on a dÈj‡† chargÈ les programmes pour 
+     * un timestamp donnÈ
      */
     
     public long createHistoGuide(String datetime)
@@ -304,7 +304,7 @@ public class ChainesDbAdapter implements GuideConstants
 		return mDb.delete(DATABASE_TABLE_HISTOGUIDE, KEY_PROG_DATETIME_DEB+" < '"+date+"'", null);
 	}
 	
-	// Utilis√© en cas d'ajout de nouvelles chaines aux favoris, 
+	// UtilisÈ en cas d'ajout de nouvelles chaines aux favoris, 
 	// comme la nouvelle chaine ne sera pas dans l'historique...
 	public long clearHistorique()
 	{

@@ -49,7 +49,7 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
 	private static ChainesDbAdapter mDbHelper;
 	private ArrayList<Favoris> listeFavoris = new ArrayList<Favoris>();
 	private List< Map<String,Object> > chainesToSelect;
-	// -1 si une chaine a √©t√© enlev√©e / 1 si une chaine a √©t√© ajout√©e / 0 si pas boug√©
+	// -1 si une chaine a ÈtÈ enlevÈe / 1 si une chaine a ÈtÈ ajoutÈe / 0 si pas bougÈ
 	// si suppression et ajout : 1
 	private int activityResult = 0; 
 	private int itemSelected = 0;
@@ -112,7 +112,7 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
 
 		listeFavoris.clear();
 		
-		// On commence par r√©cup√©rer la liste des chaines favorites
+		// On commence par rÈcupÈrer la liste des chaines favorites
     	Cursor chainesIds = mDbHelper.getFavoris();
     	startManagingCursor (chainesIds);
         if (chainesIds != null)
@@ -141,10 +141,10 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
 					listeFavoris.add(f);
 				} while (chainesIds.moveToNext());
 			}
-			// Ici on trie pour avoir les listes de programmes dans l'ordre des num√©ros de chaine
+			// Ici on trie pour avoir les listes de programmes dans l'ordre des numÈros de chaine
 			Collections.sort(listeFavoris);
 
-			// On cr√©√© l'horizontal scrollview en haut avec la liste des chaines favorites
+			// On crÈÈ l'horizontal scrollview en haut avec la liste des chaines favorites
 			Iterator<Favoris> it = listeFavoris.iterator();
 	    	LinearLayout csly = (LinearLayout) findViewById(R.id.ChoixSelectedLinearLayout);
 	    	csly.removeAllViews();
@@ -162,8 +162,8 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
 	            	this));
 			}
 
-			// Ici on r√©cup√®re la liste des chaines disponibles pour le guide auxquelles ont enl√®ve celles
-			// d√©j√† s√©lectionn√©es
+			// Ici on rÈcupËre la liste des chaines disponibles pour le guide auxquelles ont enlËve celles
+			// dÈj‡† sÈlectionnÈes
 			chainesToSelect = new ArrayList< Map<String,Object> >();
 			Cursor allChaines = mDbHelper.getListChaines();
 			if (allChaines != null)
@@ -200,8 +200,8 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
 						}
 						allChaines.moveToNext();
 					}
-					// On doit refaire un tour pour les chaines non s√©lectionn√©es
-					// dont le num√©ro est > au num√©ro de la derni√®re chaine des favoris
+					// On doit refaire un tour pour les chaines non sÈlectionnÈes
+					// dont le numÈro est > au numÈro de la derniËre chaine des favoris
 					while (!allChaines.isAfterLast())
 					{
 						image = allChaines.getString(CI_image);
@@ -237,12 +237,12 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
     
     private void displayAdd(final Integer id)
     {
-    	displayDialog(id, FAVORIS_COMMAND_ADD, "Ajouter cette cha√Æne aux favoris ?");
+    	displayDialog(id, FAVORIS_COMMAND_ADD, "Ajouter cette chaÓne aux favoris ?");
     }
 
     private void displaySuppr(final Integer id)
     {
-    	displayDialog(id, FAVORIS_COMMAND_SUPPR, "Supprimer cette cha√Æne des favoris ?");
+    	displayDialog(id, FAVORIS_COMMAND_SUPPR, "Supprimer cette chaÓne des favoris ?");
     }
     
     private void displayDialog(final Integer id, final int command, String msg)
@@ -283,9 +283,9 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
 		d.setTitle(getString(R.string.app_name)+" - Favoris");
 		d.setIcon(R.drawable.fm_guide_tv);
 		d.setMessage(
-			"Utilisez la liste horizontale d'ic√¥nes pour voir les favoris actuels.\n"+
-			"Cliquez sur un ic√¥ne de cha√Æne pour supprimer un favori.\n\n"+
-			"Utilisez la liste vericale (ic√¥nes + nom) pour ajouter des favoris."
+			"Utilisez la liste horizontale d'ic‡¥nes pour voir les favoris actuels.\n"+
+			"Cliquez sur un ic‡¥ne de chaÓne pour supprimer un favori.\n\n"+
+			"Utilisez la liste vericale (ic‡¥nes + nom) pour ajouter des favoris."
 			);
 		d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
 			{
@@ -303,7 +303,7 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
     	AlertDialog d = new AlertDialog.Builder(this).create();
     	d.setIcon(R.drawable.fm_guide_tv);
 		d.setTitle("Erreur");
-    	d.setMessage("Probl√®me r√©seau, essayez √† nouveau.");
+    	d.setMessage("ProblËme rÈseau, essayez ‡† nouveau.");
 		d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
 			{
 				public void onClick(DialogInterface dialog, int which)
@@ -324,7 +324,7 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
         	switch (command)
         	{
 	        	case FAVORIS_COMMAND_RESET:
-	        		FBMNetTask.iProgressShow("R√©initialisation","",R.drawable.fm_guide_tv);
+	        		FBMNetTask.iProgressShow("RÈinitialisation","",R.drawable.fm_guide_tv);
 	            	break;
 	        	case FAVORIS_COMMAND_ADD:
 	        		FBMNetTask.iProgressShow("Ajout","",R.drawable.fm_guide_tv);

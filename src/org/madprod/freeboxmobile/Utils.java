@@ -1,6 +1,8 @@
 package org.madprod.freeboxmobile;
 
 import java.nio.channels.FileChannel;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.io.*;
 
 import android.content.Context;
@@ -57,4 +59,59 @@ public class Utils implements Constants
 		}
 		return FBMVersion;
 	}
+	
+	public static void unzipFile(String pathZipFile, String path){
+		try {
+			final int BUFFER = 2048;
+			byte data[] = new byte[BUFFER];
+			BufferedOutputStream dest = null;
+			FileInputStream zipFile = new FileInputStream(pathZipFile);
+			BufferedInputStream buffZip = new BufferedInputStream(zipFile);
+			ZipInputStream zis = new ZipInputStream(buffZip);
+			ZipEntry entree;
+			int count;
+			while((entree = zis.getNextEntry()) != null) {
+				Log.e(TAG, "entree = "+entree);
+				File f = new File(path+"/"+entree.getName());
+				if (entree.isDirectory()){
+					if (!f.exists()){
+						f.mkdir();
+					}
+				}else{
+					FileOutputStream fos = new FileOutputStream(f);
+					dest = new BufferedOutputStream(fos, BUFFER);
+					while ((count = zis.read(data, 0, BUFFER)) != -1) {
+						dest.write(data, 0, count);
+					}
+					dest.flush();
+					dest.close();
+				}
+			}
+			
+
+			zis.close();
+
+		} catch (IOException e2) {
+			e2.printStackTrace();
+		}
+
+	}
+	
+	public static void deleteFile(File path) {
+		if (path.exists()){
+			if (!path.delete()){
+				File[] files = path.listFiles(); 
+				for(int i=0; i<files.length; i++) { 
+					if(files[i].isDirectory()) { 
+						deleteFile(files[i]); 
+					} 
+					else { 
+						files[i].delete(); 
+					} 
+				} 
+			}
+		}
+	}
+
+	
 }
