@@ -59,7 +59,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 	static final int MENU_UPDATE_CHAINES = 1;
 	static final int MENU_UPDATE_ALL = 2;
 
-	// id utilisé pour les modifs d'enregistrements
+	// id utilisÃ© pour les modifs d'enregistrements
 	private Integer ide = 0;
 	
 	// etat de ProgressBarIndeterminateVisibility
@@ -68,9 +68,9 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 	private boolean fromListe = false;
 	private boolean fromGuide = false;
 	
-	// Id du boitier séléctionné
+	// Id du boitier sÃ©lÃ©ctionnÃ©
 	private static int mBoitierHD = 0;
-	// Nom du boitier sélectionné
+	// Nom du boitier sÃ©lectionnÃ©
 	private static String mBoitierHDName = null;
 	// Curseur sur les boitiers
 	private static Cursor boitiersCursor = null;
@@ -81,13 +81,13 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 	// Curseur sur la liste des chaines
 	private static Cursor chainesCursor = null;
 	SimpleCursorAdapter chainesSpinnerAdapter = null;
-	// id de la chaine selectionnée
+	// id de la chaine selectionnÃ©e
 	private static Integer mChaineID = 0;
 
 	// Curseur sur les disques
 	private static Cursor disquesCursor = null;
 
-	// Curseur sur les services de la chaine selectionnée
+	// Curseur sur les services de la chaine selectionnÃ©e
 	private static Cursor servicesCursor = null;
 
 	private long mRowId = -1;
@@ -102,7 +102,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 	Spinner boitierHDSpinner = null;
 	Spinner disqueSpinner = null;
 
-	// identifiant du dernier user à  être entré dans l'activité
+	// identifiant du dernier user Ã  Ãªtre entrÃ© dans l'activitÃ©
 	public static String lastUser = "";
     private Button buttonRecur, ButtonDateDeb, ButtonTimeDeb, ButtonDateFin, ButtonTimeFin;
     CheckBox lendi, mordi, credi, joudi, dredi, sadi, gromanche;
@@ -246,13 +246,13 @@ public class ProgrammationActivity extends Activity implements PvrConstants
             		setFin();
             		if (getDuree() < 1)
             		{
-            			afficherMsgErreur("Vous ne pouvez pas utiliser cette durée !");
+            			afficherMsgErreur("Vous ne pouvez pas utiliser cette durÃ©e !");
             		}
             	}
             }
         });
 
-        // Qualité
+        // Qualitï¿½
         chainesSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
@@ -266,7 +266,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 			}
         });
 
-        // Récurrence
+        // RÃ©currence
         if (buttonRecur != null) {
 	        buttonRecur.setOnClickListener(new OnClickListener() {
 				@Override
@@ -328,14 +328,14 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 	        		Editor editor = mgr.edit();
 					editor.putString(KEY_SPLASH_PVR, Utils.getFBMVersion(this));
 					editor.commit();
-	        		afficherMsgErreur("La liste des chaînes est vide, elle va être actualisée dans quelques secondes.");
+	        		afficherMsgErreur("La liste des chaÃ®nes est vide, elle va Ãªtre actualisÃ©e dans quelques secondes.");
 	        	}
 	        	else
 	        	{
 	        		showPasDeChaine();
 	        	}
 			}
-			else // Sinon on met quand même à  jour la liste des disques
+			else // Sinon on met quand mï¿½me ï¿½ jour la liste des disques
 			{
 				runProgNetwork(false, true);
 			}
@@ -358,10 +358,10 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 	    	alertDialog.setTitle("Rafraichissement en cours");
 	    	alertDialog.setIcon(R.drawable.icon_fbm_reverse);
 	    	alertDialog.setMessage(
-				"Un rafraichissement est déjà  en cours.\n\n"+
-				"Réessayez lorsqu'il sera terminé."
+				"Un rafraichissement est dÃ©jÃ  en cours.\n\n"+
+				"RÃ©essayez lorsqu'il sera terminÃ©."
 			);
-	    	alertDialog.setButton(DialogInterface.BUTTON_NEUTRAL, "Réessayer", new DialogInterface.OnClickListener()
+	    	alertDialog.setButton(DialogInterface.BUTTON_NEUTRAL, "RÃ©essayer", new DialogInterface.OnClickListener()
 			{
 				public void onClick(DialogInterface dialog, int which)
 				{
@@ -412,9 +412,9 @@ public class ProgrammationActivity extends Activity implements PvrConstants
     
     /* Creates the menu items */
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, MENU_UPDATE_HD, 1, "Mettre à  jour disques").setIcon(android.R.drawable.ic_menu_rotate);
-        menu.add(0, MENU_UPDATE_CHAINES, 2, "Mettre à  jour chaînes").setIcon(android.R.drawable.ic_menu_rotate);
-        menu.add(0, MENU_UPDATE_CHAINES, 0, "Tout mettre à  jour").setIcon(android.R.drawable.ic_menu_rotate);
+        menu.add(0, MENU_UPDATE_HD, 1, "Mettre Ã  jour disques").setIcon(android.R.drawable.ic_menu_rotate);
+        menu.add(0, MENU_UPDATE_CHAINES, 2, "Mettre Ã  jour chaÃ®nes").setIcon(android.R.drawable.ic_menu_rotate);
+        menu.add(0, MENU_UPDATE_CHAINES, 0, "Tout mettre Ã  jour").setIcon(android.R.drawable.ic_menu_rotate);
         return true;
     }
 
@@ -638,7 +638,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 				getString(R.string.pvrSamedi), getString(R.string.pvrDimanche) };
 
     	alertDialog = new AlertDialog.Builder(this).create();
-    	alertDialog.setTitle("Récurrence");
+    	alertDialog.setTitle("Rï¿½currence");
     	alertDialog.setIcon(R.drawable.fm_magnetoscope);
 		alertDialog.setMessage(getString(R.string.pvrTxtRecurrenceInfo));
 		alertDialog.setButton("Continuer", new DialogInterface.OnClickListener() {
@@ -682,11 +682,11 @@ public class ProgrammationActivity extends Activity implements PvrConstants
     public void showPasDeChaine()
     {
     	alertDialog = new AlertDialog.Builder(this).create();
-    	alertDialog.setTitle("La liste des chaînes du magnétoscope est vide");
+    	alertDialog.setTitle("La liste des chaines du magnÃ©toscope est vide");
     	alertDialog.setIcon(R.drawable.icon_fbm_reverse);
     	alertDialog.setMessage(
-			"Ceci est peut être dà» à  un problème réseau lors du téléchargement.\n"+
-			"Vous pouvez rafraichir la liste des chaînes en utilisant le bouton MENU de votre téléphone "+
+			"Ceci est peut Ãªtre dÃ» Ã  un problÃ¨me rÃ©seau lors du tÃ©lÃ©chargement.\n"+
+			"Vous pouvez rafraichir la liste des chaÃ®nes en utilisant le bouton MENU de votre tÃ©lÃ©phone "+
 			"ou en cliquant ci-dessous."
 		);
     	alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Rafraichir", new DialogInterface.OnClickListener()
@@ -726,10 +726,10 @@ public class ProgrammationActivity extends Activity implements PvrConstants
     
     private void preparerActivite()
     {
-        // Dans tous les cas on remplit le spinner du boitier (même si on l'affiche pas)
-    	// car son init remplit certaines variables nécessaires aux disques (chaque disque dépend d'un boitier)
+        // Dans tous les cas on remplit le spinner du boitier (mÃªme si on l'affiche pas)
+    	// car son init remplit certaines variables nÃ©cessaires aux disques (chaque disque dÃ©pend d'un boitier)
     	remplirSpinner(R.id.pvrPrgBoitier);
-    	// Suppression du layout de sélection si on n'a qu'un boitier HD
+    	// Suppression du layout de sÃ©lection si on n'a qu'un boitier HD
 		if (!plusieursBoitiersHD)
 		{
     		findViewById(R.id.pvrPrgLayoutBoitier).setVisibility(View.GONE);
@@ -816,8 +816,8 @@ public class ProgrammationActivity extends Activity implements PvrConstants
             }
             
             /**
-             * doAction: traite le formulaire, et envoie la requete à  la console de free
-             * @return : String le message d'erreur, le cas échéant, null sinon
+             * doAction: traite le formulaire, et envoie la requete ï¿½ la console de free
+             * @return : String le message d'erreur, le cas ï¿½chï¿½ant, null sinon
              */
             private String doAction()
             {
@@ -845,7 +845,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 
         		// Service
         		Spinner spinnerQualite = (Spinner) findViewById(R.id.pvrPrgQualite);
-        		// TODO : créer une requete plutot que de chercher dans le cursor
+        		// TODO : crÃ©er une requete plutot que de chercher dans le cursor
         		Cursor mServicesCursor = db.fetchServicesChaine(mChaineID, mBoitierHD);
         		mServicesCursor.moveToPosition(spinnerQualite.getSelectedItemPosition());
         		Log.d(TAG,"SERVICE : "+mServicesCursor.getString(mServicesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_SERVICE_DESC)));
@@ -864,9 +864,9 @@ public class ProgrammationActivity extends Activity implements PvrConstants
         		
         		// Disque
         		int disqueId = disqueSpinner.getSelectedItemPosition();
-        		// TODO : Ici, si l'abonné n'a pas de disque dur dans sa Freebox : problème !
+        		// TODO : Ici, si l'abonnÃ© n'a pas de disque dur dans sa Freebox : problÃ¨me !
 
-        		// TODO : créer une requete plutot que de chercher dans le cursor
+        		// TODO : crÃ©er une requete plutot que de chercher dans le cursor
         		Cursor mDisquesCursor = db.getListeDisques(mBoitierHD);
        			mDisquesCursor.moveToPosition(disqueId);
        			where_id = mDisquesCursor.getInt(mDisquesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_DISQUE_ID));
@@ -882,7 +882,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
         		postVars.add(new BasicNameValuePair("emission", emission));
         		postVars.add(new BasicNameValuePair("where_id", where_id.toString()));
         		
-        		// Récurrence
+        		// RÃ©currence
         		String repeat_a = "";
             	for (int i = 0; i < 7; i++) {
             		if (joursChoisis[i]) {
@@ -928,8 +928,8 @@ public class ProgrammationActivity extends Activity implements PvrConstants
         		}
         		else
         		{
-        			// On enregistre le total de minutes d'enregistrement effectués avec l'application
-        			// plus tard on pourra l'afficher à  l'utilisateur
+        			// On enregistre le total de minutes d'enregistrement effectuÃ©s avec l'application
+        			// plus tard on pourra l'afficher Ã  l'utilisateur
         			SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
         			int total = mgr.getInt(KEY_TOTAL_ENR, 0);
         			total += duree;
@@ -1013,7 +1013,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 			}
 	        catch (ParseException e)
 	        {
-	        	Log.e(TAG,"Problème conversion de date deb ! "+e.getMessage());
+	        	Log.e(TAG,"Problï¿½me conversion de date deb ! "+e.getMessage());
 				e.printStackTrace();
 				showErreurDate("fin");
 			}
@@ -1028,9 +1028,9 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 			}
 	        catch (ParseException e)
 	        {
-	        	Log.e(TAG,"Problème conversion de date fin ! "+e.getMessage());
+	        	Log.e(TAG,"ProblÃ¨me conversion de date fin ! "+e.getMessage());
 				e.printStackTrace();
-				showErreurDate("début");
+				showErreurDate("dÃ©but");
 			}
 	        setDuree();
 	        refreshDateTimeButtons();
@@ -1044,11 +1044,11 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 	private void showErreurDate(String q)
 	{
     	alertDialog = new AlertDialog.Builder(this).create();
-    	alertDialog.setTitle("Problème");
+    	alertDialog.setTitle("ProblÃ¨me");
     	alertDialog.setIcon(R.drawable.icon_fbm_reverse);
     	alertDialog.setMessage(
-			"Une erreur est survenue lors de la récupération de la date.\n\n"+
-			"Veuillez vérifier la date de "+q+" de votre enregistrement."
+			"Une erreur est survenue lors de la rÃ©cupÃ©ration de la date.\n\n"+
+			"Veuillez vÃ©rifier la date de "+q+" de votre enregistrement."
 		);
     	alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
 			{
@@ -1076,7 +1076,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 
         if (mRowId >= 0)
         {
-	        // Récupération des infos concernant cet enregistrement
+	        // RÃ©cupÃ©ration des infos concernant cet enregistrement
 	        EnregistrementsDbAdapter db = new EnregistrementsDbAdapter(this);
 	        db.open();
 	        Cursor c = db.fetchEnregistrement(mRowId);
@@ -1150,7 +1150,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
     	if ((disquesCursor != null) && (disquesCursor.getCount() > 0))
     	{
 	    	int disqueId = disqueSpinner.getSelectedItemPosition();
-	    	// Au démarrage de l'activity, rien n'est encore selectionné
+	    	// Au dÃ©marrage de l'activity, rien n'est encore selectionnÃ©
 	    	if (disqueId < 0)
 	    		disqueId = 0;
 			disquesCursor.moveToPosition(disqueId);
@@ -1212,7 +1212,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 					chainesSpinnerAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_spinner_item, chainesCursor, chaines, to);
 					chainesSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 					spinner.setAdapter(chainesSpinnerAdapter);
-					// TODO : Modifier pour ajouter le numéro de chaîne + le logo
+					// TODO : Modifier pour ajouter le numÃ©ro de chaÃ®ne + le logo
 				}
 				break;
 				

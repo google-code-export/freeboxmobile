@@ -20,7 +20,7 @@ import android.content.SharedPreferences.Editor;
 import android.util.Log;
 
 /**
- * tÈlÈcharge la liste des chaines et disques
+ * t√©l√©charge la liste des chaines et disques
  * $Id$
  */
 
@@ -105,7 +105,7 @@ public class PvrNetwork extends FBMNetTask implements PvrConstants // AsyncTask<
 					{
 						nbBoitiers = jObject.getInt("boxes");
 						
-						// On rÈcupËre les favoris
+						// On r√©cup√®re les favoris
 						jArray = jObject.getJSONArray("chaines");
 						size = jArray.length();
 			    		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -125,8 +125,8 @@ public class PvrNetwork extends FBMNetTask implements PvrConstants // AsyncTask<
 						size = jArray.length();
 						for (i=0 ; i < size ; i++)
 						{
-							// En insÈrant en base comme cela, si un boitier n'a pas de disque
-							// il ne sera paas rÈfÈrencÈ (ce qui est voulu)
+							// En ins√©rant en base comme cela, si un boitier n'a pas de disque
+							// il ne sera pas r√©f√©renc√© (ce qui est voulu)
 							jDiskObject = jArray.getJSONObject(i);
 					    	db.createBoitierDisque(
 					    			"Freebox HD "+(boitier+1),
@@ -149,9 +149,9 @@ public class PvrNetwork extends FBMNetTask implements PvrConstants // AsyncTask<
 						// ON RECUPERE LA LISTE DES CHAINES DE CE BOITIER
 						jArray = jObject.getJSONArray("services");
 						max = jArray.length();
-						dProgressMessage("Actualisation de la liste des "+max+" chaÓnes pour le boitier "+(int)(boitier+1)+" ("+nbBoitiers+" boitier"+(nbBoitiers >1?"s":"")+" en tout)...", max);
+						dProgressMessage("Actualisation de la liste des "+max+" cha√Ænes pour le boitier "+(int)(boitier+1)+" ("+nbBoitiers+" boitier"+(nbBoitiers >1?"s":"")+" en tout)...", max);
 						publishProgress(0);
-						Log.d(TAG,"RÈcupÈration chaines boitier "+boitier+" - nb chaines = "+max);
+						Log.d(TAG,"R√©cup√©ration chaines boitier "+boitier+" - nb chaines = "+max);
 						for (i=0 ; i < max ; i++)
 						{
 							publishProgress(i);
@@ -201,7 +201,7 @@ public class PvrNetwork extends FBMNetTask implements PvrConstants // AsyncTask<
 	        }
 	        else
 	        {
-	        	// TODO : Si on a un boitier dÈbranchÈ, on tombe ici mais il ne faudrait pas
+	        	// TODO : Si on a un boitier d√©branch√©, on tombe ici mais il ne faudrait pas
 	        	// sortir comme ca (ca empeche la maj de tous les autres boitiers)
 	        	ok = false;
 	        	break;
@@ -216,7 +216,7 @@ public class PvrNetwork extends FBMNetTask implements PvrConstants // AsyncTask<
     	if (ok)
     	{
         	doSwap(db);
-	    	// On met ‡† jour le timestamp du dernier refresh
+	    	// On met √† jour le timestamp du dernier refresh
         	// TODO : Peut etre mettre mgr dans FBMNetTask afin qu'il soit toujours accessible et qu'on puisse toujours faire l'update ci-dessous
         	a = getActivity();
         	if (a != null)
@@ -229,7 +229,7 @@ public class PvrNetwork extends FBMNetTask implements PvrConstants // AsyncTask<
 	    	db.close();
 	    	return true;
     	}
-        Log.d(TAG,"==> Impossible de tÈlÈcharger le json des chaines/disques");
+        Log.d(TAG,"==> Impossible de t√©l√©charger le json des chaines/disques");
     	db.close();
         return false;
     }

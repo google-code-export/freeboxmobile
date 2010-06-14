@@ -12,7 +12,7 @@ import android.content.Context;
 import android.util.Log;
 
 /**
- * télécharge la liste des enregistrements et les stocke en base
+ * tÃ©lÃ©charge la liste des enregistrements et les stocke en base
  * $Id$
  */
 
@@ -22,7 +22,7 @@ public class EnregistrementsNetwork implements Constants
 
     /**
      * HTML --> DB
-     * Télécharge la page HTML de l'interface, et stocke la liste des enregistrements dans
+     * TÃ©lÃ©charge la page HTML de l'interface, et stocke la liste des enregistrements dans
      * la base sqlite (via la fonction recupererEnregistrements)
      */
     public static boolean updateEnregistrementsFromConsole(Context c)
@@ -84,7 +84,7 @@ public class EnregistrementsNetwork implements Constants
 	        		bNum = 0;
 	        	}
 			}
-			// Pour chaque boitier, on récupère la liste des enregistrements
+			// Pour chaque boitier, on rÃ©cupÃ¨re la liste des enregistrements
 	    	int debut = contenu.indexOf("<div class=\"table block\">") + 25;
 	    	int fin = contenu.indexOf("<div class=\"clearer\"></div>");
 	
@@ -100,8 +100,8 @@ public class EnregistrementsNetwork implements Constants
     }
 
     /**
-     * Récupère les enregistrements depuis la table HTML de la console correspondant
-     * à  la liste des enregistrements programmés
+     * RÃ©cupÃ¨re les enregistrements depuis la table HTML de la console correspondant
+     * Ã  la liste des enregistrements programmÃ©s
      * Stocke cette liste dans la base sqlite
      */
     private static boolean recupererEnregistrements(Context c, int bId)
@@ -122,7 +122,7 @@ public class EnregistrementsNetwork implements Constants
 			{
 				tableEnregistrements = tableEnregistrements.substring(debut);
 	        	
-	        	// Récupération des infos
+	        	// RÃ©cupÃ©ration des infos
 				chaine =		recupererChamp("<strong>", "<");
 				date =			recupererChamp("<strong>", "<");
 				heure =			recupererChamp("<strong>", "<");
@@ -162,8 +162,8 @@ public class EnregistrementsNetwork implements Constants
     }
     
     /**
-     * Récupère un "champ" (date, chaine...) pour un enregistrement programmé
-     * @param debut	identificateur du début du champ
+     * RÃ©cupÃ¨re un "champ" (date, chaine...) pour un enregistrement programmÃ©
+     * @param debut	identificateur du dÃ©but du champ
      * @param fin	identificateur de fin du champ
      * @return		le texte compris entre "debut" et "fin"
      */
@@ -172,7 +172,7 @@ public class EnregistrementsNetwork implements Constants
     	String champ;
     	int pos;
     	
-    	// On se place au début
+    	// On se place au dÃ©but
     	pos = tableEnregistrements.indexOf(debut);    	
     	if (pos <= 0 || pos + debut.length() > tableEnregistrements.length())
     	{
@@ -181,7 +181,7 @@ public class EnregistrementsNetwork implements Constants
     	champ = tableEnregistrements.substring(pos + debut.length());
     	tableEnregistrements = tableEnregistrements.substring(pos + debut.length());
     	
-    	// On coupe après la fin
+    	// On coupe aprï¿½s la fin
     	pos = champ.indexOf(fin);
     	if (pos <= 0 || pos > champ.length() || pos > tableEnregistrements.length())
     	{

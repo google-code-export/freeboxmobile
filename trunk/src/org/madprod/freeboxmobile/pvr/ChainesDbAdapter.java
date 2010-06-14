@@ -25,6 +25,8 @@ public class ChainesDbAdapter implements GuideConstants
 	public static final String KEY_FAVORIS_ID = "fav_id";
 	public static final String KEY_FAVORIS_TS = "fav_ts"; // timestamp of the last check
 	
+	public static final String KEY_HISTO_DATE = "date";
+
     public static final String KEY_CHAINE_NAME = "name";
     public static final String KEY_CHAINE_ID = "chaine_id"; // = gc_canal (KEY_GUIDECHAINE_CANAL)
     public static final String KEY_CHAINE_BOITIER = "chaine_boitier";
@@ -34,7 +36,7 @@ public class ChainesDbAdapter implements GuideConstants
     public static final String KEY_GUIDECHAINE_ID = "gc_id"; // = channel_id (KEY_PROG_CHANNEL_ID)
     public static final String KEY_GUIDECHAINE_NAME = "gc_name";
     public static final String KEY_GUIDECHAINE_CANAL = "gc_canal"; // = chaine_id (KEY_CHAINE_ID)
-    public static final String KEY_GUIDECHAINE_FAVORIS = "gc_favoris"; // TODO : remove, unused
+//    public static final String KEY_GUIDECHAINE_FAVORIS = "gc_favoris"; // TODO : remove, unused
     
     public static final String KEY_SERVICE_DESC = "service_desc";
     public static final String KEY_SERVICE_ID = "service_id";
@@ -73,10 +75,14 @@ public class ChainesDbAdapter implements GuideConstants
     private static final String TABLE_FAVORIS = " ("
     	+ KEY_FAVORIS_ID +" integer primary key, "
     	+ KEY_FAVORIS_TS +" datetime not null);";
-    
+
 	private static final String TABLE_HISTOGUIDE = " ("
     	+ KEY_ROWID+" integer primary key autoincrement, "
     	+ KEY_PROG_DATETIME_DEB+" datetime not null);";
+
+	private static final String TABLE_DAYHISTOGUIDE = " ("
+    	+ KEY_ROWID+" integer primary key autoincrement, "
+    	+ KEY_HISTO_DATE +" date not null);";
 
 	private static final String TABLE_PROGRAMMES = " ("
     	+ KEY_ROWID+" integer primary key autoincrement, "
@@ -95,7 +101,7 @@ public class ChainesDbAdapter implements GuideConstants
         + KEY_GUIDECHAINE_IMAGE+" text not null,"
         + KEY_GUIDECHAINE_CANAL+" integer not null,"
         + KEY_GUIDECHAINE_ID+" integer not null,"
-        + KEY_GUIDECHAINE_FAVORIS+" integer not null,"
+//        + KEY_GUIDECHAINE_FAVORIS+" integer not null,"
         + KEY_GUIDECHAINE_FBXID+" integer not null);";
 
 	private static final String TABLE_CHAINES = " ("
@@ -134,9 +140,10 @@ public class ChainesDbAdapter implements GuideConstants
     private static final String DATABASE_TABLE_PROGRAMMES = "programmes";
     private static final String DATABASE_TABLE_GUIDECHAINES = "guidechaines";
     private static final String DATABASE_TABLE_HISTOGUIDE = "histoguide";
+    private static final String DATABASE_TABLE_DAYHISTOGUIDE = "dayhistoguide";
     private static final String DATABASE_TABLE_FAVORIS = "favoris";
 
-    private static final int DATABASE_VERSION = 29;
+    private static final int DATABASE_VERSION = 30;
 
     private static final String DATABASE_CREATE_CHAINES =
         "create table "+DATABASE_TABLE_CHAINES+TABLE_CHAINES;
@@ -161,6 +168,9 @@ public class ChainesDbAdapter implements GuideConstants
 
     private static final String DATABASE_CREATE_HISTOGUIDE =
         "create table "+DATABASE_TABLE_HISTOGUIDE+TABLE_HISTOGUIDE;
+
+    private static final String DATABASE_CREATE_DAYHISTOGUIDE =
+        "create table "+DATABASE_TABLE_DAYHISTOGUIDE+TABLE_DAYHISTOGUIDE;
 
     private static final String DATABASE_CREATE_FAVORIS =
         "create table "+DATABASE_TABLE_FAVORIS+TABLE_FAVORIS;
@@ -188,6 +198,7 @@ public class ChainesDbAdapter implements GuideConstants
             db.execSQL(DATABASE_CREATE_PROGRAMMES);
             db.execSQL(DATABASE_CREATE_GUIDECHAINES);
             db.execSQL(DATABASE_CREATE_HISTOGUIDE);
+            db.execSQL(DATABASE_CREATE_DAYHISTOGUIDE);
             db.execSQL(DATABASE_CREATE_FAVORIS);
         }
 
@@ -204,6 +215,7 @@ public class ChainesDbAdapter implements GuideConstants
             db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_PROGRAMMES);
             db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_GUIDECHAINES);
             db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_HISTOGUIDE);
+            db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_DAYHISTOGUIDE);
             db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_FAVORIS);
             onCreate(db);
         }
@@ -243,10 +255,10 @@ public class ChainesDbAdapter implements GuideConstants
 
     /*
      * METHODES POUR LES FAVORIS
-     * PRINCIPE : lors du mise ‡† jour :
-     * - on met ‡† jour les timestamp des favoris qui existent dÈj‡†
+     * PRINCIPE : lors du mise √† jour :
+     * - on met √† jour les timestamp des favoris qui existent d√©j√†
      * - on ajoute les nouveaux favoris
-     * - puis on supprime les vieux timestamp qui restent (qui correspondent aux chaÓnes qui ne sont plus en favoris)
+     * - puis on supprime les vieux timestamp qui restent (qui correspondent aux cha√Ænes qui ne sont plus en favoris)
      */
     
 	public long updateFavoris(int fav_id, String datetime)
@@ -279,10 +291,25 @@ public class ChainesDbAdapter implements GuideConstants
 
     /*
      * METHODES POUR L'HISTORIQUE DU GUIDE
-     * Histoguide permet de savoir si on a dÈj‡† chargÈ les programmes pour 
-     * un timestamp donnÈ
+     * Histoguide permet de savoir si on a d√©j√† charg√© les programmes pour 
+     * un timestamp donn√©
      */
     
+	/**
+	 * DayHistoGuide : savoir si on a en cache (db) tous les programmes d'une journ√©e
+	 */
+    public long createDayHistoGuide(String date)
+    {
+    	ContentValues initialValues = new ContentValues();
+    	initialValues.put(KEY_HISTO_DATE, date);
+        return mDb.insert(DATABASE_TABLE_DAYHISTOGUIDE, null, initialValues);
+    }
+
+    /**
+     * HistoGuide : savoir si on a en cache (db) les programmes des 4 heures qui suivent un timestamp 
+     * @param datetime
+     * @return
+     */
     public long createHistoGuide(String datetime)
     {
     	ContentValues initialValues = new ContentValues();
@@ -290,6 +317,20 @@ public class ChainesDbAdapter implements GuideConstants
         return mDb.insert(DATABASE_TABLE_HISTOGUIDE, null, initialValues);
     }
     
+	public long isDayHistoGuidePresent(String date)
+	{
+		return mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE_DAYHISTOGUIDE + " WHERE "+KEY_HISTO_DATE+" = '"+date+"'").simpleQueryForLong();
+	}
+
+	public long deleteOldDayHisto()
+	{
+		Calendar c = Calendar.getInstance();
+    	Integer mois = c.get(Calendar.MONTH)+1;
+    	Integer jour = c.get(Calendar.DAY_OF_MONTH);
+		String date = c.get(Calendar.YEAR)+"-"+(mois<10?"0":"")+mois.toString()+"-"+(jour<10?"0":"")+jour.toString();
+		return mDb.delete(DATABASE_TABLE_HISTOGUIDE, KEY_PROG_DATETIME_DEB+" < '"+date+"'", null);
+	}
+
 	public long isHistoGuidePresent(String datetime)
 	{
 		return mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE_HISTOGUIDE + " WHERE "+KEY_PROG_DATETIME_DEB+" = '"+datetime+"'").simpleQueryForLong();
@@ -297,18 +338,25 @@ public class ChainesDbAdapter implements GuideConstants
 	
 	public long deleteOldHisto()
 	{
+		long res;
 		Calendar c = Calendar.getInstance();
     	Integer mois = c.get(Calendar.MONTH)+1;
     	Integer jour = c.get(Calendar.DAY_OF_MONTH);
-		String date = c.get(Calendar.YEAR)+"-"+(mois<10?"0":"")+mois.toString()+"-"+(jour<10?"0":"")+jour.toString()+" 00:00:00";
-		return mDb.delete(DATABASE_TABLE_HISTOGUIDE, KEY_PROG_DATETIME_DEB+" < '"+date+"'", null);
+		String date = c.get(Calendar.YEAR)+"-"+(mois<10?"0":"")+mois.toString()+"-"+(jour<10?"0":"")+jour.toString();
+		res = mDb.delete(DATABASE_TABLE_HISTOGUIDE, KEY_PROG_DATETIME_DEB+" < '"+date+" 00:00:00'", null);
+		res += mDb.delete(DATABASE_TABLE_DAYHISTOGUIDE, KEY_HISTO_DATE+" < '"+date+"'", null);
+		return res;
 	}
 	
-	// UtilisÈ en cas d'ajout de nouvelles chaines aux favoris, 
+	// Utilis√© en cas d'ajout de nouvelles chaines aux favoris, 
 	// comme la nouvelle chaine ne sera pas dans l'historique...
 	public long clearHistorique()
 	{
-		return mDb.delete(DATABASE_TABLE_HISTOGUIDE, null, null);
+		long res;
+		
+		res = mDb.delete(DATABASE_TABLE_DAYHISTOGUIDE, null, null);
+		res += mDb.delete(DATABASE_TABLE_HISTOGUIDE, null, null);
+		return res;
 	}
 
     /*
@@ -322,7 +370,7 @@ public class ChainesDbAdapter implements GuideConstants
         initialValues.put(KEY_GUIDECHAINE_CANAL, canal);
         initialValues.put(KEY_GUIDECHAINE_NAME, name);
         initialValues.put(KEY_GUIDECHAINE_IMAGE, image);
-        initialValues.put(KEY_GUIDECHAINE_FAVORIS, 0);
+//        initialValues.put(KEY_GUIDECHAINE_FAVORIS, 0);
         return mDb.insert(DATABASE_TABLE_GUIDECHAINES, null, initialValues);
     }
 
@@ -419,12 +467,6 @@ public class ChainesDbAdapter implements GuideConstants
 	public long isProgrammePresent(int channelId, String horaire_deb)
 	{
 		return mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE_PROGRAMMES + " WHERE "+KEY_PROG_CHANNEL_ID+" = "+channelId+" AND "+KEY_PROG_DATETIME_DEB+" = '"+horaire_deb+"'").simpleQueryForLong();
-	}
-	
-	// TODO : Remove
-	public int deleteProgsChaine_unused(int id)
-	{
-		return mDb.delete(DATABASE_TABLE_PROGRAMMES, KEY_PROG_CHANNEL_ID+" = "+id, null);
 	}
 	
 	public int deleteOldProgs()
