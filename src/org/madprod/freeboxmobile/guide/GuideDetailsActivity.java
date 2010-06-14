@@ -55,7 +55,7 @@ public class GuideDetailsActivity extends Activity implements GuideConstants
 	        titreEmission.setText(extras.getString(ChainesDbAdapter.KEY_PROG_TITLE));
 	        descEmission.setText(extras.getString(ChainesDbAdapter.KEY_PROG_RESUM_L));
 	        Integer duree = extras.getInt(ChainesDbAdapter.KEY_PROG_DUREE);
-	        dureeEmission.setText("Durée : "+(duree.toString())+" minute"+(duree > 1 ? "s":""));
+	        dureeEmission.setText("DurÃ©e : "+(duree.toString())+" minute"+(duree > 1 ? "s":""));
 	
 	        String dt = extras.getString(ChainesDbAdapter.KEY_PROG_DATETIME_DEB);
 	        String date[] = dt.split(" ");
@@ -72,13 +72,13 @@ public class GuideDetailsActivity extends Activity implements GuideConstants
 				cdate += amj[2];
 				cdate += " "+mois[c.get(Calendar.MONTH)];
 				cdate += " "+amj[0];
-				cdate += " à  "+hm[0]+"h"+hm[1];
-		        dateHeureEmission.setText("Diffusé le "+cdate);
+				cdate += " Ã  "+hm[0]+"h"+hm[1];
+		        dateHeureEmission.setText("DiffusÃ© le "+cdate);
 			}
 			catch (ParseException e)
 			{
 				e.printStackTrace();
-				dateHeureEmission.setText("Diffusé le "+amj[2]+"/"+amj[1]+"/"+amj[0]+" à  "+hm[0]+"h"+hm[1]);
+				dateHeureEmission.setText("DiffusÃ© le "+amj[2]+"/"+amj[1]+"/"+amj[0]+" Ã  "+hm[0]+"h"+hm[1]);
 			}
 
 	        partager.setOnClickListener(
@@ -89,10 +89,10 @@ public class GuideDetailsActivity extends Activity implements GuideConstants
 						{
 							String text = titreEmission.getText()+"\n"+dateHeureEmission.getText()+
 								" sur "+extras.getString(ChainesDbAdapter.KEY_GUIDECHAINE_NAME)+
-								"\n\n"+"Partagé par FreeboxMobile pour Android.";
+								"\n\n"+"PartagÃ© par FreeboxMobile pour Android.";
 					        Intent i = new Intent(Intent.ACTION_SEND)
 				    			.putExtra(Intent.EXTRA_TEXT, text).setType("text/plain")
-				    			.putExtra(Intent.EXTRA_SUBJECT, "ProgrammeTV partagé par FreeboxMobile")
+				    			.putExtra(Intent.EXTRA_SUBJECT, "ProgrammeTV partagÃ© par FreeboxMobile")
 //				    			.addCategory(Intent.CATEGORY_DEFAULT)
 				    			;
 					    	startActivityForResult(Intent.createChooser(i, "Partagez ce programme avec"),0);
@@ -148,9 +148,9 @@ public class GuideDetailsActivity extends Activity implements GuideConstants
         }
         else
         {
-        	Log.d(TAG,"GUIDEDETAILS ouvert sans données");
+        	Log.d(TAG,"GUIDEDETAILS ouvert sans donnÃ©es");
         }
-        setTitle(getString(R.string.app_name)+" - Détails du programme");
+        setTitle(getString(R.string.app_name)+" - DÃ©tails du programme");
     }
     
     @Override

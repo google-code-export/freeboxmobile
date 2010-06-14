@@ -1,9 +1,6 @@
 package org.madprod.freeboxmobile.guide;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Iterator;
 
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.FBMNetTask;
@@ -18,15 +15,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.AdapterView.OnItemSelectedListener;
 
@@ -39,7 +33,6 @@ import android.widget.AdapterView.OnItemSelectedListener;
 
 public class GuideMenuActivity extends Activity implements GuideConstants
 {
-	private ArrayList<Favoris> listeFavoris = new ArrayList<Favoris>();
 	private ChainesDbAdapter mDbHelper;
 	private Spinner jourChaine;
 	
@@ -56,7 +49,6 @@ public class GuideMenuActivity extends Activity implements GuideConstants
         mDbHelper.open();
         Log.d(TAG,"Nettoyage des anciens programmes effacés : "+mDbHelper.deleteOldProgs());
         Log.d(TAG,"Nettoyage de l'ancienne historique : "+mDbHelper.deleteOldHisto());
-
     }
 	
 	@Override
@@ -113,7 +105,6 @@ public class GuideMenuActivity extends Activity implements GuideConstants
             	}
             );
         GuideUtils.makeCalDates();
-        getFavoris();
         final Spinner datesSpinner = (Spinner) findViewById(R.id.SpinnerDate);
         final Spinner heuresSpinner = (Spinner) findViewById(R.id.SpinnerHeure);
         jourChaine = (Spinner) findViewById(R.id.SpinnerJourChaine);
@@ -191,75 +182,21 @@ public class GuideMenuActivity extends Activity implements GuideConstants
 	protected void onResume()
 	{
 		super.onResume();
-		getFavoris();
+    	GuideUtils.displayFavoris(this, 
+        		new View.OnClickListener()
+    			{
+    				public void onClick(View view)
+    				{
+    					Log.d(TAG, "click "+(Integer)view.getTag());
+    	    			String selectedDate = GuideUtils.calDates.get(jourChaine.getSelectedItemPosition());
+    					Intent i = new Intent(GuideMenuActivity.this, GuideChaineActivity.class);
+    					i.putExtra("DATE", selectedDate);
+    					i.putExtra("CHAINE", (Integer)view.getTag());
+    			        startActivity(i);
+    				}
+    			},
+    			R.id.ChoixSelectedLinearLayout, -1);
 	}
-	
-	private void getFavoris()
-    {
-		Log.d(TAG,"getFavoris");
-
-		listeFavoris.clear();
-
-    	Cursor chainesIds = mDbHelper.getFavoris();
-    	startManagingCursor (chainesIds);
-        if (chainesIds != null)
-		{
-			Favoris f;
-			if (chainesIds.moveToFirst())
-			{
-				Cursor chaineCursor;
-				int CI_progchannel_id = chainesIds.getColumnIndexOrThrow(ChainesDbAdapter.KEY_FAVORIS_ID);
-				do
-				{
-					f = new Favoris();
-					f.guidechaine_id = chainesIds.getInt(CI_progchannel_id);
-					chaineCursor = mDbHelper.getGuideChaine(f.guidechaine_id);
-					if ((chaineCursor != null) && (chaineCursor.moveToFirst()))
-					{
-						f.canal = chaineCursor.getInt(chaineCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_CANAL));
-						f.name = chaineCursor.getString(chaineCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_NAME));
-						f.image = chaineCursor.getString(chaineCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE));
-						chaineCursor.close();
-					}
-					else
-					{
-						if (chaineCursor != null)
-						{
-							chaineCursor.close();							
-						}
-					}
-					listeFavoris.add(f);
-				} while (chainesIds.moveToNext());
-			}
-			// Ici on trie pour avoir les listes de programmes dans l'ordre des numéros de chaine
-			Collections.sort(listeFavoris);
-
-			// On créé l'horizontal scrollview en haut avec la liste des chaines favorites
-			Iterator<Favoris> it = listeFavoris.iterator();
-	    	LinearLayout csly = (LinearLayout) findViewById(R.id.ChoixSelectedLinearLayout);
-	    	csly.removeAllViews();
-	    	csly.setGravity(Gravity.CENTER);
-			while(it.hasNext())
-			{
-				final Favoris ff = it.next();
-				csly.addView(GuideUtils.addVisuelChaine(ff.image, ff.name, (Integer)ff.guidechaine_id,
-					new View.OnClickListener()
-            		{
-            			public void onClick(View view)
-            			{
-            				Log.d(TAG, "click "+(Integer)view.getTag());
-//            				Toast.makeText(GuideMenuActivity.this, "Fonctionnalité non disponible pour l'instant", Toast.LENGTH_SHORT).show();
-                			String selectedDate = GuideUtils.calDates.get(jourChaine.getSelectedItemPosition());
-        					Intent i = new Intent(GuideMenuActivity.this, GuideChaineActivity.class);
-        					i.putExtra("DATE", selectedDate);
-        					i.putExtra("CHAINE", ff.guidechaine_id);
-        			        startActivity(i);
-            			}
-            		},
-            		this));
-			}
-		}
-    }
 
 	private void displayAboutGuide()
     {	
@@ -292,7 +229,7 @@ public class GuideMenuActivity extends Activity implements GuideConstants
 
         protected Integer doInBackground(Void... arg0)
         {
-        	new GuideNetwork(GuideMenuActivity.this, null, true, false, true, false).getData(); // To get chaines logos
+        	new GuideNetwork(GuideMenuActivity.this, null, 4, true, true, false).getData(); // To get chaines logos
         	// TODO : handle return type
         	new PvrNetwork(false, false).getData(); // to get favoris list
         	return 1;
@@ -303,7 +240,20 @@ public class GuideMenuActivity extends Activity implements GuideConstants
     		setProgressBarIndeterminateVisibility(false);
         	if (result != DATA_NOT_DOWNLOADED)
         	{
-        		getFavoris();
+            	GuideUtils.displayFavoris(GuideMenuActivity.this, 
+                		new View.OnClickListener()
+            			{
+            				public void onClick(View view)
+            				{
+            					Log.d(TAG, "click "+(Integer)view.getTag());
+            	    			String selectedDate = GuideUtils.calDates.get(jourChaine.getSelectedItemPosition());
+            					Intent i = new Intent(GuideMenuActivity.this, GuideChaineActivity.class);
+            					i.putExtra("DATE", selectedDate);
+            					i.putExtra("CHAINE", (Integer)view.getTag());
+            			        startActivity(i);
+            				}
+            			},
+            			R.id.ChoixSelectedLinearLayout, -1);
         	}
         	dismissAll();
         }

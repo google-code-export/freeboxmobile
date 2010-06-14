@@ -58,7 +58,6 @@ import android.widget.AdapterView.OnItemSelectedListener;
 
 public class GuideActivity extends ListActivity implements GuideConstants
 {
-//	private static ProgressDialog progressDialog = null;
 	public static String progressText;
 	private static ChainesDbAdapter mDbHelper;
 	private static Activity guideAct;
@@ -129,7 +128,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
     	// Selections
     	selectedDate = GuideUtils.calDates.get(0);
         int h = c.get(Calendar.HOUR_OF_DAY);
-        selectedHeure = (h<10?"0"+h:h)+":00:00";        
+        selectedHeure = (h<10?"0"+h:h)+":00:00";
 
 		spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, GuideUtils.dates);
 		spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -175,7 +174,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
         			selectedHeure += ":00:00";
         			Log.d(TAG,"Item at position : "+s+" "+selectedHeure);
     				setFinDateHeure();
-        			new GuideActivityNetwork(selectedDate+" "+selectedHeure, false, true, false, false).execute((Void[])null);
+        			new GuideActivityNetwork(selectedDate+" "+selectedHeure, false, false, false).execute((Void[])null);
         		}
         	}
         );
@@ -218,11 +217,11 @@ public class GuideActivity extends ListActivity implements GuideConstants
         boolean nochaine = getFromDb();
     	if ((mDbHelper.getNbChaines() == 0) || (nochaine))
     	{
-    		new GuideActivityNetwork(dt, true, true, false, false).execute((Void[])null);    		
+    		new GuideActivityNetwork(dt, true, false, false).execute((Void[])null);    		
     	}
     	else
     	{
-    		new GuideActivityNetwork(dt, false, true, false, true).execute((Void[])null);
+    		new GuideActivityNetwork(dt, false, false, true).execute((Void[])null);
     	}
     	setTitle(getString(R.string.app_name)+" Guide TV - "+FBMHttpConnection.getTitle());   
 		if (!mgr.getString(KEY_SPLASH_GUIDE, "0").equals(Utils.getFBMVersion(this)))
@@ -292,7 +291,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
 				selectedHeure = s+":00:00";
 				Log.d(TAG,"Refresh manuel : "+selectedHeure);
 				setFinDateHeure();
-    			new GuideActivityNetwork(selectedDate+" "+selectedHeure, false, true, true, true).execute((Void[])null);
+    			new GuideActivityNetwork(selectedDate+" "+selectedHeure, false, true, true).execute((Void[])null);
     			return true;
     		case GUIDE_OPTION_MODE:
     			mode_reduit = (mode_reduit ? false : true);
@@ -325,7 +324,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
 		Programme p = (Programme) adapter.getItem((int)info.id);
 	    menu.setHeaderTitle(p.titre);
 	    menu.add(0, GUIDE_CONTEXT_ENREGISTRER, 0, "Enregistrer");
-	    menu.add(0, GUIDE_CONTEXT_DETAILS, 1, "DÈtails");
+	    menu.add(0, GUIDE_CONTEXT_DETAILS, 1, "D√©tails");
 	}
 	
 	@Override
@@ -377,15 +376,15 @@ public class GuideActivity extends ListActivity implements GuideConstants
     	Log.i(TAG,"ON ACTIVITY RESULT : "+resultCode);
     	switch (resultCode)
     	{
-    		// Si on a supprimÈ un favori sans en ajouter, pas besoin d'une mise ‡† jour rÈseau
+    		// Si on a supprim√© un favori sans en ajouter, pas besoin d'une mise √† jour r√©seau
     		case -1 :
     	    	Log.d(TAG,"RESULT SUPPR");
     			getFromDb();
     			break;
-    		// Si on a ajoutÈ un favori -> mise ‡† jour rÈseau
+    		// Si on a ajout√© un favori -> mise √† jour r√©seau
     		case 1:
     	    	Log.d(TAG,"RESULT ADD");
-    	    	new GuideActivityNetwork(selectedDate+" "+selectedHeure, false, true, true, true).execute((Void[])null);
+    	    	new GuideActivityNetwork(selectedDate+" "+selectedHeure, false, true, true).execute((Void[])null);
     	    break;
     	    default:
     	    break;
@@ -461,7 +460,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
             			}
             		})
             		*/
-        	.setTitle("CatÈgories ‡† afficher dans le guide :")
+        	.setTitle("Cat√©gories √† afficher dans le guide :")
             .setIcon(R.drawable.fm_guide_tv)
             .create();
 		alertDialog.show();
@@ -517,6 +516,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
 	    		return(header);
 	    	}    	
 	    };
+	    
 	    listesChaines = new ArrayList<ListeChaines>();
     	Cursor chainesIds = mDbHelper.getFavoris();
     	startManagingCursor (chainesIds);
@@ -572,15 +572,15 @@ public class GuideActivity extends ListActivity implements GuideConstants
 					listesChaines.add(l);
 				} while (chainesIds.moveToNext());
 				
-				// TODO : si nochaine == true, il manque une chaine, lancer un tÈlÈchargement des chaines du guide
+				// TODO : si nochaine == true, il manque une chaine, lancer un t√©l√©chargement des chaines du guide
 				if (nochaine == true)
 				{
 					Log.d(TAG,"IL MANQUE AU MOINS UNE CHAINE");
 				}
-				// Ici on trie pour avoir les listes de programmes dans l'ordre des numÈros de chaine
+				// Ici on trie pour avoir les listes de programmes dans l'ordre des num√©ros de chaine
 				Collections.sort(listesChaines);
 				
-				// Puis on crÈÈ les diffÈrentes sous-listes (une par chaine)
+				// Puis on cr√©√© les diff√©rentes sous-listes (une par chaine)
 				ga = new ArrayList<GuideAdapter>();
 				Iterator<ListeChaines> it = listesChaines.iterator();
 				String filepath;
@@ -597,6 +597,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
 			}
 		}
         setListAdapter(adapter);
+
         return nochaine;
 	}
 	
@@ -792,7 +793,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
 		d.setTitle(getString(R.string.app_name)+" - GuideTV");
 		d.setIcon(R.drawable.fm_guide_tv);
 		d.setMessage(
-			"Pour filtrer les programmes par catÈgorie, utilisez l'option 'Choisir les catÈgories' disponible dans le menu.");
+			"Pour filtrer les programmes par cat√©gorie, utilisez l'option 'Choisir les cat√©gories' disponible dans le menu.");
 		d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
 			{
 				public void onClick(DialogInterface dialog, int which)
@@ -808,7 +809,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
     {	
     	AlertDialog d = new AlertDialog.Builder(this).create();
 		d.setTitle(getString(R.string.app_name)+" - Guide TV");
-		d.setMessage("ProblËme rÈseau, veuillez rÈessayer.");
+		d.setMessage("Probl√®me r√©seau, veuillez r√©essayer.");
 		d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
 			{
 				public void onClick(DialogInterface dialog, int which)
@@ -824,7 +825,6 @@ public class GuideActivity extends ListActivity implements GuideConstants
     {
     	private String debdatetime;
     	private boolean getChaines;
-    	private boolean getProg;
     	private boolean forceRefresh;
     	private boolean refreshActivity;
     	
@@ -834,7 +834,7 @@ public class GuideActivity extends ListActivity implements GuideConstants
 
         protected Integer doInBackground(Void... arg0)
         {
-        	return new GuideNetwork(GuideActivity.this, debdatetime, getChaines, getProg, true, forceRefresh).getData();
+        	return new GuideNetwork(GuideActivity.this, debdatetime, 4, getChaines, true, forceRefresh).getData();
         }
 
         protected void onPostExecute(Integer result)
@@ -855,20 +855,19 @@ public class GuideActivity extends ListActivity implements GuideConstants
 
         /**
          * GuideactivityNetwork
-         * @param d : datetime dÈbut
-         * @param chaine : rÈcupÈrer liste des chaines (+ logos) ?
-         * @param prog : rÈcupÈrer liste des programmes ?
-         * @param force : forcer la rÈcupÈration des programmes (ne pas tenir compte du cache) ?
-         * @param refreshactivity : pour rafraichir toute l'activitÈ aprËs un onActivityResult du choix des favoris
+         * @param d : datetime d√©but
+         * @param chaine : r√©cup√©rer liste des chaines (+ logos) ?
+         * @param prog : r√©cup√©rer liste des programmes ?
+         * @param force : forcer la r√©cup√©ration des programmes (ne pas tenir compte du cache) ?
+         * @param refreshactivity : pour rafraichir toute l'activit√© apr√®s un onActivityResult du choix des favoris
          */
-        public GuideActivityNetwork(String d, boolean chaine, boolean prog, boolean force, boolean refreshactivity)
+        public GuideActivityNetwork(String d, boolean chaine, boolean force, boolean refreshactivity)
         {
        		debdatetime = d;
         	getChaines = chaine;
-        	getProg = prog;
         	forceRefresh = force;
         	refreshActivity = refreshactivity;
-        	Log.d(TAG,"GUIDEACTIVITYNETWORK START "+d+" "+chaine+" "+prog);
+        	Log.d(TAG,"GUIDEACTIVITYNETWORK START "+d+" "+chaine);
         }
     }
 }

@@ -4,23 +4,32 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.madprod.freeboxmobile.Constants;
+import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.WrapBitmap;
+import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
 
 import android.app.Activity;
+import android.app.ListActivity;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
@@ -34,7 +43,7 @@ import android.widget.LinearLayout.LayoutParams;
 
 public class GuideUtils implements Constants
 {
-	// Cette liste sert � r�cup�rer la date correspondant � l'indice du spinner
+	// Cette liste sert à récupérer la date correspondant à l'indice du spinner
 	public static List<String> calDates = new ArrayList<String>();
 	public static List<String> dates;
 	private static boolean mNewBitmapAvailable;
@@ -61,7 +70,7 @@ public class GuideUtils implements Constants
         dates = new ArrayList<String>();
 
         Integer i, mois, jour;
-        for (i=0; i < 7; i++)
+        for (i=0; i < 5; i++)
         {
         	mois = c.get(Calendar.MONTH)+1;
         	jour = c.get(Calendar.DAY_OF_MONTH);
@@ -101,40 +110,6 @@ public class GuideUtils implements Constants
 		}
 		return heuresAdapter;
     }
-
-    /**
-     * Calcule la fin de la plage (de 4h) � r�cup�rer sur le serveur
-     * @param selectedHeure : heure de d�but
-     * @param datefin : datesSpinner.getSelectedItemId();
-     */
-	public static String setFinDateHeure_unused(String selectedHeure, long datefin)
-	{
-		String sdatefin;
-		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-		Date dtdeb;
-		try
-		{
-			dtdeb = sdf.parse(selectedHeure);
-			long heurefin = dtdeb.getHours()+4;
-//			long datefin = datesSpinner.getSelectedItemId();
-			if (heurefin > 23)
-			{
-				heurefin -= 24;
-				sdatefin = GuideUtils.calDates.get((int) (datefin+1));
-			}
-			else
-			{
-				sdatefin = GuideUtils.calDates.get((int) (datefin));
-			}
-			return (sdatefin+" "+(heurefin<10?"0"+heurefin:heurefin)+":00:00");
-		}
-		catch (ParseException e)
-		{
-			Log.e(TAG,"setfinDateHeure pb decode heure "+ e.getMessage());
-			e.printStackTrace();
-			return "";
-		}
-	}
 	
 	public static LinearLayout addVisuelChaine(String image, String name, Integer tag, View.OnClickListener o, Activity a)
 	{
@@ -170,5 +145,142 @@ public class GuideUtils implements Constants
 		il.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 		il.setGravity(Gravity.CENTER_HORIZONTAL);
 		return il;
+	}
+	
+	public static void displayFavoris(final Activity a, OnClickListener o, int id, int itemSelected)
+    {
+		ArrayList<Favoris> listeFavoris = new ArrayList<Favoris>();
+		List< Map<String,Object> > chainesToSelect;
+		// -1 si une chaine a été enlevée / 1 si une chaine a été ajoutée / 0 si pas bougé
+		// si suppression et ajout : 1
+		ChainesDbAdapter mDbHelper = new ChainesDbAdapter(a);
+		mDbHelper.open();
+		Log.d(TAG,"getFavoris");
+
+		listeFavoris.clear();
+
+    	Cursor chainesIds = mDbHelper.getFavoris();
+        if (chainesIds != null)
+		{
+			Favoris f;
+			if (chainesIds.moveToFirst())
+			{
+				Cursor chaineCursor;
+				int CI_progchannel_id = chainesIds.getColumnIndexOrThrow(ChainesDbAdapter.KEY_FAVORIS_ID);
+				do
+				{
+					f = new Favoris();
+					f.guidechaine_id = chainesIds.getInt(CI_progchannel_id);
+					chaineCursor = mDbHelper.getGuideChaine(f.guidechaine_id);
+					if ((chaineCursor != null) && (chaineCursor.moveToFirst()))
+					{
+						f.canal = chaineCursor.getInt(chaineCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_CANAL));
+						f.name = chaineCursor.getString(chaineCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_NAME));
+						f.image = chaineCursor.getString(chaineCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE));
+						chaineCursor.close();
+					}
+					else
+					{
+						if (chaineCursor != null)
+						{
+							chaineCursor.close();							
+						}
+					}
+					listeFavoris.add(f);
+				} while (chainesIds.moveToNext());
+			}
+			// Ici on trie pour avoir les listes de programmes dans l'ordre des numéros de chaine
+			Collections.sort(listeFavoris);
+
+			// On créé l'horizontal scrollview en haut avec la liste des chaines favorites
+			Iterator<Favoris> it = listeFavoris.iterator();
+	    	LinearLayout csly = (LinearLayout) a.findViewById(id);
+	    	csly.removeAllViews();
+	    	csly.setGravity(Gravity.CENTER);
+			while(it.hasNext())
+			{
+				final Favoris ff = it.next();
+				if (ff.name != null)
+				{
+					csly.addView(addVisuelChaine(ff.image, ff.name, (Integer)ff.guidechaine_id, o, a));
+				}
+			}
+	        if (itemSelected == -1)
+	        {
+		        chainesIds.close();
+		        mDbHelper.close();
+		        return;
+	        }
+	
+			chainesToSelect = new ArrayList< Map<String,Object> >();
+			Cursor allChaines = mDbHelper.getListChaines();
+			if (allChaines != null)
+			{
+				if (allChaines.moveToFirst())
+				{
+					final int CI_image = allChaines.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE);
+					final int CI_canal = allChaines.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_CANAL);
+					final int CI_name = allChaines.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_NAME);
+					final int CI_id = allChaines.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_ID);
+					String image;
+					Map<String,Object> map;
+					for (it = listeFavoris.iterator(); it.hasNext();)
+					{
+						f = it.next();
+						while ((!allChaines.isAfterLast()) &&
+								(allChaines.getInt(CI_canal) != f.canal))
+						{
+							image = allChaines.getString(CI_image);
+							map = new HashMap<String,Object>();
+							if (image.length() > 0)
+							{
+								map.put(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE, Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES+image);
+							}
+							else
+							{
+								map.put(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE, R.drawable.chaine_vide);
+							}
+							map.put(ChainesDbAdapter.KEY_GUIDECHAINE_CANAL, allChaines.getInt(CI_canal));
+							map.put(ChainesDbAdapter.KEY_GUIDECHAINE_NAME, allChaines.getString(CI_name));
+							map.put(ChainesDbAdapter.KEY_GUIDECHAINE_ID, allChaines.getInt(CI_id));
+							chainesToSelect.add(map);
+							allChaines.moveToNext();
+						}
+						allChaines.moveToNext();
+					}
+					// On doit refaire un tour pour les chaines non sélectionnées
+					// dont le numéro est > au numéro de la dernière chaine des favoris
+					while (!allChaines.isAfterLast())
+					{
+						image = allChaines.getString(CI_image);
+						map = new HashMap<String,Object>();
+						if (image.length() > 0)
+						{
+							map.put(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE, Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES+image);
+						}
+						else
+						{
+							map.put(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE, R.drawable.chaine_vide);
+						}
+						map.put(ChainesDbAdapter.KEY_GUIDECHAINE_CANAL, allChaines.getInt(CI_canal));
+						map.put(ChainesDbAdapter.KEY_GUIDECHAINE_NAME, allChaines.getString(CI_name));
+						map.put(ChainesDbAdapter.KEY_GUIDECHAINE_ID, allChaines.getInt(CI_id));
+						chainesToSelect.add(map);
+						allChaines.moveToNext();							
+					}
+			        SimpleAdapter mList = new SimpleAdapter(
+			        		a, chainesToSelect, R.layout.guide_favoris_row, 
+			        		new String[] {ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE, ChainesDbAdapter.KEY_GUIDECHAINE_NAME, ChainesDbAdapter.KEY_GUIDECHAINE_ID},
+			        		new int[] {R.id.ImageViewFavoris, R.id.TextViewFavoris, R.id.HiddenTextView});
+			        ((ListActivity) a).setListAdapter(mList);
+			        if (itemSelected > 0)
+			        {
+			        	((ListActivity) a).setSelection(itemSelected);
+			        }
+				}
+				allChaines.close();
+			}
+	    }
+        mDbHelper.close();
 	}
 }
