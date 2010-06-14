@@ -80,7 +80,7 @@ public class SendlogActivity extends Activity implements HomeConstants
 	        		TelephonyManager telephonyManager =(TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 	        		String myLog = "Network Operator : " + telephonyManager.getNetworkOperatorName() + "\n";
 	        		myLog += "SIM Operator : " + telephonyManager.getSimOperatorName() + "\n";
-	        		myLog += "Le problème arrive : " + Wifi3G + "\n";
+	        		myLog += "Le problÃ¨me arrive : " + Wifi3G + "\n";
 	        		myLog += getBuildDetailsAsString();
 			    	SpannableStringBuilder ssb = new SpannableStringBuilder(
 			    			getString(R.string.app_name)+" : "+
@@ -96,8 +96,8 @@ public class SendlogActivity extends Activity implements HomeConstants
         			AlertDialog d = new AlertDialog.Builder(SendlogActivity.this).create();
         			d.setTitle("Description obligatoire");
         			d.setMessage(
-        				"Veuillez rentrer une description du problème avant de valider.\n\n"+
-        				"C'est important pour nous aider à  résoudre le problème :)"
+        				"Veuillez rentrer une description du problÃ¨me avant de valider.\n\n"+
+        				"C'est important pour nous aider Ã  rÃ©soudre le problÃ¨me :)"
         			);
 
         			d.setButton(DialogInterface.BUTTON_NEUTRAL, "Ok", new DialogInterface.OnClickListener()
@@ -190,7 +190,7 @@ public class SendlogActivity extends Activity implements HomeConstants
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
-    	Toast.makeText(this, "Merci de nous aider à  améliorer Freebox Mobile !",
+    	Toast.makeText(this, "Merci de nous aider Ã  amÃ©liorer Freebox Mobile !",
     			Toast.LENGTH_LONG).show();
     	finish();
 	}
