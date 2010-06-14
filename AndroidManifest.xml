@@ -34,8 +34,9 @@
 		<activity android:theme="@style/Theme.FreeboxMobile.TitleBar" android:name=".guide.GuideMenuActivity"></activity>
 		<activity android:theme="@style/Theme.FreeboxMobile.TitleBar" android:name=".guide.GuideChoixChainesActivity"></activity>
 		<activity android:theme="@style/Theme.FreeboxMobile.NoTitleBar" android:name=".guide.GuideDetailsActivity"></activity>
-		<activity android:theme="@style/Theme.FreeboxMobile.TitleBar" android:name=".remotecontrol.RemoteControlActivity"></activity>
+		<activity android:theme="@style/Theme.FreeboxMobile.TitleBar" android:name=".remotecontrol.RemoteControlActivity" android:configChanges="orientation|keyboardHidden"></activity>
 		<activity android:theme="@style/Theme.FreeboxMobile.TitleBar" android:name=".remotecontrol.RemoteControlChooseLayout"></activity>
+		<activity android:theme="@style/Theme.FreeboxMobile.TitleBar" android:name=".remotecontrol.RemoteControlListLayout"></activity>
 
 		<service android:name=".mvv.MevoSync"></service>
     	<service android:name=".ligne.InfoAdslCheck"></service>
