@@ -22,8 +22,8 @@ public interface Constants
     static final String KEY_TEL			= "tel";
     static final String KEY_LINELENGTH	= "length";
     static final String KEY_ATTN		= "attn";
-    static final String KEY_LINETYPE	= "linetype"; // 0 = non dégroupé / 1 = dégroupé
-    static final String KEY_FBMVERSION	= "fbmversion"; // version de FBM qui a généré les infos du compte
+    static final String KEY_LINETYPE	= "linetype"; // 0 = non dÃ©groupÃ© / 1 = dÃ©groupÃ©
+    static final String KEY_FBMVERSION	= "fbmversion"; // version de FBM qui a gÃ©nÃ©rÃ© les infos du compte
 
     static final String KEY_LAST_REFRESH = "lastrefresh_";
 
@@ -55,14 +55,14 @@ public interface Constants
 	public final int NOTIF_INFOADSL = 2;
 	
 	public final String jours[] = {"", "Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"};
-	public final String mois[] = {"janvier", "février", "mars", "avril", "mai", "juin", "juillet", "aoà»t", "septembre", "octobre", "novembre", "décembre"};
+	public final String mois[] = {"janvier", "fÃ©vrier", "mars", "avril", "mai", "juin", "juillet", "aoÃ»t", "septembre", "octobre", "novembre", "dÃ©cembre"};
 	
-    // Types de comptes - doit respecter l'ordre du nom des comptes définis dans array.xml
+    // Types de comptes - doit respecter l'ordre du nom des comptes dÃ©finis dans array.xml
 	// Utile uniquement pour le spinner de la creation d'un nouveau compte
     static final int COMPTES_TYPE_ADSL = 0;
     static final int COMPTES_TYPE_FO = 1;
     
-    // Types de lignes,+ précis que le type de compte. C'est ce qui est stocké et utilisé
+    // Types de lignes,+ prï¿½cis que le type de compte. C'est ce qui est stockÃ© et utilisÃ©
     static final String LINE_TYPE_FBXIPADSL = "0";
     static final String LINE_TYPE_FBXDEGROUPE = "1";
     static final String LINE_TYPE_FBXOPTIQUE = "2";

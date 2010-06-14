@@ -13,9 +13,6 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
 import android.util.Log;
-import android.view.View;
-import android.widget.ListView;
-import android.widget.Toast;
 
 /**
 *
@@ -39,7 +36,7 @@ public class Config extends PreferenceActivity implements OnSharedPreferenceChan
 
         FBMHttpConnection.initVars(this, null);
         // Pas beau sur les prefs suite bug : http://code.google.com/p/android/issues/detail?id=922
-        // TODO : try workaround évoqué dans le rapport de bug
+        // TODO : try workaround Ã©voquÃ© dans le rapport de bug
         //setTheme(android.R.style.Theme_Light);
 
         
@@ -98,27 +95,27 @@ public class Config extends PreferenceActivity implements OnSharedPreferenceChan
     	
     	if (KEY_USER.equals(key))
     	{
-    		summary = "Actuellement : "+(value==null?"Non renseigné":value);
+    		summary = "Actuellement : "+(value==null?"Non renseignÃ©":value);
         }
     	else if (KEY_PASSWORD.equals(key))
 		{
-			summary = "Acuellement : "+(value==null?"Non renseigné":"Renseigné");
+			summary = "Acuellement : "+(value==null?"Non renseignÃ©":"RenseignÃ©");
 		}
     	else if (BOITIER1_CODE.equals(key))
 		{
-			summary = "Acuellement : "+(value==null?"Non renseigné":"Renseigné");
+			summary = "Acuellement : "+(value==null?"Non renseignÃ©":"RenseignÃ©");
 		}
     	else if (BOITIER1_STATE.equals(key))
 		{
-			summary = "Acuellement : "+(value==null?"Non renseigné":"Renseigné");
+			summary = "Acuellement : "+(value==null?"Non renseignÃ©":"RenseignÃ©");
 		}
     	else if (BOITIER2_CODE.equals(key))
 		{
-			summary = "Acuellement : "+(value==null?"Non renseigné":"Renseigné");
+			summary = "Acuellement : "+(value==null?"Non renseignÃ©":"RenseignÃ©");
 		}
     	else if (BOITIER2_STATE.equals(key))
 		{
-			summary = "Acuellement : "+(value==null?"Non renseigné":"Renseigné");
+			summary = "Acuellement : "+(value==null?"Non renseignÃ©":"RenseignÃ©");
 		}
     	else if (KEY_MEVO_PREFS_FREQ.equals(key))
 		{
