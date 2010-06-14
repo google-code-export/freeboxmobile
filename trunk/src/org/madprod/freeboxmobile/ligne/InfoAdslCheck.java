@@ -127,8 +127,8 @@ public class InfoAdslCheck extends WakefullIntentService implements Constants
 			mNotificationManager= (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		}
 		
-		tickerText = getString(R.string.app_name)+" : Problème réseau ADSL";
-		contentText = "Votre DSLAM ne répond pas.";
+		tickerText = getString(R.string.app_name)+" : ProblÃ¨me rÃ©seau ADSL";
+		contentText = "Votre DSLAM ne rÃ©pond pas.";
 		long when = System.currentTimeMillis();
 
 		Notification notification = new Notification(icon, tickerText, when);
