@@ -192,6 +192,7 @@ public class RemoteControlActivity extends Activity implements GuideConstants, H
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		Log.i(TAG,"onConfigurationChanged Start");
+		chooseView();
 		super.onConfigurationChanged(newConfig);
 	}
 
@@ -428,16 +429,24 @@ public class RemoteControlActivity extends Activity implements GuideConstants, H
 
 	private String setPathWithOrientation(String pathHorizontal, String pathVertical){
 		String path;
+		Log.d(TAG, "Chemin horizontal = "+pathHorizontal);
+		Log.d(TAG, "Chemin vertical = "+pathVertical);
+
 		int orientation = getResources().getConfiguration().orientation;
+		Log.d(TAG, "Orientation = "+orientation);
 		if (new File(pathHorizontal).exists() && new File(pathVertical).exists()){
 			if (orientation == Configuration.ORIENTATION_LANDSCAPE){
+				Log.d(TAG, "Orientation = landscape");
 				path = pathHorizontal;
 			}else{
+				Log.d(TAG, "Orientation = portrait");
 				path = pathVertical;
 			}
 		}else if (new File(pathHorizontal).exists()){
+			Log.d(TAG, "path = horizontal");
 			path = pathHorizontal;			
 		}else{
+			Log.d(TAG, "path = vertical");
 			path = pathVertical;			
 		}
 		return path;
