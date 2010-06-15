@@ -68,6 +68,7 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.TabHost;
+import android.widget.Toast;
 import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabHost.TabContentFactory;
 
@@ -80,7 +81,6 @@ import android.widget.TabHost.TabContentFactory;
 
 public class RemoteControlActivity extends Activity implements GuideConstants, HomeConstants, Constants, RemoteControlActivityConstants
 {
-
 	static final CommandManager cm = CommandManager.getCommandManager();
 	private TabHost th;
 	private boolean fullscreen;
@@ -200,8 +200,8 @@ public class RemoteControlActivity extends Activity implements GuideConstants, H
 	@Override
 	public void onStart()
 	{
-		boolean confOk = false;
 		super.onStart();
+		boolean confOk = false;
 		Log.i(TAG,"RemoteControlActivity Start");
 		SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 
@@ -227,7 +227,7 @@ public class RemoteControlActivity extends Activity implements GuideConstants, H
 				{
 					public void onClick(DialogInterface dialog, int which)
 					{
-						startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+						startActivityForResult(new Intent(Settings.ACTION_WIFI_SETTINGS), 0);
 						dialog.dismiss();
 					}
 				}
@@ -239,7 +239,7 @@ public class RemoteControlActivity extends Activity implements GuideConstants, H
 					public void onClick(DialogInterface dialog, int which)
 					{
 						dialog.dismiss();
-						startActivity(new Intent(getApplicationContext(), Config.class));
+						startActivityForResult(new Intent(getApplicationContext(), Config.class), 0);
 					}
 				}
 				);
@@ -259,7 +259,6 @@ public class RemoteControlActivity extends Activity implements GuideConstants, H
 		}else{
 			confOk = true;
 		}
-
 
 
 		if (!mgr.getString(KEY_SPLASH_REMOTE, "0").equals(Utils.getFBMVersion(this)))
@@ -306,6 +305,7 @@ public class RemoteControlActivity extends Activity implements GuideConstants, H
 	}
 
 
+
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		boolean ever = false;
@@ -336,9 +336,6 @@ public class RemoteControlActivity extends Activity implements GuideConstants, H
 	{
 		switch (item.getItemId())
 		{
-		case HOME_OPTION_CONFIG:
-			startActivity(new Intent(this, Config.class));
-			break;
 		case FULLSCREEN:
 			fullscreen = !fullscreen;
 			chooseView();
@@ -347,17 +344,23 @@ public class RemoteControlActivity extends Activity implements GuideConstants, H
 		return super.onOptionsItemSelected(item);
 	}
 
-	//	@Override
-	//	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-	////		if (requestCode == CHOOSELAYOUTREQUESTCODE && resultCode == SAVE){
-	//		if (requestCode == CHOOSELAYOUTREQUESTCODE){
-	//			loadUI();
-	//			if (currentTag != null){
-	//				th.setCurrentTabByTag(currentTag);
-	//			}
-	//		}
-	//	}
-	//
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+		////		if (requestCode == CHOOSELAYOUTREQUESTCODE && resultCode == SAVE){
+		//		if (requestCode == CHOOSELAYOUTREQUESTCODE){
+		//			loadUI();
+		//			if (currentTag != null){
+		//				th.setCurrentTabByTag(currentTag);
+		//			}
+		//		}
+
+		finish();
+		startActivity(new Intent(this, RemoteControlActivity.class));
+
+
+	}
+
 
 	private View createView(String pathHorizontal, String pathVertical, boolean mosaicView){
 
@@ -741,8 +744,8 @@ public class RemoteControlActivity extends Activity implements GuideConstants, H
 		@Override
 		protected void onPostExecute(Integer result) {
 			FBMNetTask.iProgressDialogDismiss();
-			chooseView();
 			super.onPostExecute(result);
+			chooseView();
 		}
 
 		@Override
