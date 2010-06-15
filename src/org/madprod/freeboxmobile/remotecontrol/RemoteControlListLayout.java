@@ -191,7 +191,7 @@ public class RemoteControlListLayout extends ListActivity implements Constants, 
     	
     	d.setTitle("Skin : "+name);
 		d.setIcon(R.drawable.fm_telecommande);
-    	d.setMessage("Souhaitez vous installer le skin selectionné ?");
+    	d.setMessage("Souhaitez vous installer le skin selectionnÃ© ?");
 		d.setButton(DialogInterface.BUTTON_POSITIVE, "Oui", new DialogInterface.OnClickListener()
 			{
 				public void onClick(DialogInterface dialog, int which)
