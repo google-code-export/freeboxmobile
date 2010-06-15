@@ -9,7 +9,6 @@ import org.madprod.freeboxmobile.Utils;
 import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
 import org.madprod.freeboxmobile.pvr.PvrNetwork;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -31,7 +30,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 * 
 */
 
-public class GuideMenuActivity extends Activity implements GuideConstants
+public class GuideMenuActivity extends GuideUtils implements GuideConstants
 {
 	private ChainesDbAdapter mDbHelper;
 	private Spinner jourChaine;
@@ -104,7 +103,7 @@ public class GuideMenuActivity extends Activity implements GuideConstants
             		}
             	}
             );
-        GuideUtils.makeCalDates();
+        makeCalDates();
         final Spinner datesSpinner = (Spinner) findViewById(R.id.SpinnerDate);
         final Spinner heuresSpinner = (Spinner) findViewById(R.id.SpinnerHeure);
         jourChaine = (Spinner) findViewById(R.id.SpinnerJourChaine);
@@ -182,7 +181,7 @@ public class GuideMenuActivity extends Activity implements GuideConstants
 	protected void onResume()
 	{
 		super.onResume();
-    	GuideUtils.displayFavoris(this, 
+    	displayFavoris(this, 
         		new View.OnClickListener()
     			{
     				public void onClick(View view)
@@ -240,7 +239,7 @@ public class GuideMenuActivity extends Activity implements GuideConstants
     		setProgressBarIndeterminateVisibility(false);
         	if (result != DATA_NOT_DOWNLOADED)
         	{
-            	GuideUtils.displayFavoris(GuideMenuActivity.this, 
+            	displayFavoris(GuideMenuActivity.this, 
                 		new View.OnClickListener()
             			{
             				public void onClick(View view)
@@ -266,4 +265,11 @@ public class GuideMenuActivity extends Activity implements GuideConstants
         	Log.d(TAG,"GUIDEMENUACTIVITYNETWORK START");
         }
     }
+
+	@Override
+	protected boolean getFromDb()
+	{
+		// TODO Auto-generated method stub
+		return false;
+	}
 }
