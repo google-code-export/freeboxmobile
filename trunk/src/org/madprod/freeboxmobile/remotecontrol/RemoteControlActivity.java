@@ -211,12 +211,12 @@ public class RemoteControlActivity extends Activity implements GuideConstants, H
 		if (!isWifiConnected() || getNbCodes()==0){
 
 			AlertDialog d = new AlertDialog.Builder(this).create();
-			d.setTitle(getString(R.string.app_name)+" - Telecommande");
+			d.setTitle(getString(R.string.app_name)+" - T√©l√©commande");
 			d.setIcon(R.drawable.fm_telecommande);
 			d.setMessage(
-					"Avant d'utiliser la tÈlÈcommande, vous devez paramÈtrer les ÈlÈments suivants :\n\n"+
+					"Avant d'utiliser la t√©l√©commande, vous devez param√©trer les √©l√©ments suivants :\n\n"+
 					((!isWifiConnected())?"- Connectez vous en wifi a votre Freebox\n":"")+
-					((getNbCodes() == 0)?"- ParamÈtrer le(s) code(s) du(des) boitier(s)\n":"")+
+					((getNbCodes() == 0)?"- Param√©trer le(s) code(s) du(des) boitier(s)\n":"")+
 					"\nQue souhaitez vous faire ?"+
 					"\n\n"
 			);
@@ -234,7 +234,7 @@ public class RemoteControlActivity extends Activity implements GuideConstants, H
 				);
 			}
 			if (getNbCodes() == 0){
-				d.setButton(DialogInterface.BUTTON_NEUTRAL, "Configurer TÈlÈcommande", new DialogInterface.OnClickListener()
+				d.setButton(DialogInterface.BUTTON_NEUTRAL, "Configurer T√©l√©commande", new DialogInterface.OnClickListener()
 				{
 					public void onClick(DialogInterface dialog, int which)
 					{
@@ -244,7 +244,7 @@ public class RemoteControlActivity extends Activity implements GuideConstants, H
 				}
 				);
 			}
-			d.setButton(DialogInterface.BUTTON_NEGATIVE, "Retour ‡ l'accueil", new DialogInterface.OnClickListener()
+			d.setButton(DialogInterface.BUTTON_NEGATIVE, "Retour √† l'accueil", new DialogInterface.OnClickListener()
 			{
 				public void onClick(DialogInterface dialog, int which)
 				{
@@ -572,7 +572,7 @@ public class RemoteControlActivity extends Activity implements GuideConstants, H
 
 				is.close();
 				if(deplacement != length){
-					throw new IOException("Le fichier n'a pas ÈtÈ lu en entier (seulement "
+					throw new IOException("Le fichier n'a pas √©t√© lu en entier (seulement "
 							+ deplacement + " sur " + length + ")");
 				}  
 
@@ -665,8 +665,8 @@ public class RemoteControlActivity extends Activity implements GuideConstants, H
 		d.setTitle(getString(R.string.app_name)+" - Telecommande");
 		d.setIcon(R.drawable.fm_telecommande);
 		d.setMessage(
-				"La telecommande est en version beta.\n\n"+
-				"Vous pouvez personnaliser la tÈlÈcommande comme bon vous semble gr‚ce ‡ l'utilisation de skins."+
+				"La t√©l√©commande est en version beta.\n\n"+
+				"Vous pouvez personnaliser la t√©l√©commande comme bon vous semble gr√¢ce √† l'utilisation de skins."+
 				"\n\n"+
 				"Pour plus d'infos sur les skins : http://code.google.com/p/freeboxmobile/ (Rubrique Wiki)"+
 				"\n\n"+
@@ -752,7 +752,7 @@ public class RemoteControlActivity extends Activity implements GuideConstants, H
 		protected void onPreExecute()
 		{
 			FBMNetTask.iProgressShow(
-					"Mise ‡ jour des chaines",
+					"Mise √† jour des chaines",
 					"Veuillez patienter svp...",
 					R.drawable.fm_infos_adsl);
 		}
@@ -774,7 +774,7 @@ public class RemoteControlActivity extends Activity implements GuideConstants, H
 				JSONObject jChannelsObject = jObject.getJSONObject("chaines");
 
 				int max = jChannelsObject.length();
-				dProgressMessage("Actualisation de la liste des "+max+" chaÓnes disponibles pour le Guide...",max);
+				dProgressMessage("Actualisation de la liste des "+max+" cha√Ænes disponibles pour le Guide...",max);
 				publishProgress(0);
 				for (Iterator <String> it = jChannelsObject.keys() ; it.hasNext() ;)
 				{
@@ -793,7 +793,7 @@ public class RemoteControlActivity extends Activity implements GuideConstants, H
 					JSONObject jChannelObject = jChannelsObject.getJSONObject(channelId);
 					image = getJSONString(jChannelObject, "image");
 					canal = getJSONString(jChannelObject, "canal");
-					// On teste si on a le fichier qui correspond ‡† la chaine
+					// On teste si on a le fichier qui correspond √† la chaine
 					file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES, image);
 					if ((file.exists() == true) && (file.length() == 0))
 					{
