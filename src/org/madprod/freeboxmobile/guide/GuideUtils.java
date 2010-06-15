@@ -1,11 +1,8 @@
 package org.madprod.freeboxmobile.guide;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -14,19 +11,27 @@ import java.util.Map;
 import org.madprod.freeboxmobile.Constants;
 import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.WrapBitmap;
+import org.madprod.freeboxmobile.guide.GuideConstants.Categorie;
 import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SimpleAdapter;
@@ -41,13 +46,27 @@ import android.widget.LinearLayout.LayoutParams;
 * 
 */
 
-public class GuideUtils implements Constants
+public abstract class GuideUtils extends ListActivity implements Constants
 {
 	// Cette liste sert à récupérer la date correspondant à l'indice du spinner
-	public static List<String> calDates = new ArrayList<String>();
-	public static List<String> dates;
+	protected static List<String> calDates = new ArrayList<String>();
+	protected static List<String> dates;
 	private static boolean mNewBitmapAvailable;
-	
+	protected static boolean mode_reduit;
+	protected static ChainesDbAdapter mDbHelper;
+	protected SectionedAdapter adapter;
+	protected ArrayList<GuideAdapter> ga = null;
+	protected static String progressText;
+
+	protected ArrayList<ListeChaines> listesChaines;
+	protected static ArrayList<Categorie> categories;
+	protected static String[] categoriesDialog;
+
+	protected String selectedDate;
+	protected String selectedHeure;
+	protected String finDateHeure;
+	protected int selectedChaine;
+
 	static
 	{
 		try
@@ -63,7 +82,7 @@ public class GuideUtils implements Constants
 		}
 	}
 	
-	public static void makeCalDates()
+	public void makeCalDates()
 	{
 		Calendar c = Calendar.getInstance();
 		c.setFirstDayOfWeek(Calendar.MONDAY);
@@ -111,7 +130,7 @@ public class GuideUtils implements Constants
 		return heuresAdapter;
     }
 	
-	public static LinearLayout addVisuelChaine(String image, String name, Integer tag, View.OnClickListener o, Activity a)
+	public LinearLayout addVisuelChaine(String image, String name, Integer tag, View.OnClickListener o, Activity a)
 	{
 		LinearLayout il = new LinearLayout(a);
 		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
@@ -147,7 +166,7 @@ public class GuideUtils implements Constants
 		return il;
 	}
 	
-	public static void displayFavoris(final Activity a, OnClickListener o, int id, int itemSelected)
+	public void displayFavoris(final Activity a, OnClickListener o, int id, int itemSelected)
     {
 		ArrayList<Favoris> listeFavoris = new ArrayList<Favoris>();
 		List< Map<String,Object> > chainesToSelect;
@@ -283,4 +302,278 @@ public class GuideUtils implements Constants
 	    }
         mDbHelper.close();
 	}
+
+	abstract protected boolean getFromDb();
+	
+    protected void chooseCategories()
+    {
+		setTheme(android.R.style.Theme_Black);
+    	AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+    	boolean[] checked = new boolean[categories.size()];
+    	for (int i = 0; i < categories.size(); i++)
+    	{
+    		checked[i] = categories.get(i).checked;
+    	}
+		alertDialog = new AlertDialog.Builder(this)
+			.setMultiChoiceItems(categoriesDialog,
+					checked,
+					new DialogInterface.OnMultiChoiceClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which, boolean what)
+						{
+							Categorie c = categories.get(which);
+							c.checked = what;
+							categories.set(which,categories.get(which));						
+						}
+					})
+			.setPositiveButton(getString(R.string.OK),
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int whichButton) {
+							setTheme(android.R.style.Theme_Light);
+							getFromDb();
+							refresh();
+							dialog.dismiss();
+						}
+					}) 
+        	.setTitle("Catégories à afficher dans le guide :")
+            .setIcon(R.drawable.fm_guide_tv)
+            .create();
+		alertDialog.show();
+    }
+
+    protected void launchActivity(Class<?> cls, int pos)
+    {
+		Programme p = (Programme) adapter.getItem(pos);
+		Intent i = new Intent(this, cls);
+		i.putExtra(ChainesDbAdapter.KEY_PROG_TITLE, p.titre);
+		i.putExtra(ChainesDbAdapter.KEY_PROG_CHANNEL_ID, p.channel_id);
+		i.putExtra(ChainesDbAdapter.KEY_PROG_DUREE, p.duree);
+		i.putExtra(ChainesDbAdapter.KEY_PROG_DATETIME_DEB, p.datetime_deb);
+		i.putExtra(ChainesDbAdapter.KEY_PROG_DATETIME_FIN, p.datetime_fin);
+		i.putExtra(ChainesDbAdapter.KEY_GUIDECHAINE_CANAL, p.canal);
+		i.putExtra(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE, p.image);
+		i.putExtra(ChainesDbAdapter.KEY_GUIDECHAINE_NAME, p.chaine_name);
+		i.putExtra(ChainesDbAdapter.KEY_PROG_RESUM_L, p.resum_l);
+		i.putExtra(ChainesDbAdapter.KEY_GUIDECHAINE_ID, p.guidechaine_id);
+        startActivity(i);
+    }
+
+    public static class Programme
+    {
+    	public String image;
+		public int channel_id;
+		public int guidechaine_id;
+    	public int duree;
+    	public String datetime_deb;
+    	public String datetime_fin;
+    	public String titre;
+    	public int canal;
+    	public String chaine_name;
+    	public String resum_l;
+    }
+    
+    protected class ListeChaines implements Comparable<ListeChaines>
+    {
+    	public int chaine_id;
+    	public int guidechaine_id;
+    	public int canal;
+    	public String name;
+    	public String image;
+    	public Cursor programmes;
+    	
+		@Override
+		public int compareTo(ListeChaines another)
+		{
+			return (canal - another.canal);
+		}
+    }
+       
+	protected void displayHelp()
+    {	
+    	AlertDialog d = new AlertDialog.Builder(this).create();
+		d.setTitle(getString(R.string.app_name)+" - GuideTV");
+		d.setIcon(R.drawable.fm_guide_tv);
+		d.setMessage(
+			"Pour filtrer les programmes par catégorie, utilisez l'option 'Choisir les catégories' disponible dans le menu.");
+		d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
+			{
+				public void onClick(DialogInterface dialog, int which)
+				{
+					dialog.dismiss();
+				}
+			}
+			);
+		d.show();
+    }
+
+	protected void displayError()
+    {	
+    	AlertDialog d = new AlertDialog.Builder(this).create();
+		d.setTitle(getString(R.string.app_name)+" - Guide TV");
+		d.setMessage("Problème réseau, veuillez réessayer.");
+		d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
+			{
+				public void onClick(DialogInterface dialog, int which)
+				{
+					dialog.dismiss();
+				}
+			}
+			);
+		d.show();
+    }
+	
+    protected static class GuideAdapter extends BaseAdapter
+    {
+    	private Context mContext;
+    	private ListeChaines listeChaines;
+    	private int titreCI;
+    	private int dureeCI;
+    	private int descCI;
+    	private int heuredebCI;
+    	private int heurefinCI;
+    	
+    	public GuideAdapter(Context c, ListeChaines l)
+    	{
+    		this.mContext = c;
+    		this.listeChaines = l;
+    		if (listeChaines.programmes != null)
+    		{
+	    		this.titreCI = listeChaines.programmes.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_TITLE);
+	    		this.dureeCI = listeChaines.programmes.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_DUREE);
+	    		this.descCI = listeChaines.programmes.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_RESUM_S);
+	    		this.heuredebCI = listeChaines.programmes.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_DATETIME_DEB);
+	    		this.heurefinCI = listeChaines.programmes.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_DATETIME_FIN);
+    		}
+    	}
+    	
+		@Override
+		public int getCount()
+		{
+			if (listeChaines.programmes != null)
+				return listeChaines.programmes.getCount();
+			else
+				return 0;
+		}
+
+		@Override
+		public Object getItem(int position)
+		{
+			Programme p = new Programme();
+			listeChaines.programmes.moveToPosition(position);
+			p.channel_id = listeChaines.programmes.getInt(listeChaines.programmes.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_CHANNEL_ID));
+			p.datetime_deb = listeChaines.programmes.getString(heuredebCI);
+			p.datetime_fin = listeChaines.programmes.getString(heurefinCI);
+			p.duree = listeChaines.programmes.getInt(dureeCI);
+			p.titre = listeChaines.programmes.getString(titreCI);
+			p.canal = listeChaines.canal;
+			p.chaine_name = listeChaines.name;
+			p.resum_l = listeChaines.programmes.getString(listeChaines.programmes.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_RESUM_L));
+			p.image = listeChaines.image;
+			p.guidechaine_id = listeChaines.guidechaine_id;
+			return p;
+		}
+
+		@Override
+		public long getItemId(int position)
+		{
+			return listeChaines.programmes.getInt(listeChaines.programmes.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_CHANNEL_ID));
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent)
+		{
+			ViewHolder	holder;
+			
+			if (listeChaines.programmes != null)
+			{
+				listeChaines.programmes.moveToPosition(position);
+				if (convertView == null)
+				{
+					holder = new ViewHolder();
+					LayoutInflater inflater = LayoutInflater.from(mContext);
+					convertView = inflater.inflate(R.layout.guide_row, null);
+					
+					holder.titre = (TextView)convertView.findViewById(R.id.guideRowTitre);
+					holder.heure = (TextView)convertView.findViewById(R.id.guideRowHeure);
+					holder.desc = (TextView)convertView.findViewById(R.id.guideRowDesc);
+			        holder.duree = (TextView)convertView.findViewById(R.id.guideRowDuree);
+			        
+			        convertView.setTag(holder);
+				}
+				else
+				{
+					holder = (ViewHolder)convertView.getTag();
+				}
+				holder.titre.setText(listeChaines.programmes.getString(titreCI));
+				holder.heure.setText(convertDateTimeHoraire(listeChaines.programmes.getString(heuredebCI)));
+				if (mode_reduit)
+				{
+					holder.duree.setVisibility(View.GONE);
+					holder.desc.setVisibility(View.GONE);
+				}
+				else
+				{
+					holder.duree.setVisibility(View.VISIBLE);
+					holder.desc.setVisibility(View.VISIBLE);
+					holder.duree.setText(convertDuree(listeChaines.programmes.getInt(dureeCI)));
+					holder.desc.setText(listeChaines.programmes.getString(descCI));
+				}
+			}
+			return convertView;
+		}
+
+		public void changeDateTime(String d, String f, Activity a)
+		{
+			listeChaines.programmes = mDbHelper.getProgrammes(listeChaines.chaine_id, d, f, categories);
+			a.startManagingCursor(listeChaines.programmes);
+		}
+		
+		public String convertDuree(int duree)
+		{
+			String ret = "";
+			if (duree > 59)
+			{
+				Integer hour = duree / 60;
+				ret += hour.toString();
+				ret += "h";
+				int m = duree - hour * 60;
+				ret += (m < 10 ? "0"+m : ""+m);
+			}
+			else
+			{
+				ret = duree + "min"+(duree>1?"s":"");
+			}
+			return ret;
+		}
+		
+		public String convertDateTimeHoraire(String org)
+		{
+			String[] datetime = org.split(" ");
+			String[] temps = datetime[1].split(":");
+			return temps[0]+":"+temps[1];
+		}
+
+		private class ViewHolder
+		{
+			TextView 	titre;
+			TextView	desc;
+			TextView	heure;
+			TextView	duree;
+		}
+    }
+    
+    public void refresh()
+    {
+    	GuideAdapter g;
+    	if (ga != null)
+    	{
+			Iterator<GuideAdapter> it = ga.iterator();
+			while(it.hasNext())
+			{
+				g = it.next();
+				g.changeDateTime(selectedDate+" 00:00:00", finDateHeure, this);
+			}
+    	}
+		adapter.notifyDataSetChanged();
+    }
 }

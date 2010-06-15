@@ -16,7 +16,6 @@ import org.madprod.freeboxmobile.Utils;
 import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
 
 import android.app.AlertDialog;
-import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -37,7 +36,7 @@ import android.widget.TextView;
 * 
 */
 
-public class GuideChoixChainesActivity extends ListActivity implements GuideConstants
+public class GuideChoixChainesActivity extends GuideUtils implements GuideConstants
 {
 	private static ChainesDbAdapter mDbHelper;
 	// -1 si une chaine a été enlevée / 1 si une chaine a été ajoutée / 0 si pas bougé
@@ -56,7 +55,7 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
         mDbHelper = new ChainesDbAdapter(this);
         mDbHelper.open();
         setTitle(getString(R.string.app_name)+" Favoris - "+FBMHttpConnection.getTitle());
-        GuideUtils.displayFavoris(this, 
+        displayFavoris(this, 
            	new View.OnClickListener()
         	{
 	    		public void onClick(View view)
@@ -101,19 +100,6 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
 		TextView chaine_id = (TextView) v.findViewById(R.id.HiddenTextView); 
 		displayAdd(Integer.parseInt((String)chaine_id.getText()));
 	}
-
-    private void refresh()
-    {
-        GuideUtils.displayFavoris(this, 
-               	new View.OnClickListener()
-            	{
-    	    		public void onClick(View view)
-    	    		{
-    	    			displaySuppr((Integer)view.getTag());
-    	    		}
-    	    	},
-    		R.id.ChoixSelectedLinearLayout, itemSelected);
-    }
 
     private void displayAdd(final Integer id)
     {
@@ -252,7 +238,15 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
         protected void onPostExecute(Boolean result)
         {
         	FBMNetTask.iProgressDialogDismiss();
-   			refresh();
+            displayFavoris(GuideChoixChainesActivity.this, 
+                   	new View.OnClickListener()
+                	{
+        	    		public void onClick(View view)
+        	    		{
+        	    			displaySuppr((Integer)view.getTag());
+        	    		}
+        	    	},
+        		R.id.ChoixSelectedLinearLayout, itemSelected);
         	switch (command)
         	{
 	        	case FAVORIS_COMMAND_RESET:
@@ -367,4 +361,11 @@ public class GuideChoixChainesActivity extends ListActivity implements GuideCons
             return false;
         }
     }
+
+	@Override
+	protected boolean getFromDb()
+	{
+		// TODO Auto-generated method stub
+		return false;
+	}
 }
