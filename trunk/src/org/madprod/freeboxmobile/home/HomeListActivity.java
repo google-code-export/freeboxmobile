@@ -275,7 +275,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		map = new HashMap<String,Object>();
 		map.put(M_ICON, R.drawable.fm_telecommande);
 		map.put(M_TITRE, getString(R.string.buttonTelecommande));
-		map.put(M_DESC, "Amusez vous avec nos télécommandes");
+		map.put(M_DESC, "Amusez vous avec nos télécommandes\n[BETA]");
 		map.put(M_CLASS, RemoteControlActivity.class);
 		modulesList.add(map);
 		map = new HashMap<String,Object>();
@@ -283,6 +283,12 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		map.put(M_TITRE, getString(R.string.buttonLigne));
 		map.put(M_DESC, "Consultez l'état de votre ligne ADSL");
 		map.put(M_CLASS, org.madprod.freeboxmobile.ligne.LigneInfoActivity.class);
+		modulesList.add(map);
+		map = new HashMap<String,Object>();
+		map.put(M_ICON, R.drawable.fm_telecopie);
+		map.put(M_TITRE, getString(R.string.buttonFax));
+		map.put(M_DESC, "Utilisez votre compte Freebox pour envoyer des Fax à partir de votre mobile\n[BETA]");
+		map.put(M_CLASS, FaxActivity.class);
 		modulesList.add(map);
 		map = new HashMap<String,Object>();
 		map.put(M_ICON, R.drawable.fm_assistance);
@@ -294,24 +300,8 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		map = new HashMap<String,Object>();
 		map.put(M_ICON, R.drawable.fm_webmail);
 		map.put(M_TITRE, getString(R.string.buttonWebmail));
-		map.put(M_DESC, "Si vous avez une adresse email en @free.fr, accèdez au webmail ici\n\nCette fonctionnalité sera bientot disponible");
-//		map.put(M_CLASS, AssistanceActivity.class);
+		map.put(M_DESC, "Si vous avez une adresse email en @free.fr, accèdez au webmail ici");
 		map.put(M_CLASS, null);
-		modulesList.add(map);
-		map = new HashMap<String,Object>();
-		map.put(M_ICON, R.drawable.fm_telecopie);
-		map.put(M_TITRE, getString(R.string.buttonFax));
-		String t = "Utilisez votre compte Freebox pour envoyer des Fax à partir de votre mobile";
-		if (Utils.getFBMVersion(this).contains("rc"))
-		{
-			map.put(M_CLASS, FaxActivity.class);
-		}
-		else
-		{
-			t += "\n\nCette fonctionnalité sera bientot disponible";
-			map.put(M_CLASS, null);
-		}
-		map.put(M_DESC, t);
 		modulesList.add(map);
 		map = new HashMap<String,Object>();
 		map.put(M_ICON, R.drawable.fm_actus_freenautes);
@@ -600,6 +590,8 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 			"Facebook (devenez fan !) :\nhttp://www.facebook.com/search/?q=freeboxmobile\n\n"+
 			"Auteurs :\n"+
 			"- Olivier Rosello : Architecture / Réseau / Home / Info ADSL / Téléphone / Guide des Programmes\n"+
+			"- Clément Beslon : Télécommande Wifi\n"+
+			"- Bruno Alacoque : Skins Télécommande\n"+
 			"- Benoit Duffez : Magnétosocope\n"+
 			"- Ludovic Meurillon : Fax\n"+
 			"- Alban Pelé : Icônes de la page d'accueil\n"+
