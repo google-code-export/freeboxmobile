@@ -1,5 +1,4 @@
 #summary Historique des versions de FreeboxMobile.
-#labels Featured
 
 <wiki:toc max_depth="2" />
 
@@ -165,7 +164,18 @@ Release : 1
  * SERVICES : Notification de nouveaux messages
 
 = Versions beta de !FreeboxMobile =
-== 0.32.3rc1 ==
+== 0.40.0rc1 ==
+Sortie le 16/06/2010<br>
+Release : 38<br>
+Revision : 552
+ * TELECOMMANDE : Ajout télécommande Freebox (Wifi) (Beta)
+ * WEBMAIL : Ajout accès webmail Free avec application adéquate
+ * ASSISTANCE : Ajout accès Assitance Free
+ * PVR : Divers debugs sur le magnétoscope
+ * GUIDE : Ajout d'une vue sur la journée d'une chaîne
+ * FAX : Activation du module Fax (Beta)
+
+== 0.32.3rc1 ==a
 Sortie le 31/05/2010<br>
 Release : 37<br>
 Revision : 527
