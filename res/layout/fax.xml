@@ -15,11 +15,9 @@
 				android:layout_gravity="center" android:layout_marginBottom="5dip">
 				<ImageView android:layout_width="wrap_content"
 					android:layout_height="wrap_content" android:id="@+id/LogoFreeboxMobile"
-					android:src="@drawable/freebox_mobile" android:layout_marginTop="10dp">
+					android:src="@drawable/freebox_mobile" android:layout_marginTop="10dp" android:adjustViewBounds="true" android:scaleType="fitXY">
 				</ImageView>
-				<TextView android:layout_width="wrap_content"
-					android:layout_height="wrap_content" android:layout_marginTop="17dp"
-					android:layout_marginLeft="-5dp" android:text="Fax" />
+				
 
 			</LinearLayout>
 			<LinearLayout android:orientation="horizontal"

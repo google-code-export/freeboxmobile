@@ -5,10 +5,9 @@
 	android:layout_height="fill_parent" 
 	android:orientation="vertical" android:id="@+id/LinearLayout01">
 
-	<ImageView android:layout_width="wrap_content"
-		android:layout_height="wrap_content" android:id="@+id/LogoFreeboxMobile"
+	<ImageView android:layout_height="wrap_content" android:id="@+id/LogoFreeboxMobile"
 		android:src="@drawable/freebox_mobile" android:layout_gravity="center"
-		android:layout_marginTop="5dip" android:layout_marginBottom="5dip" android:scaleType="center">
+		android:layout_marginTop="5dip" android:layout_marginBottom="5dip" android:scaleType="fitXY" android:adjustViewBounds="true" android:layout_width="wrap_content">
 	</ImageView>
 
 	<ListView  android:layout_width="fill_parent"
