@@ -164,6 +164,13 @@ Release : 1
  * SERVICES : Notification de nouveaux messages
 
 = Versions beta de !FreeboxMobile =
+== 0.40.0rc2 ==
+Sortie le 17/06/2010<br>
+Release : 39
+Revision : 557
+ * Ajout de visuels en haute définition pour les devices de type Nexus / Desire / Milestone...
+ * Correction de divers bugs
+
 == 0.40.0rc1 ==
 Sortie le 16/06/2010<br>
 Release : 38<br>
