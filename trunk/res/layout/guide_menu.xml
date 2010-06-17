@@ -6,7 +6,7 @@
 			android:id="@+id/LogoFreeboxMobile"
 			android:src="@drawable/freebox_mobile"
 			android:layout_gravity="center"
-			android:layout_marginBottom="5dip" android:layout_marginTop="5dip">
+			android:layout_marginBottom="5dip" android:layout_marginTop="5dip" android:adjustViewBounds="true" android:scaleType="fitXY">
 		</ImageView>
 <ScrollView  android:id="@+id/ScrollViewLigneInfo" android:layout_height="fill_parent" android:layout_width="fill_parent">
 	

@@ -261,9 +261,6 @@ public class FBMHttpConnection implements Constants
 				consoleValues.put(KEY_LINETYPE, LINE_TYPE_FBXOPTIQUE);
 				break;
 		}
-    	// TODO : enlever la ligne suivante après debug
-    	if (consoleValues.get(KEY_LINETYPE).equals(LINE_TYPE_FBXIPADSL))
-			Log.d(TAG,"DEBUG INFO TECHNIQUES : "+br);		    		
     	Log.d(TAG,"type:"+consoleValues.get(KEY_LINETYPE));
     	consoleValues.put(KEY_NRA, parsePage(br, "NRA :", "\">", "</"));
     	consoleValues.put(KEY_LINELENGTH, parsePage(br, "Longueur :", "red\">", " mètres"));
