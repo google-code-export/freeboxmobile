@@ -141,8 +141,15 @@ public abstract class GuideUtils extends ListActivity implements Constants
         if (mNewBitmapAvailable)
         {
 			WrapBitmap bmp = new WrapBitmap(filepath);
-			bmp.setDensity(128);
-			i.setImageBitmap(bmp.getBitmap());        	
+			if (bmp != null)
+			{
+				bmp.setDensity(128);
+				i.setImageBitmap(bmp.getBitmap());
+			}
+			else
+			{
+				Log.e(TAG, "Bitmap not found : "+filepath);
+			}
         }
         else
         {

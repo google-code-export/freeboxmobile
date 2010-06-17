@@ -43,7 +43,7 @@ public class FBMHttpConnection implements Constants
 	private static String login = null;
 	private static String password = null;
 	private static String fbmversion = "";
-	// Variables id et idt d'acc�s � MonCompteFree
+	// Variables id et idt d'accès à MonCompteFree
 	private static String id = null;
 	private static String idt = null;
 
@@ -246,36 +246,36 @@ public class FBMHttpConnection implements Constants
 	 */
 	private static ContentValues parseConsole(String l, String p, int type)
 	{
-		try
+		ContentValues consoleValues = new ContentValues();
+		String br = getPage(getAuthRequest(suiviTechUrl, null, true, true, "ISO8859_1"));
+		String offre = parsePage(br, "Raccordée actuellement en offre", "<font", "</font>");
+		switch (type)
 		{
-			ContentValues consoleValues = new ContentValues();
-			String br = getPage(getAuthRequest(suiviTechUrl, null, true, true, "ISO8859_1"));
-			String offre = parsePage(br, "Raccordée actuellement en offre", "<font", "</font>");
-			switch (type)
+			case COMPTES_TYPE_ADSL :
+				if (offre.contains("Freebox dégroupé"))
+			    	consoleValues.put(KEY_LINETYPE, LINE_TYPE_FBXDEGROUPE);
+				else
+					consoleValues.put(KEY_LINETYPE, LINE_TYPE_FBXIPADSL);
+				break;
+			case COMPTES_TYPE_FO :
+				consoleValues.put(KEY_LINETYPE, LINE_TYPE_FBXOPTIQUE);
+				break;
+		}
+    	// TODO : enlever la ligne suivante après debug
+    	if (consoleValues.get(KEY_LINETYPE).equals(LINE_TYPE_FBXIPADSL))
+			Log.d(TAG,"DEBUG INFO TECHNIQUES : "+br);		    		
+    	Log.d(TAG,"type:"+consoleValues.get(KEY_LINETYPE));
+    	consoleValues.put(KEY_NRA, parsePage(br, "NRA :", "\">", "</"));
+    	consoleValues.put(KEY_LINELENGTH, parsePage(br, "Longueur :", "red\">", " mètres"));
+    	consoleValues.put(KEY_ATTN, parsePage(br, "Affaiblissement :", "red\">", " dB"));
+    	consoleValues.put(KEY_IP, parsePage(br, "Votre adresse IP", "<b>", " / "));
+    	consoleValues.put(KEY_TEL, parsePage(br, "téléphone Freebox", "<b>", "</b>"));
+		if (consoleValues.get(KEY_IP) != "")
+		{
+			URI uri = URI.create(frimousseUrl);
+			XMLRPCClient client = new XMLRPCClient(uri);
+			try
 			{
-				case COMPTES_TYPE_ADSL :
-					if (offre.contains("Freebox dégroupé"))
-				    	consoleValues.put(KEY_LINETYPE, LINE_TYPE_FBXDEGROUPE);
-					else
-						consoleValues.put(KEY_LINETYPE, LINE_TYPE_FBXIPADSL);
-					break;
-				case COMPTES_TYPE_FO :
-					consoleValues.put(KEY_LINETYPE, LINE_TYPE_FBXOPTIQUE);
-					break;
-			}
-	    	// TODO : enlever la ligne suivante après debug
-	    	if (consoleValues.get(KEY_LINETYPE).equals(LINE_TYPE_FBXIPADSL))
-				Log.d(TAG,"DEBUG INFO TECHNIQUES : "+br);		    		
-	    	Log.d(TAG,"type:"+consoleValues.get(KEY_LINETYPE));
-	    	consoleValues.put(KEY_NRA, parsePage(br, "NRA :", "\">", "</"));
-	    	consoleValues.put(KEY_LINELENGTH, parsePage(br, "Longueur :", "red\">", " mètres"));
-	    	consoleValues.put(KEY_ATTN, parsePage(br, "Affaiblissement :", "red\">", " dB"));
-	    	consoleValues.put(KEY_IP, parsePage(br, "Votre adresse IP", "<b>", " / "));
-	    	consoleValues.put(KEY_TEL, parsePage(br, "téléphone Freebox", "<b>", "</b>"));
-			if (consoleValues.get(KEY_IP) != "")
-			{
-				URI uri = URI.create(frimousseUrl);
-				XMLRPCClient client = new XMLRPCClient(uri);
 				Object[] response = (Object[]) client.call("getDSLAMListForPool", consoleValues.get(KEY_IP));
 				if (response.length > 0)
 				{
@@ -288,18 +288,19 @@ public class FBMHttpConnection implements Constants
 					Log.d(TAG,"DSLAM pas trouvé");
 				}
 			}
-			else
+			catch (Exception e)
 			{
+				Log.e(TAG, "parseConsole : " + e.getMessage());
+				e.printStackTrace();
 				consoleValues.put(KEY_DSLAM,"");
+				Log.d(TAG,"DSLAM pas trouvé");					
 			}
-			return (consoleValues);
 		}
-		catch (Exception e)
+		else
 		{
-			Log.e(TAG, "parseConsole : " + e.getMessage());
-			e.printStackTrace();
+			consoleValues.put(KEY_DSLAM,"");
 		}
-		return (null);
+		return (consoleValues);
 	}
 
 	// En cas de résussite : http://adsl.free.fr/compte/console.pl?id=417389&idt=10eb38933107f10c
