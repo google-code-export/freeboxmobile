@@ -8,21 +8,26 @@ import java.io.StringWriter;
 import java.net.URI;
 import java.net.URL;
 import java.util.Map;
+import java.util.Vector;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
-import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
-
-import android.util.Log;
 
 /**
  * XMLRPCClient allows to call remote XMLRPC method.
@@ -76,11 +81,18 @@ public class XMLRPCClient extends XMLRPCCommon {
 	private HttpPost postMethod;
 	private HttpParams httpParams;
 
+
 	/**
 	 * XMLRPCClient constructor. Creates new instance based on server URI
+	 * (Code contributed by sgayda2 from issue #17, and by erickok from ticket #10)
+	 * 
 	 * @param XMLRPC server URI
 	 */
 	public XMLRPCClient(URI uri) {
+		SchemeRegistry registry = new SchemeRegistry();
+		registry.register(new Scheme("http", new PlainSocketFactory(), 80));
+		registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443)); 
+		
 		postMethod = new HttpPost(uri);
 		postMethod.addHeader("Content-Type", "text/xml");
 		
@@ -89,10 +101,29 @@ public class XMLRPCClient extends XMLRPCCommon {
 		// two second delay between sending http POST request and POST body 
 		httpParams = postMethod.getParams();
 		HttpProtocolParams.setUseExpectContinue(httpParams, false);
-		HttpProtocolParams.setUserAgent(httpParams, FBMHttpConnection.USER_AGENT);
-		client = new DefaultHttpClient();
+		this.client = new DefaultHttpClient(new ThreadSafeClientConnManager(httpParams, registry), httpParams);
 	}
 	
+	/**
+	 * XMLRPCClient constructor. Creates new instance based on server URI
+	 * (Code contributed by sgayda2 from issue #17)
+	 * 
+	 * @param XMLRPC server URI
+	 * @param HttpClient to use
+	 */
+	
+	public XMLRPCClient(URI uri, HttpClient client) {
+		postMethod = new HttpPost(uri);
+		postMethod.addHeader("Content-Type", "text/xml");
+		
+		// WARNING
+		// I had to disable "Expect: 100-Continue" header since I had 
+		// two second delay between sending http POST request and POST body 
+		httpParams = postMethod.getParams();
+		HttpProtocolParams.setUseExpectContinue(httpParams, false);
+		this.client = client;
+	}
+
 	/**
 	 * Convenience constructor. Creates new instance based on server String address
 	 * @param XMLRPC server address
@@ -100,6 +131,16 @@ public class XMLRPCClient extends XMLRPCCommon {
 	public XMLRPCClient(String url) {
 		this(URI.create(url));
 	}
+
+	/**
+	 * Convenience constructor. Creates new instance based on server String address
+	 * @param XMLRPC server address
+	 * @param HttpClient to use
+	 */
+	public XMLRPCClient(String url, HttpClient client) {
+		this(URI.create(url), client);
+	}
+
 	
 	/**
 	 * Convenience XMLRPCClient constructor. Creates new instance based on server URL
@@ -107,6 +148,98 @@ public class XMLRPCClient extends XMLRPCCommon {
 	 */
 	public XMLRPCClient(URL url) {
 		this(URI.create(url.toExternalForm()));
+	}
+
+	/**
+	 * Convenience XMLRPCClient constructor. Creates new instance based on server URL
+	 * @param XMLRPC server URL
+	 * @param HttpClient to use
+	 */
+	public XMLRPCClient(URL url, HttpClient client) {
+		this(URI.create(url.toExternalForm()), client);
+	}
+	
+	/**
+	 * Convenience constructor. Creates new instance based on server String address
+	 * @param XMLRPC server address
+	 * @param HTTP Server - Basic Authentication - Username
+	 * @param HTTP Server - Basic Authentication - Password
+	 */	
+	public XMLRPCClient(URI uri, String username, String password) {
+        this(uri);
+        
+        ((DefaultHttpClient) client).getCredentialsProvider().setCredentials(
+        new AuthScope(uri.getHost(), uri.getPort(),AuthScope.ANY_REALM),
+        new UsernamePasswordCredentials(username, password));
+    }
+
+	/**
+	 * Convenience constructor. Creates new instance based on server String address
+	 * @param XMLRPC server address
+	 * @param HTTP Server - Basic Authentication - Username
+	 * @param HTTP Server - Basic Authentication - Password
+	 * @param HttpClient to use
+	 */	
+	public XMLRPCClient(URI uri, String username, String password, HttpClient client) {
+        this(uri, client);
+        
+        ((DefaultHttpClient) this.client).getCredentialsProvider().setCredentials(
+        new AuthScope(uri.getHost(), uri.getPort(),AuthScope.ANY_REALM),
+        new UsernamePasswordCredentials(username, password));
+    }
+
+	/**
+	 * Convenience constructor. Creates new instance based on server String address
+	 * @param XMLRPC server address
+	 * @param HTTP Server - Basic Authentication - Username
+	 * @param HTTP Server - Basic Authentication - Password
+	 */
+	public XMLRPCClient(String url, String username, String password) {
+		this(URI.create(url), username, password);
+	}
+
+	/**
+	 * Convenience constructor. Creates new instance based on server String address
+	 * @param XMLRPC server address
+	 * @param HTTP Server - Basic Authentication - Username
+	 * @param HTTP Server - Basic Authentication - Password
+	 * @param HttpClient to use
+	 */
+	public XMLRPCClient(String url, String username, String password, HttpClient client) {
+		this(URI.create(url), username, password, client);
+	}
+
+	/**
+	 * Convenience constructor. Creates new instance based on server String address
+	 * @param XMLRPC server url
+	 * @param HTTP Server - Basic Authentication - Username
+	 * @param HTTP Server - Basic Authentication - Password
+	 */
+	public XMLRPCClient(URL url, String username, String password) {
+		this(URI.create(url.toExternalForm()), username, password);
+	}
+
+	/**
+	 * Convenience constructor. Creates new instance based on server String address
+	 * @param XMLRPC server url
+	 * @param HTTP Server - Basic Authentication - Username
+	 * @param HTTP Server - Basic Authentication - Password
+	 * @param HttpClient to use
+	 */
+	public XMLRPCClient(URL url, String username, String password, HttpClient client) {
+		this(URI.create(url.toExternalForm()), username, password, client);
+	}
+
+	/**
+	 * Sets basic authentication on web request using plain credentials
+	 * @param username The plain text username
+	 * @param password The plain text password
+	 */
+	public void setBasicAuthentication(String username, String password) {
+		((DefaultHttpClient) client).getCredentialsProvider().setCredentials(
+		        new AuthScope(postMethod.getURI().getHost(), postMethod.getURI().getPort(),
+AuthScope.ANY_REALM),
+		        new UsernamePasswordCredentials(username, password));
 	}
 
 	/**
@@ -136,7 +269,7 @@ public class XMLRPCClient extends XMLRPCCommon {
 
 			// check status code
 			int statusCode = response.getStatusLine().getStatusCode();
-//			Log.d(Tag.LOG, "ros status code:" + statusCode);
+			//Log.d(Tag.LOG, "ros status code:" + statusCode);
 			if (statusCode != HttpStatus.SC_OK) {
 				throw new XMLRPCException("HTTP status code: " + statusCode + " != " + HttpStatus.SC_OK);
 			}
@@ -220,6 +353,23 @@ public class XMLRPCClient extends XMLRPCCommon {
 	 */
 	public Object call(String method) throws XMLRPCException {
 		return callEx(method, null);
+	}
+	
+	/**
+	 * Convenience method call with a vectorized parameter
+     * (Code contributed by jahbromo from issue #14)
+	 * @param method name of method to call
+	 * @param paramsv vector of method's parameter
+	 * @return deserialized method return value
+	 * @throws XMLRPCException
+	 */
+	
+	public Object call(String method, Vector paramsv) throws XMLRPCException {
+		Object[] params = new Object [paramsv.size()];
+		for (int i=0; i<paramsv.size(); i++) {
+			params[i]=paramsv.elementAt(i);
+		}
+		return callEx(method, params);
 	}
 	
 	/**
