@@ -50,8 +50,7 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants
     	getChaines = chaine;
     	forceRefresh = force;
     	this.progress = progress;
-    	Log.d(TAG,"GUIDENETWORK START "+d+" "+chaine+" "+force);
-
+    	Log.d(TAG,"GUIDENETWORK START "+d+" "+duree+" "+chaine+" "+progress+" "+force);
     }
     
     public int getData()
@@ -63,7 +62,7 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants
     	JSONObject jHoraireObject;
     	int channel_id;
 		ChainesDbAdapter db;
-		int courant=0;
+		int courant = 0;
 		int max = 0;
 		boolean ok = true;
 
@@ -100,16 +99,23 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants
 		}
         List<NameValuePair> param = new ArrayList<NameValuePair>();
         param.add(new BasicNameValuePair("ajax","get_chaines"));
-        if (duree_h == 24)
+        if (datetime != null)
         {
-            param.add(new BasicNameValuePair("date", datetime+" 00:00:00"));	
+	        if (duree_h == 24)
+	        {
+	            param.add(new BasicNameValuePair("date", datetime+" 00:00:00"));	
+	        }
+	        else
+	        {
+        		param.add(new BasicNameValuePair("date", datetime));
+	        }
+	        param.add(new BasicNameValuePair("duree_h", duree_h.toString()));
         }
         else
         {
-        	param.add(new BasicNameValuePair("date", datetime));
+        	param.add(new BasicNameValuePair("date", "2010-01-01 00:00:00"));
         }
-        param.add(new BasicNameValuePair("duree_h", duree_h.toString()));
-
+        Log.d(TAG, "ICI:"+param);
         String resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(MAGNETO_URL, param, true, true, "UTF8"));
         if (resultat != null)
         {
