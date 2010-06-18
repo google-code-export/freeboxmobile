@@ -71,7 +71,6 @@ public class Utils implements Constants
 			ZipEntry entree;
 			int count;
 			while((entree = zis.getNextEntry()) != null) {
-				Log.e(TAG, "entree = "+entree);
 				File f = new File(path+"/"+entree.getName());
 				if (entree.isDirectory()){
 					if (!f.exists()){
