@@ -398,6 +398,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 		{
 			alertDialog.show();
 		}
+		progAct = this;
 	}
 
 	@Override
@@ -408,6 +409,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 		{
 			alertDialog.dismiss();
 		}
+		progAct = null;
 	}
     
     /* Creates the menu items */
@@ -1013,7 +1015,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 			}
 	        catch (ParseException e)
 	        {
-	        	Log.e(TAG,"Probl�me conversion de date deb ! "+e.getMessage());
+	        	Log.e(TAG,"Problème conversion de date deb ! "+e.getMessage());
 				e.printStackTrace();
 				showErreurDate("fin");
 			}

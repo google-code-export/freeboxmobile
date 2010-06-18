@@ -12,7 +12,7 @@ import android.graphics.BitmapFactory;
 
 public class WrapBitmap
 {
-	private Bitmap mInstance;
+	private Bitmap mInstance = null;
 	
 	static
 	{
@@ -36,7 +36,10 @@ public class WrapBitmap
 	
 	public void setDensity(int density)
 	{
-		mInstance.setDensity(density);
+		if (mInstance != null)
+		{
+			mInstance.setDensity(density);
+		}
 	}
 	
 	public Bitmap getBitmap()
