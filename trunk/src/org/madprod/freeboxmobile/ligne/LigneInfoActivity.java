@@ -176,7 +176,7 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
 	        	t1_2.setTextColor(0xffff0000);
 	        }
 	        text2 = "Liste des tickets de "+mgr.getString(KEY_DSLAM, "")+" :";
-	        text3 = "Historique de l'�tat de "+mgr.getString(KEY_DSLAM, "")+" :";
+	        text3 = "Historique de l'état de "+mgr.getString(KEY_DSLAM, "")+" :";
 	        
 	        LinearLayout lt = (LinearLayout) findViewById(R.id.LinearLayoutTickets);
 	        lt.removeAllViews();
