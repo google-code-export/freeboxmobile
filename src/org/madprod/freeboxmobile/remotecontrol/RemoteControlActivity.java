@@ -89,6 +89,10 @@ public class RemoteControlActivity extends Activity implements GuideConstants, H
 	private String currentTag = "mosaic";
 	private BroadCastManager bcm;
 	private BroadcastReceiver viewCommandBcr ;
+	private UpdateChannels uc;
+	private DownloadLayout dl;
+	
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		Log.i(TAG,"RemoteControlActivity create");
@@ -192,7 +196,13 @@ public class RemoteControlActivity extends Activity implements GuideConstants, H
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		Log.i(TAG,"onConfigurationChanged Start");
-		chooseView();
+		Log.d(TAG,"info sur Update channel = "+uc);
+		Log.d(TAG,"info sur Download Layout = "+dl);
+		
+		
+		if (uc == null && dl == null){
+			chooseView();			
+		}
 		super.onConfigurationChanged(newConfig);
 	}
 
@@ -264,13 +274,25 @@ public class RemoteControlActivity extends Activity implements GuideConstants, H
 		if (!mgr.getString(KEY_SPLASH_REMOTE, "0").equals(Utils.getFBMVersion(this)))
 		{
 			displayAboutRemote();
-			new DownloadLayout().execute();
 			Editor editor = mgr.edit();
 			editor.putString(KEY_SPLASH_REMOTE, Utils.getFBMVersion(this));
 			editor.commit();
 		}
 
 
+		if (!(new File(getFilesDir()+PATHMOSAICHORIZONTAL).exists() 
+			&& new File(getFilesDir()+PATHMOSAICVERTICAL).exists()
+			&& new File(getFilesDir()+PATHREMOTEHORIZONTAL).exists()
+			&& new File(getFilesDir()+PATHREMOTEVERTICAL).exists())){
+			new DownloadLayout().execute();
+			
+		}
+
+		
+		
+		
+		
+		
 		if (confOk)
 		{
 			chooseView();
@@ -461,7 +483,7 @@ public class RemoteControlActivity extends Activity implements GuideConstants, H
 		@Override
 		protected Void doInBackground(Void... arg0) {
 
-
+			dl = this;
 			File f = null;
 			try {
 				f = File.createTempFile("tmp", "fbm");
@@ -607,6 +629,7 @@ public class RemoteControlActivity extends Activity implements GuideConstants, H
 		@Override
 		protected void onPostExecute(Void result) {
 			FBMNetTask.iProgressDialogDismiss();
+			dl = null;
 		}		
 	}
 
@@ -746,6 +769,7 @@ public class RemoteControlActivity extends Activity implements GuideConstants, H
 			FBMNetTask.iProgressDialogDismiss();
 			super.onPostExecute(result);
 			chooseView();
+			uc = null;
 		}
 
 		@Override
@@ -758,6 +782,7 @@ public class RemoteControlActivity extends Activity implements GuideConstants, H
 		}
 
 		private void updateChaine(){
+			uc = this;
 			File file, filen;
 			String image, canal;
 			int courant = 0;
@@ -770,7 +795,10 @@ public class RemoteControlActivity extends Activity implements GuideConstants, H
 
 			String resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(MAGNETO_URL, param, true, true, "UTF8"));
 			try {
+				
+				Log.d(TAG, "resultat ="+resultat);
 				JSONObject jObject = new JSONObject(resultat);
+				if (jObject == null) return;
 				JSONObject jChannelsObject = jObject.getJSONObject("chaines");
 
 				int max = jChannelsObject.length();

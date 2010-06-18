@@ -335,7 +335,6 @@ public class RemoteControlListLayout extends ListActivity implements Constants, 
 				ZipEntry entree;
 				int count;
 				while((entree = zis.getNextEntry()) != null ) {
-					Log.d(TAG, "entree = "+entree);
 					File f = File.createTempFile("tmp", "FBM");
 					FileOutputStream fos = new FileOutputStream(f);
 					dest = new BufferedOutputStream(fos, BUFFER);
