@@ -743,7 +743,7 @@ public class FBMHttpConnection implements Constants
             	e.printStackTrace();
 			}
 		}
-//        if (log)
+        if (log)
         	Log.d(TAG,"makeStringForPost : "+listConcat);
         return (listConcat);
     }
