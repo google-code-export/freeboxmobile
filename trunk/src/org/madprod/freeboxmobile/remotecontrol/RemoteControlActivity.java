@@ -344,7 +344,7 @@ public class RemoteControlActivity extends Activity implements GuideConstants, H
 			menu.findItem(FULLSCREEN).setEnabled(true);
 
 			if (fullscreen){
-				menu.findItem(FULLSCREEN).setTitle("Quittez mode plein ecran");
+				menu.findItem(FULLSCREEN).setTitle("Quitter mode plein ecran");
 			}else{
 				menu.findItem(FULLSCREEN).setTitle("Mode plein ecran");
 			}
