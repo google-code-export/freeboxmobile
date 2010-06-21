@@ -180,10 +180,13 @@ public class RemoteControlActivity extends Activity implements GuideConstants, H
 			}
 
 			th.setOnTabChangedListener(new OnTabChangeListener(){
-
 				@Override
 				public void onTabChanged(String tag) {
 					currentTag = tag;
+					if (currentTag.compareTo("remote") == 0){
+						fullscreen = true;
+						chooseView();
+					}
 				}
 
 			});
