@@ -32,20 +32,14 @@ public class ManageCompte extends FBMNetTask implements Constants// AsyncTask<Co
 	@Override
 	protected Integer doInBackground(Void...params)
 	{
-		Log.d(TAG, "Manage Compte 1 "+payload.refresh);
 		payload.result = FBMHttpConnection.connectFreeCheck(payload.login, payload.password, payload.type);
-		Log.d(TAG, "Manage Compte 2 "+payload.result+" "+payload.refresh);
 		if ((payload.result != null) /*&& (payload.refresh)*/)
 		{
-			Log.d(TAG, "Manage Compte 3");
 	    	dProgressSet("Importation", "", R.drawable.fm_magnetoscope);
 			new PvrNetwork(true, true).getData();
-			Log.d(TAG, "Manage Compte 4");
 	    	ProgrammationActivity.lastUser = "";
 			new GuideNetwork(getActivity(), null, 4, true, true, false).getData();
-			Log.d(TAG, "Manage Compte 5");
 		}
-		Log.d(TAG, "Manage Compte 6");
 		return (0);
 	}
 

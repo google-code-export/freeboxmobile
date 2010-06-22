@@ -135,6 +135,7 @@ public class ComptesEditActivity extends Activity implements Constants
                 	}
                 	else
                 	{
+                		// TODO : peut être ne pas appeler ManageCompte si le compte n'est pas le premier
 		                new ManageCompte(new ComptePayload(title, user, password, type, mRowId, false)).execute();
                 	}
                 }
