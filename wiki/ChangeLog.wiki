@@ -14,6 +14,18 @@ RESEAU : les connexions réseau / authentifications sur la console Free...
 GUIDE : les guide TV
 
 = Versions publiques de !FreeboxMobile =
+== 0.40.0 ==
+Sortie le 22/06/2010<br>
+Release : 41
+Revision : 566
+ * TELECOMMANDE : Ajout télécommande Freebox (Wifi) (Beta)
+ * WEBMAIL : Ajout accès webmail Free avec application adéquate
+ * ASSISTANCE : Ajout accès Assitance Free
+ * PVR : Divers debugs sur le magnétoscope
+ * GUIDE : Ajout d'une vue sur la journée d'une chaîne
+ * FAX : Activation du module Fax (Beta)
+ * DIVERS : Ajout de visuels haute-définition
+
 == 0.32.2 ==
 Sortie le 08/04/2010<br>
 Release : 36<br>
