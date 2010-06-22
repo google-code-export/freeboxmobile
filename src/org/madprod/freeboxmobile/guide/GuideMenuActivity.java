@@ -158,15 +158,6 @@ public class GuideMenuActivity extends GuideUtils implements GuideConstants
         		}
         	}
         );
-
-	   	setTitle(getString(R.string.app_name)+" Menu Guide TV - "+FBMHttpConnection.getTitle());
-		if (!mgr.getString(KEY_SPLASH_GUIDE, "0").equals(Utils.getFBMVersion(this)))
-		{
-			Editor editor = mgr.edit();
-			editor.putString(KEY_SPLASH_GUIDE, Utils.getFBMVersion(this));
-			editor.commit();
-			displayAboutGuide();
-		}
     }
 	
 	@Override
@@ -197,29 +188,7 @@ public class GuideMenuActivity extends GuideUtils implements GuideConstants
     			R.id.ChoixSelectedLinearLayout, -1);
 	}
 
-	private void displayAboutGuide()
-    {	
-    	AlertDialog d = new AlertDialog.Builder(this).create();
-		d.setTitle(getString(R.string.app_name)+" - GuideTV");
-		d.setIcon(R.drawable.fm_guide_tv);
-		d.setMessage(
-			"Le guide est en version beta.\n\n"+
-			"Ses fonctionnalités, son look et ses performances seront améliorés "+
-			"dans les prochaines semaines.\n\n"+
-			"Mais il est déjà pratique comme cela :)"
-			);
-		d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
-			{
-				public void onClick(DialogInterface dialog, int which)
-				{
-					dialog.dismiss();
-				}
-			}
-			);
-		d.show();
-    }
-
-    private class GuideMenuActivityNetwork extends FBMNetTask //AsyncTask<Void, Integer, Integer>
+	private class GuideMenuActivityNetwork extends FBMNetTask //AsyncTask<Void, Integer, Integer>
     {
         protected void onPreExecute()
         {
