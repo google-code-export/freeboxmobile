@@ -2,18 +2,12 @@ package org.madprod.freeboxmobile.guide;
 
 import java.util.Calendar;
 
-import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
-import org.madprod.freeboxmobile.Utils;
 import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
 import org.madprod.freeboxmobile.pvr.PvrNetwork;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -57,8 +51,6 @@ public class GuideMenuActivity extends GuideUtils implements GuideConstants
 		
 		Log.i(TAG,"GUIDE MENU START");
 		FBMNetTask.register(this);
-
-		SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 
     	if (mDbHelper.getNbFavoris() == 0)
     	{

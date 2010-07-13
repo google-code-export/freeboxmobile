@@ -570,7 +570,7 @@ public class FBMHttpConnection implements Constants
 				c = connectionFree(login, password, false);
 				if (c == CONNECT_CONNECTED)
 				{
-					Log.d(TAG,"GETISR :  REAUTHENTIFICATION OK");
+					Log.d(TAG,"GETISR : REAUTHENTIFICATION OK");
 					h = prepareConnection(url+"?"+makeStringForPost(p, auth, charset), retour ? "GET": "HEAD");
 					h.setDoInput(true);
 					Log.d(TAG,"HEADERS : "+h.getHeaderFields());

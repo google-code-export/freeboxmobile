@@ -12,6 +12,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
@@ -322,13 +323,23 @@ public class ChainesDbAdapter implements GuideConstants
 		return mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE_DAYHISTOGUIDE + " WHERE "+KEY_HISTO_DATE+" = '"+date+"'").simpleQueryForLong();
 	}
 
-	public long deleteOldDayHisto()
+	public long deleteOldDayHisto_old()
 	{
+		long res = 0;
+		
 		Calendar c = Calendar.getInstance();
     	Integer mois = c.get(Calendar.MONTH)+1;
     	Integer jour = c.get(Calendar.DAY_OF_MONTH);
 		String date = c.get(Calendar.YEAR)+"-"+(mois<10?"0":"")+mois.toString()+"-"+(jour<10?"0":"")+jour.toString();
-		return mDb.delete(DATABASE_TABLE_HISTOGUIDE, KEY_PROG_DATETIME_DEB+" < '"+date+"'", null);
+		try
+		{
+			res = mDb.delete(DATABASE_TABLE_HISTOGUIDE, KEY_PROG_DATETIME_DEB+" < '"+date+"'", null);
+		}
+		catch (SQLiteException e)
+		{
+			Log.e(TAG, "deleteOldDayHisto Exception : "+e.getMessage());
+		}		
+		return res;
 	}
 
 	public long isHistoGuidePresent(String datetime)
@@ -338,13 +349,21 @@ public class ChainesDbAdapter implements GuideConstants
 	
 	public long deleteOldHisto()
 	{
-		long res;
+		long res = 0;
+		
 		Calendar c = Calendar.getInstance();
     	Integer mois = c.get(Calendar.MONTH)+1;
     	Integer jour = c.get(Calendar.DAY_OF_MONTH);
 		String date = c.get(Calendar.YEAR)+"-"+(mois<10?"0":"")+mois.toString()+"-"+(jour<10?"0":"")+jour.toString();
-		res = mDb.delete(DATABASE_TABLE_HISTOGUIDE, KEY_PROG_DATETIME_DEB+" < '"+date+" 00:00:00'", null);
-		res += mDb.delete(DATABASE_TABLE_DAYHISTOGUIDE, KEY_HISTO_DATE+" < '"+date+"'", null);
+		try
+		{
+			res = mDb.delete(DATABASE_TABLE_HISTOGUIDE, KEY_PROG_DATETIME_DEB+" < '"+date+" 00:00:00'", null);
+			res += mDb.delete(DATABASE_TABLE_DAYHISTOGUIDE, KEY_HISTO_DATE+" < '"+date+"'", null);
+		}
+		catch (SQLiteException e)
+		{
+			Log.e(TAG, "deleteOldHisto Exception : "+e.getMessage());
+		}
 		return res;
 	}
 	
@@ -352,10 +371,17 @@ public class ChainesDbAdapter implements GuideConstants
 	// comme la nouvelle chaine ne sera pas dans l'historique...
 	public long clearHistorique()
 	{
-		long res;
+		long res = 0;
 		
-		res = mDb.delete(DATABASE_TABLE_DAYHISTOGUIDE, null, null);
-		res += mDb.delete(DATABASE_TABLE_HISTOGUIDE, null, null);
+		try
+		{
+			res = mDb.delete(DATABASE_TABLE_DAYHISTOGUIDE, null, null);
+			res += mDb.delete(DATABASE_TABLE_HISTOGUIDE, null, null);
+		}
+		catch (SQLiteException e)
+		{
+			Log.e(TAG, "clearHistorique Exception : "+e.getMessage());
+		}
 		return res;
 	}
 

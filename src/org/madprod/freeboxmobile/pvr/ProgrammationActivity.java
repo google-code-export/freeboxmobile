@@ -1120,7 +1120,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 	        String strHeure = c.getString(c.getColumnIndex(EnregistrementsDbAdapter.KEY_HEURE));
 //	        heure.setCurrentHour(Integer.parseInt(strHeure.substring(0,2)));
 //	        heure.setCurrentMinute(Integer.parseInt(strHeure.substring(3)));
-	        
+
 	        choosen_year_deb = year;
 	        choosen_month_deb = month;
 	        choosen_day_deb = day;
@@ -1339,16 +1339,19 @@ public class ProgrammationActivity extends Activity implements PvrConstants
         protected void onPostExecute(Boolean telechargementOk)
         {
         	preparerActivite();
-        	if (telechargementOk == Boolean.TRUE)
-        	{
-        	}
-        	else
-        	{
-    			afficherMsgErreur(progAct.getString(R.string.pvrErreurTelechargementDonnees));
-        	}
-        	// progAct important ici / en cas de screenrotation, il est essentiel
-        	// (sinon le setProgressBar se fait sur l'ancienne activity que connait l'asynctask) 
-    		progAct.setProgressBarIndeterminateVisibility(false);
+    		if (progAct != null)
+    		{
+	        	if (telechargementOk == Boolean.TRUE)
+	        	{
+	        	}
+	        	else
+	        	{
+	       			afficherMsgErreur(progAct.getString(R.string.pvrErreurTelechargementDonnees));
+	        	}
+	        	// progAct important ici / en cas de screenrotation, il est essentiel
+	        	// (sinon le setProgressBar se fait sur l'ancienne activity que connait l'asynctask) 
+	    		progAct.setProgressBarIndeterminateVisibility(false);
+    		}
     		pbiv = false;
         }
         
