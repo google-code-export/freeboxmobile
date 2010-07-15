@@ -298,6 +298,12 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		map.put(M_CLASS, null);
 		modulesList.add(map);
 		map = new HashMap<String,Object>();
+		map.put(M_ICON, R.drawable.fm_freewifi);
+		map.put(M_TITRE, getString(R.string.buttonFreeWifi));
+		map.put(M_DESC, "Configurer votre accès FreeWifi afin de pouvoir bénéficier de millions de HotSpots Wifi en France");
+		map.put(M_CLASS, null);
+		modulesList.add(map);
+		map = new HashMap<String,Object>();
 		map.put(M_ICON, R.drawable.fm_webmail);
 		map.put(M_TITRE, getString(R.string.buttonWebmail));
 		map.put(M_DESC, "Si vous avez une adresse email en @free.fr, accèdez au webmail ici");
@@ -360,8 +366,11 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 	    	}
 	    	else if (moduleName.equals(getString(R.string.buttonWebmail)))
 	    	{
-	    		//org.geeek.free
-	    		openWebmail();
+	    		openExtApp("org.geeek.free", ".activity.SplashScreenActivity", "Webmail Free.fr");
+	    	}
+	    	else if (moduleName.equals(getString(R.string.buttonFreeWifi)))
+	    	{
+	    		openExtApp("com.mba.freewifi", ".FreeWifiConnect", "FreeWifi Connect");
 	    	}
         }
     	if (moduleClass != null)
@@ -439,27 +448,11 @@ public class HomeListActivity extends ListActivity implements HomeConstants
         }
     }
     
-    private void openWebmail()
+    private void openExtApp(final String packageName, final String className, final String appName)
     {
-		final String packageName = "org.geeek.free";
-//		final String className = "org.geeek.free.activity.WebmailActivity";
-		final String className = "org.geeek.free.activity.SplashScreenActivity";
-
 		Intent i = new Intent(Intent.ACTION_MAIN);
-		i.setClassName(packageName, className);
+		i.setClassName(packageName, packageName+className);
 		i.putExtra("nosplashscreen", true);
-/*
-		final Intent intent = new Intent(Intent.ACTION_MAIN, null);
-		intent.addCategory(Intent.CATEGORY_LAUNCHER);
-
-		final ComponentName cn = new ComponentName(packageName,
-		className);
-
-		intent.setComponent(cn);
-		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		startActivity( intent);
-		*/
-		// Works 
 		try
 		{
 			startActivity(i);
@@ -470,9 +463,9 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 			d.setTitle(getString(R.string.app_name));
 			d.setIcon(R.drawable.icon_fbm_reverse);
 	    	d.setMessage(
-				"Pour utiliser la fonctionnalité Webmail, vous devez installer l'application 'Webmail Free.fr'.\n\n"+
+				"Pour utiliser cette fonctionnalité, vous devez installer l'application '"+appName+"'.\n\n"+
 				"Cliquez sur 'Continuer' pour l'installer ou sur 'Plus tard' pour continuer à utiliser Freebox Mobile "+
-				"sans 'Webmail'.\n"
+				"sans cette fonctionnalité.\n"
 			);
 			d.setButton(DialogInterface.BUTTON_POSITIVE, "Continuer", new DialogInterface.OnClickListener()
 				{
@@ -481,7 +474,25 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 						dialog.dismiss();
 			            Intent marketIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + packageName));
 			            marketIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			            startActivity(marketIntent); 
+			            try
+			            {
+			            	startActivity(marketIntent);
+			            }
+			            catch (ActivityNotFoundException e)
+			            {
+			    	    	AlertDialog ad = new AlertDialog.Builder(HomeListActivity.this).create();
+			    			ad.setTitle(getString(R.string.app_name));
+			    			ad.setIcon(R.drawable.icon_fbm_reverse);
+			    	    	ad.setMessage("Impossible d'ouvrir Android Market !");
+			    			ad.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
+							{
+								public void onClick(DialogInterface dialog, int which)
+								{
+									dialog.dismiss();
+								}
+							});
+			    	    	ad.show();
+			            }
 					}
 				});
 			d.setButton(DialogInterface.BUTTON_NEGATIVE, "Plus tard", new DialogInterface.OnClickListener()
@@ -492,7 +503,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 				}
 			});
 			d.show();
-		}
+		}    	
     }
     
     private void shareApp()
