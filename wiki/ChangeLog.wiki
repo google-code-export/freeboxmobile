@@ -14,6 +14,13 @@ RESEAU : les connexions réseau / authentifications sur la console Free...
 GUIDE : les guide TV
 
 = Versions publiques de !FreeboxMobile =
+== 0.40.1 ==
+Sortie le 26/07/2010<br>
+Release : 42
+Revision : 572
+ * DIVERS : Ajout de visuels haute-définition
+ * HOME : Ajout d'un lien vers FreeWifi Connect
+
 == 0.40.0 ==
 Sortie le 22/06/2010<br>
 Release : 41
