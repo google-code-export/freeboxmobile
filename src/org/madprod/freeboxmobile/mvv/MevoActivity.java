@@ -434,7 +434,10 @@ public class MevoActivity extends ListActivity implements MevoConstants
 				public void onStopTrackingTouch(SeekBar seekBar)
 				{
 					messageTimer.schedule(messageUpdateTask = new UpdateTimeTask(), 250, 250);
-					play_current_mp.seekTo(seekBar.getProgress());
+					if (play_current_mp != null)
+					{
+						play_current_mp.seekTo(seekBar.getProgress());
+					}
 				}
 			});
     	}
@@ -710,8 +713,8 @@ public class MevoActivity extends ListActivity implements MevoConstants
 			{
 					if (!curMsg.setMsgSource(Environment.getExternalStorageDirectory().toString()+DIR_FBM+FBMHttpConnection.getIdentifiant()+DIR_MEVO+curMsg.getStringValue(KEY_NAME)))
 					{
-						Toast t = Toast.makeText(MevoActivity.mevoActivity, "Problème avec le fichier du message !", Toast.LENGTH_LONG);
-						t.show();
+//						Toast t = Toast.makeText(MevoActivity.mevoActivity, "Problème avec le fichier du message !", Toast.LENGTH_SHORT);
+//						t.show();
 					}
 			}
 			return convertView;
@@ -782,12 +785,20 @@ public class MevoActivity extends ListActivity implements MevoConstants
     				play_current_pos = pos;
 					Log.d(TAG,"Prepare play "+pos);
 					play_current_mp = m.getMP();
-					m.setIntValue(KEY_STATUS, MSG_STATUS_LISTENED, true);
-					m.setIntValue(KEY_PLAY_STATUS, PLAY_STATUS_PLAY, false);
-					play_current_mp.setOnCompletionListener(this);
-					play_current_mp.start();
-					this.setMessageSeekBar(0, play_current_mp.getCurrentPosition(), play_current_mp.getDuration());
-					this.messageTimer.schedule(messageUpdateTask = new UpdateTimeTask(), 250, 250);
+					if (play_current_mp != null) // Dans le cas d'un fichier de message pas valide,play_current_mp == null
+					{
+						m.setIntValue(KEY_STATUS, MSG_STATUS_LISTENED, true);
+						m.setIntValue(KEY_PLAY_STATUS, PLAY_STATUS_PLAY, false);
+						play_current_mp.setOnCompletionListener(this);
+						play_current_mp.start();
+						this.setMessageSeekBar(0, play_current_mp.getCurrentPosition(), play_current_mp.getDuration());
+						this.messageTimer.schedule(messageUpdateTask = new UpdateTimeTask(), 250, 250);
+					}
+					else
+					{
+						Toast t = Toast.makeText(MevoActivity.mevoActivity, "Problème avec le fichier du message !", Toast.LENGTH_SHORT);
+						t.show();
+					}
 					updateMessageCount();
 					MevoSync.cancelNotif(NOTIF_MEVO);
 				}

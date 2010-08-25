@@ -17,7 +17,13 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.xmlrpc.android.XMLRPCClient;
 
@@ -517,6 +523,49 @@ public class FBMHttpConnection implements Constants
 		else
 			Log.d(TAG,"CHARSET default : "+charset);
 		return charset;
+	}
+
+	public static InputStreamReader getAuthXmlRequest(String url, List<NameValuePair> p, boolean auth, boolean retour, String charset)
+	{
+		int c;
+		HttpURLConnection h = null;
+		
+		c = checkConnected(CONNECT_CONNECTED);
+		if (c != CONNECT_CONNECTED)
+		{
+			if (h != null)
+			{
+				h.disconnect();
+				h = null;
+			}
+			Log.d(TAG,"GETISR : PAS AUTHENTIFIE SUR LA CONSOLE - SESSION EXPIREE");
+			c = connectionFree(login, password, false);
+		}
+		if (c != CONNECT_CONNECTED)
+		{
+			return null;
+		}
+		
+		HttpClient httpclient = new DefaultHttpClient();
+		HttpGet httpget = new HttpGet(url+"?"+makeStringForPost(p, auth, charset));
+		HttpResponse response;
+        try
+        {
+        	response = httpclient.execute(httpget);
+        	HttpEntity entity = response.getEntity();
+        	return (new InputStreamReader(entity.getContent()));
+        }
+        catch (ClientProtocolException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return null;
 	}
 
 	/**

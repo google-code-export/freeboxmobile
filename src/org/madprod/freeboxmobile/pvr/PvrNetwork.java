@@ -81,7 +81,7 @@ public class PvrNetwork extends FBMNetTask implements PvrConstants // AsyncTask<
 	        param.add(new BasicNameValuePair("ajax","listes"));
 	        param.add(new BasicNameValuePair("box", ""+boitier));
 	
-	        String resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(MAGNETO_URL, param, true, true, "ISO8859_1"));
+	        String resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthXmlRequest(MAGNETO_URL, param, true, true, "ISO8859_1"));
 	    	Log.i(TAG,"DEBUT :"+new Date());
 	        if (resultat != null)
 	        {
@@ -92,7 +92,7 @@ public class PvrNetwork extends FBMNetTask implements PvrConstants // AsyncTask<
 					{
 						if (FBMHttpConnection.connect() == CONNECT_CONNECTED)
 						{
-							resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(MAGNETO_URL, param, true, true, "ISO8859_1"));
+							resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthXmlRequest(MAGNETO_URL, param, true, true, "ISO8859_1"));
 						}
 						else
 						{

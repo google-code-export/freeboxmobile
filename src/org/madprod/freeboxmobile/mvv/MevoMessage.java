@@ -258,6 +258,7 @@ public class MevoMessage implements MevoConstants
 			Log.e(TAG,"setMsgSource IOException : "+e.getMessage());
 			e.printStackTrace();
 		}
+		releaseMP();
 		return false;
 	}
 
