@@ -116,7 +116,7 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants
         	param.add(new BasicNameValuePair("date", "2010-01-01 00:00:00"));
         }
         Log.d(TAG, "ICI:"+param);
-        String resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(MAGNETO_URL, param, true, true, "UTF8"));
+        String resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthXmlRequest(MAGNETO_URL, param, true, true, "UTF8"));
         if (resultat != null)
         {
         	Log.d(TAG,"Guide Network start "+new Date());
@@ -128,7 +128,7 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants
 					Log.d(TAG,"Authentification expirée");
 					if (FBMHttpConnection.connect() == CONNECT_CONNECTED)
 					{
-						resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(MAGNETO_URL, param, true, true, "UTF8"));
+						resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthXmlRequest(MAGNETO_URL, param, true, true, "UTF8"));
 						jObject = new JSONObject(resultat);
 					}
 					else

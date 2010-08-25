@@ -279,7 +279,7 @@ public class GuideChoixChainesActivity extends GuideUtils implements GuideConsta
         private boolean Action(ArrayList<NameValuePair> params)
         {
 			Log.d(TAG, "===============> ACTION !");
-        	String res = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(MAGNETO_URL, params, true, true, "UTF8"));
+        	String res = FBMHttpConnection.getPage(FBMHttpConnection.getAuthXmlRequest(MAGNETO_URL, params, true, true, "UTF8"));
             if (res != null)
             {
             	try
@@ -291,7 +291,7 @@ public class GuideChoixChainesActivity extends GuideUtils implements GuideConsta
     					if (FBMHttpConnection.connect() == CONNECT_CONNECTED)
     					{
         					Log.d(TAG, "===============> CONNECTED !");
-    						res = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(MAGNETO_URL, params, true, true, "UTF8"));
+    						res = FBMHttpConnection.getPage(FBMHttpConnection.getAuthXmlRequest(MAGNETO_URL, params, true, true, "UTF8"));
     						if (res != null)
     						{
             					Log.d(TAG, "===============> NOT  NULL !");
