@@ -3,6 +3,9 @@ package org.madprod.freeboxmobile.mvv;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,6 +30,9 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.media.AudioFormat;
+import android.media.AudioManager;
+import android.media.AudioTrack;
 import android.os.Environment;
 import android.os.SystemClock;
 import android.util.Log;
@@ -397,7 +403,7 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 			int intstatus = -1;
 			int presence = 0;
 			Cursor curs;
-			File file;
+			File file, filet;
 
 	        newmsg = 0;
 	        file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+FBMHttpConnection.getIdentifiant()+DIR_MEVO);
@@ -453,26 +459,111 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 							}
 	
 				    	    // Get the mevo file and store it on sdcard
-					        file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+FBMHttpConnection.getIdentifiant()+DIR_MEVO,name);
-					        boolean ok = false;
+					        file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+FBMHttpConnection.getIdentifiant()+DIR_MEVO,name+".wav");
 					        if (file.exists() == false)
 					        {
-								ok = FBMHttpConnection.getFile(file, mevoUrl+link, null, false);
+						        filet = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+FBMHttpConnection.getIdentifiant()+DIR_MEVO,name+"_temp");
+								FBMHttpConnection.getFile(filet, mevoUrl+link, null, false);
+								FileInputStream is = new FileInputStream(filet);
+								try
+							    {
+									byte[] byteData = null;
+									byte[] byteDataPCM = null;
+									int iSize = -1;
+									long wavSize;
+									byteData = new byte[is.available()];
+									iSize = is.read(byteData);
+									is.close();
+									filet.delete();
+
+									byteDataPCM = new byte[iSize * 2]; // Pour éviter de pourrir encore plus le son, je convertis du 8kHz en 16kHz... d'où le x2
+
+									AudioConverter.free2pcm(byteData, 0, byteDataPCM, 0, iSize, false, 1);
+									
+/*
+								      int intSize = android.media.AudioTrack.getMinBufferSize(8000,
+								          AudioFormat.CHANNEL_CONFIGURATION_MONO,
+								          AudioFormat.ENCODING_PCM_16BIT);
+								      AudioTrack at = new AudioTrack(AudioManager.STREAM_DTMF, 8000,
+								          AudioFormat.CHANNEL_CONFIGURATION_MONO,
+								          AudioFormat.ENCODING_PCM_16BIT, intSize, AudioTrack.MODE_STREAM);
+								      at.setStereoVolume(1, 1);
+								      if (at != null) {
+								        at.play();
+								        at.write(byteDataPCM, 0, byteDataPCM.length);
+								        at.stop();
+								        at.release();
+								      }
+								      else
+								      {
+								    	  Log.i(TAG,"Pb while playing");
+								      }
+								      */
+									FileOutputStream fstream = new FileOutputStream(file);
+									
+									// WAV writer
+									fstream.write("RIFF".getBytes());
+									wavSize = iSize*2 + 36;
+									fstream.write(AudioConverter.longToBytes32(wavSize));
+									fstream.write("WAVE".getBytes()); //WAVE
+									
+									fstream.write("fmt ".getBytes()); // fmt
+									
+									fstream.write(0x10); // 16 for PCM
+									fstream.write(0x00);
+									fstream.write(0x00);
+									fstream.write(0x00);
+									
+									fstream.write(0x01);		// PCM
+									fstream.write(0x00);
+
+									fstream.write(0x01);		// 1 channel (mono)
+									fstream.write(0x00);
+
+									fstream.write(0x40);	// sample rate : 8000 Hz
+									fstream.write(0x1f);
+									fstream.write(0x00);
+									fstream.write(0x00);
+									
+									fstream.write(0x80);	// byte rate : 16000
+									fstream.write(0x3E);
+									fstream.write(0x00);
+									fstream.write(0x00);
+									
+									fstream.write(0x02);		// Block align = numchannels * bits per sample / 8
+									fstream.write(0x00);
+									
+									fstream.write(0x10);		// bits per sample (16)
+									fstream.write(0x00);
+									
+									fstream.write("data".getBytes());	// data
+									
+									wavSize = iSize*2;
+									fstream.write(AudioConverter.longToBytes32(wavSize));
+									
+									fstream.write(byteDataPCM);
+									fstream.close();
+									Log.i(TAG,"File converted ! "+name+".wav");
+							    }
+								catch (FileNotFoundException e)
+								{
+									Log.e(TAG,"Error while converting data "+e.getMessage());
+							    }
 					        }
 					        presence = 4;
-					        curs = mDbHelper.fetchMessage(name);
+					        curs = mDbHelper.fetchMessage(name+".wav");
 							if (curs.moveToFirst() == false)
 				        	{
 								// Store data in db if the message is not present in the db
 								Log.i(TAG,"STORING IN DB");
-					        	mDbHelper.createMessage(intstatus, presence, from, when, link, del, Integer.parseInt(length), name);
+					        	mDbHelper.createMessage(intstatus, presence, from, when, link, del, Integer.parseInt(length), name+".wav");
 					        	newmsg++;
 				        	}
 				        	else
 				        	{
 								// Update data in db if the message is already present in the db
 				        		Log.i(TAG,"UPDATING DB");
-				        		mDbHelper.updateMessage(presence, link, del, name);
+				        		mDbHelper.updateMessage(presence, link, del, name+".wav");
 				        	}
 				        	curs.close();
 						}
