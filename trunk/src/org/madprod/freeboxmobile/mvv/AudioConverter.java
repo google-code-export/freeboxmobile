@@ -1,5 +1,7 @@
 package org.madprod.freeboxmobile.mvv;
 
+import android.util.Log;
+
 /**
 *
 * @author Olivier Rosello
@@ -58,7 +60,6 @@ public class AudioConverter
 		}
 	}
 	
-
 	public static void intToBytes16(int sample, byte[] buffer, int byteOffset,
 			boolean bigEndian, int volume)
 	{
@@ -71,5 +72,16 @@ public class AudioConverter
 			buffer[byteOffset++] = (byte) ((sample & 0xFF) * volume);
 			buffer[byteOffset--] = (byte) ((sample >> 8) * volume);
 		}
+	}
+	
+	public static byte[] longToBytes32(long sample)
+	{
+		byte[] buffer = {0,0,0,0};
+
+		buffer[0] = (byte) (sample >> 0);
+		buffer[1] = (byte) (sample >> 8);
+		buffer[2] = (byte) (sample >> 16);
+		buffer[3] = (byte) (sample >> 24);
+		return buffer;
 	}
 }
