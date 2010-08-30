@@ -14,6 +14,14 @@ RESEAU : les connexions réseau / authentifications sur la console Free...
 GUIDE : les guide TV
 
 = Versions publiques de !FreeboxMobile =
+== 0.40.2 ==
+Sortie le 30/08/2010<br>
+Release : 43
+Revision : 578
+ * MEVO : correction du bug d'écoute des messages sous Froyo (Android 2.2). Cf Bug http://code.google.com/p/freeboxmobile/issues/detail?id=238
+ * MEVO : Amélioration de l'affichage sur les écrans HD
+ * GUIDE / PVR : optimisations réseau (+ rapide)
+
 == 0.40.1 ==
 Sortie le 26/07/2010<br>
 Release : 42
