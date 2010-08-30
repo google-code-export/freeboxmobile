@@ -30,9 +30,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.media.AudioFormat;
-import android.media.AudioManager;
-import android.media.AudioTrack;
 import android.os.Environment;
 import android.os.SystemClock;
 import android.util.Log;
@@ -479,26 +476,7 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 									byteDataPCM = new byte[iSize * 2]; // Pour éviter de pourrir encore plus le son, je convertis du 8kHz en 16kHz... d'où le x2
 
 									AudioConverter.free2pcm(byteData, 0, byteDataPCM, 0, iSize, false, 1);
-									
-/*
-								      int intSize = android.media.AudioTrack.getMinBufferSize(8000,
-								          AudioFormat.CHANNEL_CONFIGURATION_MONO,
-								          AudioFormat.ENCODING_PCM_16BIT);
-								      AudioTrack at = new AudioTrack(AudioManager.STREAM_DTMF, 8000,
-								          AudioFormat.CHANNEL_CONFIGURATION_MONO,
-								          AudioFormat.ENCODING_PCM_16BIT, intSize, AudioTrack.MODE_STREAM);
-								      at.setStereoVolume(1, 1);
-								      if (at != null) {
-								        at.play();
-								        at.write(byteDataPCM, 0, byteDataPCM.length);
-								        at.stop();
-								        at.release();
-								      }
-								      else
-								      {
-								    	  Log.i(TAG,"Pb while playing");
-								      }
-								      */
+
 									FileOutputStream fstream = new FileOutputStream(file);
 									
 									// WAV writer
