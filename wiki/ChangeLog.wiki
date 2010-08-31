@@ -14,6 +14,12 @@ RESEAU : les connexions réseau / authentifications sur la console Free...
 GUIDE : les guide TV
 
 = Versions publiques de !FreeboxMobile =
+== 0.40.3 ==
+Sortie le 31/08/2010<br>
+Release : 44
+Revision : 580
+ * PVR : Correction d'un bug qui faisait planter lors de la programmation d'un enregistrement
+
 == 0.40.2 ==
 Sortie le 30/08/2010<br>
 Release : 43
