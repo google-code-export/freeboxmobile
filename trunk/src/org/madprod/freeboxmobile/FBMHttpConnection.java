@@ -677,14 +677,18 @@ public class FBMHttpConnection implements Constants
 				h.setDoOutput(true);
 				if (retour)
 					h.setDoInput(true);
-				if (h.getResponseCode() == -1)
+/*				if (h.getResponseCode() == -1)
 				{
 					Log.d(TAG, "POST : Second essai...");
 					h = prepareConnection(url+(auth ? "?"+makeStringForPost(null, auth, null) : ""), "POST");
+					Log.d(TAG,"DBG 04");
 					h.setDoOutput(true);
+					Log.d(TAG,"DBG 05");
 					if (retour)
-						h.setDoInput(true);					
+						h.setDoInput(true);
+					Log.d(TAG,"DBG 06");
 				}
+*/
 				OutputStreamWriter o = new OutputStreamWriter(h.getOutputStream());
 				o.write(makeStringForPost(p, false, null));
 				o.flush();
@@ -725,6 +729,7 @@ public class FBMHttpConnection implements Constants
 			}
 			if ((c == CONNECT_CONNECTED) && (retour))
 			{
+			//	h.setDoInput(true);
 				Log.d(TAG,"POST : LECTURE DONNEES");
 				pagesCharset = getCharset(h.getContentType(), pagesCharset);
 				return (new InputStreamReader(h.getInputStream(), pagesCharset));

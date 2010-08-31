@@ -905,18 +905,29 @@ public class ProgrammationActivity extends Activity implements PvrConstants
             		postVars.add(new BasicNameValuePair("submit", "PROGRAMMER L'ENREGISTREMENT"));
             	}
 
+            	int erreurPos;
         		// Requete HTTP
         		String url = "https://adsls.free.fr/admin/magneto.pl";
        			postVars.add(new BasicNameValuePair("box", ""+mBoitierHD));
         		String resultat = FBMHttpConnection.getPage(FBMHttpConnection.postAuthRequest(url, postVars, true, true));
-
-        		int erreurPos = resultat.indexOf("erreurs");
+        		if (resultat == null)
+        		{
+        			resultat = FBMHttpConnection.getPage(FBMHttpConnection.postAuthRequest(url, postVars, true, true));
+        		}
+        		if (resultat == null)
+        		{
+        			erreurPos = 42;
+        		}
+        		else
+        		{
+        			erreurPos = resultat.indexOf("erreurs");
+        		}
         		if (erreurPos > 0)
         		{
         			int debutErr, finErr;
         			String msgErreur;
         			
-        			msgErreur = resultat.substring(erreurPos);            			
+        			msgErreur = (erreurPos != 42 ? resultat.substring(erreurPos) : "");
         			debutErr = msgErreur.indexOf("<span style=\"color: #cc0000\">") + 29;
         			finErr = msgErreur.substring(debutErr).indexOf("<");
         			msgErreur = msgErreur.substring(debutErr, debutErr+finErr);
