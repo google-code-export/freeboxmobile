@@ -10,6 +10,7 @@
 	<string name="mevo_context_markread">Marquer comme écouté</string>
 	<string name="mevo_context_sendsms">Répondre par SMS</string>
 	<string name="mevo_context_addnumber">Ajouter le numéro au répertoire</string>
+	<string name="mevo_context_searchnumber">Annuaire inversé</string>
 	<string name="mevo_hidden_number">Numéro masqué</string>
 	<string name="mevo_msgtype_fax_home">Fax personnel</string>
 	<string name="mevo_msgtype_fax_work">Fax professionnel</string>

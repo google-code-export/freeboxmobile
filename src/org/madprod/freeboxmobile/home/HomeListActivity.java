@@ -189,16 +189,24 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 			log.delete();
 
 			// On reinstalle les timers de notif si nécessaire
-			String ms = mgr.getString(KEY_MEVO_PREFS_FREQ, "0");
-			if (!ms.equals("0"))
+			String ms = mgr.getString(KEY_MEVO_PREFS_FREQ, "-1");
+			if (!ms.equals("0")) // Si "0" : l'utilisateur ne veut pas de relève périodique
 			{
-				MevoSync.changeTimer(Integer.parseInt(ms), this);
+				if (!ms.equals("-1"))  // Si une valeur était mise
+				{
+					MevoSync.changeTimer(Integer.parseInt(ms), this);
+				}
+				else // Si pas configuré : valeur par défaut
+				{
+					MevoSync.changeTimer(3600000, this);
+				}
 			}
-			ms = mgr.getString(KEY_INFOADSL_PREFS_FREQ, "0");
-			if (!ms.equals("0"))
-			{
-				InfoAdslCheck.changeTimer(Integer.parseInt(ms), this);
-			}
+			// Le serveur d'info ADSL ne fonctionne plus : le timer est désactivé pour l'instant
+//			ms = mgr.getString(KEY_INFOADSL_PREFS_FREQ, "0");
+//			if (!ms.equals("0"))
+//			{
+//				InfoAdslCheck.changeTimer(Integer.parseInt(ms), this);
+//			}
 			displayAbout();
 		}
         Log.d(TAG,"type:"+mgr.getString(KEY_LINETYPE, ""));

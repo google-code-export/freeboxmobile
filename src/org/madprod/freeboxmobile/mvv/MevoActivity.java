@@ -227,6 +227,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
 		    }
 		    if (((MevoMessage) this.mAdapter.getItem(id)).getStringValue(KEY_SOURCE).equals(((MevoMessage) this.mAdapter.getItem(id)).getStringValue(KEY_CALLER)))
 		    {
+		    	menu.add(0, MEVO_CONTEXT_SEARCHNUMBER, 0, R.string.mevo_context_searchnumber);
 		    	menu.add(0, MEVO_CONTEXT_ADDNUMBER, 0, R.string.mevo_context_addnumber);
 		    }
 //		    menu.add(0, MEVO_CONTEXT_VIEWDETAILS, 0, R.string.mevo_context_msgdetails);
@@ -305,6 +306,9 @@ public class MevoActivity extends ListActivity implements MevoConstants
     		case MEVO_CONTEXT_ADDNUMBER:
     			mAdapter.addNumber((int)info.id);
     		break;
+    		case MEVO_CONTEXT_SEARCHNUMBER:
+    			mAdapter.searchNumber((int)info.id);
+        	break;
     		case MEVO_CONTEXT_MARKREAD:
     			mAdapter.setMessageInt((int)info.id, KEY_STATUS,MSG_STATUS_LISTENED);
     			mAdapter.updateMessageCount();
@@ -446,7 +450,10 @@ public class MevoActivity extends ListActivity implements MevoConstants
         {
         	public void run()
         	{
-        		setMessageSeekBar(0, play_current_mp.getCurrentPosition(), play_current_mp.getDuration());
+        		if (play_current_mp != null)
+        		{
+        			setMessageSeekBar(0, play_current_mp.getCurrentPosition(), play_current_mp.getDuration());
+        		}
         	}
         }
 
@@ -601,6 +608,14 @@ public class MevoActivity extends ListActivity implements MevoConstants
 			intent.setType(Contacts.People.CONTENT_ITEM_TYPE);
 			intent.putExtra(Insert.PHONE, Uri.parse("tel:"+((MevoMessage)this.getItem(id)).getStringValue(KEY_SOURCE)));
 			mevoActivity.startActivity(intent);
+    	}
+
+    	public void searchNumber(int id)
+    	{
+//            Intent searchIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.118218.fr/recherche/?q="+((MevoMessage)this.getItem(id)).getStringValue(KEY_SOURCE)+"&rewrited=&rewritedLocality=&address=&b=0&typ=r&st=I"));
+            Intent searchIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://mobile.118218.fr/wap/resultats.php?requete="+((MevoMessage)this.getItem(id)).getStringValue(KEY_SOURCE)+"&particulier=on&activite=&page=1"));
+            searchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            mevoActivity.startActivity(searchIntent);
     	}
 
     	public void sendSMS(int id)

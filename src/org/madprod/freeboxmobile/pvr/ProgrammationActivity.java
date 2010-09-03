@@ -568,7 +568,8 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 
     int getDuree()
     {
-    	return Integer.parseInt(dureeEmission.getText().toString());
+    	String duree = dureeEmission.getText().toString();
+   		return (duree.length() > 0 ? Integer.parseInt(duree) : 0);
     }
 
     void setDuree()

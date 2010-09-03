@@ -37,10 +37,10 @@ public interface Constants
     static final String BOITIER2_CODE = "boitier2_code";
 
     
-    static final String TAG		= "FBM";
+    static final String TAG				= "FBM";
 	static final String DIR_FBM			= "/freeboxmobile/";
-    static final String OLDDIR_CHAINES = "chaines/";
-    static final String DIR_CHAINES = ".chaines/";
+    static final String OLDDIR_CHAINES	= ".chaines/";
+    static final String DIR_CHAINES		= "chaines/";
 
     static final String MAGNETO_URL = "https://adsls.free.fr/admin/magneto.pl";
 
@@ -62,7 +62,7 @@ public interface Constants
     static final int COMPTES_TYPE_ADSL = 0;
     static final int COMPTES_TYPE_FO = 1;
     
-    // Types de lignes,+ pr�cis que le type de compte. C'est ce qui est stocké et utilisé
+    // Types de lignes,+ précis que le type de compte. C'est ce qui est stocké et utilisé
     static final String LINE_TYPE_FBXIPADSL = "0";
     static final String LINE_TYPE_FBXDEGROUPE = "1";
     static final String LINE_TYPE_FBXOPTIQUE = "2";
