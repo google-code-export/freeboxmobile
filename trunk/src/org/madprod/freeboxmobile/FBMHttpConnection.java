@@ -371,11 +371,11 @@ public class FBMHttpConnection implements Constants
 		}
 		finally
 		{
-			if (h != null)
+/*			if (h != null)
 			{
 				h.disconnect();
 			}
-		}
+*/		}
 		if (!assistance)
 		{
 	       	if (m_id != null && m_idt != null)
@@ -636,7 +636,7 @@ public class FBMHttpConnection implements Constants
 			{
 				Log.d(TAG,"GETISR : LECTURE DONNEES - TYPE : "+h.getContentType());
 				charset = getCharset(h.getContentType(), charset);
-
+//				h.disconnect();
 				return (new InputStreamReader(h.getInputStream(), charset));
 			}
 		}
@@ -645,7 +645,11 @@ public class FBMHttpConnection implements Constants
 			Log.e(TAG,"getAuthRequestISR "+e.getMessage());
 			e.printStackTrace();
 		}
-		return (null);
+/*		if (h != null)
+		{
+			h.disconnect();
+		}
+*/		return (null);
 	}
 
 	// TODO : Remove ?
@@ -677,26 +681,26 @@ public class FBMHttpConnection implements Constants
 				h.setDoOutput(true);
 				if (retour)
 					h.setDoInput(true);
-/*				if (h.getResponseCode() == -1)
+				OutputStreamWriter o = new OutputStreamWriter(h.getOutputStream());
+				if (true) //(h.getResponseCode() == -1) // Bug:  does not work if not walking into this if, need to investigate
 				{
-					Log.d(TAG, "POST : Second essai...");
+					h.disconnect();
+					Log.d(TAG, "POST : Second essai....");
 					h = prepareConnection(url+(auth ? "?"+makeStringForPost(null, auth, null) : ""), "POST");
-					Log.d(TAG,"DBG 04");
 					h.setDoOutput(true);
-					Log.d(TAG,"DBG 05");
 					if (retour)
 						h.setDoInput(true);
-					Log.d(TAG,"DBG 06");
+					o = new OutputStreamWriter(h.getOutputStream());
 				}
-*/
-				OutputStreamWriter o = new OutputStreamWriter(h.getOutputStream());
+//				OutputStreamWriter o = new OutputStreamWriter(h.getOutputStream());
 				o.write(makeStringForPost(p, false, null));
 				o.flush();
 				o.close();
-				Log.d(TAG,"RESPONSE : "+h.getResponseCode()+" "+h.getResponseMessage());
+				Log.d(TAG,"RESPONSEa : "+h.getResponseCode()+" "+h.getResponseMessage());
 				if (h.getHeaderFields().get("location") != null)
 				{
 					c = CONNECT_NOT_CONNECTED;
+					Log.d(TAG,"PROBLEMEa !!!");
 				}
 			}
 			if (c != CONNECT_CONNECTED)
@@ -716,10 +720,25 @@ public class FBMHttpConnection implements Constants
 					if (retour)
 						h.setDoInput(true);
 					OutputStreamWriter o = new OutputStreamWriter(h.getOutputStream());
+					if (h.getResponseCode() == -1)
+					{
+						h.disconnect();
+						Log.d(TAG, "POST : Second essai...");
+						h = prepareConnection(url+(auth ? "?"+makeStringForPost(null, auth, null) : ""), "POST");
+						h.setDoOutput(true);
+						if (retour)
+							h.setDoInput(true);
+						o = new OutputStreamWriter(h.getOutputStream());
+					}					
 					o.write(makeStringForPost(p, false, null));
 					o.flush();
 					o.close();
-					Log.d(TAG,"RESPONSE : "+h.getResponseCode()+" "+h.getResponseMessage());
+					Log.d(TAG,"RESPONSEb : "+h.getResponseCode()+" "+h.getResponseMessage());
+					if (h.getHeaderFields().get("location") != null)
+					{
+						c = CONNECT_NOT_CONNECTED;
+						Log.d(TAG,"PROBLEMEb !!!");
+					}
 				}
 			}
 			else
@@ -732,6 +751,7 @@ public class FBMHttpConnection implements Constants
 			//	h.setDoInput(true);
 				Log.d(TAG,"POST : LECTURE DONNEES");
 				pagesCharset = getCharset(h.getContentType(), pagesCharset);
+//				h.disconnect();
 				return (new InputStreamReader(h.getInputStream(), pagesCharset));
 			}
 		}
@@ -740,7 +760,11 @@ public class FBMHttpConnection implements Constants
 			Log.e(TAG,"EXCEPTION PostAuthRequest : "+e.getMessage());
 			e.printStackTrace();
 		}
-		return (null);
+/*		if (h != null)
+		{
+			h.disconnect();
+		}
+*/		return (null);
 	}
 
 	private static String makeStringForPost(List<NameValuePair> p, boolean auth, String charset)

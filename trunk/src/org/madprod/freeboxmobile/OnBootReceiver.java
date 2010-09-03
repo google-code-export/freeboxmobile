@@ -24,7 +24,7 @@ public class OnBootReceiver extends BroadcastReceiver implements Constants
 	public void onReceive(Context context, Intent intent)
 	{
 		String ms = context.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_MEVO_PREFS_FREQ, "0");
-//		Log.d(DEBUGTAG, "On Boot Receiver mevo ! "+ms);
+		Log.d(TAG, "On Boot Receiver mevo ! "+ms);
 		if (!ms.equals("0"))
 		{
 			AlarmManager mgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
@@ -32,15 +32,15 @@ public class OnBootReceiver extends BroadcastReceiver implements Constants
 			PendingIntent pi = PendingIntent.getBroadcast(context, 0, i, 0);
 			mgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), Integer.parseInt(ms), pi);
 		}
-		ms = context.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_INFOADSL_PREFS_FREQ, "0");
+		// InfoADSL ne fonctionne plus vraiment (frimousse.org) du coup pour l'instant ceci est désactivé
+//		ms = context.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_INFOADSL_PREFS_FREQ, "0");
 //		Log.d(DEBUGTAG, "On Boot Receiver infoadsl ! "+ms);
-		if (!ms.equals("0"))
-		{
-			AlarmManager mgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
-			Intent i = new Intent(context, OnInfoAdslAlarmReceiver.class);
-			PendingIntent pi = PendingIntent.getBroadcast(context, 0, i, 0);
-			mgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), Integer.parseInt(ms), pi);
-		}
-
+//		if (!ms.equals("0"))
+//		{
+//			AlarmManager mgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+//			Intent i = new Intent(context, OnInfoAdslAlarmReceiver.class);
+//			PendingIntent pi = PendingIntent.getBroadcast(context, 0, i, 0);
+//			mgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), Integer.parseInt(ms), pi);
+//		}
 	}
 }
