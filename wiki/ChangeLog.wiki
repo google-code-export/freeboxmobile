@@ -14,6 +14,15 @@ RESEAU : les connexions réseau / authentifications sur la console Free...
 GUIDE : les guide TV
 
 = Versions publiques de !FreeboxMobile =
+== 0.40.4 ==
+Sortie le 03/09/2010<br>
+Release : 45
+Revision : 582
+ * PVR : Correction d'un bug qui faisait ne programmait pas correctement certains enregistrements (bug http://code.google.com/p/freeboxmobile/issues/detail?id=241)
+ * MVV : le menu contextuel sur le numéros inconnus propose de chercher dans l'annuaire inversé
+ * MVV : activation de la vérification périodique par défaut
+ * INFOADSL : désactivation de la vérification périodique suite à grenouille.com HS
+
 == 0.40.3 ==
 Sortie le 31/08/2010<br>
 Release : 44
