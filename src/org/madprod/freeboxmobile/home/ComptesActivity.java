@@ -5,8 +5,11 @@ import java.util.Date;
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
+import org.madprod.freeboxmobile.guide.GuideCheck;
+import org.madprod.freeboxmobile.mvv.MevoSync;
 
 import android.app.ListActivity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -291,7 +294,8 @@ public class ComptesActivity extends ListActivity implements HomeConstants
         
         Log.d(TAG, "onActivityResult");
         FBMNetTask.register(this);
-        // Si il n'y avait pas de compte définit et qu'un compte vient d'être créé, on le selectionne par défaut
+        // Si il n'y avait pas de compte défini et qu'un compte vient d'être créé, on le selectionne par défaut
+        // et on installe les timers
         if ((getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getString(KEY_USER, null) == null) && (resultCode != 0))
         {
        		Long id = intent.getLongExtra(ComptesDbAdapter.KEY_ROWID, 0);
@@ -308,6 +312,20 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 				}
 				c.close();
 				mDb.close();
+				
+				String ms = getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_MEVO_PREFS_FREQ, "-1");
+				if (!ms.equals("0")) // Si "0" : l'utilisateur ne veut pas de relève périodique
+				{
+					if (!ms.equals("-1"))  // Si une valeur était mise
+					{
+						MevoSync.changeTimer(Integer.parseInt(ms), this);
+					}
+					else // Si pas configuré : valeur par défaut
+					{
+						MevoSync.changeTimer(DEFAULT_MEVO_FREQ, this);
+					}
+				}
+				GuideCheck.setTimer(this);
         	}
         }
         FBMHttpConnection.initCompte(ComptesActivity.this);

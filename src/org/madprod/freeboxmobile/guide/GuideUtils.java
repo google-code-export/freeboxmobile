@@ -82,14 +82,14 @@ public abstract class GuideUtils extends ListActivity implements Constants
 		}
 	}
 	
-	public void makeCalDates()
+	public static void makeCalDates()
 	{
 		Calendar c = Calendar.getInstance();
 		c.setFirstDayOfWeek(Calendar.MONDAY);
         dates = new ArrayList<String>();
 
         Integer i, mois, jour;
-        for (i=0; i < 5; i++)
+        for (i=0; i < 6; i++)
         {
         	mois = c.get(Calendar.MONTH)+1;
         	jour = c.get(Calendar.DAY_OF_MONTH);

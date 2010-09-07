@@ -16,6 +16,7 @@ import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.Utils;
 import org.madprod.freeboxmobile.fax.FaxActivity;
+import org.madprod.freeboxmobile.guide.GuideCheck;
 import org.madprod.freeboxmobile.guide.GuideMenuActivity;
 import org.madprod.freeboxmobile.ligne.InfoAdslCheck;
 import org.madprod.freeboxmobile.mvv.MevoSync;
@@ -188,25 +189,6 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 			File log = new File(Environment.getExternalStorageDirectory()+DIR_FBM, file_log);
 			log.delete();
 
-			// On reinstalle les timers de notif si nécessaire
-			String ms = mgr.getString(KEY_MEVO_PREFS_FREQ, "-1");
-			if (!ms.equals("0")) // Si "0" : l'utilisateur ne veut pas de relève périodique
-			{
-				if (!ms.equals("-1"))  // Si une valeur était mise
-				{
-					MevoSync.changeTimer(Integer.parseInt(ms), this);
-				}
-				else // Si pas configuré : valeur par défaut
-				{
-					MevoSync.changeTimer(3600000, this);
-				}
-			}
-			// Le serveur d'info ADSL ne fonctionne plus : le timer est désactivé pour l'instant
-//			ms = mgr.getString(KEY_INFOADSL_PREFS_FREQ, "0");
-//			if (!ms.equals("0"))
-//			{
-//				InfoAdslCheck.changeTimer(Integer.parseInt(ms), this);
-//			}
 			displayAbout();
 		}
         Log.d(TAG,"type:"+mgr.getString(KEY_LINETYPE, ""));

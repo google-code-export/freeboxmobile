@@ -15,12 +15,12 @@ import android.util.Log;
 * 
 */
 
-public class OnBootReceiver extends BroadcastReceiver implements Constants
+public class OnUpgradeReceiver extends BroadcastReceiver implements Constants
 {
 	@Override
 	public void onReceive(Context context, Intent intent)
 	{
-		Log.d(TAG, "On Boot Receiver ! ");
+		Log.d(TAG, "On Upgrade Receiver ! ");
 
 		String ms = context.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_MEVO_PREFS_FREQ, "-1");
 		if (!ms.equals("0")) // Si "0" : l'utilisateur ne veut pas de relève périodique

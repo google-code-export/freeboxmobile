@@ -17,7 +17,7 @@ import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.Utils;
 import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
 
-import android.app.Activity;
+import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 
@@ -27,7 +27,7 @@ import android.util.Log;
 
 public class GuideNetwork extends FBMNetTask implements GuideConstants
 {
-	private Activity activity;
+	private Context context;
 	private String datetime;
 	private Integer duree_h;
 	private boolean getChaines;
@@ -42,9 +42,9 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants
      * @param progress : display progress ?
      * @param force : force refresh programs event if they are already present in database
      */
-    public GuideNetwork(Activity a, String d, Integer duree, boolean chaine, boolean progress, boolean force)
+    public GuideNetwork(Context c, String d, Integer duree, boolean chaine, boolean progress, boolean force)
     {
-    	activity = a;
+    	context = c;
     	datetime = d;
     	duree_h = duree;
     	getChaines = chaine;
@@ -71,7 +71,7 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants
 			dProgressSet("Importation", "Actualisation des données du guide", R.drawable.fm_guide_tv);
 			publishProgress(0);
 		}
-		db = new ChainesDbAdapter(activity);
+		db = new ChainesDbAdapter(context);
 		db.open();
 
 		if	(
@@ -111,7 +111,7 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants
 	        }
 	        param.add(new BasicNameValuePair("duree_h", duree_h.toString()));
         }
-        else
+        else // Nécessaire pour récuperer certaines données lorsqu'on ne veut pas récuperer les programmes
         {
         	param.add(new BasicNameValuePair("date", "2010-01-01 00:00:00"));
         }
@@ -135,6 +135,7 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants
 					{
 						db.close();
 						publishProgress(-1);
+						Log.d(TAG,"DATA NOT DONWLOADED");
 						return (DATA_NOT_DOWNLOADED);
 					}
 				}
