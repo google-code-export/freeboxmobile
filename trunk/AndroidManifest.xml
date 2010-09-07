@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="org.madprod.freeboxmobile" android:versionName="0.40.4" android:versionCode="45">
+      package="org.madprod.freeboxmobile" android:versionCode="46" android:versionName="0.40.5rc1.8">
     <application android:label="@string/app_name" android:icon="@drawable/icon_fbm">
 		<activity android:name=".home.HomeListActivity" android:label="@string/app_name" android:theme="@style/Theme.FreeboxMobile.NoTitleBar" android:icon="@drawable/icon_fbm">
 			<intent-filter>
@@ -38,16 +38,27 @@
 		<activity android:theme="@style/Theme.FreeboxMobile.TitleBar" android:name=".remotecontrol.RemoteControlChooseLayout"></activity>
 		<activity android:theme="@style/Theme.FreeboxMobile.TitleBar" android:name=".remotecontrol.RemoteControlListLayout"></activity>
 
-		<service android:name=".mvv.MevoSync"></service>
-    	<service android:name=".ligne.InfoAdslCheck"></service>
-
 		<receiver android:name=".OnBootReceiver">
 			<intent-filter>
 				<action android:name="android.intent.action.BOOT_COMPLETED" />
 			</intent-filter>
 		</receiver>
+		
+		<receiver android:name=".OnUpgradeReceiver">
+			<intent-filter>
+    			<action android:name="android.intent.action.PACKAGE_REPLACED" />
+    			<data android:scheme="package" android:path="org.madprod.freeboxmobile" />
+  			</intent-filter>
+		</receiver>
+
 		<receiver android:name=".mvv.OnMevoAlarmReceiver"></receiver>
 		<receiver android:name=".ligne.OnInfoAdslAlarmReceiver"></receiver>
+		<receiver android:name=".guide.OnGuideAlarmReceiver"></receiver>
+
+		<service android:name=".mvv.MevoSync"></service>
+    	<service android:name=".ligne.InfoAdslCheck"></service>
+    	<service android:name=".guide.GuideCheck"></service>
+
 	</application>
 
 	<uses-permission android:name="android.permission.INTERNET"></uses-permission>

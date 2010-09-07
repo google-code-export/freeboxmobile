@@ -23,7 +23,7 @@ public class WakefullIntentService extends IntentService implements Constants
 
 	public static void acquireStaticLock(Context context)
 	{
-		Log.i(TAG,"acquireStaticLock ");
+		Log.i(TAG,"acquireStaticLock");
 		getLock(context).acquire();
 	}
 
@@ -60,7 +60,11 @@ public class WakefullIntentService extends IntentService implements Constants
 		WakeLock mWakeLock = getLock(this);
 		if (mWakeLock.isHeld())
 			mWakeLock.release();
-//		getLock(this).release();
+		if (getLock(this).isHeld())
+		{
+			Log.i(TAG,"releaseStaticLock");
+			getLock(this).release();
+		}
 	}
 	
 	@Override

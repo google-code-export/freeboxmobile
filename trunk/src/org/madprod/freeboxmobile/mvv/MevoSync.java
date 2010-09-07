@@ -280,11 +280,11 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 	 * @param ms : timer value in ms
 	 * @param a : activity
 	 */
-	public static void changeTimer(int ms, Activity a)
+	public static void changeTimer(int ms, Context c)
 	{
-		AlarmManager amgr = (AlarmManager) a.getSystemService(HomeListActivity.ALARM_SERVICE);
-		Intent i = new Intent(a, OnMevoAlarmReceiver.class);
-		PendingIntent pi = PendingIntent.getBroadcast(a, 0, i, 0);
+		AlarmManager amgr = (AlarmManager) c.getSystemService(HomeListActivity.ALARM_SERVICE);
+		Intent i = new Intent(c, OnMevoAlarmReceiver.class);
+		PendingIntent pi = PendingIntent.getBroadcast(c, 0, i, 0);
 		if (ms != 0)
 		{
 			amgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), ms, pi);

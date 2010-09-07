@@ -930,12 +930,15 @@ public class ProgrammationActivity extends Activity implements PvrConstants
         			
         			msgErreur = (erreurPos != 42 ? resultat.substring(erreurPos) : "");
         			debutErr = msgErreur.indexOf("<span style=\"color: #cc0000\">") + 29;
-        			finErr = msgErreur.substring(debutErr).indexOf("<");
-        			msgErreur = msgErreur.substring(debutErr, debutErr+finErr);
-        			
-        			if (msgErreur.indexOf("Erreur interne 1") >= 0)
+        			if (debutErr != -1)
         			{
-        				msgErreur += "\n" + getString(R.string.pvrErreurInterne1);
+        				finErr = msgErreur.substring(debutErr).indexOf("<");
+        				msgErreur = msgErreur.substring(debutErr, debutErr+finErr);
+        			
+        				if (msgErreur.indexOf("Erreur interne 1") >= 0)
+        				{
+        					msgErreur += "\n" + getString(R.string.pvrErreurInterne1);
+        				}
         			}
         			db.close();
         			return getString(R.string.pvrErreurConsole) + "\n" + msgErreur;
