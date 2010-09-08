@@ -5,10 +5,9 @@
 			android:layout_height="wrap_content"
 			android:id="@+id/LogoFreeboxMobile"
 			android:src="@drawable/freebox_mobile"
-			android:layout_gravity="center"
-			android:layout_marginBottom="5dip" android:layout_marginTop="5dip">
+			android:layout_gravity="center" android:adjustViewBounds="true" android:layout_marginBottom="5dip" android:layout_marginTop="5dip">
 		</ImageView>
-<ScrollView android:layout_width="fill_parent" android:id="@+id/GuideDetailsScrollView" android:layout_height="wrap_content" android:layout_weight="1">
+<ScrollView android:layout_width="fill_parent" android:id="@+id/GuideDetailsScrollView" android:layout_weight="1" android:layout_height="fill_parent">
 	<LinearLayout android:orientation="vertical" android:layout_height="fill_parent" android:layout_width="fill_parent" android:paddingLeft="10dip" android:paddingBottom="10dip" android:paddingRight="10dip" android:id="@+id/GuideDetailsLinearLayout">
 		<LinearLayout android:id="@+id/LinearLayout01" android:layout_height="wrap_content" android:layout_width="fill_parent" android:orientation="horizontal"><ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/pvr_duree" android:id="@+id/GuideDetailsLogoChaine"></ImageView><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:textStyle="bold" android:layout_gravity="center_vertical" android:layout_marginLeft="10dip" android:id="@+id/GuideDetailsNomChaine" android:text="Chaine ()" android:textSize="16sp"></TextView>
 </LinearLayout><TextView android:layout_height="wrap_content" android:textStyle="bold" android:text="Titre" android:layout_gravity="center_vertical" android:id="@+id/GuideDetailsTitre" android:gravity="center" android:layout_width="fill_parent" android:layout_marginTop="5dip" android:textSize="16sp"></TextView><TextView android:layout_height="wrap_content" android:layout_marginTop="5dip" android:textStyle="bold" android:id="@+id/GuideDetailsTV01" android:text="Informations" android:layout_width="fill_parent" style="?android:attr/listSeparatorTextViewStyle" android:textSize="16sp"></TextView><TextView android:layout_height="wrap_content" android:text="23/02/2010" android:layout_width="wrap_content" android:layout_weight="1" android:gravity="center" android:id="@+id/GuideDetailsDateHeure"></TextView><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/GuideDetailsDuree" android:text="45 minutes" android:layout_weight="1" android:gravity="right"></TextView><TextView android:layout_height="wrap_content" android:layout_marginTop="5dip" android:textStyle="bold" android:layout_width="fill_parent" style="?android:attr/listSeparatorTextViewStyle" android:textSize="16sp" android:id="@+id/GuideDetailsTV02" android:text="Résumé"></TextView><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/GuideDetailsDesc" android:text="Description"></TextView>
@@ -24,6 +23,11 @@
 
 
 
+
+
+<TextView android:id="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="10dip" android:textStyle="bold" android:textSize="14sp" android:text="Détails, vidéos, bandes annonces  de l'émission sur :"></TextView><LinearLayout android:id="@+id/LinearLayout02" android:layout_height="wrap_content" android:layout_width="fill_parent" android:orientation="horizontal"><LinearLayout android:id="@+id/LinearLayout05" android:layout_height="wrap_content" android:layout_width="fill_parent" android:layout_weight="1"></LinearLayout><ImageButton android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/GuideDetailsYouTube" android:src="@drawable/youtube"></ImageButton><LinearLayout android:id="@+id/LinearLayout05" android:layout_height="wrap_content" android:layout_width="fill_parent" android:layout_weight="1"></LinearLayout><ImageButton android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/allocine" android:id="@+id/GuideDetailsAlloCine"></ImageButton><LinearLayout android:id="@+id/LinearLayout05" android:layout_height="wrap_content" android:layout_width="fill_parent" android:layout_weight="1"></LinearLayout>
+
+</LinearLayout>
 </LinearLayout>
 </ScrollView>
 

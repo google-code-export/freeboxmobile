@@ -2,11 +2,9 @@ package org.madprod.freeboxmobile.home;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -16,23 +14,17 @@ import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.Utils;
 import org.madprod.freeboxmobile.fax.FaxActivity;
-import org.madprod.freeboxmobile.guide.GuideCheck;
 import org.madprod.freeboxmobile.guide.GuideMenuActivity;
-import org.madprod.freeboxmobile.ligne.InfoAdslCheck;
-import org.madprod.freeboxmobile.mvv.MevoSync;
 import org.madprod.freeboxmobile.remotecontrol.RemoteControlActivity;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.ActivityNotFoundException;
-import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -52,6 +44,7 @@ import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
 *
@@ -110,8 +103,6 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		e.commit();
 		e = mgr.edit();
 */
-        if (Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED) == false)
-        	showSdCardError();
 		setContentView(R.layout.home_main_list);
 		setTitle(getString(R.string.app_name)+" "+FBMHttpConnection.getTitle());
 	}
@@ -122,6 +113,8 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     	Log.i(TAG,"MainActivity Start");
     	super.onStart();
     	FBMNetTask.register(this);
+        if (Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED) == false)
+        	showSdCardError();
     	SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 		FBMHttpConnection.initVars(this, null);
 		// Si l'utilisateur n'a pas configuré de compte
@@ -361,6 +354,29 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 	    	else if (moduleName.equals(getString(R.string.buttonFreeWifi)))
 	    	{
 	    		openExtApp("com.mba.freewifi", ".FreeWifiConnect", "FreeWifi Connect");
+	    	}
+	    	else if (moduleName.equals(getString(R.string.buttonTv)))
+	    	{
+	    		Intent i = new Intent("kr.mobilesoft.yxplayer.PLAYER");
+//	    		Intent i = new Intent("kr.mobilesoft.yxplayer.StreamsView");
+	    		i.putExtra("url", "http://vipmms9.yacast.net/bfm_bfmtv");
+	    		i.putExtra("uri", "http://vipmms9.yacast.net/bfm_bfmtv");
+//	    		i.putExtra("add", "http://vipmms9.yacast.net/bfm_bfmtv");
+//	    		i.putExtra("stream", "http://vipmms9.yacast.net/bfm_bfmtv");
+//	    		i.putExtra("streams", "http://vipmms9.yacast.net/bfm_bfmtv");
+//	    		i.putExtra("URL", "http://vipmms9.yacast.net/bfm_bfmtv");
+//	    		i.putExtra("URI", "http://vipmms9.yacast.net/bfm_bfmtv");
+//	    		i.putExtra("open", "http://vipmms9.yacast.net/bfm_bfmtv"); // fait planter
+//	    		i.putExtra("video", "http://vipmms9.yacast.net/bfm_bfmtv");
+	    		try
+	    		{
+	    			startActivity(i);
+	    		}
+	    		catch (Exception e)
+	    		{
+	    			Toast.makeText(this, "Pb ! "+e.getMessage(), 2000).show();
+	    			Log.d(TAG, "PB : "+e.getMessage());
+	    		}
 	    	}
         }
     	if (moduleClass != null)

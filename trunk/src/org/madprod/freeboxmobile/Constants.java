@@ -38,7 +38,7 @@ public interface Constants
     static final String BOITIER2_STATE = "boitier2_state";
     static final String BOITIER2_CODE = "boitier2_code";
 
-    static final int	DEFAULT_MEVO_FREQ	= 3600000;
+    static final long	DEFAULT_MEVO_FREQ	= AlarmManager.INTERVAL_HOUR;
     static final long	DEFAULT_GUIDE_FREQ	= AlarmManager.INTERVAL_DAY; 
     
     static final String TAG				= "FBM";
