@@ -14,11 +14,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -51,6 +53,8 @@ public class GuideDetailsActivity extends Activity implements GuideConstants
 	        Button enregistrer = (Button) findViewById(R.id.GuideDetailsButtonEnregistrer);
 	        Button regarder = (Button) findViewById(R.id.GuideDetailsButtonRegarder);
 	        ImageView logoChaine = (ImageView) findViewById(R.id.GuideDetailsLogoChaine);
+	        ImageButton youTube = (ImageButton) findViewById(R.id.GuideDetailsYouTube);
+	        ImageButton alloCine = (ImageButton) findViewById(R.id.GuideDetailsAlloCine);
 	        
 	        titreEmission.setText(extras.getString(ChainesDbAdapter.KEY_PROG_TITLE));
 	        descEmission.setText(extras.getString(ChainesDbAdapter.KEY_PROG_RESUM_L));
@@ -64,7 +68,8 @@ public class GuideDetailsActivity extends Activity implements GuideConstants
 	        
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			Calendar c = Calendar.getInstance();
-			try {
+			try
+			{
 				c.setTime(sdf.parse(date[0]));
 				c.setFirstDayOfWeek(Calendar.MONDAY);
 				String cdate = jours[c.get(Calendar.DAY_OF_WEEK)].toLowerCase()+" ";
@@ -81,7 +86,29 @@ public class GuideDetailsActivity extends Activity implements GuideConstants
 				dateHeureEmission.setText("Diffusé le "+amj[2]+"/"+amj[1]+"/"+amj[0]+" à "+hm[0]+"h"+hm[1]);
 			}
 
-	        partager.setOnClickListener(
+			youTube.setOnClickListener(
+					new View.OnClickListener()
+					{
+						@Override
+						public void onClick(View arg0)
+						{
+							startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/results?search_query="+titreEmission.getText()+"&aq=f")));
+						}
+					}
+				);
+
+			alloCine.setOnClickListener(
+					new View.OnClickListener()
+					{
+						@Override
+						public void onClick(View arg0)
+						{
+							startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.allocine.fr/recherche/?q="+titreEmission.getText())));
+						}
+					}
+				);
+
+			partager.setOnClickListener(
 					new View.OnClickListener()
 					{
 						@Override

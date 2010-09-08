@@ -10,7 +10,6 @@ import org.madprod.freeboxmobile.Constants;
 import org.madprod.freeboxmobile.WakefullIntentService;
 import org.madprod.freeboxmobile.home.HomeListActivity;
 
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -26,8 +25,6 @@ import android.util.Log;
 * $Id$
 * 
 */
-
-//cette classe est juste un copier/coller, faut l'adapter au guide
 
 public class GuideCheck extends WakefullIntentService implements Constants
 {
@@ -65,14 +62,12 @@ public class GuideCheck extends WakefullIntentService implements Constants
 		new GuideNetwork(this, dateToGet, 24, false, false, true).getData();
 		dateToGet = GuideUtils.calDates.get((GuideUtils.calDates.size() - 2));
 		new GuideNetwork(this, dateToGet, 24, false, false, true).getData();
-		dateToGet = GuideUtils.calDates.get((GuideUtils.calDates.size() - 3));
-		new GuideNetwork(this, dateToGet, 24, false, false, false).getData();
-		dateToGet = GuideUtils.calDates.get((GuideUtils.calDates.size() - 4));
-		new GuideNetwork(this, dateToGet, 24, false, false, false).getData();
-		dateToGet = GuideUtils.calDates.get((GuideUtils.calDates.size() - 5));
-		new GuideNetwork(this, dateToGet, 24, false, false, false).getData();
-		dateToGet = GuideUtils.calDates.get((GuideUtils.calDates.size() - 6));
-		new GuideNetwork(this, dateToGet, 24, false, false, false).getData();
+		int nbJours = GuideUtils.calDates.size() - 3;
+		while (nbJours >= 0)
+		{
+			dateToGet = GuideUtils.calDates.get((nbJours--));
+			new GuideNetwork(this, dateToGet, 24, false, false, false).getData();			
+		}
 
 		try
 		{
@@ -90,7 +85,7 @@ public class GuideCheck extends WakefullIntentService implements Constants
 
 		super.onHandleIntent(intent);
 	}
-	
+
 	/**
 	 * set periodical guide download timer
 	 * @param c : context
@@ -100,7 +95,7 @@ public class GuideCheck extends WakefullIntentService implements Constants
 		AlarmManager amgr = (AlarmManager) c.getSystemService(HomeListActivity.ALARM_SERVICE);
 		Intent i = new Intent(c, OnGuideAlarmReceiver.class);
 		PendingIntent pi = PendingIntent.getBroadcast(c, 0, i, 0);
-		amgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, /*System.currentTimeMillis(),*/SystemClock.elapsedRealtime(), AlarmManager.INTERVAL_FIFTEEN_MINUTES/*.INTERVAL_DAY*/, pi);
+		amgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, /*System.currentTimeMillis(),*/SystemClock.elapsedRealtime(), AlarmManager.INTERVAL_DAY, pi);
 		Log.i(TAG, "GuideTimer set");
 	}
 }

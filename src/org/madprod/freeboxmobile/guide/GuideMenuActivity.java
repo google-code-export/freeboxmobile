@@ -1,5 +1,8 @@
 package org.madprod.freeboxmobile.guide;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Calendar;
 
 import org.madprod.freeboxmobile.FBMNetTask;
@@ -8,6 +11,7 @@ import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
 import org.madprod.freeboxmobile.pvr.PvrNetwork;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -42,6 +46,43 @@ public class GuideMenuActivity extends GuideUtils implements GuideConstants
         mDbHelper.open();
         Log.d(TAG,"Nettoyage des anciens programmes effacés : "+mDbHelper.deleteOldProgs());
         Log.d(TAG,"Nettoyage de l'ancienne historique : "+mDbHelper.deleteOldHisto());
+
+        /*
+		if(getIntent()!=null && getIntent().getAction() != null)
+		{
+			Log.d(TAG, "TYPE : "+getIntent().getType());
+			Log.d(TAG, "ACTION : "+getIntent().getAction());
+			Log.d(TAG, "SCHEME : "+getIntent().getScheme());
+			Log.d(TAG, "PACKAGE : "+getIntent().getPackage());
+			Log.d(TAG, "TOSTRING : "+getIntent().toString());
+			Log.d(TAG, "FLAGS : "+ getIntent().getFlags());
+			Log.d(TAG, "URI : "+ getIntent().toURI());
+			Log.d(TAG, "DESCRIBE CONTENTS : "+ getIntent().describeContents());
+			Log.d(TAG, "RESOLVE : "+ getIntent().resolveType(this));
+			Log.d(TAG, "DATA STRING : "+ getIntent().getDataString());
+			Log.d(TAG, "CATEGORIES : "+ getIntent().getCategories());
+			
+			if (getIntent().getExtras() != null)
+			{
+				Log.d(TAG, "EXTRA_TEXT : "+(String) getIntent().getExtras().get(Intent.EXTRA_TEXT));
+				Log.d(TAG, "EXTRA STREAM : "+ getIntent().getExtras().get(Intent.EXTRA_STREAM));				
+				Log.d(TAG, "SIZE : "+ getIntent().getExtras().size());
+				Log.d(TAG, "TO STRING : "+ getIntent().getExtras().toString());
+			}
+			else
+			{
+				Log.d(TAG, "NO EXTRA !");
+			}
+			if (getIntent().getData() != null)
+			{
+				Log.d(TAG, "DATA : "+ getIntent().getData().toString());
+			}
+			else
+			{
+				Log.d(TAG, "NO DATA !");
+			}
+		}
+*/
     }
 	
 	@Override
