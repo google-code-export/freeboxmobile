@@ -365,7 +365,12 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 
 	   			List<NameValuePair> params = new ArrayList<NameValuePair>();
 				params.add(new BasicNameValuePair("tel",tel));
-				params.add(new BasicNameValuePair("fichier",curs.getString(curs.getColumnIndex(KEY_NAME))));
+				String msgFile = curs.getString(curs.getColumnIndex(KEY_NAME));
+				if (msgFile.endsWith(".wav"))
+				{
+					msgFile = msgFile.substring(0, msgFile.length() - 4);
+				}
+				params.add(new BasicNameValuePair("fichier",msgFile));
 
 				Log.d(TAG, "Deleting on server "+params);
 				FBMHttpConnection.getAuthRequest(mevoUrl+mevoDelPage, params, true, false, "ISO8859_1");
