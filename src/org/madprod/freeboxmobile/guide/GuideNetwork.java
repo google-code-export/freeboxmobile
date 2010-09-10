@@ -2,7 +2,10 @@ package org.madprod.freeboxmobile.guide;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -38,6 +41,7 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants
      * GuideNetwork : refresh data for Guide
      * @param a : activity used to display progress bars
      * @param d : datetime to get programmes or null if you don't want to get programs
+     * @param duree : nombre d'heure à télécharger
      * @param chaine : wants to get chaines list ?
      * @param progress : display progress ?
      * @param force : force refresh programs event if they are already present in database
@@ -208,6 +212,27 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants
 						db.createHistoGuide(datetime+" 18:00:00");
 						db.createHistoGuide(datetime+" 19:00:00");
 						db.createHistoGuide(datetime+" 20:00:00");
+						// Tester si isDayHistoGuidePresent(datetime jour précédent)
+						// Si oui : db.createHistoGuide(datetimejourprécédent+ " 21-22-23"...);
+						try
+						{
+							Date date = new SimpleDateFormat("yyy-MM-dd").parse(datetime);
+							Calendar c = Calendar.getInstance();
+							c.setFirstDayOfWeek(Calendar.MONDAY);
+							c.setTime(date);
+							c.add(Calendar.DAY_OF_MONTH, -1);
+							String datetimehier = (c.get(Calendar.YEAR)+"-"+((c.get(Calendar.MONTH)+1)<10?"0":"")+(c.get(Calendar.MONTH)+1)+"-"+(c.get(Calendar.DAY_OF_MONTH)<10?"0":"")+c.get(Calendar.DAY_OF_MONTH));
+							Log.d(TAG, "=============> HIER = "+datetimehier);
+							db.createHistoGuide(datetimehier+" 21:00:00");
+							db.createHistoGuide(datetimehier+" 22:00:00");
+							db.createHistoGuide(datetimehier+" 23:00:00");							
+						}
+						catch (ParseException e)
+						{
+							e.printStackTrace();
+							Log.d(TAG, "Probleme parsing date");
+						}
+						
 					}
 				}
 				if (getChaines)

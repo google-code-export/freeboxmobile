@@ -9,6 +9,8 @@ import java.util.Date;
 import org.madprod.freeboxmobile.Constants;
 import org.madprod.freeboxmobile.WakefullIntentService;
 import org.madprod.freeboxmobile.home.HomeListActivity;
+import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
+import org.madprod.freeboxmobile.pvr.PvrNetwork;
 
 import android.app.AlarmManager;
 import android.app.NotificationManager;
@@ -57,6 +59,14 @@ public class GuideCheck extends WakefullIntentService implements Constants
 
 		GuideUtils.makeCalDates();
 		
+		ChainesDbAdapter mDbHelper = new ChainesDbAdapter(this);
+        mDbHelper.open();
+    	if (mDbHelper.getNbFavoris() == 0)
+    	{
+        	new GuideNetwork(this, null, 4, true, false, false).getData(); // To get chaines logos
+        	new PvrNetwork(false, false).getData(); // to get favoris list
+    	}
+
 		String dateToGet = GuideUtils.calDates.get((GuideUtils.calDates.size() - 1));
 		Log.d(TAG, "last date : "+dateToGet);
 		new GuideNetwork(this, dateToGet, 24, false, false, true).getData();
