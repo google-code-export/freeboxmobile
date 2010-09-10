@@ -1,8 +1,5 @@
 package org.madprod.freeboxmobile.guide;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Calendar;
 
 import org.madprod.freeboxmobile.FBMNetTask;
@@ -11,7 +8,6 @@ import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
 import org.madprod.freeboxmobile.pvr.PvrNetwork;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
