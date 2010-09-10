@@ -29,6 +29,11 @@ public class PvrNetwork extends FBMNetTask implements PvrConstants // AsyncTask<
 	private boolean getChaines;
 	private boolean getDisques;
 	
+	/**
+	 * PvrNetwork
+	 * @param getChaines : want to get Chaines list ?
+	 * @param getDisques : want to get Logo list ?
+	 */
     public PvrNetwork(boolean getChaines, boolean getDisques)
     {
     	this.getChaines = getChaines;
