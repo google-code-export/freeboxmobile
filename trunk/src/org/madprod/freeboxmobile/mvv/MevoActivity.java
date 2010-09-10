@@ -11,6 +11,7 @@ import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.ServiceUpdateUIListener;
 import org.madprod.freeboxmobile.Utils;
+import org.madprod.freeboxmobile.WrapBitmap;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -32,6 +33,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Contacts;
+import android.provider.ContactsContract;
 import android.provider.Contacts.Intents.Insert;
 import android.util.Log;
 import android.widget.BaseAdapter;
@@ -605,9 +607,21 @@ public class MevoActivity extends ListActivity implements MevoConstants
     	public void addNumber(int id)
     	{
 			Intent intent = new Intent(Intent.ACTION_INSERT_OR_EDIT);
-			intent.setType(Contacts.People.CONTENT_ITEM_TYPE);
-			intent.putExtra(Insert.PHONE, Uri.parse("tel:"+((MevoMessage)this.getItem(id)).getStringValue(KEY_SOURCE)));
-			mevoActivity.startActivity(intent);
+
+			try
+			{
+				// For Android >= 2.0
+				intent.setType(ContactsContract.Contacts.CONTENT_ITEM_TYPE);
+				intent.putExtra(ContactsContract.Intents.Insert.PHONE, ((MevoMessage)this.getItem(id)).getStringValue(KEY_SOURCE));
+				mevoActivity.startActivity(intent);
+			}
+			catch (Throwable t)
+			{
+				// For Android 1.5 - 1.6
+				intent.setType(Contacts.People.CONTENT_ITEM_TYPE);
+				intent.putExtra(Insert.PHONE, ((MevoMessage)this.getItem(id)).getStringValue(KEY_SOURCE));
+				mevoActivity.startActivity(intent);
+			}
     	}
 
     	public void searchNumber(int id)

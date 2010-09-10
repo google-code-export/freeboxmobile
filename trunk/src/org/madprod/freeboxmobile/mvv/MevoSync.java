@@ -350,7 +350,7 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 		}
 		else
 		{
-			// Si le message est pr�sent sur le serveur de Free
+			// Si le message est présent sur le serveur de Free
 			if (!(curs.getString(curs.getColumnIndex(KEY_DEL)).equals("")))
 			{
 	    		String tel = curs.getString(curs.getColumnIndex(KEY_DEL));
@@ -376,8 +376,8 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 				FBMHttpConnection.getAuthRequest(mevoUrl+mevoDelPage, params, true, false, "ISO8859_1");
 			}
 		}
-		// Puis on marque le message comme effac� dans la base
-		// (on l'efface pas � proprement dit de la base, ca pourrait servir pour un historique)
+		// Puis on marque le message comme effacé dans la base
+		// (on l'efface pas à proprement dit de la base, ca pourrait servir pour un historique)
 		Log.d(TAG, "Updating DB : "+mDbHelper.updateMessage(0, "", "", name));
 
 		if (UI_UPDATE_LISTENER != null)
