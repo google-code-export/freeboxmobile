@@ -90,19 +90,26 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 			e.printStackTrace();
 		}
 
-		mDbHelper = new MevoDbAdapter(this);
-
-		FBMHttpConnection.initVars(null, getBaseContext());
-		newmsg = checkUpdate();
-		if (newmsg > 0)
-		{
-			_initNotif(newmsg);
-			if (UI_UPDATE_LISTENER != null)
+        if (Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED) == true)
+        {
+			mDbHelper = new MevoDbAdapter(this);
+	
+			FBMHttpConnection.initVars(null, getBaseContext());
+			newmsg = checkUpdate();
+			if (newmsg > 0)
 			{
-				UI_UPDATE_LISTENER.updateUI();
+				_initNotif(newmsg);
+				if (UI_UPDATE_LISTENER != null)
+				{
+					UI_UPDATE_LISTENER.updateUI();
+				}
 			}
-		}
-
+        }
+        else
+        {
+			Log.e(TAG,"SD Card not mounted");        	
+        }
+        
 		try
 		{
 			BufferedWriter out = new BufferedWriter (new FileWriter(log.getAbsolutePath(), true));

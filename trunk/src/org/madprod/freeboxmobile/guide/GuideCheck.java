@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.Date;
 
 import org.madprod.freeboxmobile.Constants;
+import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.WakefullIntentService;
 import org.madprod.freeboxmobile.home.HomeListActivity;
 import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
@@ -59,14 +60,18 @@ public class GuideCheck extends WakefullIntentService implements Constants
 
 		GuideUtils.makeCalDates();
 		
+		FBMHttpConnection.initVars(null, getBaseContext());
+
 		ChainesDbAdapter mDbHelper = new ChainesDbAdapter(this);
         mDbHelper.open();
-    	if (mDbHelper.getNbFavoris() == 0)
-    	{
-        	new GuideNetwork(this, null, 4, true, false, false).getData(); // To get chaines logos
-        	new PvrNetwork(false, false).getData(); // to get favoris list
-    	}
-
+        if (Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED) == true)
+        {
+	    	if (mDbHelper.getNbFavoris() == 0)
+	    	{
+	        	new GuideNetwork(this, null, 4, true, false, false).getData(); // To get chaines logos
+	        	new PvrNetwork(false, false).getData(); // to get favoris list
+	    	}
+        }
 		String dateToGet = GuideUtils.calDates.get((GuideUtils.calDates.size() - 1));
 		Log.d(TAG, "last date : "+dateToGet);
 		new GuideNetwork(this, dateToGet, 24, false, false, true).getData();
@@ -105,7 +110,7 @@ public class GuideCheck extends WakefullIntentService implements Constants
 		AlarmManager amgr = (AlarmManager) c.getSystemService(HomeListActivity.ALARM_SERVICE);
 		Intent i = new Intent(c, OnGuideAlarmReceiver.class);
 		PendingIntent pi = PendingIntent.getBroadcast(c, 0, i, 0);
-		amgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, /*System.currentTimeMillis(),*/SystemClock.elapsedRealtime(), AlarmManager.INTERVAL_DAY, pi);
+		amgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, /*System.currentTimeMillis(),*/SystemClock.elapsedRealtime(),AlarmManager.INTERVAL_FIFTEEN_MINUTES/* AlarmManager.INTERVAL_DAY*/, pi);
 		Log.i(TAG, "GuideTimer set");
 	}
 }

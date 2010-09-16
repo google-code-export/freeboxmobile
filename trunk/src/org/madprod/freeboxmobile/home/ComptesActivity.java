@@ -237,11 +237,11 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 						SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 						Long duree = (new Date()).getTime() - getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getLong(KEY_LAST_REFRESH+c.getString(c.getColumnIndexOrThrow(KEY_USER)), 0);
 						Log.d(TAG,"TEMPS : "+c.getString(c.getColumnIndexOrThrow(KEY_USER))+" - "+getSharedPreferences(KEY_PREFS, MODE_PRIVATE).getLong(KEY_LAST_REFRESH+c.getString(c.getColumnIndexOrThrow(KEY_USER)), 0)+" "+duree);
+						
 						// Si ca fait + de 30 jours on met à jour (2592000000 )
 						if (duree > 2592000000L)
 						{
 							updatePrefs(mgr.edit(), c);
-							FBMHttpConnection.initCompte(ComptesActivity.this);
 					        new ManageCompte(new ComptePayload(
 					        		mgr.getString(KEY_TITLE, ""),
 					        		mgr.getString(KEY_USER, ""),
@@ -252,7 +252,6 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 						else
 						{
 							updatePrefs(mgr.edit(), c);
-							FBMHttpConnection.initCompte(ComptesActivity.this);
 						}
 					}
 					else
@@ -285,7 +284,8 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 		editor.putString(KEY_LINETYPE, c.getString(c.getColumnIndexOrThrow(KEY_LINETYPE)));
 		editor.putString(KEY_FBMVERSION, c.getString(c.getColumnIndexOrThrow(KEY_FBMVERSION)));
 		editor.commit();
-    }
+		FBMHttpConnection.initCompte(ComptesActivity.this);
+	}
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent)
@@ -312,7 +312,7 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 				}
 				c.close();
 				mDb.close();
-				
+
 				String ms = getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_MEVO_PREFS_FREQ, "-1");
 				if (!ms.equals("0")) // Si "0" : l'utilisateur ne veut pas de relève périodique
 				{
@@ -328,6 +328,9 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 				GuideCheck.setTimer(this);
         	}
         }
-        FBMHttpConnection.initCompte(ComptesActivity.this);
+        else
+        {
+        	FBMHttpConnection.initCompte(ComptesActivity.this);
+        }
     }
 }

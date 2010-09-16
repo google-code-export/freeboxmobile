@@ -21,7 +21,7 @@ import android.util.Log;
 public class Utils implements Constants
 {
 	private static String FBMVersion = null;
-	
+
 	public static void copyFile(File in, File out) throws IOException 
     {
 	    FileChannel inChannel = new FileInputStream(in).getChannel();
@@ -59,7 +59,7 @@ public class Utils implements Constants
 		}
 		return FBMVersion;
 	}
-	
+
 	public static void unzipFile(String pathZipFile, String path){
 		try {
 			final int BUFFER = 2048;

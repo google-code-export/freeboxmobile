@@ -14,6 +14,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 
 /**
@@ -287,7 +288,13 @@ public class ChainesDbAdapter implements GuideConstants
     
 	public long getNbFavoris()
 	{
-		return mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE_FAVORIS).simpleQueryForLong();
+		long ret;
+		SQLiteStatement sqls;
+
+		sqls = mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE_FAVORIS);
+		ret = sqls.simpleQueryForLong();
+		sqls.close();
+		return ret;
 	}
 
     /*
@@ -320,7 +327,13 @@ public class ChainesDbAdapter implements GuideConstants
     
 	public long isDayHistoGuidePresent(String date)
 	{
-		return mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE_DAYHISTOGUIDE + " WHERE "+KEY_HISTO_DATE+" = '"+date+"'").simpleQueryForLong();
+		long ret;
+		SQLiteStatement sqls;
+
+		sqls = mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE_DAYHISTOGUIDE + " WHERE "+KEY_HISTO_DATE+" = '"+date+"'");
+		ret = sqls.simpleQueryForLong();
+		sqls.close();
+		return ret;
 	}
 
 	public long deleteOldDayHisto_old()
@@ -344,7 +357,12 @@ public class ChainesDbAdapter implements GuideConstants
 
 	public long isHistoGuidePresent(String datetime)
 	{
-		return mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE_HISTOGUIDE + " WHERE "+KEY_PROG_DATETIME_DEB+" = '"+datetime+"'").simpleQueryForLong();
+		long ret;
+		
+		SQLiteStatement sqls = mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE_HISTOGUIDE + " WHERE "+KEY_PROG_DATETIME_DEB+" = '"+datetime+"'");
+		ret = sqls.simpleQueryForLong();
+		sqls.close();
+		return ret;
 	}
 	
 	public long deleteOldHisto()
@@ -402,7 +420,11 @@ public class ChainesDbAdapter implements GuideConstants
 
 	public long isGuideChainePresent(int id)
 	{
-		return mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE_GUIDECHAINES + " WHERE "+KEY_GUIDECHAINE_ID+" = "+id).simpleQueryForLong();
+		long ret;
+		SQLiteStatement sqls = mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE_GUIDECHAINES + " WHERE "+KEY_GUIDECHAINE_ID+" = "+id);
+		ret = sqls.simpleQueryForLong();
+		sqls.close();
+		return ret;
 	}
 
 	/**
@@ -430,7 +452,11 @@ public class ChainesDbAdapter implements GuideConstants
 
 	public long getNbChaines()
 	{
-		return mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE_GUIDECHAINES).simpleQueryForLong();
+		long ret;
+		SQLiteStatement sqls = mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE_GUIDECHAINES);
+		ret = sqls.simpleQueryForLong();
+		sqls.close();
+		return ret;		
 	}
 
 	/*
@@ -492,7 +518,11 @@ public class ChainesDbAdapter implements GuideConstants
 
 	public long isProgrammePresent(int channelId, String horaire_deb)
 	{
-		return mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE_PROGRAMMES + " WHERE "+KEY_PROG_CHANNEL_ID+" = "+channelId+" AND "+KEY_PROG_DATETIME_DEB+" = '"+horaire_deb+"'").simpleQueryForLong();
+		long ret;
+		SQLiteStatement sqls = mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE_PROGRAMMES + " WHERE "+KEY_PROG_CHANNEL_ID+" = "+channelId+" AND "+KEY_PROG_DATETIME_DEB+" = '"+horaire_deb+"'");
+		ret = sqls.simpleQueryForLong();
+		sqls.close();
+		return ret;
 	}
 	
 	public int deleteOldProgs()
@@ -572,7 +602,11 @@ public class ChainesDbAdapter implements GuideConstants
     
 	public long getChainesNb()
 	{
-		return mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE_CHAINES).simpleQueryForLong();
+		long ret;
+		SQLiteStatement sqls = mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE_CHAINES);
+		ret = sqls.simpleQueryForLong();
+		sqls.close();
+		return ret;
 	}
 
 	/*
@@ -623,7 +657,11 @@ public class ChainesDbAdapter implements GuideConstants
 
     public boolean checkTable(String table)
     {
-    	return (mDb.compileStatement("SELECT COUNT("+KEY_ROWID+") FROM "+table).simpleQueryForLong() > 0);
+		boolean ret;
+		SQLiteStatement sqls = mDb.compileStatement("SELECT COUNT("+KEY_ROWID+") FROM "+table);
+		ret = sqls.simpleQueryForLong() > 0;
+		sqls.close();
+		return ret;
     }
     
 	public long createBoitierDisque(String b_name, int b_id, int d_free_size, int d_total_size, int d_id,

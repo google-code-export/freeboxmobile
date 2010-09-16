@@ -320,6 +320,11 @@ public class FBMHttpConnection implements Constants
 		String m_idt = null;
 		HttpURLConnection h = null;
 		
+		if (l == null)
+		{
+			return CONNECT_LOGIN_FAILED;
+		}
+		
 		Log.d(TAG,"Connect Free start ");
         try
         {
