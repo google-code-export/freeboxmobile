@@ -20,7 +20,6 @@ import org.madprod.freeboxmobile.remotecontrol.RemoteControlActivity;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -128,7 +127,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
         	if (!mgr.getString(KEY_FBMVERSION, "0").equals(Utils.getFBMVersion(this)))
         	{
         		Log.d(TAG,"HOME : on rafraichi le compte "+mgr.getString(KEY_FBMVERSION, "0"));
-        		refreshCompte();
+//        		refreshCompte();
         		Editor editor = mgr.edit();
 				editor.putString(KEY_FBMVERSION, Utils.getFBMVersion(this));
 				editor.commit();
@@ -143,15 +142,13 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 	        if (of.exists())
 	        {
 	        	Log.i(TAG,"Ancien dossier des chaînes, on renomme "+OLDDIR_CHAINES+" en "+DIR_CHAINES);
-//	        	File nf = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES);
-//	        	nf.mkdirs();
 	        	if (of.renameTo(file))
 	        	{
-	        		Log.i(TAG," ok");
+	        		Log.i(TAG,"rename ok");
 	        	}
 	        	else
 	        	{
-	        		Log.i(TAG," notok");
+	        		Log.i(TAG,"rename notok");
 	        	}
 	        }
 	        // Si le dossier des chaînes n'existe pas, on le créé
@@ -179,8 +176,12 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 	        Editor editor = mgr.edit();
 			editor.putString(KEY_SPLASH, Utils.getFBMVersion(this));
 			editor.commit();
-			File log = new File(Environment.getExternalStorageDirectory()+DIR_FBM, file_log);
-			log.delete();
+			// On supprime le log que si on est pas sur une beta
+			if (Utils.getFBMVersion(this).contains("rc") == false)
+			{
+				File log = new File(Environment.getExternalStorageDirectory()+DIR_FBM, file_log);
+				log.delete();
+			}
 
 			displayAbout();
 		}
@@ -216,7 +217,6 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     {
 		Log.i(TAG,"MainActivity Pause");
     	super.onPause();
-//		FBMHttpConnection.closeDisplay();
     }
 
     private void refreshCompte()
@@ -355,7 +355,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 	    	{
 	    		openExtApp("com.mba.freewifi", ".FreeWifiConnect", "FreeWifi Connect");
 	    	}
-	    	else if (moduleName.equals(getString(R.string.buttonTv)))
+	    	else if (false)//(moduleName.equals(getString(R.string.buttonTv)))
 	    	{
 	    		Intent i = new Intent("kr.mobilesoft.yxplayer.PLAYER");
 //	    		Intent i = new Intent("kr.mobilesoft.yxplayer.StreamsView");
@@ -511,7 +511,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 			d.show();
 		}    	
     }
-    
+
     private void shareApp()
     {
     	SpannableString ss = new SpannableString(getResources().getString(R.string.mail_link));
@@ -609,6 +609,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 			"- Olivier Rosello : Architecture / Réseau / Home / Info ADSL / Téléphone / Guide des Programmes\n"+
 			"- Clément Beslon : Télécommande Wifi\n"+
 			"- Bruno Alacoque : Skins Télécommande\n"+
+			"- Nacer Laradji : Hébergement, gestion des serveurs\n"+
 			"- Benoit Duffez : Magnétosocope\n"+
 			"- Ludovic Meurillon : Fax\n"+
 			"- Alban Pelé : Icônes de la page d'accueil\n"+
@@ -616,7 +617,9 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 			"Cette application opensource utilise :\n"+
 			"- Android-XMLRPC : http://code.google.com/p/android-xmlrpc/\n"+
 			"- Icônes Tango : http://tango.freedesktop.org/\n" +
-			"- Frimousse : http://www.frimousse.org\n"
+			"- Frimousse : http://www.frimousse.org\n"+
+			"\n"+
+			"Les serveurs de Freebox Mobile sont gracieusement fournis par Ovea:\nhttp://www.oveaconnect.me/\n"
 			);
     	s.setPadding(10,10,10,10);
     	t.setMovementMethod(LinkMovementMethod.getInstance());

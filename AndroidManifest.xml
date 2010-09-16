@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="org.madprod.freeboxmobile" android:versionCode="46" android:versionName="0.40.5rc1.8">
+      package="org.madprod.freeboxmobile" android:versionCode="46" android:versionName="0.40.5rc1">
     <application android:label="@string/app_name" android:icon="@drawable/icon_fbm">
 		<activity android:name=".home.HomeListActivity" android:label="@string/app_name" android:theme="@style/Theme.FreeboxMobile.NoTitleBar" android:icon="@drawable/icon_fbm">
 			<intent-filter>
@@ -58,7 +58,6 @@
 		<service android:name=".mvv.MevoSync"></service>
     	<service android:name=".ligne.InfoAdslCheck"></service>
     	<service android:name=".guide.GuideCheck"></service>
-
 	</application>
 
 	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
@@ -68,6 +67,10 @@
 	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"></uses-permission>
 	<uses-permission android:name="android.permission.WAKE_LOCK"></uses-permission>
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
+	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE"></uses-permission>
+	<uses-permission android:name="android.permission.CHANGE_WIFI_STATE"></uses-permission>
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
+	<uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"></uses-permission>
 
 	<support-screens
 		android:largeScreens="true"
@@ -79,8 +82,4 @@
 		android:minSdkVersion="3"
 		android:targetSdkVersion="6">
 	</uses-sdk>
-<uses-permission android:name="android.permission.ACCESS_WIFI_STATE"></uses-permission>
-<uses-permission android:name="android.permission.CHANGE_WIFI_STATE"></uses-permission>
-<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
-<uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"></uses-permission>
 </manifest>

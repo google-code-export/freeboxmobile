@@ -11,7 +11,6 @@ import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.ServiceUpdateUIListener;
 import org.madprod.freeboxmobile.Utils;
-import org.madprod.freeboxmobile.WrapBitmap;
 
 import android.app.Activity;
 import android.app.AlertDialog;
