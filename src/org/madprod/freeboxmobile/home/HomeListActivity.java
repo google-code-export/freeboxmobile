@@ -295,7 +295,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		map = new HashMap<String,Object>();
 		map.put(M_ICON, R.drawable.fm_actus_freenautes);
 		map.put(M_TITRE, getString(R.string.buttonActu));
-		map.put(M_DESC, "Consultez l'actualité de Free et de la Freebox\n\nCette fonctionnalité n'est pas encore disponible");
+		map.put(M_DESC, "Consultez l'actualité de Free et de la Freebox");
 		map.put(M_CLASS, null);
 		modulesList.add(map);    	
     	map = new HashMap<String,Object>();
@@ -350,7 +350,10 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 	    	else if (moduleName.equals(getString(R.string.buttonWebmail)))
 	    	{
 	    		openExtApp("org.geeek.free", ".activity.SplashScreenActivity", "Webmail Free.fr");
-	    	}
+	    	}else if (moduleName.equals(getString(R.string.buttonActu)))
+		    {
+		    	openExtApp("org.madprod.infofreenautes", ".splashscreen.SplashScreen", "Info Freenautes");
+		    }
 	    	else if (moduleName.equals(getString(R.string.buttonFreeWifi)))
 	    	{
 	    		openExtApp("com.mba.freewifi", ".FreeWifiConnect", "FreeWifi Connect");
