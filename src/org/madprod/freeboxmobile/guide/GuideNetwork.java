@@ -39,7 +39,7 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants
 
     /**
      * GuideNetwork : refresh data for Guide
-     * @param a : activity used to display progress bars
+     * @param c : context used to access database
      * @param d : datetime to get programmes or null if you don't want to get programs
      * @param duree : nombre d'heure à télécharger
      * @param chaine : wants to get chaines list ?
@@ -133,15 +133,15 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants
 					if (FBMHttpConnection.connect() == CONNECT_CONNECTED)
 					{
 						resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthXmlRequest(MAGNETO_URL, param, true, true, "UTF8"));
-						jObject = new JSONObject(resultat);
 					}
-					else
+					if ((FBMHttpConnection.connect() != CONNECT_CONNECTED) || (resultat == null))
 					{
 						db.close();
 						publishProgress(-1);
 						Log.d(TAG,"DATA NOT DONWLOADED");
 						return (DATA_NOT_DOWNLOADED);
 					}
+					jObject = new JSONObject(resultat);
 				}
 				if (datetime != null)
 				{
@@ -167,7 +167,7 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants
 							// Je ne sais pas à quoi correspond le channel_id 173 mais les programmes sont vides
 							// et il n'y a pas de chaine qui corresponde dans la liste des chaines
 							// donc...
-							if ((db.isProgrammePresent(channel_id, datetime_deb) == 0) && (channel_id != 173))
+							if (!(db.isProgrammePresent(channel_id, datetime_deb)) && (channel_id != 173))
 							{
 								jHoraireObject = jHorairesObject.getJSONObject(datetime_deb);
 								db.createProgramme(
@@ -222,7 +222,6 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants
 							c.setTime(date);
 							c.add(Calendar.DAY_OF_MONTH, -1);
 							String datetimehier = (c.get(Calendar.YEAR)+"-"+((c.get(Calendar.MONTH)+1)<10?"0":"")+(c.get(Calendar.MONTH)+1)+"-"+(c.get(Calendar.DAY_OF_MONTH)<10?"0":"")+c.get(Calendar.DAY_OF_MONTH));
-							Log.d(TAG, "=============> HIER = "+datetimehier);
 							db.createHistoGuide(datetimehier+" 21:00:00");
 							db.createHistoGuide(datetimehier+" 22:00:00");
 							db.createHistoGuide(datetimehier+" 23:00:00");							

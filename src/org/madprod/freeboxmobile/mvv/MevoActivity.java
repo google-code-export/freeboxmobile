@@ -146,22 +146,23 @@ public class MevoActivity extends ListActivity implements MevoConstants
     {
     	super.onStart();
     	MevoSync.setActivity(this);
-       	MevoSync.setUpdateListener(new ServiceUpdateUIListener()
-    	{
-			@Override
-			public void updateUI()
-			{
-				Log.i(TAG,"updateUI");
-				runOnUiThread(new Runnable()
+       	MevoSync.setUpdateListener(
+   			new ServiceUpdateUIListener()
+	    	{
+				@Override
+				public void updateUI()
 				{
-					public void run()
-					{
-						mAdapter.refreshUI();
-					}
-				});
-			}
-    	}
-    	);
+					Log.i(TAG,"updateUI");
+					runOnUiThread(
+						new Runnable()
+						{
+							public void run()
+							{
+								mAdapter.refreshUI();
+							}
+						});
+				}
+	    	});
     	Log.i(TAG,"MevoActivity Start");
     }
     
@@ -364,7 +365,6 @@ public class MevoActivity extends ListActivity implements MevoConstants
 		mAdapter.stopPlay();
 		mAdapter.releaseMP();
 		MevoSync.setActivity(null);
-//		FBMHttpConnection.closeDisplay();
 	}
 
 	private void setHpOff()
@@ -652,7 +652,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
     	{
 			((MevoMessage) this.getItem((int) id)).log();
     	}
-    	
+
     	public int getCurrentPos()
     	{
     		return play_current_pos;
@@ -698,11 +698,11 @@ public class MevoActivity extends ListActivity implements MevoConstants
 			{
 				holder = (ViewHolder)convertView.getTag();
 			}
-			
+
 			holder.quand.setText(curMsg.getStringValue(KEY_QUAND_HR));
 			holder.length.setText(curMsg.getStringValue(KEY_LENGTH)+" "+this.msg_unit);
 
-			// Ici je mettais en gras les messages pr�sents sur le serveur. Mais inutile, pas joli.
+			// Ici je mettais en gras les messages présents sur le serveur. Mais inutile, pas joli.
 /* 			if (curMsg.getStringValue(KEY_DEL).compareTo("") != 0)
 			{
 				holder.qui.setTypeface(Typeface.DEFAULT_BOLD);
@@ -779,7 +779,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
     		notifyDataSetChanged();
 			return true;
 		}
-		
+
 		public void stopPlay()
 		{
 			// Si on était pas dans le cas d'un premier play
@@ -872,13 +872,13 @@ public class MevoActivity extends ListActivity implements MevoConstants
 			TextView	length;
 			ImageView	bouton;
 		}
-		
+
 	    private class DeleteMessage extends AsyncTask<String, Void, Void>
 	    {
 			@Override
 			protected Void doInBackground(String... name)
 			{
-				MevoSync.deleteMsg(name[0], mevoActivity);
+				MevoSync.deleteMsg(name[0]);
 				return null;
 			}
 

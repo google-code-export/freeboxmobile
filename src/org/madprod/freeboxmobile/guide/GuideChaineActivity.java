@@ -11,6 +11,7 @@ import java.util.Iterator;
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
+import org.madprod.freeboxmobile.ServiceUpdateUIListener;
 import org.madprod.freeboxmobile.Utils;
 import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
 import org.madprod.freeboxmobile.pvr.ProgrammationActivity;
@@ -30,6 +31,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -38,6 +40,7 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.AdapterView.OnItemSelectedListener;
 
 /**
 *
@@ -58,7 +61,7 @@ public class GuideChaineActivity extends GuideUtils implements GuideConstants
 		ArrayAdapter<String> spinnerAdapter;
         super.onCreate(savedInstanceState);
 
-        FBMNetTask.register(this);
+//        FBMNetTask.register(this);
         Log.i(TAG,"GUIDE CHAINE CREATE");
 		SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 		mode_reduit = mgr.getBoolean(KEY_MODE, false);
@@ -88,32 +91,13 @@ public class GuideChaineActivity extends GuideUtils implements GuideConstants
 
         mDbHelper = new ChainesDbAdapter(this);
         mDbHelper.open();
-       
-        final Bundle extras = getIntent().getExtras();
+
         datesSpinner = (Spinner) findViewById(R.id.DatesSpinner);
-
-        makeCalDates();
-        Calendar c = Calendar.getInstance();
-        c.setFirstDayOfWeek(Calendar.MONDAY);
-
-    	// Selections
-    	selectedDate = GuideUtils.calDates.get(0);
-
 		spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, GuideUtils.dates);
 		spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		datesSpinner.setAdapter(spinnerAdapter);
 
-		Button buttonCategories = (Button) findViewById(R.id.ButtonCategories);
-        buttonCategories.setOnClickListener(
-        	new View.OnClickListener()
-        	{
-        		public void onClick(View view)
-        		{
-        			chooseCategories();
-        		}
-        	}
-        );
-
+        final Bundle extras = getIntent().getExtras();
     	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:00:00");
     	String dt;
         if (extras != null)
@@ -136,9 +120,41 @@ public class GuideChaineActivity extends GuideUtils implements GuideConstants
         	dt = sdf.format(new Date());
         }
     	Log.i(TAG, "Selected chaine : "+selectedChaine);
+
+        makeCalDates();
+        Calendar c = Calendar.getInstance();
+        c.setFirstDayOfWeek(Calendar.MONDAY);
+
+		datesSpinner.setOnItemSelectedListener(
+			new OnItemSelectedListener()
+			{
+				public void onItemSelected(AdapterView<?> view, View arg1, int arg2, long arg3)
+	    		{
+	    			selectedDate = GuideUtils.calDates.get(arg2);
+					setFinDateHeure();
+	    			getFromDb();
+	    		}
+
+				@Override
+				public void onNothingSelected(AdapterView<?> arg0)
+				{
+				}
+			});
+
+		Button buttonCategories = (Button) findViewById(R.id.ButtonCategories);
+        buttonCategories.setOnClickListener(
+        	new View.OnClickListener()
+        	{
+        		public void onClick(View view)
+        		{
+        			chooseCategories();
+        		}
+        	}
+        );
+
 		setFinDateHeure();
-//        boolean nochaine = getFromDb();
-   		new GuideChaineActivityNetwork(dt, false, false, true).execute((Void[])null);
+        getFromDb();
+//   		new GuideChaineActivityNetwork(dt, false, false, true).execute((Void[])null);
 
         displayFavoris(this,
                	new View.OnClickListener()
@@ -148,7 +164,8 @@ public class GuideChaineActivity extends GuideUtils implements GuideConstants
             			selectedDate = GuideUtils.calDates.get(datesSpinner.getSelectedItemPosition());
         				setFinDateHeure();
     	    			selectedChaine = (Integer)view.getTag();
-    					new GuideChaineActivityNetwork(selectedDate, false, false, true).execute((Void[])null);
+    	    			getFromDb();
+//    					new GuideChaineActivityNetwork(selectedDate, false, false, true).execute((Void[])null);
     	    		}
     	    	},
     		R.id.ChoixSelectedLinearLayout, -1);
@@ -171,12 +188,45 @@ public class GuideChaineActivity extends GuideUtils implements GuideConstants
     }
 
     @Override
+    public void onResume()
+    {
+    	super.onResume();
+    	Log.i(TAG,"GUIDE CHAINE onResume");
+    	GuideCheck.setActivity(this);
+       	GuideCheck.setUpdateListener(
+       			new ServiceUpdateUIListener()
+    	    	{
+    				@Override
+    				public void updateUI()
+    				{
+    					Log.i(TAG,"updateUI");
+    					runOnUiThread(
+    						new Runnable()
+    						{
+    							public void run()
+    							{
+    								getFromDb();
+    							}
+    						});
+    				}
+    	    	});    	
+    }
+    
+    @Override
     public void onDestroy()
     {
-    	FBMNetTask.unregister(this);
+//    	FBMNetTask.unregister(this);
         mDbHelper.close();
     	super.onDestroy();
     }
+
+	@Override
+	public void onPause()
+	{
+		Log.i(TAG,"GuideChaineActivity pause");
+		super.onPause();
+		GuideCheck.setActivity(null);
+	}
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu)
@@ -217,7 +267,9 @@ public class GuideChaineActivity extends GuideUtils implements GuideConstants
     			startActivityForResult(new Intent(this, GuideChoixChainesActivity.class),0);
     			return true;
     		case GUIDE_OPTION_REFRESH:
-    	   		new GuideChaineActivityNetwork(selectedDate, false, true, true).execute((Void[])null);
+//    	   		new GuideChaineActivityNetwork(selectedDate, false, true, true).execute((Void[])null);
+            	Log.d(TAG, "Refresh from point 2");
+    			GuideCheck.refresh(selectedDate);
     			return true;
     		case GUIDE_OPTION_MODE:
     			mode_reduit = (mode_reduit ? false : true);
@@ -302,22 +354,57 @@ public class GuideChaineActivity extends GuideUtils implements GuideConstants
     		case 0 :
     			break;
     		case -1 :
+    	    	Log.d(TAG,"RESULT SUPPR");
     			mDbHelper.close();
     	        mDbHelper = new ChainesDbAdapter(this);
     	        mDbHelper.open();
     		case 1 :
-    	    	Log.d(TAG,"RESULT ADD/SUPPR");
+    			if (resultCode == 1)
+    			{
+	    	    	Log.d(TAG,"RESULT ADD");
+	    	    	// TODO : Enlever refresh auto ici
+	    	    	// Ajouter boite de dialogue qui propose de rafraichir tous les jours
+	    	    	// en sortant de la config des favoris
+//	    	    	displayMAJ(this);
+	    	    	
+/*	            	Log.d(TAG, "Refresh from point 3");
+	            	GuideCheck.setActivity(this);
+	               	GuideCheck.setUpdateListener(
+	               			new ServiceUpdateUIListener()
+	            	    	{
+	            				@Override
+	            				public void updateUI()
+	            				{
+	            					Log.i(TAG,"updateUI");
+	            					runOnUiThread(
+	            						new Runnable()
+	            						{
+	            							public void run()
+	            							{
+	            								getFromDb();
+	            							}
+	            						});
+	            				}
+	            	    	});
+	    			GuideCheck.refresh(GuideUtils.calDates.get(datesSpinner.getSelectedItemPosition()));
+	    			*/
+    			}
+    			else
+    			{
+    				getFromDb();
+    			}
     	        displayFavoris(this,
-    	               	new View.OnClickListener()
-    	            	{
-    	    	    		public void onClick(View view)
-    	    	    		{
-    	            			selectedDate = GuideUtils.calDates.get(datesSpinner.getSelectedItemPosition());
-    	        				setFinDateHeure();
-    	    	    			selectedChaine = (Integer)view.getTag();
-    	    					new GuideChaineActivityNetwork(selectedDate, false, false, true).execute((Void[])null);
-    	    	    		}
-    	    	    	},
+	               	new View.OnClickListener()
+	            	{
+	    	    		public void onClick(View view)
+	    	    		{
+	            			selectedDate = GuideUtils.calDates.get(datesSpinner.getSelectedItemPosition());
+	        				setFinDateHeure();
+	    	    			selectedChaine = (Integer)view.getTag();
+	    	    			getFromDb();
+//    	    					new GuideChaineActivityNetwork(selectedDate, false, false, true).execute((Void[])null);
+	    	    		}
+	    	    	},
     	    		R.id.ChoixSelectedLinearLayout, -1);
 //    			getFromDb();
     			break;
@@ -364,94 +451,92 @@ public class GuideChaineActivity extends GuideUtils implements GuideConstants
 	    	}    	
 	    };
 	    listesChaines = new ArrayList<ListeChaines>();
-//    	Cursor chainesIds = mDbHelper.getChaineFavoris();
- //   	startManagingCursor (chainesIds);
- //       if (chainesIds != null)
-//		{
-//			if (chainesIds.moveToFirst())
-//			{
-				Cursor chaineCursor;
-				ListeChaines l;
-//				int columnIndex = chainesIds.getColumnIndexOrThrow(ChainesDbAdapter.KEY_FAVORIS_ID);
-//				do
-//				{
-					l = new ListeChaines();
-					l.chaine_id = selectedChaine;//chainesIds.getInt(columnIndex);
-					chaineCursor = mDbHelper.getGuideChaine(l.chaine_id);
-					if ((chaineCursor != null))
-					{
-						if (chaineCursor.moveToFirst())
-						{
-							l.canal = chaineCursor.getInt(chaineCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_CANAL));
-							l.name = chaineCursor.getString(chaineCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_NAME));
-							l.image = chaineCursor.getString(chaineCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE));
-							l.guidechaine_id = chaineCursor.getInt(chaineCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_ID));
-							chaineCursor.close();
-						}
-						else
-						{
-							nochaine = true;
-						}
-					}
-					else
-						nochaine = true;
+		Cursor chaineCursor;
+		ListeChaines l;
+		l = new ListeChaines();
+		l.chaine_id = selectedChaine;//chainesIds.getInt(columnIndex);
+		chaineCursor = mDbHelper.getGuideChaine(l.chaine_id);
+		if ((chaineCursor != null))
+		{
+			if (chaineCursor.moveToFirst())
+			{
+				l.canal = chaineCursor.getInt(chaineCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_CANAL));
+				l.name = chaineCursor.getString(chaineCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_NAME));
+				l.image = chaineCursor.getString(chaineCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE));
+				l.guidechaine_id = chaineCursor.getInt(chaineCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_ID));
+			}
+			else
+			{
+				Log.d(TAG, "nochaine 1");
+				nochaine = true;
+			}
+			chaineCursor.close();
+		}
+		else
+		{
+			Log.d(TAG, "nochaine 2");
+			nochaine = true;
+		}
 
-			        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			        String datetoget = selectedDate+" 00:00:00";//+selectedHeure;
-			        try
-			        {
-						Date dselect = sdf.parse(datetoget);
-				        if (dselect.before(new Date()))
-				        {
-				        	datetoget = sdf.format(new Date());
-				        	selectedDate = datetoget.split(" ")[0];
-				        }
-					}
-			        catch (ParseException e)
-			        {
-			        	Log.e(TAG,"GUIDEACTIVITY : pb parse date "+e.getMessage());
-						e.printStackTrace();
-					}
-					l.programmes = mDbHelper.getProgrammes(l.chaine_id, datetoget, finDateHeure, categories);
-					startManagingCursor(l.programmes);
-					listesChaines.add(l);
-//				} while (chainesIds.moveToNext());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String datetoget = selectedDate+" 00:00:00";
+        try
+        {
+			Date dselect = sdf.parse(datetoget);
+	        if (dselect.before(new Date()))
+	        {
+	        	datetoget = sdf.format(new Date());
+	        	selectedDate = datetoget.split(" ")[0];
+	        }
+		}
+        catch (ParseException e)
+        {
+        	Log.e(TAG,"GUIDEACTIVITY : pb parse date "+e.getMessage());
+			e.printStackTrace();
+		}
+		l.programmes = mDbHelper.getProgrammes(l.chaine_id, datetoget, finDateHeure, categories);
+		startManagingCursor(l.programmes);
+		listesChaines.add(l);
 				
-				// TODO : si nochaine == true, il manque une chaine, lancer un téléchargement des chaines du guide
-				if (nochaine == true)
-				{
-					Log.d(TAG,"IL MANQUE AU MOINS UNE CHAINE");
-				}
-				// Ici on trie pour avoir les listes de programmes dans l'ordre des numéros de chaine
-				Collections.sort(listesChaines);
-				
-				// Puis on créé les différentes sous-listes (une par chaine)
-				ga = new ArrayList<GuideAdapter>();
-				Iterator<ListeChaines> it = listesChaines.iterator();
-				String filepath;
-				Bitmap bmp;
-				while(it.hasNext())
-				{
-					l = it.next();
-					GuideAdapter g = new GuideAdapter(this, l);
-					ga.add(g);
-			        filepath = Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES+l.image;
-					bmp = BitmapFactory.decodeFile(filepath);
-					adapter.addSection(l.name+" ("+((Integer)l.canal).toString()+")",bmp,g);
-				}
-//			}
-//		}
+		// TODO : si nochaine == true, il manque une chaine, lancer un téléchargement des chaines du guide
+		if (nochaine == true)
+		{
+			Log.d(TAG,"IL MANQUE AU MOINS UNE CHAINE");
+		}
+		// Ici on trie pour avoir les listes de programmes dans l'ordre des numéros de chaine
+		Collections.sort(listesChaines);
+		
+		// Puis on créé les différentes sous-listes (une par chaine)
+		ga = new ArrayList<GuideAdapter>();
+		Iterator<ListeChaines> it = listesChaines.iterator();
+		String filepath;
+		Bitmap bmp;
+		while(it.hasNext())
+		{
+			l = it.next();
+			GuideAdapter g = new GuideAdapter(this, l);
+			ga.add(g);
+	        filepath = Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES+l.image;
+			bmp = BitmapFactory.decodeFile(filepath);
+			adapter.addSection(l.name+" ("+((Integer)l.canal).toString()+")",bmp,g);
+		}
         setListAdapter(adapter);
+        if (nochaine == true)
+        {
+        	Log.d(TAG, "Refresh from point 1");
+        	GuideCheck.refresh(GuideUtils.calDates.get(datesSpinner.getSelectedItemPosition()));
+        }
         return nochaine;
 	}
-	
-    private class GuideChaineActivityNetwork extends FBMNetTask
+
+	// TODO : Remove here
+    private class GuideChaineActivityNetwork_old extends FBMNetTask
     {
     	private String debdatetime;
     	private boolean getChaines;
     	private boolean forceRefresh;
     	private boolean refreshActivity;
-    	
+
         protected void onPreExecute()
         {
         }
@@ -463,6 +548,7 @@ public class GuideChaineActivity extends GuideUtils implements GuideConstants
 
         protected void onPostExecute(Integer result)
         {
+        	Log.d(TAG, "GUIDECHAINEACTIVITY - ON POST EXECUTE : " + result);
         	if (((result != DATA_NOT_DOWNLOADED) && (getChaines)) || (refreshActivity))
         	{
         		getFromDb();
@@ -485,7 +571,7 @@ public class GuideChaineActivity extends GuideUtils implements GuideConstants
          * @param force : forcer la récupération des programmes (ne pas tenir compte du cache) ?
          * @param refreshactivity : pour rafraichir toute l'activité après un onActivityResult du choix des favoris
          */
-        public GuideChaineActivityNetwork(String d, boolean chaine, boolean force, boolean refreshactivity)
+        public GuideChaineActivityNetwork_old(String d, boolean chaine, boolean force, boolean refreshactivity)
         {
        		debdatetime = d;
         	getChaines = chaine;

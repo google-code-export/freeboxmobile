@@ -53,9 +53,7 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
     public static ServiceUpdateUIListener UI_UPDATE_LISTENER;
     private static Activity CUR_ACTIVITY;
 
-    // TODO : Remove myProgressDialog, replace with functions of FBMNetTask
     static ProgressDialog myProgressDialog = null;
-
 	static NotificationManager mNotificationManager = null;
 
 	/* ------------------------------------------------------------------------
@@ -143,7 +141,7 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 			{
 				myProgressDialog.show();
 			}
-			mNotificationManager= (NotificationManager) activity.getSystemService(NOTIFICATION_SERVICE);
+			mNotificationManager = (NotificationManager) activity.getSystemService(NOTIFICATION_SERVICE);
 
 	        // Si l'application a été utilisée avant le support du multicomptes, on migre les données
 	        File f = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_MEVO);
@@ -210,7 +208,7 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 
 		if (mNotificationManager == null)
 		{
-			mNotificationManager= (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+			mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		}
 		
 		if (newmsg > 1)
@@ -326,7 +324,7 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
 		CUR_ACTIVITY.startService(i);
     }
 
-	public static void deleteMsg(String name, Activity a)
+	public static void deleteMsg(String name)
 	{
 		File file;
 		Cursor curs;

@@ -330,7 +330,8 @@ public class ChainesDbAdapter implements GuideConstants
 		long ret;
 		SQLiteStatement sqls;
 
-		sqls = mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE_DAYHISTOGUIDE + " WHERE "+KEY_HISTO_DATE+" = '"+date+"'");
+		sqls = mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE_DAYHISTOGUIDE + " WHERE "+KEY_HISTO_DATE+" = ?");
+		sqls.bindString(1, date);
 		ret = sqls.simpleQueryForLong();
 		sqls.close();
 		return ret;
@@ -359,7 +360,8 @@ public class ChainesDbAdapter implements GuideConstants
 	{
 		long ret;
 		
-		SQLiteStatement sqls = mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE_HISTOGUIDE + " WHERE "+KEY_PROG_DATETIME_DEB+" = '"+datetime+"'");
+		SQLiteStatement sqls = mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE_HISTOGUIDE + " WHERE "+KEY_PROG_DATETIME_DEB+" = ?");
+		sqls.bindString(1, datetime);
 		ret = sqls.simpleQueryForLong();
 		sqls.close();
 		return ret;
@@ -421,7 +423,8 @@ public class ChainesDbAdapter implements GuideConstants
 	public long isGuideChainePresent(int id)
 	{
 		long ret;
-		SQLiteStatement sqls = mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE_GUIDECHAINES + " WHERE "+KEY_GUIDECHAINE_ID+" = "+id);
+		SQLiteStatement sqls = mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE_GUIDECHAINES + " WHERE "+KEY_GUIDECHAINE_ID+" = ?");
+		sqls.bindLong(1, id);
 		ret = sqls.simpleQueryForLong();
 		sqls.close();
 		return ret;
@@ -516,13 +519,15 @@ public class ChainesDbAdapter implements GuideConstants
 		        , null, null, null, KEY_PROG_DATETIME_DEB);
     }
 
-	public long isProgrammePresent(int channelId, String horaire_deb)
+	public boolean isProgrammePresent(int channelId, String horaire_deb)
 	{
 		long ret;
-		SQLiteStatement sqls = mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE_PROGRAMMES + " WHERE "+KEY_PROG_CHANNEL_ID+" = "+channelId+" AND "+KEY_PROG_DATETIME_DEB+" = '"+horaire_deb+"'");
+		SQLiteStatement sqls = mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE_PROGRAMMES + " WHERE "+KEY_PROG_CHANNEL_ID+" = ? AND "+KEY_PROG_DATETIME_DEB+" = ?");
+		sqls.bindLong(1, channelId);
+		sqls.bindString(2, horaire_deb);
 		ret = sqls.simpleQueryForLong();
 		sqls.close();
-		return ret;
+		return (ret > 0);
 	}
 	
 	public int deleteOldProgs()
