@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.madprod.freeboxmobile.Constants;
 import org.madprod.freeboxmobile.R;
+import org.madprod.freeboxmobile.ServiceUpdateUIListener;
 import org.madprod.freeboxmobile.WrapBitmap;
 import org.madprod.freeboxmobile.guide.GuideConstants.Categorie;
 import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
@@ -89,6 +90,14 @@ public abstract class GuideUtils extends ListActivity implements Constants
         dates = new ArrayList<String>();
 
         Integer i, mois, jour;
+        if (calDates != null)
+        {
+        	calDates.clear();
+        }
+        if (dates != null)
+        {
+        	dates.clear();
+        }
         for (i=0; i < 6; i++)
         {
         	mois = c.get(Calendar.MONTH)+1;
@@ -173,6 +182,13 @@ public abstract class GuideUtils extends ListActivity implements Constants
 		return il;
 	}
 	
+	/**
+	 * Affiche la scrollbar horizontale "barre de favoris"
+	 * @param a
+	 * @param o
+	 * @param id
+	 * @param itemSelected
+	 */
 	public void displayFavoris(final Activity a, OnClickListener o, int id, int itemSelected)
     {
 		ArrayList<Favoris> listeFavoris = new ArrayList<Favoris>();
@@ -237,7 +253,7 @@ public abstract class GuideUtils extends ListActivity implements Constants
 		        mDbHelper.close();
 		        return;
 	        }
-	
+
 			chainesToSelect = new ArrayList< Map<String,Object> >();
 			Cursor allChaines = mDbHelper.getListChaines();
 			if (allChaines != null)
@@ -307,6 +323,7 @@ public abstract class GuideUtils extends ListActivity implements Constants
 				allChaines.close();
 			}
 	    }
+        chainesIds.close();
         mDbHelper.close();
 	}
 
@@ -394,7 +411,7 @@ public abstract class GuideUtils extends ListActivity implements Constants
 			return (canal - another.canal);
 		}
     }
-       
+
 	protected void displayHelp()
     {	
     	AlertDialog d = new AlertDialog.Builder(this).create();
@@ -429,7 +446,7 @@ public abstract class GuideUtils extends ListActivity implements Constants
 		d.show();
     }
 	
-    protected static class GuideAdapter extends BaseAdapter
+	protected static class GuideAdapter extends BaseAdapter
     {
     	private Context mContext;
     	private ListeChaines listeChaines;
@@ -583,4 +600,5 @@ public abstract class GuideUtils extends ListActivity implements Constants
     	}
 		adapter.notifyDataSetChanged();
     }
+
 }

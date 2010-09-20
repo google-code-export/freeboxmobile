@@ -4,9 +4,12 @@ import java.util.Calendar;
 
 import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
+import org.madprod.freeboxmobile.ServiceUpdateUIListener;
 import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
 import org.madprod.freeboxmobile.pvr.PvrNetwork;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -34,7 +37,7 @@ public class GuideMenuActivity extends GuideUtils implements GuideConstants
     {
         super.onCreate(savedInstanceState);
 
-        FBMNetTask.register(this);
+//        FBMNetTask.register(this);
         Log.i(TAG,"GUIDE MENU CREATE");
         setContentView(R.layout.guide_menu);
 
@@ -88,11 +91,6 @@ public class GuideMenuActivity extends GuideUtils implements GuideConstants
 		
 		Log.i(TAG,"GUIDE MENU START");
 		FBMNetTask.register(this);
-
-    	if (mDbHelper.getNbFavoris() == 0)
-    	{
-    		new GuideMenuActivityNetwork().execute((Void[])null);    		
-    	}
 
         Button enCours = (Button) findViewById(R.id.ButtonEnCours);
         enCours.setOnClickListener(
@@ -215,9 +213,85 @@ public class GuideMenuActivity extends GuideUtils implements GuideConstants
     				}
     			},
     			R.id.ChoixSelectedLinearLayout, -1);
+
+    	GuideCheck.setActivity(this);
+       	GuideCheck.setUpdateListener(
+       			new ServiceUpdateUIListener()
+    	    	{
+    				@Override
+    				public void updateUI()
+    				{
+    					Log.i(TAG,"updateUI");
+    					runOnUiThread(
+    						new Runnable()
+    						{
+    							public void run()
+    							{
+    								getFromDb();
+    							}
+    						});
+    				}
+    	    	});
+    	if (mDbHelper.getNbFavoris() == 0)
+    	{
+	    	AlertDialog d = new AlertDialog.Builder(this).create();
+			d.setTitle(getString(R.string.app_name)+" - GuideTV");
+			d.setIcon(R.drawable.fm_guide_tv);
+			d.setMessage(
+				"Les données du guide sont mis à jour automatiquement en tâche de fond toutes les 24 heures.\n\n"+
+				"Comme il s'agit du premier lancement, les données doivent être téléchargées. Voulez-vous le faire maintenant (opération longue) ?");
+			d.setButton(DialogInterface.BUTTON_POSITIVE, "Oui", new DialogInterface.OnClickListener()
+				{
+					public void onClick(DialogInterface dialog, int which)
+					{
+		            	GuideCheck.setActivity(GuideMenuActivity.this);
+		               	GuideCheck.setUpdateListener(
+		               			new ServiceUpdateUIListener()
+		            	    	{
+		            				@Override
+		            				public void updateUI()
+		            				{
+		            	            	displayFavoris(GuideMenuActivity.this, 
+		            	                		new View.OnClickListener()
+		            	            			{
+		            	            				public void onClick(View view)
+		            	            				{
+		            	            					Log.d(TAG, "click "+(Integer)view.getTag());
+		            	            	    			String selectedDate = GuideUtils.calDates.get(jourChaine.getSelectedItemPosition());
+		            	            					Intent i = new Intent(GuideMenuActivity.this, GuideChaineActivity.class);
+		            	            					i.putExtra("DATE", selectedDate);
+		            	            					i.putExtra("CHAINE", (Integer)view.getTag());
+		            	            			        startActivity(i);
+		            	            				}
+		            	            			},
+		            	            			R.id.ChoixSelectedLinearLayout, -1);
+		            				}
+		            	    	});
+		    			GuideCheck.refresh(null);
+						dialog.dismiss();
+					}
+				});
+			d.setButton(DialogInterface.BUTTON_NEGATIVE, "Non", new DialogInterface.OnClickListener()
+			{
+				public void onClick(DialogInterface dialog, int which)
+				{
+					dialog.dismiss();
+					GuideMenuActivity.this.finish();
+				}
+			});
+			d.show();
+    	}
+    }
+
+	@Override
+	public void onPause()
+	{
+		super.onPause();
+		GuideCheck.setActivity(null);
 	}
 
-	private class GuideMenuActivityNetwork extends FBMNetTask //AsyncTask<Void, Integer, Integer>
+	// TODO : Remove
+	private class GuideMenuActivityNetwork_old extends FBMNetTask //AsyncTask<Void, Integer, Integer>
     {
         protected void onPreExecute()
         {
@@ -227,7 +301,6 @@ public class GuideMenuActivity extends GuideUtils implements GuideConstants
         protected Integer doInBackground(Void... arg0)
         {
         	new GuideNetwork(GuideMenuActivity.this, null, 4, true, true, false).getData(); // To get chaines logos
-        	// TODO : handle return type
         	new PvrNetwork(false, false).getData(); // to get favoris list
         	return 1;
         }
@@ -237,20 +310,6 @@ public class GuideMenuActivity extends GuideUtils implements GuideConstants
     		setProgressBarIndeterminateVisibility(false);
         	if (result != DATA_NOT_DOWNLOADED)
         	{
-            	displayFavoris(GuideMenuActivity.this, 
-                		new View.OnClickListener()
-            			{
-            				public void onClick(View view)
-            				{
-            					Log.d(TAG, "click "+(Integer)view.getTag());
-            	    			String selectedDate = GuideUtils.calDates.get(jourChaine.getSelectedItemPosition());
-            					Intent i = new Intent(GuideMenuActivity.this, GuideChaineActivity.class);
-            					i.putExtra("DATE", selectedDate);
-            					i.putExtra("CHAINE", (Integer)view.getTag());
-            			        startActivity(i);
-            				}
-            			},
-            			R.id.ChoixSelectedLinearLayout, -1);
         	}
         	dismissAll();
         }
@@ -258,7 +317,7 @@ public class GuideMenuActivity extends GuideUtils implements GuideConstants
         /**
          * GuideactivityNetwork
          */
-        public GuideMenuActivityNetwork()
+        public GuideMenuActivityNetwork_old()
         {
         	Log.d(TAG,"GUIDEMENUACTIVITYNETWORK START");
         }
@@ -267,7 +326,6 @@ public class GuideMenuActivity extends GuideUtils implements GuideConstants
 	@Override
 	protected boolean getFromDb()
 	{
-		// TODO Auto-generated method stub
 		return false;
 	}
 }

@@ -30,6 +30,7 @@ public class FBMNetTask extends AsyncTask<Void, Integer, Integer> implements Con
 	
 	protected void onProgressUpdate(Integer... progress)
     {
+		Log.d(TAG, "ProgressUpdate "+(activity != null ? activity.toString(): "null"));
 		if (progress[0] != -1)
 		{
 			dProgressUpdate(progress[0]);
@@ -42,7 +43,7 @@ public class FBMNetTask extends AsyncTask<Void, Integer, Integer> implements Con
 	
 	public static void register(Activity a)
 	{
-		Log.d(TAG, "FBMNetTask : REGISTER");
+		Log.d(TAG, "FBMNetTask : REGISTER "+(a != null ? a.toString(): "null"));
 		if (iProgressDialog != null)
 		{
 			iProgressDialog.show();
@@ -61,7 +62,7 @@ public class FBMNetTask extends AsyncTask<Void, Integer, Integer> implements Con
 	
 	public static void unregister(Activity a)
 	{
-		Log.d(TAG, "FBMNetTask : UNREGISTER");
+		Log.d(TAG, "FBMNetTask : UNREGISTER "+(a != null ? a.toString(): "null"));
 		if (activity == a)
 		{
 			if (dProgressDialog != null){
@@ -137,6 +138,7 @@ public class FBMNetTask extends AsyncTask<Void, Integer, Integer> implements Con
 
 	public static void dProgressSet(String title, String message, int icon)
 	{
+		Log.d(TAG, "FBMNetTask : DPROGRESSSET "+(activity != null ? activity.toString(): "null"));		
 		dProgressTitle = title;
 		dProgressText = message;
 		dProgressIcon = icon;

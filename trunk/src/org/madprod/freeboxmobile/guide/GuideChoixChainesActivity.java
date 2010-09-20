@@ -12,6 +12,7 @@ import org.json.JSONObject;
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
+import org.madprod.freeboxmobile.ServiceUpdateUIListener;
 import org.madprod.freeboxmobile.Utils;
 import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
 
@@ -25,6 +26,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -101,6 +103,54 @@ public class GuideChoixChainesActivity extends GuideUtils implements GuideConsta
 		displayAdd(Integer.parseInt((String)chaine_id.getText()));
 	}
 
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event)
+	{
+	    if ((keyCode == KeyEvent.KEYCODE_BACK))
+	    {
+	        Log.d(this.getClass().getName(), "back button pressed");
+
+	        if (activityResult == 1)
+	        {
+		    	AlertDialog d = new AlertDialog.Builder(this).create();
+				d.setTitle(getString(R.string.app_name)+" - GuideTV");
+				d.setIcon(R.drawable.fm_guide_tv);
+				d.setMessage(
+					"Les programmes du guide sont mis à jour automatiquement en tâche de fond toutes les 24 heures.\n\n"+
+					"Des favoris viennent d'être ajoutés. Voulez-vous mettre à jour les programmes du guide maintenant (opération longue) ?");
+				d.setButton(DialogInterface.BUTTON_POSITIVE, "Oui", new DialogInterface.OnClickListener()
+					{
+						public void onClick(DialogInterface dialog, int which)
+						{
+			            	GuideCheck.setActivity(GuideChoixChainesActivity.this);
+			               	GuideCheck.setUpdateListener(
+			               			new ServiceUpdateUIListener()
+			            	    	{
+			            				@Override
+			            				public void updateUI()
+			            				{
+			            				}
+			            	    	});
+			    			GuideCheck.refresh(null);
+							dialog.dismiss();
+							GuideChoixChainesActivity.this.finish();
+						}
+					});
+				d.setButton(DialogInterface.BUTTON_NEGATIVE, "Non", new DialogInterface.OnClickListener()
+				{
+					public void onClick(DialogInterface dialog, int which)
+					{
+						dialog.dismiss();
+						GuideChoixChainesActivity.this.finish();
+					}
+				}
+					);
+				d.show();
+	        }
+	    }
+	    return super.onKeyDown(keyCode, event);
+	}
+	
     private void displayAdd(final Integer id)
     {
     	displayDialog(id, FAVORIS_COMMAND_ADD, "Ajouter cette chaîne aux favoris ?");
@@ -228,8 +278,6 @@ public class GuideChoixChainesActivity extends GuideUtils implements GuideConsta
 //	                new GuideNetwork(GuideChoixChainesActivity.this, null, false, true, param, true).getData();
 	            	break;
 	        	case FAVORIS_COMMAND_SUPPR:
-	        		// TODO : check and remove this line
-//	                mDbHelper.deleteProgsChaine(param);
 	            	break;
         	}
         	return result;

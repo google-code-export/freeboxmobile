@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="org.madprod.freeboxmobile" android:versionCode="46" android:versionName="0.40.5rc1">
+      package="org.madprod.freeboxmobile"
+      android:versionCode="46"
+      android:versionName="0.40.5rc1" android:installLocation="internalOnly">
     <application android:label="@string/app_name" android:icon="@drawable/icon_fbm">
 		<activity android:name=".home.HomeListActivity" android:label="@string/app_name" android:theme="@style/Theme.FreeboxMobile.NoTitleBar" android:icon="@drawable/icon_fbm">
 			<intent-filter>
@@ -51,6 +53,16 @@
   			</intent-filter>
 		</receiver>
 
+		<receiver android:name=".OnExternalApp">
+			<!-- <intent-filter>
+    			<action android:name="android.intent.action.EXTERNAL_APPLICATIONS_AVAILABLE"/>
+  			</intent-filter>
+  			-->
+    		<intent-filter>
+    			<action android:name="android.intent.action.MEDIA_MOUNTED"/>
+    		</intent-filter>
+		</receiver>
+
 		<receiver android:name=".mvv.OnMevoAlarmReceiver"></receiver>
 		<receiver android:name=".ligne.OnInfoAdslAlarmReceiver"></receiver>
 		<receiver android:name=".guide.OnGuideAlarmReceiver"></receiver>
@@ -72,14 +84,12 @@
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
 	<uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"></uses-permission>
 
-	<support-screens
-		android:largeScreens="true"
-	    android:normalScreens="true"
-	    android:smallScreens="true"
-	    android:anyDensity="true">
-	</support-screens>
+	<supports-screens
+		android:resizeable="false" android:anyDensity="true" android:largeScreens="true" android:normalScreens="true" android:smallScreens="true">
+	</supports-screens>
 	<uses-sdk
 		android:minSdkVersion="3"
-		android:targetSdkVersion="6">
+		android:targetSdkVersion="8">
 	</uses-sdk>
+
 </manifest>
