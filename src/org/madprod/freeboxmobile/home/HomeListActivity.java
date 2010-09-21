@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.http.client.methods.HttpGet;
 import org.madprod.freeboxmobile.Config;
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.FBMNetTask;
@@ -111,11 +112,13 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     {
     	Log.i(TAG,"MainActivity Start");
     	super.onStart();
+    	
     	FBMNetTask.register(this);
         if (Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED) == false)
         	showSdCardError();
     	SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 		FBMHttpConnection.initVars(this, null);
+    	FBMHttpConnection.checkVersion();
 		// Si l'utilisateur n'a pas configuré de compte
         if (mgr.getString(KEY_TITLE, "").equals(""))
 		{

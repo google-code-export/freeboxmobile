@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
@@ -43,7 +44,7 @@ import android.webkit.MimeTypeMap;
 
 public class FBMHttpConnection implements Constants
 {
-	public static String USER_AGENT = "FreeboxMobile (Linux; U; Android; fr-fr;)";
+	public static String USER_AGENT = "FreeboxMobile (Linux; U; Android ;;; fr-fr;)";
 
 	private static String title = null;
 	private static String login = null;
@@ -74,12 +75,27 @@ public class FBMHttpConnection implements Constants
 		}
 		if (fbmversion.equals(""))
 		{
+			Build build = new Build();
 			fbmversion = Utils.getFBMVersion(c);
-			USER_AGENT = c.getString(R.string.app_name)+"/"+fbmversion+" (Linux; U; Android "+Build.VERSION.RELEASE+"; fr-fr;)";
+			USER_AGENT = c.getString(R.string.app_name)+"/"+fbmversion+" (Linux; U; Android "+Build.VERSION.RELEASE+"; "+ getFieldReflectively(build,"MANUFACTURER")+";"+getFieldReflectively(build,"MODEL")+";fr-fr;)";
 		}
         title = c.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_TITLE, null);
 		login = c.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_USER, null);
 		password = c.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_PASSWORD, null);
+	}
+	
+	// Code from enh project (enh.googlecode.com)
+	private static String getFieldReflectively(Build build, String fieldName)
+	{
+		try
+		{
+			final Field field = Build.class.getField(fieldName);
+			return field.get(build).toString();
+		}
+		catch (Exception ex)
+		{
+			return "inconnu";
+		}
 	}
 
 	/**
@@ -400,6 +416,27 @@ public class FBMHttpConnection implements Constants
        	return connectionStatus;
     }
 
+	/**
+	 * Vérifie si une nouvelle version de Freebox Mobile est sortie
+	 * @return true si oui, false sinon
+	 */
+	// TODO : Terminer ici
+	public static boolean checkVersion()
+	{
+		try
+		{
+			HttpURLConnection  c = prepareConnection("http://check.freeboxmobile.net", "GET");
+			c.setDoInput(true);
+			c.getInputStream();
+		}
+		catch (IOException e)
+		{
+			Log.e(TAG, "CHECK VERSION PB : ");
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
 	private static HttpURLConnection prepareConnection(String url, String method) throws IOException
 	{
 		URL u = new URL(url);
@@ -556,6 +593,7 @@ public class FBMHttpConnection implements Constants
 		HttpResponse response;
         try
         {
+        	httpget.setHeader("User-Agent", USER_AGENT);
         	response = httpclient.execute(httpget);
         	HttpEntity entity = response.getEntity();
         	return (new InputStreamReader(entity.getContent()));
