@@ -243,6 +243,12 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		map.put(M_DESC, "Consultez le guide TV, programmez des enregistrements");
 		map.put(M_CLASS, GuideMenuActivity.class);
 		modulesList.add(map);
+		map = new HashMap<String,Object>();
+		map.put(M_ICON, R.drawable.fm_actus_freenautes);
+		map.put(M_TITRE, getString(R.string.buttonActu));
+		map.put(M_DESC, "NOUVEAU : Consultez l'actualité de Free et de la Freebox");
+		map.put(M_CLASS, null);
+		modulesList.add(map);    	
     	map = new HashMap<String,Object>();
 		map.put(M_ICON, R.drawable.fm_magnetoscope);
 		map.put(M_TITRE, getString(R.string.buttonPvr));
@@ -292,12 +298,6 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		map.put(M_DESC, "Si vous avez une adresse email en @free.fr, accèdez au webmail ici");
 		map.put(M_CLASS, null);
 		modulesList.add(map);
-		map = new HashMap<String,Object>();
-		map.put(M_ICON, R.drawable.fm_actus_freenautes);
-		map.put(M_TITRE, getString(R.string.buttonActu));
-		map.put(M_DESC, "Consultez l'actualité de Free et de la Freebox");
-		map.put(M_CLASS, null);
-		modulesList.add(map);    	
     	map = new HashMap<String,Object>();
 		map.put(M_ICON, R.drawable.fm_television);
 		map.put(M_TITRE, getString(R.string.buttonTv));
@@ -349,14 +349,14 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 	    	}
 	    	else if (moduleName.equals(getString(R.string.buttonWebmail)))
 	    	{
-	    		openExtApp("org.geeek.free", ".activity.SplashScreenActivity", "Webmail Free.fr");
+	    		openExtApp("org.geeek.free", ".activity.SplashScreenActivity", "Webmail Free.fr", false);
 	    	}else if (moduleName.equals(getString(R.string.buttonActu)))
 		    {
-		    	openExtApp("org.madprod.infofreenautes", ".splashscreen.SplashScreen", "Info Freenautes");
+		    	openExtApp("org.madprod.infofreenautes", ".splashscreen.SplashScreen", "Info Freenautes", true);
 		    }
 	    	else if (moduleName.equals(getString(R.string.buttonFreeWifi)))
 	    	{
-	    		openExtApp("com.mba.freewifi", ".FreeWifiConnect", "FreeWifi Connect");
+	    		openExtApp("com.mba.freewifi", ".FreeWifiConnect", "FreeWifi Connect", false);
 	    	}
 	    	else if (false)//(moduleName.equals(getString(R.string.buttonTv)))
 	    	{
@@ -457,7 +457,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
         }
     }
     
-    private void openExtApp(final String packageName, final String className, final String appName)
+    private void openExtApp(final String packageName, final String className, final String appName, boolean plugin)
     {
 		Intent i = new Intent(Intent.ACTION_MAIN);
 		i.setClassName(packageName, packageName+className);
@@ -468,11 +468,16 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		}
 		catch (ActivityNotFoundException e)
 		{
+			String type;
+			if (plugin)
+				type = "le module";
+			else
+				type = "l'application";
 	    	AlertDialog d = new AlertDialog.Builder(this).create();
 			d.setTitle(getString(R.string.app_name));
 			d.setIcon(R.drawable.icon_fbm_reverse);
 	    	d.setMessage(
-				"Pour utiliser cette fonctionnalité, vous devez installer l'application '"+appName+"'.\n\n"+
+				"Pour utiliser cette fonctionnalité, vous devez installer "+type+" '"+appName+"'.\n\n"+
 				"Cliquez sur 'Continuer' pour l'installer ou sur 'Plus tard' pour continuer à utiliser Freebox Mobile "+
 				"sans cette fonctionnalité.\n"
 			);

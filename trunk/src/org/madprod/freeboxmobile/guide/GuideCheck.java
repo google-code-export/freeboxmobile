@@ -88,26 +88,26 @@ public class GuideCheck extends WakefullIntentService implements GuideConstants
 	        {
 		    	if (mDbHelper.getNbFavoris() == 0)
 		    	{
-		    		getData(this, null, 4, true, false, false); // To get chaines logos
+		    		getData(this, null, 4, true, false); // To get chaines logos
 		        	new PvrNetwork(false, false).getData(); // to get favoris list
 		    	}
 	        }
 			String dateToGet = GuideUtils.calDates.get((GuideUtils.calDates.size() - 1));
 			Log.d(TAG, "last date : "+dateToGet);
-			getData(this, dateToGet, 24, false, false, true);
+			getData(this, dateToGet, 24, false, true);
 			dateToGet = GuideUtils.calDates.get((GuideUtils.calDates.size() - 2));
-			getData(this, dateToGet, 24, false, false, true);
+			getData(this, dateToGet, 24, false, true);
 			int nbJours = GuideUtils.calDates.size() - 3;
 			while (nbJours >= 0)
 			{
 				dateToGet = GuideUtils.calDates.get((nbJours--));
-				getData(this, dateToGet, 24, false, UI_UPDATE_LISTENER != null, false);			
+				getData(this, dateToGet, 24, false, false);			
 			}
 			mDbHelper.close();
 		}
 		else
 		{
-			getData(this, selectedDate, 24, false, true, true);
+			getData(this, selectedDate, 24, false, true);
 		}
 
 		if (UI_UPDATE_LISTENER != null)
@@ -195,9 +195,9 @@ public class GuideCheck extends WakefullIntentService implements GuideConstants
 		Log.i(TAG, "GuideTimer set");
 	}
 	
-	private int getData(Context context, String datetime, Integer duree_h, boolean getChaines, boolean progress, boolean forceRefresh)
+	private int getData(Context context, String datetime, Integer duree_h, boolean getChaines, boolean forceRefresh)
 	{
-    	Log.d(TAG,"GUIDESYNCDATA START "+datetime+" "+duree_h+" "+getChaines+" "+progress+" "+forceRefresh);
+    	Log.d(TAG,"GUIDESYNCDATA START "+datetime+" "+duree_h+" "+getChaines+" "+forceRefresh);
 		JSONObject jObject;
 		JSONObject jChannelsObject;
 		JSONObject jChannelObject;
