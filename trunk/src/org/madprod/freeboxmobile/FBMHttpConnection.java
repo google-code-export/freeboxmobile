@@ -49,7 +49,6 @@ public class FBMHttpConnection implements Constants
 	private static String title = null;
 	private static String login = null;
 	private static String password = null;
-	private static String fbmversion = "";
 	// Variables id et idt d'accès à MonCompteFree
 	private static String id = null;
 	private static String idt = null;
@@ -73,11 +72,10 @@ public class FBMHttpConnection implements Constants
 		{
 			c = a.getBaseContext();
 		}
-		if (fbmversion.equals(""))
+		if (Utils.getFBMVersion(c).equals(""))
 		{
 			Build build = new Build();
-			fbmversion = Utils.getFBMVersion(c);
-			USER_AGENT = c.getString(R.string.app_name)+"/"+fbmversion+" (Linux; U; Android "+Build.VERSION.RELEASE+"; "+ getFieldReflectively(build,"MANUFACTURER")+";"+getFieldReflectively(build,"MODEL")+";fr-fr;)";
+			USER_AGENT = c.getString(R.string.app_name)+"/"+Utils.getFBMVersion(c)+" (Linux; U; Android "+Build.VERSION.RELEASE+"; "+ getFieldReflectively(build,"MANUFACTURER")+";"+getFieldReflectively(build,"MODEL")+";fr-fr;)";
 		}
         title = c.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_TITLE, null);
 		login = c.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_USER, null);
@@ -186,7 +184,7 @@ public class FBMHttpConnection implements Constants
 			login = l;
 			password = p;
 			v = parseConsole(l, p, type);
-			v.put(KEY_FBMVERSION, fbmversion);
+			v.put(KEY_FBMVERSION, Utils.getFBMVersion(null));
 			Log.d(TAG,"connectFreeCheck : "+v);
 
 			// restauration des données présentes avant

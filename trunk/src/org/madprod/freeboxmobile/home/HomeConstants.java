@@ -14,6 +14,8 @@ import android.view.Menu;
 public interface HomeConstants extends Constants
 {
     static final String KEY_SPLASH		= "splashscreen";
+    static final String KEY_CODE		= "fbm_code"; // Version code de l'application (cf manifest)
+    static final String KEY_LAST_LAUNCH = "last_launch";
     
     static final int HOME_OPTION_COMPTES = Menu.FIRST;
     static final int HOME_OPTION_CONFIG = Menu.FIRST + 1;
