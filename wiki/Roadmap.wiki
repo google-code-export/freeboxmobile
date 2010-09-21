@@ -5,9 +5,7 @@ Prédiction des versions / fonctionnalités. Mais rien n'est figé, ca ne se fer
 
 Pour les fonctionnalités déjà implémentées, voir le ChangeLog.
 
- * 0.40 : Envoyer des Fax à partir de son mobile en utilisant sa ligne fax Freebox / Utiliser son mobile comme télécommande Freebox
- * 0.45 : Séparer l'application en modules différents (l'utilisateur ne sera pas obligé d'installer toutes les fonctionnalités)
- * 0.50 : Lire l'actualité Freenautes à partir de son mobile ([http://www.universfreebox.com Univers Freebox], [http://freephonie.org/ Freephonie], ...) via l'application !FreeboxMobile
+ * 0.51 : Séparer l'application en modules différents (l'utilisateur ne sera pas obligé d'installer toutes les fonctionnalités)
  * 0.52 : Lire l'actualité Freenautes à partir d'un widget de bureau Android 
  * 0.55 : Consulter et archiver l'historique des appels de sa Freebox à partir de son mobile (avec un lien numéro de téléphone - contact)
  * 0.60 : Accéder aux contenus vidéo de son réseau local à partir de son mobile (y compris lorsqu'on se trouve hors de chez soi)
