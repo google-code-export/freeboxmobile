@@ -37,7 +37,6 @@ public class GuideMenuActivity extends GuideUtils implements GuideConstants
     {
         super.onCreate(savedInstanceState);
 
-//        FBMNetTask.register(this);
         Log.i(TAG,"GUIDE MENU CREATE");
         setContentView(R.layout.guide_menu);
 
@@ -221,36 +220,11 @@ public class GuideMenuActivity extends GuideUtils implements GuideConstants
     				@Override
     				public void updateUI()
     				{
-    					Log.i(TAG,"updateUI");
     					runOnUiThread(
-    						new Runnable()
-    						{
-    							public void run()
+    							new Runnable()
     							{
-    								getFromDb();
-    							}
-    						});
-    				}
-    	    	});
-    	if (mDbHelper.getNbFavoris() == 0)
-    	{
-	    	AlertDialog d = new AlertDialog.Builder(this).create();
-			d.setTitle(getString(R.string.app_name)+" - GuideTV");
-			d.setIcon(R.drawable.fm_guide_tv);
-			d.setMessage(
-				"Les données du guide sont mis à jour automatiquement en tâche de fond toutes les 24 heures.\n\n"+
-				"Comme il s'agit du premier lancement, les données doivent être téléchargées. Voulez-vous le faire maintenant (opération longue) ?");
-			d.setButton(DialogInterface.BUTTON_POSITIVE, "Oui", new DialogInterface.OnClickListener()
-				{
-					public void onClick(DialogInterface dialog, int which)
-					{
-		            	GuideCheck.setActivity(GuideMenuActivity.this);
-		               	GuideCheck.setUpdateListener(
-		               			new ServiceUpdateUIListener()
-		            	    	{
-		            				@Override
-		            				public void updateUI()
-		            				{
+    								public void run()
+    								{
 		            	            	displayFavoris(GuideMenuActivity.this, 
 		            	                		new View.OnClickListener()
 		            	            			{
@@ -264,11 +238,25 @@ public class GuideMenuActivity extends GuideUtils implements GuideConstants
 		            	            			        startActivity(i);
 		            	            				}
 		            	            			},
-		            	            			R.id.ChoixSelectedLinearLayout, -1);
-		            				}
-		            	    	});
-		    			GuideCheck.refresh(null);
+		            	            			R.id.ChoixSelectedLinearLayout, -1);		            									
+    								}
+    							});
+    				}
+    	    	});
+    	if (mDbHelper.getNbFavoris() == 0)
+    	{
+	    	AlertDialog d = new AlertDialog.Builder(this).create();
+			d.setTitle(getString(R.string.app_name)+" - GuideTV");
+			d.setIcon(R.drawable.fm_guide_tv);
+			d.setMessage(
+				"Les données du guide sont mis à jour automatiquement en tâche de fond toutes les 24 heures.\n\n"+
+				"Comme il s'agit du premier lancement, les données doivent être téléchargées. Voulez-vous le faire maintenant (opération longue) ?");
+			d.setButton(DialogInterface.BUTTON_POSITIVE, "Oui", new DialogInterface.OnClickListener()
+				{
+					public void onClick(final DialogInterface dialog, int which)
+					{
 						dialog.dismiss();
+		    			GuideCheck.refresh(null);
 					}
 				});
 			d.setButton(DialogInterface.BUTTON_NEGATIVE, "Non", new DialogInterface.OnClickListener()
@@ -289,39 +277,6 @@ public class GuideMenuActivity extends GuideUtils implements GuideConstants
 		super.onPause();
 		GuideCheck.setActivity(null);
 	}
-
-	// TODO : Remove
-	private class GuideMenuActivityNetwork_old extends FBMNetTask //AsyncTask<Void, Integer, Integer>
-    {
-        protected void onPreExecute()
-        {
-    		iProgressShow("Mon compte Freebox", "Veuillez patienter,\n\nChargement / rafraichissement des données en cours...", R.drawable.icon_fbm_reverse);
-        }
-
-        protected Integer doInBackground(Void... arg0)
-        {
-        	new GuideNetwork(GuideMenuActivity.this, null, 4, true, true, false).getData(); // To get chaines logos
-        	new PvrNetwork(false, false).getData(); // to get favoris list
-        	return 1;
-        }
-
-        protected void onPostExecute(Integer result)
-        {
-    		setProgressBarIndeterminateVisibility(false);
-        	if (result != DATA_NOT_DOWNLOADED)
-        	{
-        	}
-        	dismissAll();
-        }
-
-        /**
-         * GuideactivityNetwork
-         */
-        public GuideMenuActivityNetwork_old()
-        {
-        	Log.d(TAG,"GUIDEMENUACTIVITYNETWORK START");
-        }
-    }
 
 	@Override
 	protected boolean getFromDb()

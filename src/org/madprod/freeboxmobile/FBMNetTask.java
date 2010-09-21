@@ -30,7 +30,6 @@ public class FBMNetTask extends AsyncTask<Void, Integer, Integer> implements Con
 	
 	protected void onProgressUpdate(Integer... progress)
     {
-		Log.d(TAG, "ProgressUpdate "+(activity != null ? activity.toString(): "null"));
 		if (progress[0] != -1)
 		{
 			dProgressUpdate(progress[0]);
@@ -138,7 +137,6 @@ public class FBMNetTask extends AsyncTask<Void, Integer, Integer> implements Con
 
 	public static void dProgressSet(String title, String message, int icon)
 	{
-		Log.d(TAG, "FBMNetTask : DPROGRESSSET "+(activity != null ? activity.toString(): "null"));		
 		dProgressTitle = title;
 		dProgressText = message;
 		dProgressIcon = icon;
