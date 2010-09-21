@@ -634,7 +634,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 			"Facebook (devenez fan !) :\nhttp://www.facebook.com/search/?q=freeboxmobile\n\n"+
 			"Auteurs :\n"+
 			"- Olivier Rosello : Architecture / Réseau / Home / Info ADSL / Téléphone / Guide des Programmes\n"+
-			"- Clément Beslon : Télécommande Wifi\n"+
+			"- Clément Beslon : Télécommande Wifi / Actualité Freenautes\n"+
 			"- Bruno Alacoque : Skins Télécommande\n"+
 			"- Nacer Laradji : Hébergement, gestion des serveurs\n"+
 			"- Benoit Duffez : Magnétosocope\n"+
