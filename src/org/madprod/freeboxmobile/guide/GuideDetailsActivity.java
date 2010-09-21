@@ -19,7 +19,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -49,9 +48,9 @@ public class GuideDetailsActivity extends Activity implements GuideConstants
 	        TextView dureeEmission = (TextView) findViewById(R.id.GuideDetailsDuree);
 	        TextView descEmission = (TextView) findViewById(R.id.GuideDetailsDesc);
 	        TextView nomChaine = (TextView) findViewById(R.id.GuideDetailsNomChaine);
-	        Button partager = (Button)  findViewById(R.id.GuideDetailsButtonPartager);
-	        Button enregistrer = (Button) findViewById(R.id.GuideDetailsButtonEnregistrer);
-	        Button regarder = (Button) findViewById(R.id.GuideDetailsButtonRegarder);
+	        final ImageButton partager = (ImageButton)  findViewById(R.id.GuideDetailsButtonPartager);
+	        ImageButton enregistrer = (ImageButton) findViewById(R.id.GuideDetailsButtonEnregistrer);
+	        ImageButton regarder = (ImageButton) findViewById(R.id.GuideDetailsButtonRegarder);
 	        ImageView logoChaine = (ImageView) findViewById(R.id.GuideDetailsLogoChaine);
 	        ImageButton youTube = (ImageButton) findViewById(R.id.GuideDetailsYouTube);
 	        ImageButton alloCine = (ImageButton) findViewById(R.id.GuideDetailsAlloCine);
@@ -136,7 +135,7 @@ public class GuideDetailsActivity extends Activity implements GuideConstants
 		        {
 		    		enregistrer.setFocusable(false);
 		    		enregistrer.setClickable(false);
-		    		enregistrer.setTextColor(0xFF888888);
+//		    		enregistrer.setTextColor(0xFF888888);
 		        }
 		        else
 		        {
@@ -161,7 +160,7 @@ public class GuideDetailsActivity extends Activity implements GuideConstants
 			}
 	        nomChaine.setText(extras.getString(ChainesDbAdapter.KEY_GUIDECHAINE_NAME)+" (canal "+
 	        		((Integer)extras.getInt(ChainesDbAdapter.KEY_GUIDECHAINE_CANAL)).toString()+")");
-	        regarder.setText("Regarder "/*+extras.getString(ChainesDbAdapter.KEY_GUIDECHAINE_NAME)*/);
+//	        regarder.setText("Regarder "/*+extras.getString(ChainesDbAdapter.KEY_GUIDECHAINE_NAME)*/);
 	        String filepath = Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES+extras.getString(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE);
 			Bitmap bmp = BitmapFactory.decodeFile(filepath);
 			if (bmp != null)
