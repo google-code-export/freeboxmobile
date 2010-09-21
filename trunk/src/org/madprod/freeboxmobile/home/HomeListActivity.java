@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.http.client.methods.HttpGet;
 import org.madprod.freeboxmobile.Config;
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.FBMNetTask;
@@ -700,7 +699,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		d.setIcon(R.drawable.icon_fbm_reverse);
 		d.setTitle(getString(R.string.app_name));
 		d.setMessage(
-			"Cette fonctionnalité n'est accessible qu'aux abonnés dégroupé.\n"
+			"Cette fonctionnalité n'est accessible qu'aux abonnés dégroupés.\n"
 		);
 
 		d.setButton(DialogInterface.BUTTON_NEUTRAL, "Ok", new DialogInterface.OnClickListener()
