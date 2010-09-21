@@ -21,6 +21,7 @@ import android.util.Log;
 public class Utils implements Constants
 {
 	private static String FBMVersion = null;
+	private static int FBMCode = 0;
 
 	public static void copyFile(File in, File out) throws IOException 
     {
@@ -41,15 +42,16 @@ public class Utils implements Constants
 	    }
 	}
 
-	public static String getFBMVersion(Context c)
+	private static void initVersions(Context c)
 	{
 		if ((FBMVersion == null) && (c != null))
 		{
 		    PackageInfo pInfo = null; 
 		    try
 		    {
-		    	pInfo = c.getPackageManager().getPackageInfo ("org.madprod.freeboxmobile",PackageManager.GET_META_DATA);
+		    	pInfo = c.getPackageManager().getPackageInfo ("org.madprod.freeboxmobile", PackageManager.GET_META_DATA);
 		    	FBMVersion = ""+pInfo.versionName;
+		    	FBMCode = pInfo.versionCode;
 		    }
 		    catch (NameNotFoundException e)
 		    {
@@ -57,7 +59,24 @@ public class Utils implements Constants
 	            Log.d(TAG, "getFBMVersion ERROR");
 		    }
 		}
+	}
+
+	public static String getFBMVersion(Context c)
+	{
+		if (FBMVersion == null)
+		{
+			initVersions(c);
+		}
 		return FBMVersion;
+	}
+	
+	public static int getFBMCode(Context c)
+	{
+		if (FBMCode == 0)
+		{
+			initVersions(c);
+		}
+		return FBMCode;
 	}
 
 	public static void unzipFile(String pathZipFile, String path){

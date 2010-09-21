@@ -2,6 +2,8 @@ package org.madprod.freeboxmobile.home;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -61,10 +63,11 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
-		Log.d(TAG,"MainActivity Create "+Utils.getFBMVersion(this)+"\n"+new Date().toString());
         super.onCreate(savedInstanceState);
 
-        Utils.getFBMVersion(this);
+		FBMHttpConnection.initVars(this, null);
+		Log.d(TAG,"MainActivity Create "+Utils.getFBMVersion(this)+"\n"+new Date().toString());
+
 		// TESTS POUR TROUVER OU EST LE BUG HTTPS CHEZ FREE
 		/*
 		List<NameValuePair> postVars = new ArrayList<NameValuePair>();
@@ -117,26 +120,39 @@ public class HomeListActivity extends ListActivity implements HomeConstants
         if (Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED) == false)
         	showSdCardError();
     	SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
-		FBMHttpConnection.initVars(this, null);
-    	FBMHttpConnection.checkVersion();
-		// Si l'utilisateur n'a pas configuré de compte
+
+    	// Si on a lancé la dernière fois il y a + de 24 heures (ou si c'est une nouvelle version)
+    	DateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+    	String date = format.format(new Date());
+    	Log.d(TAG, "DATE : "+ date);
+        if ((!(mgr.getString(KEY_LAST_LAUNCH, "").equals(date))) || (!mgr.getString(KEY_SPLASH, "0").equals(Utils.getFBMVersion(this))))
+		{
+    		Editor editor = mgr.edit();
+			editor.putString(KEY_LAST_LAUNCH, date);
+        	FBMHttpConnection.checkVersion();
+        	editor.commit();
+		}
+
+    	// Si l'utilisateur n'a pas configuré de compte
         if (mgr.getString(KEY_TITLE, "").equals(""))
 		{
 			showNoCompte();
 		}
         else
         {
-        	// S'il s'agit du premier lancement de cette version, on rafraichi pas mal d'infos
-        	if (!mgr.getString(KEY_FBMVERSION, "0").equals(Utils.getFBMVersion(this)))
+    		// Si on est sur une version trop ancienne
+            // on rafraichi pas mal d'infos
+    		if (mgr.getInt(KEY_CODE, 0) < 41)
         	{
         		Log.d(TAG,"HOME : on rafraichi le compte "+mgr.getString(KEY_FBMVERSION, "0"));
-//        		refreshCompte();
+        		refreshCompte();
         		Editor editor = mgr.edit();
 				editor.putString(KEY_FBMVERSION, Utils.getFBMVersion(this));
+				editor.putInt(KEY_CODE, Utils.getFBMCode(this));
 				editor.commit();
         	}
         }
-		// Si on est sur un premier lancement de la nouvelle version :
+        // Si on est sur un premier lancement de la nouvelle version :
 		if (!mgr.getString(KEY_SPLASH, "0").equals(Utils.getFBMVersion(this)))
 		{
 			// Si on avait l'ancienne structure pour stocker les logos des chaînes, on migre :
@@ -178,6 +194,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 
 	        Editor editor = mgr.edit();
 			editor.putString(KEY_SPLASH, Utils.getFBMVersion(this));
+			editor.putInt(KEY_CODE, Utils.getFBMCode(this));
 			editor.commit();
 			// On supprime le log que si on est pas sur une beta
 			if (Utils.getFBMVersion(this).contains("rc") == false)
@@ -185,7 +202,6 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 				File log = new File(Environment.getExternalStorageDirectory()+DIR_FBM, file_log);
 				log.delete();
 			}
-
 			displayAbout();
 		}
         Log.d(TAG,"type:"+mgr.getString(KEY_LINETYPE, ""));

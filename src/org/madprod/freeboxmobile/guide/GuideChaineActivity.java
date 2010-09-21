@@ -61,7 +61,6 @@ public class GuideChaineActivity extends GuideUtils implements GuideConstants
 		ArrayAdapter<String> spinnerAdapter;
         super.onCreate(savedInstanceState);
 
-//        FBMNetTask.register(this);
         Log.i(TAG,"GUIDE CHAINE CREATE");
 		SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 		mode_reduit = mgr.getBoolean(KEY_MODE, false);
