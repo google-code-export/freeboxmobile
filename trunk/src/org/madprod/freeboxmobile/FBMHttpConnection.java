@@ -73,9 +73,13 @@ public class FBMHttpConnection implements Constants
 			c = a.getBaseContext();
 		}
 		Build build = new Build();
-		USER_AGENT = c.getString(R.string.app_name)+"/"+Utils.getFBMVersion(c)+" (Linux; U; Android "+Build.VERSION.RELEASE+"; "+ getFieldReflectively(build,"MANUFACTURER")+";"+getFieldReflectively(build,"MODEL")+";fr-fr;)";
+		// Au premier passage ici depuis le lancement de l'appli, on construit le UA
+		if (title == null)
+		{
+			USER_AGENT = c.getString(R.string.app_name)+"/"+Utils.getFBMVersion(c)+" (Linux; U; Android "+Build.VERSION.RELEASE+"; "+ getFieldReflectively(build,"MANUFACTURER")+";"+getFieldReflectively(build,"MODEL")+";fr-fr;)";
+		}
 
-		Log.d(TAG, "USER AGENT : "+USER_AGENT);
+		// Par contre, ici, on assigne à chaque fois (l'utilisateur peut changer de compte entre deux passages)
         title = c.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_TITLE, null);
 		login = c.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_USER, null);
 		password = c.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_PASSWORD, null);
