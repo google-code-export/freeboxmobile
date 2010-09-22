@@ -16,7 +16,7 @@ GUIDE : les guide TV
 = Versions publiques de !FreeboxMobile =
 == 0.40.4 ==
 Sortie le 03/09/2010<br>
-Release : 45
+Release : 45<br>
 Revision : 582
  * PVR : Correction d'un bug qui faisait ne programmait pas correctement certains enregistrements (bug http://code.google.com/p/freeboxmobile/issues/detail?id=241)
  * MVV : le menu contextuel sur le numéros inconnus propose de chercher dans l'annuaire inversé
@@ -25,13 +25,13 @@ Revision : 582
 
 == 0.40.3 ==
 Sortie le 31/08/2010<br>
-Release : 44
+Release : 44<br>
 Revision : 580
  * PVR : Correction d'un bug qui faisait planter lors de la programmation d'un enregistrement
 
 == 0.40.2 ==
 Sortie le 30/08/2010<br>
-Release : 43
+Release : 43<br>
 Revision : 578
  * MEVO : correction du bug d'écoute des messages sous Froyo (Android 2.2). Cf Bug http://code.google.com/p/freeboxmobile/issues/detail?id=238
  * MEVO : Amélioration de l'affichage sur les écrans HD
@@ -39,14 +39,14 @@ Revision : 578
 
 == 0.40.1 ==
 Sortie le 26/07/2010<br>
-Release : 42
+Release : 42<br>
 Revision : 572
  * DIVERS : Ajout de visuels haute-définition
  * HOME : Ajout d'un lien vers FreeWifi Connect
 
 == 0.40.0 ==
 Sortie le 22/06/2010<br>
-Release : 41
+Release : 41<br>
 Revision : 566
  * TELECOMMANDE : Ajout télécommande Freebox (Wifi) (Beta)
  * WEBMAIL : Ajout accès webmail Free avec application adéquate
@@ -207,8 +207,15 @@ Release : 1
 
 = Versions beta de !FreeboxMobile =
 == 0.50.0rc1 ==
-Release : 
-Revision : 
+Sortie le 22/09/2010<br>
+Release : 605<br>
+Revision : 46
+ * MVV : possibilité de chercher un numéro inconnu sur l'annuaire inversé (via le menu contextuel)
+ * GUIDE : possibilité de consulter les fiches You Tube et Allo Ciné des films & séries
+ * GUIDE : les programmes se mettent à jour en tâche de fond chaque jour. Du coup, 24h après l'installation, l'accès à tous les programmes du guide, pour tous les jours et toutes les chaînes favorites devient instantané
+ * GUIDE : de nouvelles icônes
+ * NEWS : nouveau module développé par Clément Beslon qui permet de consulter l’actualité d'Univers Freebox, de voir les vidéos du site et de poster des commentaires
+ * NEWS : notifications automatiques de nouvelles news
 
 == 0.40.0rc3 ==
 Sortie le 21/06/2010<br>
