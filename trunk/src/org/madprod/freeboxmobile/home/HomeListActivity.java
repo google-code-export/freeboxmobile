@@ -123,9 +123,9 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     	// Si on a lancé la dernière fois il y a + de 24 heures (ou si c'est une nouvelle version)
     	DateFormat format = new SimpleDateFormat("dd/MM/yyyy");
     	String date = format.format(new Date());
-    	Log.d(TAG, "DATE : "+ date);
-        if ((!(mgr.getString(KEY_LAST_LAUNCH, "").equals(date))) || (!mgr.getString(KEY_SPLASH, "0").equals(Utils.getFBMVersion(this))))
+        if ((!(mgr.getString(KEY_LAST_LAUNCH, "").equals(date))) || (!(mgr.getString(KEY_SPLASH, "0").equals(Utils.getFBMVersion(this)))))
 		{
+        	Log.d(TAG, "VERIF NEW VERSION");
     		Editor editor = mgr.edit();
 			editor.putString(KEY_LAST_LAUNCH, date);
         	FBMHttpConnection.checkVersion();
