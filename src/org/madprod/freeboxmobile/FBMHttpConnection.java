@@ -591,19 +591,16 @@ public class FBMHttpConnection implements Constants
 		HttpResponse response;
         try
         {
-        	httpget.setHeader("User-Agent", USER_AGENT);
         	response = httpclient.execute(httpget);
         	HttpEntity entity = response.getEntity();
-        	return (new InputStreamReader(entity.getContent()));
+        	return (new InputStreamReader(entity.getContent(), charset));
         }
         catch (ClientProtocolException e)
         {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         catch (IOException e)
         {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return null;
@@ -817,6 +814,7 @@ public class FBMHttpConnection implements Constants
         {
         	charset = "ISO8859_1";
         }
+
         if ((p != null) && (p.size() > 0))
         {
             for(int i = 0 ; i < p.size() ; i++)
