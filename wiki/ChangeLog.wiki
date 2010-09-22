@@ -12,6 +12,8 @@ CONFIG : Les différents panneaux de configuration<br>
 SERVICES : tout ce qui tourne en tâche de fond
 RESEAU : les connexions réseau / authentifications sur la console Free...
 GUIDE : les guide TV
+NEWS : Le module actu freenautes
+TELECOMMANDE : Le module de télécommande
 
 = Versions publiques de !FreeboxMobile =
 == 0.40.4 ==
