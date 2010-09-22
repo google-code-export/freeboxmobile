@@ -72,11 +72,10 @@ public class FBMHttpConnection implements Constants
 		{
 			c = a.getBaseContext();
 		}
-		if (Utils.getFBMVersion(c).equals(""))
-		{
-			Build build = new Build();
-			USER_AGENT = c.getString(R.string.app_name)+"/"+Utils.getFBMVersion(c)+" (Linux; U; Android "+Build.VERSION.RELEASE+"; "+ getFieldReflectively(build,"MANUFACTURER")+";"+getFieldReflectively(build,"MODEL")+";fr-fr;)";
-		}
+		Build build = new Build();
+		USER_AGENT = c.getString(R.string.app_name)+"/"+Utils.getFBMVersion(c)+" (Linux; U; Android "+Build.VERSION.RELEASE+"; "+ getFieldReflectively(build,"MANUFACTURER")+";"+getFieldReflectively(build,"MODEL")+";fr-fr;)";
+
+		Log.d(TAG, "USER AGENT : "+USER_AGENT);
         title = c.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_TITLE, null);
 		login = c.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_USER, null);
 		password = c.getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_PASSWORD, null);
@@ -421,14 +420,16 @@ public class FBMHttpConnection implements Constants
 	// TODO : Terminer ici
 	public static boolean checkVersion()
 	{
-		try
-		{
-			HttpURLConnection  c = prepareConnection("http://check.freeboxmobile.net", "GET");
-			c.setDoInput(true);
-			c.getInputStream();
-		}
-		catch (IOException e)
-		{
+		HttpClient httpclient = new DefaultHttpClient();
+		HttpGet httpget = new HttpGet("http://check.freeboxmobile.net");
+		httpget.setHeader("User-Agent", USER_AGENT);
+        try
+        {
+    		HttpResponse response;
+        	response = httpclient.execute(httpget);
+        }
+        catch (Exception e)
+        {
 			Log.e(TAG, "CHECK VERSION PB : ");
 			e.printStackTrace();
 		}
@@ -591,6 +592,7 @@ public class FBMHttpConnection implements Constants
 		HttpResponse response;
         try
         {
+        	httpget.setHeader("User-Agent", USER_AGENT);
         	response = httpclient.execute(httpget);
         	HttpEntity entity = response.getEntity();
         	return (new InputStreamReader(entity.getContent(), charset));
