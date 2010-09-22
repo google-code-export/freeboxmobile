@@ -1,3 +1,7 @@
+#summary Historique des versions de !ActuFreenautes.
+
+<wiki:toc max_depth="2" />
+
 = Versions publiques du module !ActuFreenautes =
 
 = Versions beta du module !ActuFreenautes =
