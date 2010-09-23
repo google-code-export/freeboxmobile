@@ -641,7 +641,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 				getString(R.string.pvrSamedi), getString(R.string.pvrDimanche) };
 
     	alertDialog = new AlertDialog.Builder(this).create();
-    	alertDialog.setTitle("R�currence");
+    	alertDialog.setTitle("Récurrence");
     	alertDialog.setIcon(R.drawable.fm_magnetoscope);
 		alertDialog.setMessage(getString(R.string.pvrTxtRecurrenceInfo));
 		alertDialog.setButton("Continuer", new DialogInterface.OnClickListener() {
