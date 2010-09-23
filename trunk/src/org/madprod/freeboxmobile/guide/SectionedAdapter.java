@@ -28,12 +28,12 @@ abstract public class SectionedAdapter extends BaseAdapter
 		super();
 		sections = new ArrayList<Section>();
 	}
-	
+
 	public void addSection(String caption, Bitmap image, Adapter adapter)
 	{
 		sections.add(new Section(caption, image, adapter));
 	}
-	
+
 	public Object getItem(int position)
 	{
 		for (Section section : this.sections)
@@ -52,7 +52,7 @@ abstract public class SectionedAdapter extends BaseAdapter
 		}
 		return(null);
 	}
-	
+
 	public int getCount()
 	{
 		int total=0;
@@ -75,20 +75,20 @@ abstract public class SectionedAdapter extends BaseAdapter
 		
 		return(total);
 	}
-	
+
 	public int getItemViewType(int position)
 	{
 		int typeOffset=TYPE_SECTION_HEADER+1; // start counting from here
-		
+
 		for (Section section : this.sections)
 		{
 			if (position==0)
 			{
 				return(TYPE_SECTION_HEADER);
 			}
-			
+
 			int size=section.adapter.getCount()+1;
-			
+
 			if (position<size)
 			{
 				return(typeOffset+section.adapter.getItemViewType(position-1));
