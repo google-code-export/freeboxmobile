@@ -1,5 +1,7 @@
 package org.madprod.freeboxmobile.home;
 
+import com.google.android.apps.analytics.GoogleAnalyticsTracker;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -58,6 +60,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 {
 	private List< Map<String,Object> > modulesList;
 	private AsyncTask<Void, Integer, Integer> task = null;
+	GoogleAnalyticsTracker tracker;
 	
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -67,6 +70,10 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		FBMHttpConnection.initVars(this, null);
 		Log.d(TAG,"MainActivity Create "+Utils.getFBMVersion(this)+"\n"+new Date().toString());
 
+		tracker = GoogleAnalyticsTracker.getInstance();
+		tracker.start("UA-9016955-4", 20, this);
+		tracker.trackPageView("Home");
+		
 		// TESTS POUR TROUVER OU EST LE BUG HTTPS CHEZ FREE
 		/*
 		List<NameValuePair> postVars = new ArrayList<NameValuePair>();
@@ -219,6 +226,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     	Log.i(TAG,"MainActivity Destroy");
 		FBMNetTask.unregister(this);
     	super.onDestroy();
+    	tracker.stop();
     }
 
     @Override
@@ -363,6 +371,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 //	    		FBMHttpConnection.connectAssistance();
 	            Intent assistanceIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://assistance.free.fr/i/#_home"));
 	            assistanceIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+	    		tracker.trackPageView("Assistance");
 	            startActivity(assistanceIntent);
 	    	}
 	    	else if (moduleName.equals(getString(R.string.buttonWebmail)))
@@ -370,7 +379,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 	    		openExtApp("org.geeek.free", ".activity.SplashScreenActivity", "Webmail Free.fr", false);
 	    	}else if (moduleName.equals(getString(R.string.buttonActu)))
 		    {
-		    	openExtApp("org.madprod.infofreenautes", ".splashscreen.SplashScreen", "Info Freenautes", true);
+		    	openExtApp("org.madprod.infofreenautes", ".splashscreen.SplashScreen", "Actu Freenautes", true);
 		    }
 	    	else if (moduleName.equals(getString(R.string.buttonFreeWifi)))
 	    	{
@@ -402,6 +411,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
         }
     	if (moduleClass != null)
     	{
+    		tracker.trackPageView(moduleName);
     		startActivity(new Intent(this, moduleClass));
     	}
     }
@@ -482,6 +492,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		i.putExtra("nosplashscreen", true);
 		try
 		{
+    		tracker.trackPageView(appName);
 			startActivity(i);
 		}
 		catch (ActivityNotFoundException e)
@@ -548,6 +559,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     		.putExtra(Intent.EXTRA_SUBJECT, 
     				getString(R.string.mail_subject)) 
     				.setType("message/rfc822");
+		tracker.trackPageView("ShareApp");
     	startActivity(Intent.createChooser(i,  "Choisissez votre logiciel de mail")); 
     }
     
@@ -568,6 +580,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 				public void onClick(DialogInterface dialog, int which)
 				{
 					dialog.dismiss();
+		    		tracker.trackPageView("Vote");
 					startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=org.madprod.freeboxmobile")));
 				}
 			});
