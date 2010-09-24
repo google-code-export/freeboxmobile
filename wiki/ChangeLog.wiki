@@ -18,7 +18,8 @@ TELECOMMANDE : Le module de télécommande
 = Versions publiques de !FreeboxMobile =
 == 0.50.0 ==
 Sortie le /09/2010<br>
-Revision : <br>
+Release : <br>
+Revision : 
  * MVV : possibilité de chercher un numéro inconnu sur l'annuaire inversé (via le menu contextuel)
  * GUIDE : possibilité de consulter les fiches You Tube et Allo Ciné des films & séries
  * GUIDE : les programmes se mettent à jour en tâche de fond chaque jour. Du coup, 24h après l'installation, l'accès à tous les programmes du guide, pour tous les jours et toutes les chaînes favorites devient instantané
