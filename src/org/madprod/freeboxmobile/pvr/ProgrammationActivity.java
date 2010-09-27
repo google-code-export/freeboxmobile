@@ -343,7 +343,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 	        		showPasDeChaine();
 	        	}
 			}
-			else // Sinon on met quand m�me � jour la liste des disques
+			else // Sinon on met quand même à jour la liste des disques
 			{
 				runProgNetwork(false, true);
 			}
@@ -643,44 +643,72 @@ public class ProgrammationActivity extends Activity implements PvrConstants
     	}
     }
     
-    private void proposerRecurrence() {
-		final CharSequence[] jours = { getString(R.string.pvrLundi), getString(R.string.pvrMardi),
-				getString(R.string.pvrMercredi), getString(R.string.pvrJeudi), getString(R.string.pvrVendredi),
-				getString(R.string.pvrSamedi), getString(R.string.pvrDimanche) };
+    private void proposerRecurrence()
+    {
+		final CharSequence[] jours =
+		{
+			getString(R.string.pvrLundi),
+			getString(R.string.pvrMardi),
+			getString(R.string.pvrMercredi),
+			getString(R.string.pvrJeudi),
+			getString(R.string.pvrVendredi),
+			getString(R.string.pvrSamedi),
+			getString(R.string.pvrDimanche)
+		};
 
     	alertDialog = new AlertDialog.Builder(this).create();
     	alertDialog.setTitle("Récurrence");
     	alertDialog.setIcon(R.drawable.fm_magnetoscope);
 		alertDialog.setMessage(getString(R.string.pvrTxtRecurrenceInfo));
-		alertDialog.setButton("Continuer", new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int which) {
+		alertDialog.setButton("Continuer", new DialogInterface.OnClickListener()
+		{
+			public void onClick(DialogInterface dialog, int which)
+			{
 				dismissAd();
 				setTheme(android.R.style.Theme_Black);
 				alertDialog = new AlertDialog.Builder(progAct)
 					.setMultiChoiceItems(jours,
-							null,
-							new DialogInterface.OnMultiChoiceClickListener() {
-								@Override
-								public void onClick(DialogInterface dialog, int which, boolean what) {
-									joursChoisis[which] = what;						
-								}
-							})
+						joursChoisis,
+						new DialogInterface.OnMultiChoiceClickListener()
+						{
+							@Override
+							public void onClick(DialogInterface dialog, int which, boolean what)
+							{
+								joursChoisis[which] = what;						
+							}
+						})
 					.setPositiveButton(getString(R.string.OK),
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog, int whichButton) {
-									progAct.setTheme(android.R.style.Theme_Light);
-									dismissAd();
+						new DialogInterface.OnClickListener()
+						{
+							public void onClick(DialogInterface dialog, int whichButton)
+							{
+								progAct.setTheme(android.R.style.Theme_Light);
+								String textRecur = "";
+								for (int i = 0; i <7 ; i++)
+								{
+									if (joursChoisis[i])
+									{
+										textRecur += jours[i].toString().substring(0, 3)+" ";
+									}
 								}
-							}) 
+								if (textRecur.length() > 1)
+								{
+									buttonRecur.setText(textRecur);
+								}
+								dismissAd();
+							}
+						}) 
 		            .setNegativeButton(getString(R.string.Annuler),
-		            		new DialogInterface.OnClickListener() { 
-		            			public void onClick(DialogInterface dialog, int whichButton) {
-									progAct.setTheme(android.R.style.Theme_Light);
-		            				resetJours();
-		            				dialog.cancel();
-									dismissAd();
-		            			} 
-		            		})
+		            	new DialogInterface.OnClickListener()
+		            	{ 
+		            		public void onClick(DialogInterface dialog, int whichButton)
+		            		{
+								progAct.setTheme(android.R.style.Theme_Light);
+		            			resetJours();
+		            			dialog.cancel();
+								dismissAd();
+		            		} 
+		            	})
 		        	.setTitle(getString(R.string.pvrChoixJours))
 		            .setIcon(R.drawable.pvr_date)
 		            .create();
@@ -698,7 +726,8 @@ public class ProgrammationActivity extends Activity implements PvrConstants
     	alertDialog.setMessage(
 			"Ceci est peut être dû à un problème réseau lors du téléchargement.\n"+
 			"Vous pouvez rafraichir la liste des chaînes en utilisant le bouton MENU de votre téléphone "+
-			"ou en cliquant ci-dessous."
+			"ou en cliquant ci-dessous.\n"+
+			"Attention : vous devez être dégroupé et posséder une Freebox v5 ou v6 pour que cela fonctionne."
 		);
     	alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Rafraichir", new DialogInterface.OnClickListener()
 			{
@@ -827,8 +856,8 @@ public class ProgrammationActivity extends Activity implements PvrConstants
             }
             
             /**
-             * doAction: traite le formulaire, et envoie la requete � la console de free
-             * @return : String le message d'erreur, le cas �ch�ant, null sinon
+             * doAction: traite le formulaire, et envoie la requete à la console de free
+             * @return : String le message d'erreur, le cas échéant, null sinon
              */
             private String doAction()
             {
