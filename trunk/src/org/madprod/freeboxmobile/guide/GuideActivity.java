@@ -15,6 +15,8 @@ import org.madprod.freeboxmobile.Utils;
 import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
 import org.madprod.freeboxmobile.pvr.ProgrammationActivity;
 
+import com.google.android.apps.analytics.GoogleAnalyticsTracker;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -56,7 +58,8 @@ public class GuideActivity extends GuideUtils implements GuideConstants
 	private Button buttonOk;
 	
 	private static ArrayAdapter<String> heuresAdapter;
-
+	GoogleAnalyticsTracker tracker;
+	
 	@Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -65,6 +68,10 @@ public class GuideActivity extends GuideUtils implements GuideConstants
 		ArrayAdapter<String> spinnerAdapter;
         super.onCreate(savedInstanceState);
 
+		tracker = GoogleAnalyticsTracker.getInstance();
+		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
+		tracker.trackPageView("GuideList");
+		
         FBMNetTask.register(this);
         Log.i(TAG,"GUIDE CREATE");
 		SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
@@ -223,6 +230,7 @@ public class GuideActivity extends GuideUtils implements GuideConstants
     {
     	FBMNetTask.unregister(this);
         mDbHelper.close();
+        tracker.stop();
     	super.onDestroy();
     }
 

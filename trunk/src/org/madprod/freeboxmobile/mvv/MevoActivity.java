@@ -12,6 +12,8 @@ import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.ServiceUpdateUIListener;
 import org.madprod.freeboxmobile.Utils;
 
+import com.google.android.apps.analytics.GoogleAnalyticsTracker;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ListActivity;
@@ -71,6 +73,8 @@ public class MevoActivity extends ListActivity implements MevoConstants
     static Button callbackButton;
     static Button deleteButton;
 
+	GoogleAnalyticsTracker tracker;
+	
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -78,6 +82,9 @@ public class MevoActivity extends ListActivity implements MevoConstants
         super.onCreate(savedInstanceState);
         FBMNetTask.register(this);
     	MevoSync.setActivity(this);
+		tracker = GoogleAnalyticsTracker.getInstance();
+		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
+		tracker.trackPageView("Mevo");
         setContentView(R.layout.mevo);
         registerForContextMenu(getListView());
         mAdapter = new MessagesAdapter(this, getContentResolver()); 
@@ -185,6 +192,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
     {
     	FBMNetTask.unregister(this);
     	super.onDestroy();
+    	tracker.stop();
     }
 
     @Override

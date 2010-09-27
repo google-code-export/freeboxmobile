@@ -8,6 +8,8 @@ import org.madprod.freeboxmobile.ServiceUpdateUIListener;
 import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
 import org.madprod.freeboxmobile.pvr.PvrNetwork;
 
+import com.google.android.apps.analytics.GoogleAnalyticsTracker;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -31,12 +33,16 @@ public class GuideMenuActivity extends GuideUtils implements GuideConstants
 {
 	private ChainesDbAdapter mDbHelper;
 	private Spinner jourChaine;
+	GoogleAnalyticsTracker tracker;
 	
 	@Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
 
+		tracker = GoogleAnalyticsTracker.getInstance();
+		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
+		tracker.trackPageView("GuideMenu");
         Log.i(TAG,"GUIDE MENU CREATE");
         setContentView(R.layout.guide_menu);
 
@@ -191,6 +197,7 @@ public class GuideMenuActivity extends GuideUtils implements GuideConstants
 	{
 		mDbHelper.close();
 		FBMNetTask.unregister(this);
+		tracker.stop();
 		super.onDestroy();
 	}
 

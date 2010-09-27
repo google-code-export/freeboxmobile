@@ -4,6 +4,8 @@ import org.madprod.freeboxmobile.Constants;
 import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
 
+import com.google.android.apps.analytics.GoogleAnalyticsTracker;
+
 import android.app.Activity;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -32,11 +34,17 @@ public class ComptesEditActivity extends Activity implements Constants
     private Long mRowId;
     private ComptesDbAdapter mDbHelper;
 
+	GoogleAnalyticsTracker tracker;
+	
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         
+		tracker = GoogleAnalyticsTracker.getInstance();
+		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
+		tracker.trackPageView("CompteEdit");
+		
         FBMNetTask.register(this);
 
     	mDbHelper = new ComptesDbAdapter(ComptesEditActivity.this);
@@ -216,6 +224,7 @@ public class ComptesEditActivity extends Activity implements Constants
     {
     	FBMNetTask.unregister(this);
     	mDbHelper.close();
+    	tracker.stop();
         super.onDestroy();
     }
 }

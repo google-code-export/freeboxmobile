@@ -1,7 +1,6 @@
 package org.madprod.freeboxmobile.home;
 
 import org.madprod.freeboxmobile.R;
-import org.madprod.freeboxmobile.Utils;
 
 import android.app.Activity;
 import android.os.Bundle;

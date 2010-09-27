@@ -34,6 +34,8 @@ import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
 
+import com.google.android.apps.analytics.GoogleAnalyticsTracker;
+
 /**
  * Activité Enregistrements
  * Gère l'onglet enregistrement avec la liste des programmation d'enregistrements
@@ -72,12 +74,16 @@ public class EnregistrementsActivity extends ExpandableListActivity implements C
 	static ProgressDialog progressDialog = null;
 	
 	static String curId = "";
-
+	GoogleAnalyticsTracker tracker;
+	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+		tracker = GoogleAnalyticsTracker.getInstance();
+		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
+		tracker.trackPageView("Enregistrements");
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.pvr);
         FBMNetTask.register(this);
@@ -126,9 +132,10 @@ public class EnregistrementsActivity extends ExpandableListActivity implements C
     @Override
 	protected void onDestroy()
     {
-    	super.onDestroy();
     	FBMNetTask.unregister(this);
     	enrAct = null;
+    	tracker.stop();
+    	super.onDestroy();
     }
 
 	@Override

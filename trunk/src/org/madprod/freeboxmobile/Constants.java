@@ -70,4 +70,6 @@ public interface Constants
     static final String LINE_TYPE_FBXIPADSL = "0";
     static final String LINE_TYPE_FBXDEGROUPE = "1";
     static final String LINE_TYPE_FBXOPTIQUE = "2";
+    
+    static final String ANALYTICS_MAIN_TRACKER = "UA-9016955-4";
 }
