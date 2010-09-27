@@ -38,6 +38,8 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
+import com.google.android.apps.analytics.GoogleAnalyticsTracker;
+
 import dalvik.system.DexClassLoader;
 
 import android.app.Activity;
@@ -92,11 +94,16 @@ public class RemoteControlActivity extends Activity implements GuideConstants, H
 	private UpdateChannels uc;
 	private DownloadLayout dl;
 	
+	GoogleAnalyticsTracker tracker;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		Log.i(TAG,"RemoteControlActivity create");
 		super.onCreate(savedInstanceState);
+
+		tracker = GoogleAnalyticsTracker.getInstance();
+		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
+		tracker.trackPageView("Telecommande à distance");
 
 		FBMNetTask.register(this);
 
@@ -886,6 +893,7 @@ public class RemoteControlActivity extends Activity implements GuideConstants, H
 		unregisterReceiver(viewCommandBcr);
 
 		System.gc();
+		tracker.stop();
 		super.onDestroy();
 	}
 

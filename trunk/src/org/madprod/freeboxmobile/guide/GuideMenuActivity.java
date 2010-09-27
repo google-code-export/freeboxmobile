@@ -42,7 +42,7 @@ public class GuideMenuActivity extends GuideUtils implements GuideConstants
 
 		tracker = GoogleAnalyticsTracker.getInstance();
 		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
-		tracker.trackPageView("GuideMenu");
+		tracker.trackPageView("Guide TV");
         Log.i(TAG,"GUIDE MENU CREATE");
         setContentView(R.layout.guide_menu);
 

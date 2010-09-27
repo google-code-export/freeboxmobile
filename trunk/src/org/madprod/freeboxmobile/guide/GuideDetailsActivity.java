@@ -13,7 +13,11 @@ import org.madprod.freeboxmobile.pvr.ProgrammationActivity;
 import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -134,15 +138,14 @@ public class GuideDetailsActivity extends Activity implements GuideConstants
 				);
 
 
-	        /*SimpleDateFormat*/ sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	        try
-	        {
+			sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			try
+			{
 				Date dfin = sdf.parse(extras.getString(ChainesDbAdapter.KEY_PROG_DATETIME_FIN));
 		        if (dfin.before(new Date()))
 		        {
 		    		enregistrer.setFocusable(false);
 		    		enregistrer.setClickable(false);
-//		    		enregistrer.setTextColor(0xFF888888);
 		        }
 		        else
 		        {
@@ -152,9 +155,7 @@ public class GuideDetailsActivity extends Activity implements GuideConstants
 								@Override
 								public void onClick(View arg0)
 								{
-									Intent i = new Intent(GuideDetailsActivity.this, ProgrammationActivity.class);
-									i.putExtras(extras);
-							        startActivity(i);
+									proposerFin(extras);
 								}
 							}
 						);
@@ -192,5 +193,67 @@ public class GuideDetailsActivity extends Activity implements GuideConstants
     	tracker.stop();
     	FBMNetTask.unregister(this);
     	super.onDestroy();
+    }
+
+    private void proposerFin(final Bundle extras)
+    {
+    	AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+    	alertDialog.setTitle("Enregistrer");
+    	alertDialog.setIcon(R.drawable.fm_magnetoscope);
+		alertDialog.setMessage("Enregistrer plusieurs programmes à la suite ?");
+		alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Non", new DialogInterface.OnClickListener()
+		{
+			@Override
+			public void onClick(DialogInterface dialog, int which)
+			{
+    			Intent i = new Intent(GuideDetailsActivity.this, ProgrammationActivity.class);
+    			i.putExtras(extras);
+    	        startActivity(i);
+    	        dialog.dismiss();
+			}
+		});
+		alertDialog.setButton(DialogInterface.BUTTON_POSITIVE,"Oui", new DialogInterface.OnClickListener()
+		{
+			@Override
+			public void onClick(DialogInterface dialog, int which)
+			{
+		    	CharSequence[] iTitle = new CharSequence[PVR_MAX_PROGS];
+		    	final CharSequence[] iEnd = new CharSequence[PVR_MAX_PROGS];
+		    	int i = 0;
+		    	String workString;
+		    	ChainesDbAdapter mDbHelper = new ChainesDbAdapter(GuideDetailsActivity.this);
+				mDbHelper.open();
+		    	Cursor c = mDbHelper.getNextProgs(extras.getInt(ChainesDbAdapter.KEY_PROG_CHANNEL_ID), extras.getString(ChainesDbAdapter.KEY_PROG_DATETIME_DEB), 5);
+		    	if (c != null)
+		    	{
+		    		if (c.moveToFirst())
+		    		{
+		    			do
+		    			{
+		    				workString = c.getString(c.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_DATETIME_DEB)).substring(11,16);
+		    				
+		    				iTitle[i] = workString+" "+c.getString(c.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_TITLE));
+		    				iEnd[i++] = c.getString(c.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_DATETIME_FIN));
+		    			} while (c.moveToNext());
+		    		}
+		    	}
+		    	AlertDialog.Builder builder = new AlertDialog.Builder(GuideDetailsActivity.this);
+		    	builder.setTitle("Sélectionnez le dernier programme à enregistrer :");
+		    	builder.setIcon(R.drawable.fm_magnetoscope);
+		    	builder.setItems(iTitle, new DialogInterface.OnClickListener()
+		    	{
+		    		public void onClick(DialogInterface dialog, int item)
+		    		{
+		    			Intent i = new Intent(GuideDetailsActivity.this, ProgrammationActivity.class);
+		    			i.putExtras(extras);
+		    			i.putExtra(ChainesDbAdapter.KEY_PROG_TITLE, i.getStringExtra(ChainesDbAdapter.KEY_PROG_TITLE)+" et +");
+		    			i.putExtra(ChainesDbAdapter.KEY_PROG_DATETIME_FIN, iEnd[item]);
+		    	        startActivity(i);
+		    	    }
+		    	});
+		    	builder.create().show();
+			}
+		});
+		alertDialog.show();
     }
 }

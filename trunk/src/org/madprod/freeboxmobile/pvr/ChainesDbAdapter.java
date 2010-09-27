@@ -480,6 +480,20 @@ public class ChainesDbAdapter implements GuideConstants
         return mDb.insert(DATABASE_TABLE_PROGRAMMES, null, initialValues);
     }
     
+    public Cursor getNextProgs(int chaineId, String datetime, Integer nb)
+    {
+		return mDb.query(
+			DATABASE_TABLE_PROGRAMMES,
+			new String[]
+	        {
+				KEY_ROWID, KEY_PROG_CHANNEL_ID, KEY_PROG_TITLE, KEY_PROG_DUREE, KEY_PROG_DATETIME_DEB, KEY_PROG_DATETIME_FIN
+			},
+		    KEY_PROG_CHANNEL_ID+" = "+chaineId+" AND "+KEY_PROG_DATETIME_DEB+" >= '"+datetime+"'"
+		    , null, null, null,
+		    KEY_PROG_DATETIME_DEB,
+		    PVR_MAX_PROGS.toString());    	
+    }
+
     /**
      * get Programs for chaine <chaineId> where datefin > deb and datedeb < fin and correspond to categories
      * @param chaineId

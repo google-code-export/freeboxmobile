@@ -36,6 +36,8 @@ public interface GuideConstants extends Constants
     static final int DATA_NEW_DATA = 1;
     static final int DATA_FROM_CACHE = 2;
     
+	static final Integer PVR_MAX_PROGS = 5; // Nb max de programmes consécutifs proposés lors d'enregistrements multiples
+
     static final String genres[] = {
     	"",						// 0
     	"Film",					// 1
