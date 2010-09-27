@@ -3,10 +3,15 @@
 <wiki:toc max_depth="2" />
 
 = Versions publiques du module !ActuFreenautes =
-
-= Versions beta du module !ActuFreenautes =
 == 1.0.0 ==
 Sortie le 27/09/2010<br>
 Release : 2<br>
+Revision : 45
+ * Première version
+
+= Versions beta du module !ActuFreenautes =
+== 1.0.0rc1 ==
+Sortie le 07/09/2010<br>
+Release : 1<br>
 Revision : 45
  * Première version
