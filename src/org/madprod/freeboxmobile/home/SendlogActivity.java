@@ -16,6 +16,8 @@ import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.Utils;
 
+import com.google.android.apps.analytics.GoogleAnalyticsTracker;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -48,10 +50,17 @@ public class SendlogActivity extends Activity implements HomeConstants
 	private String Wifi3G="";
 	private String fbmlog = "";
 	
+	GoogleAnalyticsTracker tracker;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        
+		tracker = GoogleAnalyticsTracker.getInstance();
+		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
+		tracker.trackPageView("SendLog");
+		
 		setTitle(getString(R.string.app_name)+" "+FBMHttpConnection.getTitle()+" - Sendlog");
 		setContentView(R.layout.home_sendlog);
 		
@@ -128,7 +137,13 @@ public class SendlogActivity extends Activity implements HomeConstants
 
     }
 	
-
+    @Override
+    protected void onDestroy()
+    {
+    	tracker.stop();
+    	super.onDestroy();
+    }
+    
     void collectAndSendLog()
     {
     	final String LOG_COLLECTOR_PACKAGE_NAME = "com.xtralogic.android.logcollector";//$NON-NLS-1$

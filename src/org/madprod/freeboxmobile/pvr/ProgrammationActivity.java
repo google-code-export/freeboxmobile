@@ -16,6 +16,8 @@ import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.Utils;
 import org.madprod.freeboxmobile.pvr.PvrNetwork;
 
+import com.google.android.apps.analytics.GoogleAnalyticsTracker;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -55,6 +57,8 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
  */
 public class ProgrammationActivity extends Activity implements PvrConstants
 {
+	GoogleAnalyticsTracker tracker;
+	
 	static final int MENU_UPDATE_HD = 0;
 	static final int MENU_UPDATE_CHAINES = 1;
 	static final int MENU_UPDATE_ALL = 2;
@@ -131,6 +135,10 @@ public class ProgrammationActivity extends Activity implements PvrConstants
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+		tracker = GoogleAnalyticsTracker.getInstance();
+		tracker.start("UA-9016955-4", 20, this);
+		tracker.trackPageView("Programmation");
+
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.pvr_programmation2);
         FBMNetTask.register(this);
@@ -252,7 +260,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
             }
         });
 
-        // Qualit�
+        // Qualité
         chainesSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
@@ -385,8 +393,8 @@ public class ProgrammationActivity extends Activity implements PvrConstants
     @Override
 	protected void onDestroy()
     {
-//    	FBMHttpConnection.closeDisplay();
     	FBMNetTask.unregister(this);
+    	tracker.stop();
     	super.onDestroy();
     }
 

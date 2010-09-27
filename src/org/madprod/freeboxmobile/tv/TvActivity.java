@@ -7,6 +7,8 @@ import java.util.Map;
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
 
+import com.google.android.apps.analytics.GoogleAnalyticsTracker;
+
 import android.app.ListActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,27 +23,38 @@ import android.widget.SimpleAdapter;
 public class TvActivity extends ListActivity implements TvConstants
 {
 	private List< Map<String,Object> > modulesList;
-
+	GoogleAnalyticsTracker tracker;
+	
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+		tracker = GoogleAnalyticsTracker.getInstance();
+		tracker.start("UA-9016955-4", 20, this);
+		tracker.trackPageView("Tv");
         setChaines();
 		setContentView(R.layout.tv_main_list);
 		setTitle(getString(R.string.app_name)+" "+FBMHttpConnection.getTitle());
     }
 
     @Override
+    protected void onDestroy()
+    {
+    	super.onDestroy();
+    	tracker.stop();
+    }
+    
+    @Override
     protected void onStart()
     {
-    	Log.i(TAG,"MainActivity Start");
+    	Log.i(TAG,"TvActivity Start");
     	super.onStart();    	
     }
 
     @Override
     protected void onResume()
     {
-		Log.i(TAG,"MainActivity Resume");
+		Log.i(TAG,"TvActivity Resume");
     	super.onResume();
 //        SimpleAdapter mList = new SimpleAdapter(this, modulesList, R.layout.home_main_list_row, new String[] {M_ICON, M_TITRE, M_DESC}, new int[] {R.id.home_main_row_img, R.id.home_main_row_titre, R.id.home_main_row_desc});
 //        setListAdapter(mList);

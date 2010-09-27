@@ -15,6 +15,8 @@ import org.madprod.freeboxmobile.home.ComptesDbAdapter;
 import org.madprod.freeboxmobile.mvv.MevoMessage;
 import org.xmlrpc.android.XMLRPCClient;
 
+import com.google.android.apps.analytics.GoogleAnalyticsTracker;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.NotificationManager;
@@ -52,11 +54,17 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
 	private static String lineType = "";
 	private static String lastUser = "";
 
+	GoogleAnalyticsTracker tracker;
+	
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
 
+		tracker = GoogleAnalyticsTracker.getInstance();
+		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
+		tracker.trackPageView("InfoLigne");
+		
         FBMNetTask.register(this);
         Log.i(TAG,"LINEINFO CREATE");
         
@@ -68,6 +76,7 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
     protected void onDestroy()
     {
     	FBMNetTask.unregister(this);
+    	tracker.stop();
     	super.onDestroy();
     }
     

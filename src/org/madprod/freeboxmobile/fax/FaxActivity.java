@@ -16,6 +16,8 @@ import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.Utils;
 
+import com.google.android.apps.analytics.GoogleAnalyticsTracker;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Notification;
@@ -54,6 +56,7 @@ public class FaxActivity extends Activity implements FaxConstants {
 
 	private File selectedFile = null;
 	
+	GoogleAnalyticsTracker tracker;
 	
 	/**
 	 * Création de l'activité d'envoi d'un fax via le compte Free actuellement utilisé
@@ -61,6 +64,9 @@ public class FaxActivity extends Activity implements FaxConstants {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		tracker = GoogleAnalyticsTracker.getInstance();
+		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
+		tracker.trackPageView("Fax");
 		FBMNetTask.register(this);
 		this.setContentView(R.layout.fax);
 
@@ -151,6 +157,7 @@ public class FaxActivity extends Activity implements FaxConstants {
 	@Override
 	protected void onDestroy() {
 		FBMNetTask.unregister(this);
+		tracker.stop();
 		super.onDestroy();
 	}
 	

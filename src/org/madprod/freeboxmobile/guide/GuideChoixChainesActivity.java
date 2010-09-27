@@ -16,6 +16,8 @@ import org.madprod.freeboxmobile.ServiceUpdateUIListener;
 import org.madprod.freeboxmobile.Utils;
 import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
 
+import com.google.android.apps.analytics.GoogleAnalyticsTracker;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -45,11 +47,16 @@ public class GuideChoixChainesActivity extends GuideUtils implements GuideConsta
 	// si suppression et ajout : 1
 	private int activityResult = 0; 
 	private int itemSelected = 0;
+	GoogleAnalyticsTracker tracker;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
+		tracker = GoogleAnalyticsTracker.getInstance();
+		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
+		tracker.trackPageView("GuideChoixChaines");
 
         FBMNetTask.register(this);
         Log.i(TAG,"GUIDECHOIXCHAINES CREATE");
@@ -90,6 +97,7 @@ public class GuideChoixChainesActivity extends GuideUtils implements GuideConsta
     {
     	FBMNetTask.unregister(this);
         mDbHelper.close();
+        tracker.stop();
     	super.onDestroy();
     }
 

@@ -8,6 +8,8 @@ import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.guide.GuideCheck;
 import org.madprod.freeboxmobile.mvv.MevoSync;
 
+import com.google.android.apps.analytics.GoogleAnalyticsTracker;
+
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
@@ -47,10 +49,17 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 	private Cursor mComptesCursor = null;
 	private SimpleCursorAdapter comptesAdapter = null;
 
+	GoogleAnalyticsTracker tracker;
+	
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
     	super.onCreate(savedInstanceState);
+		
+    	tracker = GoogleAnalyticsTracker.getInstance();
+		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
+		tracker.trackPageView("ComptesList");
+		
         Log.d(TAG, "onCreate");
 
     	FBMNetTask.register(this);
@@ -168,6 +177,7 @@ public class ComptesActivity extends ListActivity implements HomeConstants
     		mDbHelper = null;
     	}
     	FBMNetTask.unregister(this);
+    	tracker.stop();
     	super.onDestroy();
     }
 

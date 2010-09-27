@@ -71,7 +71,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		Log.d(TAG,"MainActivity Create "+Utils.getFBMVersion(this)+"\n"+new Date().toString());
 
 		tracker = GoogleAnalyticsTracker.getInstance();
-		tracker.start("UA-9016955-4", 20, this);
+		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
 		tracker.trackPageView("Home");
 		
 		// TESTS POUR TROUVER OU EST LE BUG HTTPS CHEZ FREE
@@ -411,7 +411,6 @@ public class HomeListActivity extends ListActivity implements HomeConstants
         }
     	if (moduleClass != null)
     	{
-    		tracker.trackPageView(moduleName);
     		startActivity(new Intent(this, moduleClass));
     	}
     }
@@ -492,7 +491,10 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		i.putExtra("nosplashscreen", true);
 		try
 		{
-    		tracker.trackPageView(appName);
+			if (!plugin)
+			{
+				tracker.trackPageView(appName);
+			}
 			startActivity(i);
 		}
 		catch (ActivityNotFoundException e)

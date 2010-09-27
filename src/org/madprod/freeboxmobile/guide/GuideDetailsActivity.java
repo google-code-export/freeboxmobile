@@ -10,6 +10,8 @@ import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
 import org.madprod.freeboxmobile.pvr.ProgrammationActivity;
 
+import com.google.android.apps.analytics.GoogleAnalyticsTracker;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -32,11 +34,16 @@ import android.widget.TextView;
 
 public class GuideDetailsActivity extends Activity implements GuideConstants
 {
+	GoogleAnalyticsTracker tracker;
+	
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
 
+		tracker = GoogleAnalyticsTracker.getInstance();
+		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
+		tracker.trackPageView("GuideDetails");
         FBMNetTask.register(this);
         Log.i(TAG,"GUIDEDETAILS CREATE");
         setContentView(R.layout.guide_details);
@@ -182,6 +189,7 @@ public class GuideDetailsActivity extends Activity implements GuideConstants
     @Override
     protected void onDestroy()
     {
+    	tracker.stop();
     	FBMNetTask.unregister(this);
     	super.onDestroy();
     }
