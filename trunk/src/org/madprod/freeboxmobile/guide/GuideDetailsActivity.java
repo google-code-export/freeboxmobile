@@ -14,7 +14,6 @@ import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -47,7 +46,7 @@ public class GuideDetailsActivity extends Activity implements GuideConstants
 
 		tracker = GoogleAnalyticsTracker.getInstance();
 		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
-		tracker.trackPageView("GuideDetails");
+		tracker.trackPageView("Guide/GuideDetails");
         FBMNetTask.register(this);
         Log.i(TAG,"GUIDEDETAILS CREATE");
         setContentView(R.layout.guide_details);
@@ -236,7 +235,9 @@ public class GuideDetailsActivity extends Activity implements GuideConstants
 		    				iEnd[i++] = c.getString(c.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_DATETIME_FIN));
 		    			} while (c.moveToNext());
 		    		}
+			    	c.close();
 		    	}
+		    	mDbHelper.close();
 		    	AlertDialog.Builder builder = new AlertDialog.Builder(GuideDetailsActivity.this);
 		    	builder.setTitle("Sélectionnez le dernier programme à enregistrer :");
 		    	builder.setIcon(R.drawable.fm_magnetoscope);

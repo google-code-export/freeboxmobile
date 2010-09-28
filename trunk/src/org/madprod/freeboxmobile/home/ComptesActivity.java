@@ -58,7 +58,7 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 		
     	tracker = GoogleAnalyticsTracker.getInstance();
 		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
-		tracker.trackPageView("ComptesList");
+		tracker.trackPageView("Home/ComptesList");
 		
         Log.d(TAG, "onCreate");
 

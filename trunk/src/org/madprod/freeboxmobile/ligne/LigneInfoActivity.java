@@ -63,7 +63,7 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
 
 		tracker = GoogleAnalyticsTracker.getInstance();
 		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
-		tracker.trackPageView("InfoLigne");
+		tracker.trackPageView("InfoLigne/InfoLigne");
 		
         FBMNetTask.register(this);
         Log.i(TAG,"LINEINFO CREATE");

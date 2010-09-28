@@ -10,7 +10,6 @@ import java.util.Map;
 
 import org.madprod.freeboxmobile.Constants;
 import org.madprod.freeboxmobile.R;
-import org.madprod.freeboxmobile.ServiceUpdateUIListener;
 import org.madprod.freeboxmobile.WrapBitmap;
 import org.madprod.freeboxmobile.guide.GuideConstants.Categorie;
 import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;

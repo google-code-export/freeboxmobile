@@ -63,7 +63,7 @@ public class GuideChaineActivity extends GuideUtils implements GuideConstants
 		
 		tracker = GoogleAnalyticsTracker.getInstance();
 		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
-		tracker.trackPageView("GuideChaine");
+		tracker.trackPageView("Guide/GuideChaine");
 		
 		ArrayAdapter<String> spinnerAdapter;
         super.onCreate(savedInstanceState);

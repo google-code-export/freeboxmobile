@@ -27,7 +27,7 @@ public class WhatsNewActivity extends Activity implements Constants
 		super.onCreate(icile);
 		tracker = GoogleAnalyticsTracker.getInstance();
 		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
-		tracker.trackPageView("WhatsNew");
+		tracker.trackPageView("Home/WhatsNew");
 
 		setContentView(R.layout.home_whatsnew);
 		setTitle(getString(R.string.app_name)+" "+getString(R.string.whatsnew_title));

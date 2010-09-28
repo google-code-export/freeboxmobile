@@ -1,7 +1,9 @@
 package org.madprod.freeboxmobile.pvr;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 import org.madprod.freeboxmobile.Constants;
 import org.madprod.freeboxmobile.FBMHttpConnection;
@@ -465,7 +467,20 @@ public class ChainesDbAdapter implements GuideConstants
 	/*
      * METHODES POUR LES PROGRAMMES
      */
-    
+
+	public Cursor getProgsNow()
+	{
+    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    	String now = sdf.format(new Date());
+    	String sql =
+    		"SELECT " + KEY_GUIDECHAINE_NAME+","+KEY_GUIDECHAINE_IMAGE+","+KEY_GUIDECHAINE_ID+","+KEY_GUIDECHAINE_CANAL+","+KEY_PROG_CHANNEL_ID+","+KEY_PROG_TITLE+","+KEY_PROG_DUREE+","+KEY_PROG_DATETIME_DEB+","+KEY_PROG_DATETIME_FIN+","+KEY_PROG_RESUM_L+
+    		" FROM "+DATABASE_TABLE_PROGRAMMES+","+DATABASE_TABLE_GUIDECHAINES+
+    		" WHERE "+KEY_PROG_DATETIME_FIN+" > '"+now+"' AND "+KEY_PROG_DATETIME_DEB+" <= '"+now+"' AND "+KEY_GUIDECHAINE_ID+" = "+KEY_PROG_CHANNEL_ID+
+    		" ORDER BY "+KEY_GUIDECHAINE_CANAL;
+    	Log.i(TAG, "SQL : "+sql);
+    	return mDb.rawQuery(sql, null);
+	}
+
     public long createProgramme(int genre_id, int channel_id, String resum_s, String resum_l, String title, int duree, String datetime_deb, String datetime_fin)
     {
     	ContentValues initialValues = new ContentValues();

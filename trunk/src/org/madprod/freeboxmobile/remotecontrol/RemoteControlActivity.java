@@ -103,7 +103,7 @@ public class RemoteControlActivity extends Activity implements GuideConstants, H
 
 		tracker = GoogleAnalyticsTracker.getInstance();
 		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
-		tracker.trackPageView("Telecommande à distance");
+		tracker.trackPageView("Remote/Telecommande");
 
 		FBMNetTask.register(this);
 

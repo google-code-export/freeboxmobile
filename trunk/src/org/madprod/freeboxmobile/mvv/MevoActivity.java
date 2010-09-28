@@ -84,7 +84,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
     	MevoSync.setActivity(this);
 		tracker = GoogleAnalyticsTracker.getInstance();
 		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
-		tracker.trackPageView("Téléphone");
+		tracker.trackPageView("Mevo/ListeAppels");
         setContentView(R.layout.mevo);
         registerForContextMenu(getListView());
         mAdapter = new MessagesAdapter(this, getContentResolver()); 
