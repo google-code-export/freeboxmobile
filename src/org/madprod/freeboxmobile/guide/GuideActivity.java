@@ -70,7 +70,7 @@ public class GuideActivity extends GuideUtils implements GuideConstants
 
 		tracker = GoogleAnalyticsTracker.getInstance();
 		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
-		tracker.trackPageView("GuideList");
+		tracker.trackPageView("Guide/GuideList");
 		
         FBMNetTask.register(this);
         Log.i(TAG,"GUIDE CREATE");

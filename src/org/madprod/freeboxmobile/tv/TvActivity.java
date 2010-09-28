@@ -30,8 +30,8 @@ public class TvActivity extends ListActivity implements TvConstants
     {
         super.onCreate(savedInstanceState);
 		tracker = GoogleAnalyticsTracker.getInstance();
-		tracker.start("UA-9016955-4", 20, this);
-		tracker.trackPageView("Tv");
+		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
+		tracker.trackPageView("Tv/HomeTv");
         setChaines();
 		setContentView(R.layout.tv_main_list);
 		setTitle(getString(R.string.app_name)+" "+FBMHttpConnection.getTitle());

@@ -72,7 +72,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 
 		tracker = GoogleAnalyticsTracker.getInstance();
 		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
-		tracker.trackPageView("Home");
+		tracker.trackPageView("Home/Home");
 		
 		// TESTS POUR TROUVER OU EST LE BUG HTTPS CHEZ FREE
 		/*
@@ -561,7 +561,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     		.putExtra(Intent.EXTRA_SUBJECT, 
     				getString(R.string.mail_subject)) 
     				.setType("message/rfc822");
-		tracker.trackPageView("ShareApp");
+		tracker.trackPageView("Home/ShareApp");
     	startActivity(Intent.createChooser(i,  "Choisissez votre logiciel de mail")); 
     }
     
@@ -582,7 +582,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 				public void onClick(DialogInterface dialog, int which)
 				{
 					dialog.dismiss();
-		    		tracker.trackPageView("Vote");
+		    		tracker.trackPageView("Home/Vote");
 					startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=org.madprod.freeboxmobile")));
 				}
 			});

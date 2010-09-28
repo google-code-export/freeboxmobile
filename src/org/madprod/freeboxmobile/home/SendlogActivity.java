@@ -59,7 +59,7 @@ public class SendlogActivity extends Activity implements HomeConstants
         
 		tracker = GoogleAnalyticsTracker.getInstance();
 		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
-		tracker.trackPageView("SendLog");
+		tracker.trackPageView("Home/SendLog");
 		
 		setTitle(getString(R.string.app_name)+" "+FBMHttpConnection.getTitle()+" - Sendlog");
 		setContentView(R.layout.home_sendlog);

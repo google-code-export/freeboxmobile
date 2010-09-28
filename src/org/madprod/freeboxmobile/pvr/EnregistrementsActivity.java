@@ -83,7 +83,7 @@ public class EnregistrementsActivity extends ExpandableListActivity implements C
         super.onCreate(savedInstanceState);
 		tracker = GoogleAnalyticsTracker.getInstance();
 		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
-		tracker.trackPageView("Enregistrements");
+		tracker.trackPageView("Pvr/Enregistrements");
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.pvr);
         FBMNetTask.register(this);

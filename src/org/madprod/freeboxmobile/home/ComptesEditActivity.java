@@ -43,7 +43,7 @@ public class ComptesEditActivity extends Activity implements Constants
         
 		tracker = GoogleAnalyticsTracker.getInstance();
 		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
-		tracker.trackPageView("CompteEdit");
+		tracker.trackPageView("Home/CompteEdit");
 		
         FBMNetTask.register(this);
 

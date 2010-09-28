@@ -136,8 +136,8 @@ public class ProgrammationActivity extends Activity implements PvrConstants
     {
         super.onCreate(savedInstanceState);
 		tracker = GoogleAnalyticsTracker.getInstance();
-		tracker.start("UA-9016955-4", 20, this);
-		tracker.trackPageView("Programmation");
+		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
+		tracker.trackPageView("Pvr/Programmation");
 
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.pvr_programmation2);

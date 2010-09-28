@@ -56,7 +56,7 @@ public class GuideChoixChainesActivity extends GuideUtils implements GuideConsta
 
 		tracker = GoogleAnalyticsTracker.getInstance();
 		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
-		tracker.trackPageView("GuideChoixChaines");
+		tracker.trackPageView("Guide/ChoixChaines");
 
         FBMNetTask.register(this);
         Log.i(TAG,"GUIDECHOIXCHAINES CREATE");

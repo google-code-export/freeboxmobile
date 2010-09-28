@@ -66,7 +66,7 @@ public class FaxActivity extends Activity implements FaxConstants {
 		super.onCreate(savedInstanceState);
 		tracker = GoogleAnalyticsTracker.getInstance();
 		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
-		tracker.trackPageView("Fax");
+		tracker.trackPageView("Fax/HomeFax");
 		FBMNetTask.register(this);
 		this.setContentView(R.layout.fax);
 
