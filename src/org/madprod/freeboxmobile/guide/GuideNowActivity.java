@@ -78,12 +78,14 @@ public class GuideNowActivity extends ListActivity implements GuideConstants
     	adapter.refresh();
     }
     
+    // TODO : option pour mettre à jour les données via le réseau
 	@Override
     public boolean onCreateOptionsMenu(Menu menu)
 	{
         super.onCreateOptionsMenu(menu);
 
-        menu.add(0, 0, 0, "Mettre à jour l'affichage").setIcon(android.R.drawable.ic_menu_rotate);
+        menu.add(0, GUIDE_OPTION_REFRESH, 0, "Mettre à jour l'affichage").setIcon(android.R.drawable.ic_menu_rotate);
+        menu.add(0, GUIDE_OPTION_SELECT, 1, R.string.guide_option_select).setIcon(android.R.drawable.ic_menu_add);
         return true;
     }
 
@@ -92,10 +94,14 @@ public class GuideNowActivity extends ListActivity implements GuideConstants
     {
     	switch (item.getItemId())
     	{
-    		case 0:
+    		case GUIDE_OPTION_REFRESH:
     			adapter.refresh();
     			adapter.notifyDataSetChanged();
-    		return true;
+    			return true;
+    		case GUIDE_OPTION_SELECT:
+    			startActivityForResult(new Intent(this, GuideChoixChainesActivity.class),0);
+    			return true;
+
         }
         return super.onOptionsItemSelected(item);
     }
