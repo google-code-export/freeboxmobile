@@ -3,6 +3,14 @@
 <wiki:toc max_depth="2" />
 
 = Versions publiques du module !ActuFreenautes =
+== 1.0.1 ==
+Sortie le 30/09/2010<br>
+Release : 3<br>
+Revision : 48
+ * Intégration de Google Analytics
+ * Relève toutes les heures par défaut
+ * Debug divers
+
 == 1.0.0 ==
 Sortie le 27/09/2010<br>
 Release : 2<br>
