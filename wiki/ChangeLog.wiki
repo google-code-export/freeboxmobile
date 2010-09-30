@@ -16,6 +16,13 @@ NEWS : Le module actu freenautes
 TELECOMMANDE : Le module de télécommande
 
 = Versions publiques de !FreeboxMobile =
+== 0.50.1 ==
+Sortie le 30/09/2010<br>
+Release : 48<br>
+Revision : 629
+ * Divers debugs et accélération des opérations réseau
+ * GUIDE : nouvelle page "Programmes en cours"
+
 == 0.50.0 ==
 Sortie le 27/09/2010<br>
 Release : 47<br>
@@ -25,7 +32,6 @@ Revision : 614
  * GUIDE : les programmes se mettent à jour en tâche de fond chaque jour. Du coup, 24h après l'installation, l'accès à tous les programmes du guide, pour tous les jours et toutes les chaînes favorites devient instantané
  * GUIDE : de nouvelles icônes
  * NEWS : nouveau module développé par Clément Beslon qui permet de consulter l’actualité d'Univers Freebox, de voir les vidéos du site et de poster des commentaires
- * NEWS : notifications automatiques de nouvelles news
 
 == 0.40.4 ==
 Sortie le 03/09/2010<br>
