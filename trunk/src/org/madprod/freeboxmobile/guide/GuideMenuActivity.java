@@ -1,12 +1,13 @@
 package org.madprod.freeboxmobile.guide;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.ServiceUpdateUIListener;
 import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
-import org.madprod.freeboxmobile.pvr.PvrNetwork;
 
 import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 
@@ -15,6 +16,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -51,12 +54,12 @@ public class GuideMenuActivity extends GuideUtils implements GuideConstants
         Log.d(TAG,"Nettoyage des anciens programmes effacés : "+mDbHelper.deleteOldProgs());
         Log.d(TAG,"Nettoyage de l'ancienne historique : "+mDbHelper.deleteOldHisto());
     }
-	
+
 	@Override
 	protected void onStart()
 	{
 		super.onStart();
-		
+
 		Log.i(TAG,"GUIDE MENU START");
 		FBMNetTask.register(this);
 
@@ -154,7 +157,7 @@ public class GuideMenuActivity extends GuideUtils implements GuideConstants
         	}
         );
     }
-	
+
 	@Override
 	protected void onDestroy()
 	{
@@ -253,4 +256,31 @@ public class GuideMenuActivity extends GuideUtils implements GuideConstants
 	{
 		return false;
 	}
+
+	@Override
+    public boolean onCreateOptionsMenu(Menu menu)
+	{
+        super.onCreateOptionsMenu(menu);
+
+        menu.add(0, GUIDE_OPTION_REFRESH_WEEK, 0, R.string.guide_option_refresh_all).setIcon(android.R.drawable.ic_menu_rotate);
+        menu.add(0, GUIDE_OPTION_REFRESH, 1, R.string.guide_option_refresh_day).setIcon(android.R.drawable.ic_menu_rotate);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+    	switch (item.getItemId())
+    	{
+    		case GUIDE_OPTION_REFRESH:
+            	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+	        	String selectedDate = sdf.format(new Date());
+    			GuideCheck.refresh(selectedDate);
+    			return true;
+    		case GUIDE_OPTION_REFRESH_WEEK:
+    			GuideCheck.refresh(null);
+    			return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }

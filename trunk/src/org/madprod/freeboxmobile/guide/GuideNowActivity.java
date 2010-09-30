@@ -105,7 +105,6 @@ public class GuideNowActivity extends ListActivity implements GuideConstants
     	super.onPause();
     }
 
-    // TODO : option pour mettre à jour les données via le réseau
 	@Override
     public boolean onCreateOptionsMenu(Menu menu)
 	{
