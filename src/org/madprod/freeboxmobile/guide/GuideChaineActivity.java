@@ -73,6 +73,25 @@ public class GuideChaineActivity extends GuideUtils implements GuideConstants
 		mode_reduit = mgr.getBoolean(KEY_MODE, false);
 		selectedChaine = 0;
 
+    	GuideCheck.setActivity(this);
+       	GuideCheck.setUpdateListener(
+       			new ServiceUpdateUIListener()
+    	    	{
+    				@Override
+    				public void updateUI()
+    				{
+    					Log.i(TAG,"updateUI");
+    					runOnUiThread(
+    						new Runnable()
+    						{
+    							public void run()
+    							{
+    								getFromDb();
+    							}
+    						});
+    				}
+    	    	});    	
+
 		setContentView(R.layout.guide_chaine);
         registerForContextMenu(getListView());
         categories = new ArrayList<Categorie>();
@@ -215,7 +234,7 @@ public class GuideChaineActivity extends GuideUtils implements GuideConstants
     							}
     						});
     				}
-    	    	});    	
+    	    	});
     }
     
     @Override

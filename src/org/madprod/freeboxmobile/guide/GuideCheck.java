@@ -89,7 +89,9 @@ public class GuideCheck extends WakefullIntentService implements GuideConstants
 		    	if (mDbHelper.getNbFavoris() == 0)
 		    	{
 		    		getData(this, null, 4, true, false); // To get chaines logos
+		    		showProgress(R.drawable.fm_guide_tv, "Guide TV", "Téléchargement du programme TV...");
 		        	new PvrNetwork(false, false).getData(); // to get favoris list
+		        	closeProgress();
 		    	}
 	        }
 			String dateToGet = GuideUtils.calDates.get((GuideUtils.calDates.size() - 1));
@@ -325,15 +327,6 @@ public class GuideCheck extends WakefullIntentService implements GuideConstants
 								// TODO : sinon rafraichir ?
 							}
 						}
-						db.mDb.setTransactionSuccessful();
-					}
-					finally
-					{
-						db.mDb.endTransaction();
-					}
-					db.mDb.beginTransaction();
-					try
-					{
 						if (duree_h == 4)
 						{
 							db.createHistoGuide(datetime);
