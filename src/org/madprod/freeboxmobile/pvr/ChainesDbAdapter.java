@@ -70,7 +70,7 @@ public class ChainesDbAdapter implements GuideConstants
     public static final String KEY_PROG_TITLE = "title";
 
     private DatabaseHelper mDbHelper;
-    private SQLiteDatabase mDb;
+    public SQLiteDatabase mDb;
     
     /**
      * Database creation sql statement
@@ -181,6 +181,9 @@ public class ChainesDbAdapter implements GuideConstants
 
     private final Context mCtx;
 
+    private SQLiteStatement sql_createRawChaine;
+    private SQLiteStatement sql_createRawService;
+
     private static class DatabaseHelper extends SQLiteOpenHelper implements Constants
     {
         DatabaseHelper(Context context)
@@ -249,11 +252,14 @@ public class ChainesDbAdapter implements GuideConstants
     {
         mDbHelper = new DatabaseHelper(mCtx);
         mDb = mDbHelper.getWritableDatabase();
+		this.sql_createRawChaine = null;
+		this.sql_createRawService = null;
         return this;
     }
     
     public void close()
     {
+    	close_sqls();
    		mDb.close();
     }
 
@@ -572,18 +578,39 @@ public class ChainesDbAdapter implements GuideConstants
      * METHODES POUR LES CHAINES
      */
 
+	private void close_sqls()
+	{
+		if (this.sql_createRawChaine != null)
+		{
+			this.sql_createRawChaine.close();
+			this.sql_createRawService.close();
+			this.sql_createRawChaine = null;
+			this.sql_createRawService = null;
+		}
+	}
+	
+	public void create_sqls()
+	{
+		this.sql_createRawChaine = mDb.compileStatement("INSERT INTO "+DATABASE_TABLE_CHAINESTEMP+" ("+KEY_CHAINE_NAME+" , "+KEY_CHAINE_ID+" , "+KEY_CHAINE_BOITIER+") VALUES (?,?,?)");
+		this.sql_createRawService = mDb.compileStatement("INSERT INTO "+DATABASE_TABLE_SERVICESTEMP+" ("+KEY_CHAINE_ID+" , "+KEY_CHAINE_BOITIER+" , "+KEY_SERVICE_DESC+" , "+KEY_SERVICE_ID+" , "+KEY_PVR_MODE+") VALUES (?,?,?,?,?)");		
+	}
+	
 	public void makeChaines()
 	{
+		close_sqls();
         mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_SERVICESTEMP);
         mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_CHAINESTEMP);
         mDb.execSQL(DATABASE_CREATE_CHAINESTEMP);
-        mDb.execSQL(DATABASE_CREATE_SERVICESTEMP);		
+        mDb.execSQL(DATABASE_CREATE_SERVICESTEMP);
+        create_sqls();
 	}
 	
     public void swapChaines()
     {
     	if (checkTable(DATABASE_TABLE_SERVICESTEMP) && checkTable(DATABASE_TABLE_CHAINESTEMP))
     	{
+    		
+    		close_sqls();
     		mDb.beginTransaction();
 	        mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_SERVICES);
 	    	mDb.execSQL("ALTER TABLE "+DATABASE_TABLE_SERVICESTEMP+" RENAME TO "+DATABASE_TABLE_SERVICES);
@@ -596,6 +623,7 @@ public class ChainesDbAdapter implements GuideConstants
 
     public void cleanTempChaines()
     {
+		close_sqls();
 		mDb.beginTransaction();
         mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_SERVICESTEMP);
         mDb.execSQL(DATABASE_CREATE_SERVICESTEMP);
@@ -603,6 +631,7 @@ public class ChainesDbAdapter implements GuideConstants
         mDb.execSQL(DATABASE_CREATE_CHAINESTEMP);
     	mDb.setTransactionSuccessful();
     	mDb.endTransaction();
+        create_sqls();
     }
 
     /**
@@ -614,13 +643,30 @@ public class ChainesDbAdapter implements GuideConstants
      * @param body the body of the Chaine
      * @return rowId or -1 if failed
      */
-    public long createChaine(String name, int chaine_id, int boitier_id) {
+    public long createChaine(String name, int chaine_id, int boitier_id)
+    {
         ContentValues initialValues = new ContentValues(3);
         initialValues.put(KEY_CHAINE_NAME, name);
         initialValues.put(KEY_CHAINE_ID, chaine_id);
         initialValues.put(KEY_CHAINE_BOITIER, boitier_id);
         return mDb.insert(DATABASE_TABLE_CHAINESTEMP, null, initialValues);
     }
+    
+	public void createRawChaine(String name, Long chaine_id, Long boitier_id)
+	{
+//		Log.d(TAG, "Try to insert : "+name);
+//		String sql = "INSERT INTO "+DATABASE_TABLE_CHAINESTEMP+" ("+KEY_CHAINE_NAME+" , "+KEY_CHAINE_ID+" , "+KEY_CHAINE_BOITIER+") VALUES (?,?,?)";
+//		String sqls = "INSERT INTO "+DATABASE_TABLE_CHAINESTEMP+" ("+KEY_CHAINE_NAME+" , "+KEY_CHAINE_ID+" , "+KEY_CHAINE_BOITIER+") VALUES ('"+name+"',"+chaine_id.toString()+","+boitier_id.toString()+")";
+//		SQLiteStatement sqls = mDb.compileStatement("INSERT INTO "+DATABASE_TABLE_CHAINESTEMP+" ("+KEY_CHAINE_NAME+" , "+KEY_CHAINE_ID+" , "+KEY_CHAINE_BOITIER+") VALUES (?,?,?)");
+//		Object[] ba = new Object[]{name, chaine_id, boitier_id};
+		sql_createRawChaine.bindString(1, name);
+		sql_createRawChaine.bindLong(2,chaine_id);
+		sql_createRawChaine.bindLong(3, boitier_id);
+		Long r = sql_createRawChaine.executeInsert();
+		Log.d(TAG, "Try to insert chaine : "+r+" ");
+//		mDb.execSQL(sql);
+		return;
+	}
 
     /**
      * Return a Cursor over the list of all Chaines in the database
@@ -656,6 +702,18 @@ public class ChainesDbAdapter implements GuideConstants
         initialValues.put(KEY_SERVICE_ID, service_id);
         initialValues.put(KEY_PVR_MODE, pvr_mode);        
         return mDb.insert(DATABASE_TABLE_SERVICESTEMP, null, initialValues);
+    }
+
+    public void createRawService(Long chaine_id, Long boitier_id, String service_desc, Integer service_id, Integer pvr_mode)
+    {
+    	sql_createRawService.bindLong(1, chaine_id);
+    	sql_createRawService.bindLong(2, boitier_id);
+    	sql_createRawService.bindString(3, service_desc);
+    	sql_createRawService.bindLong(4, service_id);
+    	sql_createRawService.bindLong(5, pvr_mode);
+		Long r = sql_createRawService.executeInsert();
+		Log.d(TAG, "Try to insert serv : "+r+" ");
+		return;
     }
 
     public Cursor fetchServicesChaine(int chaineId, int boitier_id)
@@ -698,7 +756,7 @@ public class ChainesDbAdapter implements GuideConstants
 		return ret;
     }
     
-	public long createBoitierDisque(String b_name, int b_id, int d_free_size, int d_total_size, int d_id,
+	public long createBoitierDisque(String b_name, Long b_id, int d_free_size, int d_total_size, int d_id,
 			int d_nomedia, int d_dirty, int d_readonly, int d_busy, String d_mount, String d_label)
 	{
     	ContentValues initialValues = new ContentValues();

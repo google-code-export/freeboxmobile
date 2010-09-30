@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.madprod.freeboxmobile.R;
+import org.madprod.freeboxmobile.ServiceUpdateUIListener;
 import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
 
 import com.google.android.apps.analytics.GoogleAnalyticsTracker;
@@ -74,18 +75,45 @@ public class GuideNowActivity extends ListActivity implements GuideConstants
     protected void onResume()
     {
     	super.onResume();
+    	GuideCheck.setActivity(this);
+       	GuideCheck.setUpdateListener(
+       			new ServiceUpdateUIListener()
+    	    	{
+    				@Override
+    				public void updateUI()
+    				{
+    					Log.i(TAG,"updateUI");
+    					runOnUiThread(
+    						new Runnable()
+    						{
+    							public void run()
+    							{
+    						    	adapter.notifyDataSetChanged();
+    						    	adapter.refresh();
+    							}
+    						});
+    				}
+    	    	});    	
     	adapter.notifyDataSetChanged();
     	adapter.refresh();
     }
     
+    @Override
+    protected void onPause()
+    {
+    	GuideCheck.setActivity(null);
+    	super.onPause();
+    }
+
     // TODO : option pour mettre à jour les données via le réseau
 	@Override
     public boolean onCreateOptionsMenu(Menu menu)
 	{
         super.onCreateOptionsMenu(menu);
 
-        menu.add(0, GUIDE_OPTION_REFRESH, 0, "Mettre à jour l'affichage").setIcon(android.R.drawable.ic_menu_rotate);
-        menu.add(0, GUIDE_OPTION_SELECT, 1, R.string.guide_option_select).setIcon(android.R.drawable.ic_menu_add);
+        menu.add(0, GUIDE_OPTION_UPDATE, 0, "Rafraichir l'affichage").setIcon(android.R.drawable.ic_menu_rotate);
+        menu.add(0, GUIDE_OPTION_REFRESH, 1, R.string.guide_option_refresh).setIcon(android.R.drawable.ic_menu_rotate);
+        menu.add(0, GUIDE_OPTION_SELECT, 2, R.string.guide_option_select).setIcon(android.R.drawable.ic_menu_add);
         return true;
     }
 
@@ -94,9 +122,15 @@ public class GuideNowActivity extends ListActivity implements GuideConstants
     {
     	switch (item.getItemId())
     	{
-    		case GUIDE_OPTION_REFRESH:
+    		case GUIDE_OPTION_UPDATE:
     			adapter.refresh();
     			adapter.notifyDataSetChanged();
+    			return true;
+    		case GUIDE_OPTION_REFRESH:
+            	Log.d(TAG, "Refresh from point 2");
+            	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+	        	String selectedDate = sdf.format(new Date());
+    			GuideCheck.refresh(selectedDate);
     			return true;
     		case GUIDE_OPTION_SELECT:
     			startActivityForResult(new Intent(this, GuideChoixChainesActivity.class),0);

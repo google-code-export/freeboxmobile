@@ -273,7 +273,6 @@ public class GuideChaineActivity extends GuideUtils implements GuideConstants
     			startActivityForResult(new Intent(this, GuideChoixChainesActivity.class),0);
     			return true;
     		case GUIDE_OPTION_REFRESH:
-//    	   		new GuideChaineActivityNetwork(selectedDate, false, true, true).execute((Void[])null);
             	Log.d(TAG, "Refresh from point 2");
     			GuideCheck.refresh(selectedDate);
     			return true;
@@ -527,7 +526,7 @@ public class GuideChaineActivity extends GuideUtils implements GuideConstants
 			adapter.addSection(l.name+" ("+((Integer)l.canal).toString()+")",bmp,g);
 		}
         setListAdapter(adapter);
-        if (nochaine == true)
+        if (mDbHelper.isDayHistoGuidePresent(GuideUtils.calDates.get(datesSpinner.getSelectedItemPosition())) == 0)
         {
         	Log.d(TAG, "Refresh from point 1");
         	GuideCheck.refresh(GuideUtils.calDates.get(datesSpinner.getSelectedItemPosition()));

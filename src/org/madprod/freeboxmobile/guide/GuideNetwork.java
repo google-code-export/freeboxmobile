@@ -160,78 +160,96 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants
 						}
 						channelId = it.next();
 						jHorairesObject = jChannelsObject.getJSONObject(channelId);
-						for (Iterator <String> jt = jHorairesObject.keys(); jt.hasNext() ;)
-						{
-							channel_id = Integer.parseInt(channelId);
-							String datetime_deb = jt.next();
-							// Je ne sais pas à quoi correspond le channel_id 173 mais les programmes sont vides
-							// et il n'y a pas de chaine qui corresponde dans la liste des chaines
-							// donc...
-							if (!(db.isProgrammePresent(channel_id, datetime_deb)) && (channel_id != 173))
-							{
-								jHoraireObject = jHorairesObject.getJSONObject(datetime_deb);
-								db.createProgramme(
-									Integer.parseInt(getJSONString(jHoraireObject, "genre_id")),
-									channel_id,
-									getJSONString(jHoraireObject,"resum_s"),
-									getJSONString(jHoraireObject,"resum_l"),
-									getJSONString(jHoraireObject,"title").replaceAll("&amp;","&"),
-									Integer.parseInt(getJSONString(jHoraireObject,"duree")),
-									datetime_deb,
-									getJSONString(jHoraireObject,"datetime_fin")
-									);
-							}
-							// TODO : sinon rafraichir ?
-						}
-					}
-					if (duree_h == 4)
-					{
-						db.createHistoGuide(datetime);
-					}
-					else
-					{
-						db.createDayHistoGuide(datetime);
-						db.createHistoGuide(datetime+" 00:00:00");
-						db.createHistoGuide(datetime+" 01:00:00");
-						db.createHistoGuide(datetime+" 02:00:00");
-						db.createHistoGuide(datetime+" 03:00:00");
-						db.createHistoGuide(datetime+" 04:00:00");
-						db.createHistoGuide(datetime+" 05:00:00");
-						db.createHistoGuide(datetime+" 06:00:00");
-						db.createHistoGuide(datetime+" 07:00:00");
-						db.createHistoGuide(datetime+" 08:00:00");
-						db.createHistoGuide(datetime+" 09:00:00");
-						db.createHistoGuide(datetime+" 10:00:00");
-						db.createHistoGuide(datetime+" 11:00:00");
-						db.createHistoGuide(datetime+" 12:00:00");
-						db.createHistoGuide(datetime+" 13:00:00");
-						db.createHistoGuide(datetime+" 14:00:00");
-						db.createHistoGuide(datetime+" 15:00:00");
-						db.createHistoGuide(datetime+" 16:00:00");
-						db.createHistoGuide(datetime+" 17:00:00");
-						db.createHistoGuide(datetime+" 18:00:00");
-						db.createHistoGuide(datetime+" 19:00:00");
-						db.createHistoGuide(datetime+" 20:00:00");
-						// Tester si isDayHistoGuidePresent(datetime jour précédent)
-						// Si oui : db.createHistoGuide(datetimejourprécédent+ " 21-22-23"...);
+						db.mDb.beginTransaction();
 						try
 						{
-							Date date = new SimpleDateFormat("yyy-MM-dd").parse(datetime);
-							Calendar c = Calendar.getInstance();
-							c.setFirstDayOfWeek(Calendar.MONDAY);
-							c.setTime(date);
-							c.add(Calendar.DAY_OF_MONTH, -1);
-							String datetimehier = (c.get(Calendar.YEAR)+"-"+((c.get(Calendar.MONTH)+1)<10?"0":"")+(c.get(Calendar.MONTH)+1)+"-"+(c.get(Calendar.DAY_OF_MONTH)<10?"0":"")+c.get(Calendar.DAY_OF_MONTH));
-							db.createHistoGuide(datetimehier+" 21:00:00");
-							db.createHistoGuide(datetimehier+" 22:00:00");
-							db.createHistoGuide(datetimehier+" 23:00:00");							
+							for (Iterator <String> jt = jHorairesObject.keys(); jt.hasNext() ;)
+							{
+								channel_id = Integer.parseInt(channelId);
+								String datetime_deb = jt.next();
+								// Je ne sais pas à quoi correspond le channel_id 173 mais les programmes sont vides
+								// et il n'y a pas de chaine qui corresponde dans la liste des chaines
+								// donc...
+								if (!(db.isProgrammePresent(channel_id, datetime_deb)) && (channel_id != 173))
+								{
+									jHoraireObject = jHorairesObject.getJSONObject(datetime_deb);
+									db.createProgramme(
+										Integer.parseInt(getJSONString(jHoraireObject, "genre_id")),
+										channel_id,
+										getJSONString(jHoraireObject,"resum_s"),
+										getJSONString(jHoraireObject,"resum_l"),
+										getJSONString(jHoraireObject,"title").replaceAll("&amp;","&"),
+										Integer.parseInt(getJSONString(jHoraireObject,"duree")),
+										datetime_deb,
+										getJSONString(jHoraireObject,"datetime_fin")
+										);
+								}
+								// TODO : sinon rafraichir ?
+							}
+							db.mDb.setTransactionSuccessful();
 						}
-						catch (ParseException e)
+						finally
 						{
-							e.printStackTrace();
-							Log.d(TAG, "Probleme parsing date");
+							db.mDb.endTransaction();
 						}
-						
+					}
+					db.mDb.beginTransaction();
+					try
+					{
+						if (duree_h == 4)
+						{
+							db.createHistoGuide(datetime);
+						}
+						else
+						{
+							db.createDayHistoGuide(datetime);
+							db.createHistoGuide(datetime+" 00:00:00");
+							db.createHistoGuide(datetime+" 01:00:00");
+							db.createHistoGuide(datetime+" 02:00:00");
+							db.createHistoGuide(datetime+" 03:00:00");
+							db.createHistoGuide(datetime+" 04:00:00");
+							db.createHistoGuide(datetime+" 05:00:00");
+							db.createHistoGuide(datetime+" 06:00:00");
+							db.createHistoGuide(datetime+" 07:00:00");
+							db.createHistoGuide(datetime+" 08:00:00");
+							db.createHistoGuide(datetime+" 09:00:00");
+							db.createHistoGuide(datetime+" 10:00:00");
+							db.createHistoGuide(datetime+" 11:00:00");
+							db.createHistoGuide(datetime+" 12:00:00");
+							db.createHistoGuide(datetime+" 13:00:00");
+							db.createHistoGuide(datetime+" 14:00:00");
+							db.createHistoGuide(datetime+" 15:00:00");
+							db.createHistoGuide(datetime+" 16:00:00");
+							db.createHistoGuide(datetime+" 17:00:00");
+							db.createHistoGuide(datetime+" 18:00:00");
+							db.createHistoGuide(datetime+" 19:00:00");
+							db.createHistoGuide(datetime+" 20:00:00");
+							// Tester si isDayHistoGuidePresent(datetime jour précédent)
+							// Si oui : db.createHistoGuide(datetimejourprécédent+ " 21-22-23"...);
+							try
+							{
+								Date date = new SimpleDateFormat("yyy-MM-dd").parse(datetime);
+								Calendar c = Calendar.getInstance();
+								c.setFirstDayOfWeek(Calendar.MONDAY);
+								c.setTime(date);
+								c.add(Calendar.DAY_OF_MONTH, -1);
+								String datetimehier = (c.get(Calendar.YEAR)+"-"+((c.get(Calendar.MONTH)+1)<10?"0":"")+(c.get(Calendar.MONTH)+1)+"-"+(c.get(Calendar.DAY_OF_MONTH)<10?"0":"")+c.get(Calendar.DAY_OF_MONTH));
+								db.createHistoGuide(datetimehier+" 21:00:00");
+								db.createHistoGuide(datetimehier+" 22:00:00");
+								db.createHistoGuide(datetimehier+" 23:00:00");							
+							}
+							catch (ParseException e)
+							{
+								e.printStackTrace();
+								Log.d(TAG, "Probleme parsing date");
+							}
+							
+						}
+						db.mDb.setTransactionSuccessful();
+					}
+					finally
+					{
+						db.mDb.endTransaction();
 					}
 				}
 				if (getChaines)
@@ -243,60 +261,69 @@ public class GuideNetwork extends FBMNetTask implements GuideConstants
 					max = jChannelsObject.length();
 					dProgressMessage("Actualisation de la liste des "+max+" chaînes disponibles pour le Guide...",max);
 					publishProgress(0);
-					for (Iterator <String> it = jChannelsObject.keys() ; it.hasNext() ;)
+					db.mDb.beginTransaction();
+					try
 					{
-						publishProgress(courant++);
-						String channelId = it.next();
-						if (channelId.length() > 0)
+						for (Iterator <String> it = jChannelsObject.keys() ; it.hasNext() ;)
 						{
-							channel_id = Integer.parseInt(channelId);
-						}
-						else
-						{
-							Log.d(TAG,"ChannelId == -1");
-							channel_id = -1;
-						}
-						jChannelObject = jChannelsObject.getJSONObject(channelId);
-						image = getJSONString(jChannelObject, "image");
-						canal = getJSONString(jChannelObject, "canal");
-						// TODO : si chaine déjà présente -> update
-						
-						// On teste si on a le fichier qui correspond à la chaine
-				        file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES, image);
-				        if ((file.exists() == true) && (file.length() == 0))
-				        {
-				        	Log.d(TAG, "File size == 0, deleting... "+image);
-				        	file.delete();
-				        }
-				        if (file.exists() == false)
-				        {
-							if (FBMHttpConnection.getFile(file, IMAGES_URL+image, null, false))
+							publishProgress(courant++);
+							String channelId = it.next();
+							if (channelId.length() > 0)
 							{
-								Log.d(TAG, "Downloading logo : "+image);
-						        filen = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES, canal+".png");
-								try
-								{
-									Log.d(TAG,"Copy file "+image);
-									Utils.copyFile(file, filen);
-								}
-								catch (IOException e)
-								{
-									Log.d(TAG,"Impossible de copier "+image+" "+canal);
-									e.printStackTrace();
-								}
+								channel_id = Integer.parseInt(channelId);
 							}
-				        }
-				        
-						if (db.isGuideChainePresent(channel_id) == 0)
-						{
-							db.createGuideChaine(
-								Integer.parseInt(getJSONString(jChannelObject, "fbx_id")),
-								channel_id,
-								Integer.parseInt(canal),
-								getJSONString(jChannelObject, "name"),
-								image
-								);
-						}				        
+							else
+							{
+								Log.d(TAG,"ChannelId == -1");
+								channel_id = -1;
+							}
+							jChannelObject = jChannelsObject.getJSONObject(channelId);
+							image = getJSONString(jChannelObject, "image");
+							canal = getJSONString(jChannelObject, "canal");
+							// TODO : si chaine déjà présente -> update
+							
+							// On teste si on a le fichier qui correspond à la chaine
+					        file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES, image);
+					        if ((file.exists() == true) && (file.length() == 0))
+					        {
+					        	Log.d(TAG, "File size == 0, deleting... "+image);
+					        	file.delete();
+					        }
+					        if (file.exists() == false)
+					        {
+								if (FBMHttpConnection.getFile(file, IMAGES_URL+image, null, false))
+								{
+									Log.d(TAG, "Downloading logo : "+image);
+							        filen = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES, canal+".png");
+									try
+									{
+										Log.d(TAG,"Copy file "+image);
+										Utils.copyFile(file, filen);
+									}
+									catch (IOException e)
+									{
+										Log.d(TAG,"Impossible de copier "+image+" "+canal);
+										e.printStackTrace();
+									}
+								}
+					        }
+					        
+							if (db.isGuideChainePresent(channel_id) == 0)
+							{
+								db.createGuideChaine(
+									Integer.parseInt(getJSONString(jChannelObject, "fbx_id")),
+									channel_id,
+									Integer.parseInt(canal),
+									getJSONString(jChannelObject, "name"),
+									image
+									);
+							}				        
+						}
+						db.mDb.setTransactionSuccessful();
+					}
+					finally
+					{
+						db.mDb.endTransaction();
 					}
 				}
 			}
