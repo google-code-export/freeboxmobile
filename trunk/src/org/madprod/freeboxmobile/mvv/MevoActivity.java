@@ -782,7 +782,10 @@ public class MevoActivity extends ListActivity implements MevoConstants
 		public boolean onError(MediaPlayer mp, int what, int extra)
 		{
 			Log.i(TAG,"onERROR "+what+" "+extra);
-			play_current_mp.stop();
+			if ((play_current_mp != null) && (play_current_mp.isPlaying()))
+			{
+				play_current_mp.stop();
+			}
 			this.setMessageSeekBar(-1, 0, 0);
     		notifyDataSetChanged();
 			return true;
