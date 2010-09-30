@@ -845,9 +845,9 @@ public class FBMHttpConnection implements Constants
                 }
             }
         }
-		if (auth)
+		if ((auth) && (id != null) && (idt != null))
 		{
-			if ((p != null) && (p.size() > 0) && (id != null) && (idt != null))
+			if ((p != null) && (p.size() > 0))
 			{
 				listConcat += "&";
 			}
