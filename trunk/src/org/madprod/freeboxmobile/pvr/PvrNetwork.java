@@ -18,6 +18,7 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.util.Log;
+import android.widget.Toast;
 
 /**
  * télécharge la liste des chaines et disques
@@ -51,14 +52,14 @@ public class PvrNetwork extends FBMNetTask implements PvrConstants // AsyncTask<
     	JSONArray jArray;
     	String mode;
     	int pvrmode;
-    	int boitier = 0;
+    	Long boitier = new Long(0);
     	int nbBoitiers = 0;
     	int i,j;
-    	int chaineId;
+    	Long chaineId;
 		ChainesDbAdapter db;
 		int max = 0;
 		int size = 0;
-		boolean ok = true;
+		int ok = 0;
 		
 		Activity a = getActivity();
 		if (a == null)
@@ -157,50 +158,61 @@ public class PvrNetwork extends FBMNetTask implements PvrConstants // AsyncTask<
 						dProgressMessage("Actualisation de la liste des "+max+" chaînes pour le boitier "+(int)(boitier+1)+" ("+nbBoitiers+" boitier"+(nbBoitiers >1?"s":"")+" en tout)...", max);
 						publishProgress(0);
 						Log.d(TAG,"Récupération chaines boitier "+boitier+" - nb chaines = "+max);
-						for (i=0 ; i < max ; i++)
+						db.mDb.beginTransaction();
+						try
 						{
-							publishProgress(i);
-							jChaineObject = jArray.getJSONObject(i);
-							chaineId = jChaineObject.getInt("id");
-							db.createChaine(
-									jChaineObject.getString("name"),
-									chaineId,
-									boitier
-									);
-							jServicesArray = jChaineObject.getJSONArray("service");
-							size = jServicesArray.length();
-							for (j=0 ; j < size ; j++)
+							for (i=0 ; i < max ; i++)
 							{
-								jServiceObject = jServicesArray.getJSONObject(j);
-								mode = jServiceObject.getString("pvr_mode");
-								if (mode.equals("public"))
-								{
-									pvrmode = PVR_MODE_PUBLIC;
-								} else if (mode.equals("private"))
-								{
-									pvrmode = PVR_MODE_PRIVATE;
-								} else
-								{
-									pvrmode = PVR_MODE_DISABLED;
-								}
-								
-								db.createService(
+								publishProgress(i);
+								jChaineObject = jArray.getJSONObject(i);
+								chaineId = new Long(jChaineObject.getInt("id"));
+								db.createRawChaine(
+										jChaineObject.getString("name").replace("'", " "),
 										chaineId,
-										boitier,
-										jServiceObject.getString("desc"),
-										jServiceObject.getInt("id"),
-										pvrmode);
-	//					    	Log.d(TAG,"GET DATA DIRECT SERVICE "+id);
+										boitier
+										);
+	
+								jServicesArray = jChaineObject.getJSONArray("service");
+								size = jServicesArray.length();
+								for (j=0 ; j < size ; j++)
+								{
+									jServiceObject = jServicesArray.getJSONObject(j);
+									mode = jServiceObject.getString("pvr_mode");
+									if (mode.equals("public"))
+									{
+										pvrmode = PVR_MODE_PUBLIC;
+									} else if (mode.equals("private"))
+									{
+										pvrmode = PVR_MODE_PRIVATE;
+									} else
+									{
+										pvrmode = PVR_MODE_DISABLED;
+									}
+									
+									db.createRawService(
+											chaineId,
+											boitier,
+											jServiceObject.getString("desc"),
+											jServiceObject.getInt("id"),
+											pvrmode);
+								}
 							}
+							Log.d(TAG, "Transaction success");
+							db.mDb.setTransactionSuccessful();
+						}
+						finally
+						{
+							db.mDb.endTransaction();
 						}
 					}
+					ok = 1;
 				}
 	        	catch (JSONException e)
 	        	{
 					Log.e(TAG,"JSONException ! "+e.getMessage());
 					Log.d(TAG,"Page:"+resultat);
 					e.printStackTrace();
-					ok = false;
+					ok = -1;
 					break;
 				}
 	        }
@@ -208,7 +220,8 @@ public class PvrNetwork extends FBMNetTask implements PvrConstants // AsyncTask<
 	        {
 	        	// TODO : Si on a un boitier débranché, on tombe ici mais il ne faudrait pas
 	        	// sortir comme ca (ca empeche la maj de tous les autres boitiers)
-	        	ok = false;
+	        	Log.d(TAG, "IMPOSSIBLE DE RAFRAICHIR");
+	        	ok = -1;
 	        	break;
 	        }
 	        boitier++;
@@ -218,9 +231,10 @@ public class PvrNetwork extends FBMNetTask implements PvrConstants // AsyncTask<
     	if (getChaines)
     		publishProgress(max);
     	publishProgress(-1);
-    	if (ok)
+    	if (ok > 0)
     	{
         	doSwap(db);
+    		Log.d(TAG, "C FINI ! "+db.getChainesNb());
 	    	// On met à jour le timestamp du dernier refresh
         	// TODO : Peut etre mettre mgr dans FBMNetTask afin qu'il soit toujours accessible et qu'on puisse toujours faire l'update ci-dessous
         	a = getActivity();

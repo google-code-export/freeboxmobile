@@ -21,6 +21,7 @@ public interface GuideConstants extends Constants
     static final int GUIDE_OPTION_SELECT = Menu.FIRST + 1;
     static final int GUIDE_OPTION_MODE = Menu.FIRST + 2;
     static final int GUIDE_OPTION_FILTER = Menu.FIRST + 3;
+    static final int GUIDE_OPTION_UPDATE = Menu.FIRST + 4;
     
     static final int GUIDE_CONTEXT_ENREGISTRER = Menu.FIRST;
     static final int GUIDE_CONTEXT_DETAILS = Menu.FIRST + 1;
