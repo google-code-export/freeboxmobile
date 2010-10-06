@@ -101,6 +101,7 @@ public class GuideDetailsActivity extends Activity implements GuideConstants
 						@Override
 						public void onClick(View arg0)
 						{
+							tracker.trackPageView("Guide/YouTube");
 							startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/results?search_query="+titreEmission.getText()+"&aq=f")));
 						}
 					}
@@ -112,6 +113,7 @@ public class GuideDetailsActivity extends Activity implements GuideConstants
 						@Override
 						public void onClick(View arg0)
 						{
+							tracker.trackPageView("Guide/AlloCine");
 							startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.allocine.fr/recherche/?q="+titreEmission.getText())));
 						}
 					}
@@ -131,6 +133,7 @@ public class GuideDetailsActivity extends Activity implements GuideConstants
 				    			.putExtra(Intent.EXTRA_SUBJECT, "ProgrammeTV partagé par FreeboxMobile")
 //				    			.addCategory(Intent.CATEGORY_DEFAULT)
 				    			;
+							tracker.trackPageView("Guide/Share");
 					    	startActivityForResult(Intent.createChooser(i, "Partagez ce programme avec"),0);
 						}
 					}

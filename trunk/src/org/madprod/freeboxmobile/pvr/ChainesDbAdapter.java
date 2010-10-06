@@ -483,7 +483,7 @@ public class ChainesDbAdapter implements GuideConstants
     		" FROM "+DATABASE_TABLE_PROGRAMMES+","+DATABASE_TABLE_GUIDECHAINES+
     		" WHERE "+KEY_PROG_DATETIME_FIN+" > '"+now+"' AND "+KEY_PROG_DATETIME_DEB+" <= '"+now+"' AND "+KEY_GUIDECHAINE_ID+" = "+KEY_PROG_CHANNEL_ID+
     		" ORDER BY "+KEY_GUIDECHAINE_CANAL;
-    	Log.i(TAG, "SQL : "+sql);
+//    	Log.i(TAG, "SQL : "+sql);
     	return mDb.rawQuery(sql, null);
 	}
 

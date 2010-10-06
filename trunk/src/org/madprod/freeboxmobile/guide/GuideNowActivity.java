@@ -176,54 +176,61 @@ public class GuideNowActivity extends ListActivity implements GuideConstants
 
         	modulesList = new ArrayList< Map<String,Object> >();
         	ChainesDbAdapter mDbHelper = new ChainesDbAdapter(mContext);
-    		mDbHelper.open();
-        	Cursor c = mDbHelper.getProgsNow();
-        	if (c != null)
-        	{    		
-        		if (c.moveToFirst())
-        		{
-        			do
-        			{
-        				if (c.getString(c.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_TITLE)).length() > 0)
-        				{
-    		    			map = new HashMap<String,Object>();
-    		    			map.put(ChainesDbAdapter.KEY_PROG_TITLE, c.getString(c.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_TITLE)));
-    		    			map.put(ChainesDbAdapter.KEY_PROG_DATETIME_DEB, c.getString(c.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_DATETIME_DEB)));
-    		    			map.put(ChainesDbAdapter.KEY_PROG_DATETIME_FIN, c.getString(c.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_DATETIME_FIN)));
-    		    			map.put(ChainesDbAdapter.KEY_PROG_RESUM_L, c.getString(c.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_RESUM_L)));
-    		    			map.put(ChainesDbAdapter.KEY_PROG_DUREE, c.getInt(c.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_DUREE)));
-    		    			map.put(ChainesDbAdapter.KEY_PROG_CHANNEL_ID, c.getInt(c.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_CHANNEL_ID)));
-    		    			map.put(ChainesDbAdapter.KEY_GUIDECHAINE_CANAL, c.getInt(c.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_CANAL)));
-    		    			map.put(ChainesDbAdapter.KEY_GUIDECHAINE_NAME, c.getString(c.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_NAME)));
-    		    			map.put(ChainesDbAdapter.KEY_GUIDECHAINE_ID, c.getInt(c.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_ID)));
-
-    		    			image = c.getString(c.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE)); 
-    		    			if (image.length() > 0)
-    		    			{
-    		    			    String filepath = Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES+image;
-    		    	    		map.put(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE, filepath);
-    		    			}
-    		    			modulesList.add(map);
-        				}
-/*    	    			Log.i(TAG, "ChannelID : "+c.getString(c.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_CHANNEL_ID))+
-    	    			" DEB : "+c.getString(c.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_DATETIME_DEB))+
-    	    			" FIN : "+c.getString(c.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_DATETIME_FIN))+
-    	    			" TITRE : "+c.getString(c.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_TITLE))
-    	    			);
-*/
-        			} while (c.moveToNext());
-        		}
-        		else
-        		{
-            		Log.d(TAG, "Guide Now : No data !");
-        		}
-        		c.close();
-        	}
-        	else
+        	try
         	{
-        		Log.d(TAG, "Guide Now : Cursor null !");
+        		mDbHelper.open();
+	        	Cursor c = mDbHelper.getProgsNow();
+	        	if (c != null)
+	        	{    		
+	        		if (c.moveToFirst())
+	        		{
+	        			do
+	        			{
+	        				if (c.getString(c.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_TITLE)).length() > 0)
+	        				{
+	    		    			map = new HashMap<String,Object>();
+	    		    			map.put(ChainesDbAdapter.KEY_PROG_TITLE, c.getString(c.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_TITLE)));
+	    		    			map.put(ChainesDbAdapter.KEY_PROG_DATETIME_DEB, c.getString(c.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_DATETIME_DEB)));
+	    		    			map.put(ChainesDbAdapter.KEY_PROG_DATETIME_FIN, c.getString(c.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_DATETIME_FIN)));
+	    		    			map.put(ChainesDbAdapter.KEY_PROG_RESUM_L, c.getString(c.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_RESUM_L)));
+	    		    			map.put(ChainesDbAdapter.KEY_PROG_DUREE, c.getInt(c.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_DUREE)));
+	    		    			map.put(ChainesDbAdapter.KEY_PROG_CHANNEL_ID, c.getInt(c.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_CHANNEL_ID)));
+	    		    			map.put(ChainesDbAdapter.KEY_GUIDECHAINE_CANAL, c.getInt(c.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_CANAL)));
+	    		    			map.put(ChainesDbAdapter.KEY_GUIDECHAINE_NAME, c.getString(c.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_NAME)));
+	    		    			map.put(ChainesDbAdapter.KEY_GUIDECHAINE_ID, c.getInt(c.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_ID)));
+	
+	    		    			image = c.getString(c.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE)); 
+	    		    			if (image.length() > 0)
+	    		    			{
+	    		    			    String filepath = Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES+image;
+	    		    	    		map.put(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE, filepath);
+	    		    			}
+	    		    			modulesList.add(map);
+	        				}
+	/*    	    			Log.i(TAG, "ChannelID : "+c.getString(c.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_CHANNEL_ID))+
+	    	    			" DEB : "+c.getString(c.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_DATETIME_DEB))+
+	    	    			" FIN : "+c.getString(c.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_DATETIME_FIN))+
+	    	    			" TITRE : "+c.getString(c.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_TITLE))
+	    	    			);
+	*/
+	        			} while (c.moveToNext());
+	        		}
+	        		else
+	        		{
+	            		Log.d(TAG, "Guide Now : No data !");
+	        		}
+	        		c.close();
+	        	}
+	        	else
+	        	{
+	        		Log.d(TAG, "Guide Now : Cursor null !");
+	        	}
+	        	mDbHelper.close();
         	}
-        	mDbHelper.close();
+        	catch (Exception e)
+        	{
+        		Log.e(TAG, "GuideNow : exception dans GuideNow "+e.getMessage());
+        	}
     	}
 
 		@Override

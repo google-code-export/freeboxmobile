@@ -1,5 +1,6 @@
 package org.madprod.freeboxmobile.tv;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,9 +11,15 @@ import org.madprod.freeboxmobile.R;
 import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 
 import android.app.ListActivity;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.Toast;
 
 /**
  * @author olivier rosello
@@ -22,7 +29,7 @@ import android.widget.SimpleAdapter;
 
 public class TvActivity extends ListActivity implements TvConstants
 {
-	private List< Map<String,Object> > modulesList;
+	private List< Map<String,Object> > streamsList;
 	GoogleAnalyticsTracker tracker;
 	
     @Override
@@ -32,6 +39,7 @@ public class TvActivity extends ListActivity implements TvConstants
 		tracker = GoogleAnalyticsTracker.getInstance();
 		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
 		tracker.trackPageView("Tv/HomeTv");
+		streamsList = new ArrayList< Map<String,Object> >();
         setChaines();
 		setContentView(R.layout.tv_main_list);
 		setTitle(getString(R.string.app_name)+" "+FBMHttpConnection.getTitle());
@@ -56,8 +64,55 @@ public class TvActivity extends ListActivity implements TvConstants
     {
 		Log.i(TAG,"TvActivity Resume");
     	super.onResume();
-//        SimpleAdapter mList = new SimpleAdapter(this, modulesList, R.layout.home_main_list_row, new String[] {M_ICON, M_TITRE, M_DESC}, new int[] {R.id.home_main_row_img, R.id.home_main_row_titre, R.id.home_main_row_desc});
-//        setListAdapter(mList);
+        SimpleAdapter mList = new SimpleAdapter(this, streamsList, R.layout.tv_main_list_row, new String[] {M_TITRE}, new int[] {R.id.tv_main_row_titre});
+        setListAdapter(mList);
+    }
+
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id)
+    {
+        super.onListItemClick(l, v, position, id);
+        String streamName = (String) streamsList.get((int) id).get(M_TITRE);
+        String streamShort = (String) streamsList.get((int) id).get(M_SHORT);
+
+    	if (false)//(moduleName.equals(getString(R.string.buttonTv)))
+    	{
+    		Intent i = new Intent("kr.mobilesoft.yxplayer.PLAYER");
+//	    		Intent i = new Intent("kr.mobilesoft.yxplayer.StreamsView");
+    		i.putExtra("url", "http://vipmms9.yacast.net/bfm_bfmtv");
+    		i.putExtra("uri", "http://vipmms9.yacast.net/bfm_bfmtv");
+//	    		i.putExtra("add", "http://vipmms9.yacast.net/bfm_bfmtv");
+//	    		i.putExtra("stream", "http://vipmms9.yacast.net/bfm_bfmtv");
+//	    		i.putExtra("streams", "http://vipmms9.yacast.net/bfm_bfmtv");
+//	    		i.putExtra("URL", "http://vipmms9.yacast.net/bfm_bfmtv");
+//	    		i.putExtra("URI", "http://vipmms9.yacast.net/bfm_bfmtv");
+//	    		i.putExtra("open", "http://vipmms9.yacast.net/bfm_bfmtv"); // fait planter
+//	    		i.putExtra("video", "http://vipmms9.yacast.net/bfm_bfmtv");
+    		try
+    		{
+    			startActivity(i);
+    		}
+    		catch (Exception e)
+    		{
+    			Toast.makeText(this, "Pb ! "+e.getMessage(), 2000).show();
+    			Log.d(TAG, "PB : "+e.getMessage());
+    		}
+    	}
+    	if (streamShort != null)
+    	{
+    	    Intent intent = new Intent();
+    	 	intent.setAction(android.content.Intent.ACTION_VIEW);
+    	 	intent.setDataAndType(Uri.parse("http://tv.freebox.fr/stream_"+streamShort), "video/mp4");
+    	 	//intent.setDataAndType(Uri.parse("/sdcard/test.mp4"), "video/mp4");
+    	 	try
+    	 	{
+    	 		startActivity(intent);
+    	 	}
+    	 	catch (Exception e)
+    	 	{
+    	 		Toast.makeText(this, "Problème : "+e.getMessage(), Toast.LENGTH_LONG).show();
+    	 	}
+    	}
     }
 
     //startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=cxLG2wtE7TM")));
@@ -84,7 +139,7 @@ public class TvActivity extends ListActivity implements TvConstants
 		map.put(M_TITRE, titre);
 		map.put(M_SHORT, shorter);
 		map.put(M_ID, id);
-		modulesList.add(map);		
+		streamsList.add(map);		
 	}
 
 	private void setChaines()

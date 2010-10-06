@@ -20,6 +20,7 @@ import org.madprod.freeboxmobile.Utils;
 import org.madprod.freeboxmobile.fax.FaxActivity;
 import org.madprod.freeboxmobile.guide.GuideMenuActivity;
 import org.madprod.freeboxmobile.remotecontrol.RemoteControlActivity;
+import org.madprod.freeboxmobile.tv.TvActivity;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
@@ -327,8 +328,16 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     	map = new HashMap<String,Object>();
 		map.put(M_ICON, R.drawable.fm_television);
 		map.put(M_TITRE, getString(R.string.buttonTv));
-		map.put(M_DESC, "Regardez vos chaînes de TV Freebox\n\nCette fonctionnalité n'est pas encore disponible");
-		map.put(M_CLASS, null);
+		if (Utils.getFBMVersion(this).contains("rc") == false)
+		{
+			map.put(M_DESC, "Regardez vos chaînes de TV Freebox\n\nCette fonctionnalité n'est pas encore disponible");
+			map.put(M_CLASS, null);
+		}
+		else
+		{
+			map.put(M_DESC, "Regardez les chaînes de TV Freebox");
+			map.put(M_CLASS, TvActivity.class);			
+		}
 		modulesList.add(map);
     	map = new HashMap<String,Object>();
 		map.put(M_ICON, R.drawable.fm_radios);
