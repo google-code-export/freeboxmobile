@@ -73,7 +73,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
     static Button callbackButton;
     static Button deleteButton;
 
-	GoogleAnalyticsTracker tracker;
+	static GoogleAnalyticsTracker tracker;
 	
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -602,6 +602,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
     		{
     			Intent intent = new Intent(Intent.ACTION_CALL);
     			intent.setData(Uri.parse("tel:"+((MevoMessage)this.getItem(id)).getStringValue(KEY_SOURCE)));
+    			tracker.trackPageView("Mevo/Callback");
     			mevoActivity.startActivity(intent);
     		}
     		catch (Exception e)
@@ -620,6 +621,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
 				// For Android >= 2.0
 				intent.setType(ContactsContract.Contacts.CONTENT_ITEM_TYPE);
 				intent.putExtra(ContactsContract.Intents.Insert.PHONE, ((MevoMessage)this.getItem(id)).getStringValue(KEY_SOURCE));
+    			tracker.trackPageView("Mevo/AddNumber");
 				mevoActivity.startActivity(intent);
 			}
 			catch (Throwable t)
@@ -627,6 +629,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
 				// For Android 1.5 - 1.6
 				intent.setType(Contacts.People.CONTENT_ITEM_TYPE);
 				intent.putExtra(Insert.PHONE, ((MevoMessage)this.getItem(id)).getStringValue(KEY_SOURCE));
+    			tracker.trackPageView("Mevo/AddNumber");
 				mevoActivity.startActivity(intent);
 			}
     	}
@@ -636,6 +639,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
 //            Intent searchIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.118218.fr/recherche/?q="+((MevoMessage)this.getItem(id)).getStringValue(KEY_SOURCE)+"&rewrited=&rewritedLocality=&address=&b=0&typ=r&st=I"));
             Intent searchIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://mobile.118218.fr/wap/resultats.php?requete="+((MevoMessage)this.getItem(id)).getStringValue(KEY_SOURCE)+"&particulier=on&activite=&page=1"));
             searchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			tracker.trackPageView("Mevo/AnnuaireInverse");
             mevoActivity.startActivity(searchIntent);
     	}
 
@@ -644,6 +648,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
     		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("smsto:"+((MevoMessage)this.getItem(id)).getStringValue(KEY_SOURCE)));
 			intent.putExtra("sms_body", "Suite à ton message "); 
 			intent.setClassName("com.android.mms", "com.android.mms.ui.ComposeMessageActivity");
+			tracker.trackPageView("Mevo/SendSMS");
 			mevoActivity.startActivity(intent);		
 
 //			Ci dessous : ca serait sympa si ca fonctionnait, ca permettrait de choisir avec quelle appli envoyer le SMS
