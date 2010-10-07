@@ -459,7 +459,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
         {
         	public void run()
         	{
-        		if (play_current_mp != null)
+        		if ((play_current_mp != null) && (play_current_mp.isPlaying() == true))
         		{
         			setMessageSeekBar(0, play_current_mp.getCurrentPosition(), play_current_mp.getDuration());
         		}
@@ -768,7 +768,6 @@ public class MevoActivity extends ListActivity implements MevoConstants
 			if (mDbHelper != null)
 			{
 				mDbHelper.close();
-				
 			}
 		}
 
@@ -798,6 +797,14 @@ public class MevoActivity extends ListActivity implements MevoConstants
 
 		public void stopPlay()
 		{
+			if (messageUpdateTask != null)
+			{
+				messageUpdateTask.cancel();
+			}
+			if (messageTimer != null)
+			{
+				messageTimer.purge();
+			}
 			// Si on était pas dans le cas d'un premier play
 			if (play_current_mp != null)
 			{
