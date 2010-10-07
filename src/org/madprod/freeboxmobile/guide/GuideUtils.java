@@ -183,7 +183,7 @@ public abstract class GuideUtils extends ListActivity implements Constants
 	
 	/**
 	 * Affiche la scrollbar horizontale "barre de favoris"
-	 * @param a
+	 * @param a activity
 	 * @param o
 	 * @param id
 	 * @param itemSelected
