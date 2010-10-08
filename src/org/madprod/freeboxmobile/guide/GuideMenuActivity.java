@@ -51,8 +51,8 @@ public class GuideMenuActivity extends GuideUtils implements GuideConstants
 
         mDbHelper = new ChainesDbAdapter(this);
         mDbHelper.open();
-        Log.d(TAG,"Nettoyage des anciens programmes effacés : "+mDbHelper.deleteOldProgs());
-        Log.d(TAG,"Nettoyage de l'ancienne historique : "+mDbHelper.deleteOldHisto());
+//        Log.d(TAG,"Nettoyage des anciens programmes effacés : "+mDbHelper.deleteOldProgs());
+//        Log.d(TAG,"Nettoyage de l'ancienne historique : "+mDbHelper.deleteOldHisto());
     }
 
 	@Override

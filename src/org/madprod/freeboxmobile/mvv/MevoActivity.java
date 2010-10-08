@@ -811,7 +811,7 @@ public class MevoActivity extends ListActivity implements MevoConstants
 				if (play_current_mp.isPlaying())
 				{
 					Log.i(TAG,"Stop current play");
-					play_current_mp.pause();
+					play_current_mp.pause();			
 					play_current_mp.seekTo(0);
 				}
 				if (play_current_pos != -1)
