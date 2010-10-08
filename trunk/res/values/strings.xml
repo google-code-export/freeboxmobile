@@ -6,8 +6,8 @@
 	<string name="MotDePasse">Mot de passe</string>
 	<string name="unknown">Inconnu</string>
 	
-	<string name="oui">Yes</string>
-	<string name="non">No</string>
+	<string name="oui">Oui</string>
+	<string name="non">Non</string>
 	<string name="OK">OK</string>
-	<string name="Annuler">Cancel</string>
+	<string name="Annuler">Annuler</string>
 </resources>

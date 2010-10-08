@@ -263,8 +263,8 @@ public class ComptesDbAdapter implements Constants
      */
     public boolean isValuePresent(String key, String value)
     {
-    	Cursor mCursor = mDb.query(true, DATABASE_TABLE, new String[] {
-        		}, key + "='" + value + "'", null,
+    	Cursor mCursor = mDb.query(true, DATABASE_TABLE, new String[]{
+        		}, key + "=\"" + value + "\"", null,
                 null, null, null, null);
 	    if ((mCursor != null) && (mCursor.moveToFirst()))
 	    {
