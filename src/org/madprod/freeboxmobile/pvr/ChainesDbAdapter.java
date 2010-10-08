@@ -604,7 +604,6 @@ public class ChainesDbAdapter implements GuideConstants
     {
     	if (checkTable(DATABASE_TABLE_SERVICESTEMP) && checkTable(DATABASE_TABLE_CHAINESTEMP))
     	{
-    		
     		close_sqls();
     		mDb.beginTransaction();
 	        mDb.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE_SERVICES);
