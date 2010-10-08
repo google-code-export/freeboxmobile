@@ -19,6 +19,7 @@ import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.Utils;
 import org.madprod.freeboxmobile.fax.FaxActivity;
 import org.madprod.freeboxmobile.guide.GuideMenuActivity;
+import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
 import org.madprod.freeboxmobile.remotecontrol.RemoteControlActivity;
 import org.madprod.freeboxmobile.tv.TvActivity;
 
@@ -138,6 +139,11 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 			editor.putString(KEY_LAST_LAUNCH, date);
         	FBMHttpConnection.checkVersion();
         	editor.commit();
+            ChainesDbAdapter mDbHelper = new ChainesDbAdapter(this);
+            mDbHelper.open();
+            Log.d(TAG,"Nettoyage des anciens programmes effacés : "+mDbHelper.deleteOldProgs());
+            Log.d(TAG,"Nettoyage de l'ancienne historique : "+mDbHelper.deleteOldHisto());
+            mDbHelper.close();
 		}
 
     	// Si l'utilisateur n'a pas configuré de compte

@@ -345,25 +345,6 @@ public class ChainesDbAdapter implements GuideConstants
 		return ret;
 	}
 
-	public long deleteOldDayHisto_old()
-	{
-		long res = 0;
-		
-		Calendar c = Calendar.getInstance();
-    	Integer mois = c.get(Calendar.MONTH)+1;
-    	Integer jour = c.get(Calendar.DAY_OF_MONTH);
-		String date = c.get(Calendar.YEAR)+"-"+(mois<10?"0":"")+mois.toString()+"-"+(jour<10?"0":"")+jour.toString();
-		try
-		{
-			res = mDb.delete(DATABASE_TABLE_HISTOGUIDE, KEY_PROG_DATETIME_DEB+" < '"+date+"'", null);
-		}
-		catch (SQLiteException e)
-		{
-			Log.e(TAG, "deleteOldDayHisto Exception : "+e.getMessage());
-		}		
-		return res;
-	}
-
 	public long isHistoGuidePresent(String datetime)
 	{
 		long ret;
@@ -377,22 +358,29 @@ public class ChainesDbAdapter implements GuideConstants
 	
 	public long deleteOldHisto()
 	{
-		long res = 0;
-		
-		Calendar c = Calendar.getInstance();
-    	Integer mois = c.get(Calendar.MONTH)+1;
-    	Integer jour = c.get(Calendar.DAY_OF_MONTH);
-		String date = c.get(Calendar.YEAR)+"-"+(mois<10?"0":"")+mois.toString()+"-"+(jour<10?"0":"")+jour.toString();
-		try
+		if (!mDb.inTransaction())
 		{
-			res = mDb.delete(DATABASE_TABLE_HISTOGUIDE, KEY_PROG_DATETIME_DEB+" < '"+date+" 00:00:00'", null);
-			res += mDb.delete(DATABASE_TABLE_DAYHISTOGUIDE, KEY_HISTO_DATE+" < '"+date+"'", null);
+			long res = 0;
+			
+			Calendar c = Calendar.getInstance();
+	    	Integer mois = c.get(Calendar.MONTH)+1;
+	    	Integer jour = c.get(Calendar.DAY_OF_MONTH);
+			String date = c.get(Calendar.YEAR)+"-"+(mois<10?"0":"")+mois.toString()+"-"+(jour<10?"0":"")+jour.toString();
+			try
+			{
+				res = mDb.delete(DATABASE_TABLE_HISTOGUIDE, KEY_PROG_DATETIME_DEB+" < '"+date+" 00:00:00'", null);
+				res += mDb.delete(DATABASE_TABLE_DAYHISTOGUIDE, KEY_HISTO_DATE+" < '"+date+"'", null);
+			}
+			catch (SQLiteException e)
+			{
+				Log.e(TAG, "deleteOldHisto Exception : "+e.getMessage());
+			}
+			return res;
 		}
-		catch (SQLiteException e)
+		else
 		{
-			Log.e(TAG, "deleteOldHisto Exception : "+e.getMessage());
+			return -1;
 		}
-		return res;
 	}
 	
 	// Utilisé en cas d'ajout de nouvelles chaines aux favoris, 
@@ -564,14 +552,21 @@ public class ChainesDbAdapter implements GuideConstants
 		sqls.close();
 		return (ret > 0);
 	}
-	
+
 	public int deleteOldProgs()
 	{
-		Calendar c = Calendar.getInstance();
-    	Integer mois = c.get(Calendar.MONTH)+1;
-    	Integer jour = c.get(Calendar.DAY_OF_MONTH);
-		String date = c.get(Calendar.YEAR)+"-"+(mois<10?"0":"")+mois.toString()+"-"+(jour<10?"0":"")+jour.toString()+" 00:00:00";
-		return mDb.delete(DATABASE_TABLE_PROGRAMMES, KEY_PROG_DATETIME_FIN+" < '"+date+"'", null);
+		if (!mDb.inTransaction())
+		{
+			Calendar c = Calendar.getInstance();
+	    	Integer mois = c.get(Calendar.MONTH)+1;
+	    	Integer jour = c.get(Calendar.DAY_OF_MONTH);
+			String date = c.get(Calendar.YEAR)+"-"+(mois<10?"0":"")+mois.toString()+"-"+(jour<10?"0":"")+jour.toString()+" 00:00:00";
+			return mDb.delete(DATABASE_TABLE_PROGRAMMES, KEY_PROG_DATETIME_FIN+" < '"+date+"'", null);
+		}
+		else
+		{
+			return -1;
+		}
 	}
 
     /*
@@ -799,31 +794,6 @@ public class ChainesDbAdapter implements GuideConstants
         return mCursor;
     }
     
-    public Cursor getListeDisques_unused(String boitierName) throws SQLException {
-        Cursor mCursor =
-            mDb.query(true, DATABASE_TABLE_BOITIERSDISQUES,
-            		new String[] {
-            		KEY_ROWID,
-            		KEY_BOITIER_NAME,
-            		KEY_BOITIER_ID,
-            		KEY_DISQUE_FREE_SIZE,
-            		KEY_DISQUE_TOTAL_SIZE,
-            		KEY_DISQUE_ID,
-            		KEY_DISQUE_NOMEDIA,
-            		KEY_DISQUE_DIRTY,
-            		KEY_DISQUE_READONLY,
-            		KEY_DISQUE_BUSY,
-            		KEY_DISQUE_MOUNT,
-            		KEY_DISQUE_LABEL,
-            		},
-            		KEY_BOITIER_NAME + "='" + boitierName+"'",
-            		null, null, null, null, null);
-	    if (mCursor != null) {
-	        mCursor.moveToFirst();
-	    }
-	    return mCursor;    	
-    }
-
     public Cursor getListeDisques(int boitierId) throws SQLException
     {
         Cursor mCursor =
