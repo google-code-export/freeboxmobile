@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-	
-	<string name="oui">Oui</string>
-	<string name="non">Non</string>
-	<string name="OK">OK</string>
-	<string name="Annuler">Annuler</string>
-</resources>

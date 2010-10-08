@@ -17,7 +17,8 @@ Par exemple, si vous voulez enregistrer une émission tous les mardi et mercredi
 	<string name="pvrTxtPrgBtnOK">Enregistrer</string>
 	<string name="pvrTxtPrgBtnRecur">Récurrence</string>
 	<string name="pvrNomDefaut">Entrez le titre de l\'émission...</string>
-	
+	<string name="pvrTxtDebut">Début</string>
+	<string name="pvrTxtFin">Fin</string>
 	<string name="pvrTxtBoitier">Boitier HD</string>
 
 	<string name="pvrInfosDisque1">Nom du disque : #nom</string>
