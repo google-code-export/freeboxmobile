@@ -139,11 +139,6 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 			editor.putString(KEY_LAST_LAUNCH, date);
         	FBMHttpConnection.checkVersion();
         	editor.commit();
-            ChainesDbAdapter mDbHelper = new ChainesDbAdapter(this);
-            mDbHelper.open();
-            Log.d(TAG,"Nettoyage des anciens programmes effacés : "+mDbHelper.deleteOldProgs());
-            Log.d(TAG,"Nettoyage de l'ancienne historique : "+mDbHelper.deleteOldHisto());
-            mDbHelper.close();
 		}
 
     	// Si l'utilisateur n'a pas configuré de compte
@@ -657,6 +652,10 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     	t.setLinksClickable(true);
     	t.setAutoLinkMask(Linkify.ALL);
     	t.setText("Freebox Mobile est une application indépendante de Free.\n\n"+
+    		"Info : Installation sur carte SD : L'installation sur SD n'est possible sur Android que "+
+    		"pour des applications simples, n'utilisant pas des fonctionnalités avancées. "+
+    		"A cause de ces contraintes liées à Android, cette application n'est pas installable sur SD. "+
+    		"Consultez la FAQ sur notre site web pour plus d'information.\n\n"+
 			"Site web :\nhttp://www.freeboxmobile.org\n\n"+
 			"Contact :\ncontact@freeboxmobile.org\n\n"+
 			"Version : "+Utils.getFBMVersion(this)+"\n\n"+

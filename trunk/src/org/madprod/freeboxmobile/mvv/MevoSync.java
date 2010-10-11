@@ -319,9 +319,12 @@ public class MevoSync extends WakefullIntentService implements MevoConstants
      */
     public static void refresh()
     {
-		Intent i = new Intent(CUR_ACTIVITY, MevoSync.class);
-		WakefullIntentService.acquireStaticLock(CUR_ACTIVITY);
-		CUR_ACTIVITY.startService(i);
+    	if (CUR_ACTIVITY != null)
+    	{
+			Intent i = new Intent(CUR_ACTIVITY, MevoSync.class);
+			WakefullIntentService.acquireStaticLock(CUR_ACTIVITY);
+			CUR_ACTIVITY.startService(i);
+    	}
     }
 
 	public static void deleteMsg(String name)
