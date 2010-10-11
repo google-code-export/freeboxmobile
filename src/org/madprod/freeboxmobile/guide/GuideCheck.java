@@ -84,6 +84,9 @@ public class GuideCheck extends WakefullIntentService implements GuideConstants
 	
 			ChainesDbAdapter mDbHelper = new ChainesDbAdapter(this);
 	        mDbHelper.open();
+            Log.d(TAG,"Nettoyage des anciens programmes effacés : "+mDbHelper.deleteOldProgs());
+            Log.d(TAG,"Nettoyage de l'ancienne historique : "+mDbHelper.deleteOldHisto());
+
 	        if (Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED) == true)
 	        {
 		    	if (mDbHelper.getNbFavoris() == 0)
