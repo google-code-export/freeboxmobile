@@ -7,7 +7,15 @@
 Sortie le 03/11/2010<br>
 Release : 4<br>
 Révision : 53
- * 
+ * Possibilité d'ouvrir l'application depuis le market 
+ * Ouverture d'une popup si Freebox Mobile n'est pas installé
+ * Possibilité de désactiver les notifications (visuelle + sonore)
+ * Indication lors de l'accès à une catégorie ne possédent pas de news
+ * Ajout d'un bouton pour rafraichir les news immédiatement
+ * Possibilité de supprimer le bouton "back" et le fond
+ * Image du fond plus nette
+ * Amélioration des stats Google Analytics
+
 
 == 1.0.1 ==
 Sortie le 30/09/2010<br>
