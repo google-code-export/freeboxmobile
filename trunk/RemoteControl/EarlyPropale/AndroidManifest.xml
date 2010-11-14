@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      android:versionCode="1"
+      android:versionName="1.0" package="org.madprod.freeboxmobile.remotecontrol.earlypropale">
+    <application android:label="EarlyPropale" android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen">
+        <activity android:name=".Main"
+                  android:label="@string/app_name">
+            <intent-filter>
+				<action android:name="android.intent.action.MAIN"></action>
+				<category android:name="android.intent.category.INFO"></category>		
+            </intent-filter>
+        </activity>
+
+    </application>
+    <uses-permission android:name="org.madprod.freeboxmobile.permission.REMOTECONTROL"/>
+    <uses-sdk android:minSdkVersion="3" />
+
+</manifest> 
