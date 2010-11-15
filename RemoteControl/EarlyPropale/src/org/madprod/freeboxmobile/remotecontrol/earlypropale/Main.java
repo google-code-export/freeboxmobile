@@ -111,10 +111,14 @@ public class Main extends Activity implements Constants{
     	
     	final ImageButton screenLeft2 = (ImageButton)findViewById(R.id.screen_left2);
     	if (screenLeft2 != null) screenLeft2.setOnClickListener(screenLeftListener);
-    	
+    	try{
         if (!bindService(new Intent("org.madprod.freeboxmobile.services.RemoteControlService"), mRemoteControlConnection, Context.BIND_AUTO_CREATE)){
         		showPopupFbm();
         }
+    	}catch(SecurityException e){
+    		showPopupSecurity();
+    		e.printStackTrace();
+    	}
         super.onStart();
     }
     
@@ -196,7 +200,7 @@ public class Main extends Activity implements Constants{
 //		d.setIcon(R.drawable.fm_actus_freenautes);
 		d.setMessage(
 				"Pour utiliser cette fonctionnalité, vous devez installer la derniere version de Freebox Mobile'.\n\n"+
-				"Cliquez sur 'Continuer' pour l'installer ou sur 'Annuler' pour quitter Actu Freenautes"
+				"Cliquez sur 'Continuer' pour l'installer ou sur 'Annuler' pour quitter Early Propale"
 		);
 		d.setButton(DialogInterface.BUTTON_POSITIVE, "Continuer", new DialogInterface.OnClickListener()
 		{
@@ -204,6 +208,58 @@ public class Main extends Activity implements Constants{
 			{
 				dialog.dismiss();
 	            Intent marketIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=org.madprod.freeboxmobile" ));
+	            marketIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+	            try
+	            {
+	            	startActivity(marketIntent);
+					finish();
+	            }
+	            catch (ActivityNotFoundException e)
+	            {
+	    	    	AlertDialog ad = new AlertDialog.Builder(Main.this).create();
+	    			ad.setTitle(getString(R.string.app_name));
+//	    			ad.setIcon(R.drawable.fm_actus_freenautes);
+	    	    	ad.setMessage("Impossible d'ouvrir Android Market !");
+	    			ad.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
+					{
+						public void onClick(DialogInterface dialog, int which)
+						{
+							dialog.dismiss();
+						}
+					});
+	    	    	ad.show();
+	            }
+			}
+		});
+	d.setButton(DialogInterface.BUTTON_NEGATIVE, "Quitter", new DialogInterface.OnClickListener()
+	{
+		public void onClick(DialogInterface dialog, int which)
+		{
+			dialog.dismiss();
+			finish();
+		}
+	});
+	d.show();
+    	
+    }    
+    
+    
+    private void showPopupSecurity(){
+		AlertDialog d = new AlertDialog.Builder(this).create();
+		d.setCancelable(false);
+		d.setTitle(getString(R.string.app_name));
+//		d.setIcon(R.drawable.fm_actus_freenautes);
+		d.setMessage(
+				"Probleme de permission.\n\n"+
+				"Veuillez réinstaller le module\n"+
+				"Cliquez sur 'Continuer' pour l'installer ou sur 'Annuler' pour quitter Early Propale"
+		);
+		d.setButton(DialogInterface.BUTTON_POSITIVE, "Continuer", new DialogInterface.OnClickListener()
+		{
+			public void onClick(DialogInterface dialog, int which)
+			{
+				dialog.dismiss();
+	            Intent marketIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=org.madprod.freeboxmobile.remotecontrol.earlypropale" ));
 	            marketIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 	            try
 	            {
