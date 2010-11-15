@@ -1,7 +1,5 @@
 package org.madprod.freeboxmobile.home;
 
-import com.google.android.apps.analytics.GoogleAnalyticsTracker;
-
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -19,21 +17,23 @@ import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.Utils;
 import org.madprod.freeboxmobile.fax.FaxActivity;
 import org.madprod.freeboxmobile.guide.GuideMenuActivity;
-import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
-import org.madprod.freeboxmobile.remotecontrol.RemoteControlActivity;
 import org.madprod.freeboxmobile.tv.TvActivity;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.net.Uri;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.Settings;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -50,6 +50,8 @@ import android.widget.ScrollView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 
 /**
 *
@@ -293,7 +295,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		map.put(M_ICON, R.drawable.fm_telecommande);
 		map.put(M_TITRE, getString(R.string.buttonTelecommande));
 		map.put(M_DESC, "Amusez vous avec nos télécommandes\n[BETA]");
-		map.put(M_CLASS, RemoteControlActivity.class);
+		map.put(M_CLASS, null);
 		modulesList.add(map);
 		map = new HashMap<String,Object>();
 		map.put(M_ICON, R.drawable.fm_infos_adsl);
@@ -390,6 +392,83 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 	    	}else if (moduleName.equals(getString(R.string.buttonActu)))
 		    {
 		    	openExtApp("org.madprod.infofreenautes", ".splashscreen.SplashScreen", "Actu Freenautes", true);
+		    }else if (moduleName.equals(getString(R.string.buttonTelecommande)))
+		    {
+		    	WifiManager wifi = (WifiManager)getSystemService(Context.WIFI_SERVICE);
+		    	boolean wifiEnabled = false;
+		    	int nbCodes = 0;
+
+		    	if (wifi.isWifiEnabled()){
+		    		WifiInfo infos = wifi.getConnectionInfo();
+		    		if(infos.getSSID()!=null){
+		    			wifiEnabled = true;
+		    		}
+		    	}
+		    	
+				String boitier1_code = getApplicationContext().getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(BOITIER1_CODE, null);
+				Log.d(TAG, "boitier1_code = "+boitier1_code);
+				Boolean boitier1_state = getApplicationContext().getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getBoolean(BOITIER1_STATE, false);
+				Log.d(TAG, "boitier1_state = "+boitier1_state);
+				String boitier2_code = getApplicationContext().getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(BOITIER2_CODE, null);
+				Log.d(TAG, "boitier2_code = "+boitier2_code);
+				Boolean boitier2_state = getApplicationContext().getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getBoolean(BOITIER2_STATE, false);
+				Log.d(TAG, "boitier2_state = "+boitier2_state);
+				if (boitier1_state && boitier1_code != null)
+					nbCodes ++;
+				if (boitier2_state && boitier2_code != null)
+					nbCodes ++;
+
+				if (!wifiEnabled || nbCodes==0){
+
+					AlertDialog d = new AlertDialog.Builder(this).create();
+					d.setTitle(getString(R.string.app_name)+" - Télécommande");
+					d.setIcon(R.drawable.fm_telecommande);
+					d.setMessage(
+							"Avant d'utiliser la télécommande, vous devez paramétrer les éléments suivants :\n\n"+
+							((!wifiEnabled)?"- Connectez vous en wifi a votre Freebox\n":"")+
+							((nbCodes == 0)?"- Paramétrer le(s) code(s) du(des) boitier(s)\n":"")+
+							"\nQue souhaitez vous faire ?"+
+							"\n\n"
+					);
+
+
+					if (!wifiEnabled){
+						d.setButton(DialogInterface.BUTTON_POSITIVE, "Configurer Wifi", new DialogInterface.OnClickListener()
+						{
+							public void onClick(DialogInterface dialog, int which)
+							{
+								startActivityForResult(new Intent(Settings.ACTION_WIFI_SETTINGS), 0);
+								dialog.dismiss();
+							}
+						}
+						);
+					}
+					if (nbCodes == 0){
+						d.setButton(DialogInterface.BUTTON_NEUTRAL, "Configurer Télécommande", new DialogInterface.OnClickListener()
+						{
+							public void onClick(DialogInterface dialog, int which)
+							{
+								dialog.dismiss();
+								startActivityForResult(new Intent(getApplicationContext(), Config.class), 0);
+							}
+						}
+						);
+					}
+					d.setButton(DialogInterface.BUTTON_NEGATIVE, "Retour à l'accueil", new DialogInterface.OnClickListener()
+					{
+						public void onClick(DialogInterface dialog, int which)
+						{
+							dialog.dismiss();
+						}
+					}
+					);
+					d.setCancelable(false);
+					d.show();
+
+		    		
+		    	}else{
+			    	openExtApp("org.madprod.freeboxmobile.remotecontrol.earlypropale", ".Main", "Early Propale", true);		    		
+		    	}
 		    }
 	    	else if (moduleName.equals(getString(R.string.buttonFreeWifi)))
 	    	{

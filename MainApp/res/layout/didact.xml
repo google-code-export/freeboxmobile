@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent" 
+    android:background="#000000" 
+    android:layout_height="fill_parent"
+>
+	<ImageView
+		android:id="@+id/ImageViewDidact"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:layout_above="@+id/buttons"
+	/>
+
+	<RelativeLayout
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_alignParentBottom="true"
+		android:id="@+id/buttons"
+	>
+		<Button
+			android:id="@+id/previous"
+			android:text="Précédent"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentLeft="true"
+		/>
+		<TextView
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_toRightOf="@+id/previous"
+			android:layout_toLeftOf="@+id/next"
+			android:gravity="center"
+			android:id="@+id/TextViewDidact"
+			android:textColor="#FFFFFF"
+		/>
+		<Button
+			android:id="@+id/next"
+			android:text="Suivant"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentRight="true"
+		/>
+	
+	</RelativeLayout>
+    
+	
+</RelativeLayout>
