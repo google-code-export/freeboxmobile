@@ -48,13 +48,6 @@
 		android:title="@string/buttonTelecommande" 
 		android:order="4"
 	>
-		<PreferenceScreen 
-			android:summary="Configuration des codes de la télécommande" 
-			android:title="Skins" 
-			android:order="5"
-			
-			
-		/>
 		<PreferenceCategory
 			android:title="Boitier 1 : hd1.freebox.fr"
 		>
@@ -95,8 +88,14 @@
 				android:digits="0123456789"
 			/>
 		
+			<PreferenceScreen 
+				android:summary="Où trouver le code ?" 
+				android:title="Aide sur les codes" 
+				android:order="5"
+				android:key="findCodes"
+			/>
+				
 		</PreferenceCategory>
-
 
 	</PreferenceScreen>
 </PreferenceScreen>

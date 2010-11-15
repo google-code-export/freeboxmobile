@@ -36,9 +36,7 @@
 		<activity android:theme="@style/Theme.FreeboxMobile.TitleBar" android:name=".guide.GuideMenuActivity"></activity>
 		<activity android:theme="@style/Theme.FreeboxMobile.TitleBar" android:name=".guide.GuideChoixChainesActivity"></activity>
 		<activity android:theme="@style/Theme.FreeboxMobile.NoTitleBar" android:name=".guide.GuideDetailsActivity"></activity>
-		<activity android:theme="@style/Theme.FreeboxMobile.TitleBar" android:name=".remotecontrol.RemoteControlActivity" android:configChanges="orientation|keyboardHidden"></activity>
-		<activity android:theme="@style/Theme.FreeboxMobile.TitleBar" android:name=".remotecontrol.RemoteControlChooseLayout"></activity>
-		<activity android:theme="@style/Theme.FreeboxMobile.TitleBar" android:name=".remotecontrol.RemoteControlListLayout"></activity>
+		<activity android:theme="@style/Theme.FreeboxMobile.NoTitleBar" android:name=".remotecontrol.FindCodesActivity"></activity>
 		<activity android:theme="@style/Theme.FreeboxMobile.TitleBar" android:name=".tv.TvActivity"></activity>
 
 		<receiver android:name=".OnBootReceiver">
@@ -46,7 +44,7 @@
 				<action android:name="android.intent.action.BOOT_COMPLETED" />
 			</intent-filter>
 		</receiver>
-		
+
 		<receiver android:name=".OnUpgradeReceiver">
 			<intent-filter>
     			<action android:name="android.intent.action.PACKAGE_REPLACED" />
@@ -63,14 +61,22 @@
     			<action android:name="android.intent.action.MEDIA_MOUNTED"/>
     		</intent-filter>
 		</receiver>
-
 		<receiver android:name=".mvv.OnMevoAlarmReceiver"></receiver>
 		<receiver android:name=".ligne.OnInfoAdslAlarmReceiver"></receiver>
 		<receiver android:name=".guide.OnGuideAlarmReceiver"></receiver>
-
 		<service android:name=".mvv.MevoSync"></service>
     	<service android:name=".ligne.InfoAdslCheck"></service>
     	<service android:name=".guide.GuideCheck"></service>
+    	<service 
+    		android:name=".services.RemoteControlService" 
+    		android:exported="true" 
+    		android:enabled="true"
+    		android:permission="org.madprod.freeboxmobile.permission.REMOTECONTROL"
+    	>
+    		<intent-filter>
+    			<action android:name="org.madprod.freeboxmobile.services.RemoteControlService"/>
+    		</intent-filter>
+    	</service>
 	</application>
 
 	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
@@ -88,8 +94,15 @@
 	<supports-screens
 		android:resizeable="false" android:anyDensity="true" android:largeScreens="true" android:normalScreens="true" android:smallScreens="true">
 	</supports-screens>
+	
+	<permission
+		android:name="org.madprod.freeboxmobile.permission.REMOTECONTROL"
+		android:label="@string/permission_remote_label"
+		android:description="@string/permission_remote_desc"
+		android:protectionLevel="normal"
+	/>
 	<uses-sdk
 		android:minSdkVersion="3"
 		android:targetSdkVersion="8">
-	</uses-sdk>
+	</uses-sdk>		
 </manifest>
