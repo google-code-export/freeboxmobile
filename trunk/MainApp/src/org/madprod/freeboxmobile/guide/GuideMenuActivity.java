@@ -93,7 +93,7 @@ public class GuideMenuActivity extends GuideUtils implements GuideConstants
 			        	Integer mois = c.get(Calendar.MONTH)+1;
 			        	Integer jour = c.get(Calendar.DAY_OF_MONTH);
 			        	String date = (c.get(Calendar.YEAR)+"-"+(mois<10?"0":"")+mois.toString()+"-"+(jour<10?"0":"")+jour.toString());
-			        	date += " 20:00:00";
+			        	date += " 21:00:00";
 						Intent i = new Intent(GuideMenuActivity.this, GuideActivity.class);
 						i.putExtra("DATE", date);
 						i.putExtra("CHAINE", 0);
