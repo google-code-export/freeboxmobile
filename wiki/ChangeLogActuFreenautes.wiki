@@ -38,6 +38,12 @@ Revision : 45
  * Première version
 
 = Versions beta du module !ActuFreenautes =
+== 1.2.0rc1 ==
+Sortie le 17/11/2010<br>
+Release : 6<br>
+Revision : 58
+ * Update suite modification de la modularisation de FBM
+
 == 1.0.0rc1 ==
 Sortie le 07/09/2010<br>
 Release : 1<br>
