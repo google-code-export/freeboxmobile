@@ -33,7 +33,7 @@ public class RemoteControlService extends Service{
 	private final IRemoteControl.Stub mRemoteControlBinder = new IRemoteControl.Stub(){
 
 		@Override
-		public void sendCommand(String cmd, boolean longClick, int repeat)
+		public void sendCommand(String cmd, boolean longClick, int repeat, int box)
 		throws RemoteException {
 
 
@@ -41,9 +41,9 @@ public class RemoteControlService extends Service{
 			try {
 				if (cmd != null){
 					if (repeat > 0){
-						cm.sendCommand(cmd, longClick, repeat);
+						cm.sendCommand(cmd, longClick, repeat, box);
 					}else{
-						cm.sendCommand(cmd, longClick);			
+						cm.sendCommand(cmd, longClick, box);			
 					}
 				}
 				sendAnswer(0, "command "+cmd+" OK");
@@ -69,18 +69,63 @@ public class RemoteControlService extends Service{
 				getCallbacks().unregister(cb); 
 			} 
 		}
+
+		@Override
+		public void sendChannel(int channel, int box) throws RemoteException {
+			cm.refreshCodes(getApplicationContext());
+			if (channel>0){
+				String channelS = ""+channel;
+				try{
+					for (int i=0; i< channelS.length(); i++){
+						if (i == channelS.length()-1)
+							cm.sendCommand(""+channelS.charAt(i), box);
+						else cm.sendCommand(""+channelS.charAt(i), true,box);
+					}
+
+					sendAnswer(0, "channel "+channel+" OK");
+				} catch (IOException e) {
+					e.printStackTrace();
+					sendAnswer(1, "channel "+channel+" PAS OK");
+				}
+
+			}
+		}
+
+		@Override
+		public void sendParentalCode(int code, int box) throws RemoteException {
+			if (code>0){
+				try{
+					String codeS = ""+code;
+					for (int i=0; i< codeS.length(); i++){
+						cm.sendCommand(""+codeS.charAt(i), box);
+					}
+					sendAnswer(1, "parental code "+code+" OK");
+				} catch (IOException e) {
+					e.printStackTrace();
+					sendAnswer(1, "parental code "+code+" PAS OK");
+				}
+
+			}
+
+		}
+
+		@Override
+		public boolean isBoxActivated(int box) throws RemoteException {
+			cm.refreshCodes(getApplicationContext());
+			return cm.isBoxActive(box);
+		}
 	};
 
 	private void sendAnswer(int status, String message){
 		synchronized(lock){
-		final int N = callbacks.beginBroadcast(); 
-		for (int i = 0; i < N; i++) { 
-			try { 
-				callbacks.getBroadcastItem(i).dataChanged(status, message); 
-			}  
-			catch (RemoteException e) {} 
-		} 
-		callbacks.finishBroadcast();
+			final int N = callbacks.beginBroadcast(); 
+			for (int i = 0; i < N; i++) { 
+				try { 
+					callbacks.getBroadcastItem(i).dataChanged(status, message); 
+				}  
+				catch (RemoteException e) {} 
+			} 
+			callbacks.finishBroadcast();
 		}
 	}
 
