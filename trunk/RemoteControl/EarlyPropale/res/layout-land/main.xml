@@ -80,7 +80,7 @@
     				android:layout_height="fill_parent"
 			    	android:layout_weight="1"
     				android:padding="3dip"
-    				android:tag="@string/options"
+    				android:tag="@string/info"
 				/>
 			</LinearLayout>
 		 	<LinearLayout
