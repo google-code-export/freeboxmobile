@@ -231,6 +231,15 @@ Release : 1
  * SERVICES : Notification de nouveaux messages
 
 = Versions beta de !FreeboxMobile =
+== 0.51.0rc1 ==
+Sortie le 17/11/2010<br>
+Release : 655<br>
+Revision : 50
+ * modularisation de l'application
+ * module télécommande séparée
+ * grosse améliorations de la télécommande
+ * debug sur le guide
+
 == 0.50.0rc1 ==
 Sortie le 22/09/2010<br>
 Release : 605<br>
