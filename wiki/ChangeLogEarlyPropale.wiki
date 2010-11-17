@@ -2,11 +2,11 @@
 
 <wiki:toc max_depth="2" />
 
-= Versions publiques du module !ActuFreenautes =
+= Versions publiques du module !EarlyPropale =
 
 = Versions beta du module !EarlyPropale =
 == 1.0.0rc1 ==
 Sortie le 17/12/2010<br>
-Release : <br>
-Révision : 
+Release : 1<br>
+Révision : 660
  * Première version en module
