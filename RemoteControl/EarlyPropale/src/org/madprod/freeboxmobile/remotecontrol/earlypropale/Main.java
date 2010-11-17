@@ -13,6 +13,7 @@ import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.ResolveInfo;
@@ -23,6 +24,8 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.RemoteException;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
@@ -33,8 +36,9 @@ import android.widget.ViewFlipper;
 public class Main extends Activity implements Constants{
 	
 	public static IRemoteControl mRemoteControl = null;
-	
-    /** Called when the activity is first created. */
+	public static int box = -1;
+
+	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -119,6 +123,8 @@ public class Main extends Activity implements Constants{
     		showPopupSecurity();
     		e.printStackTrace();
     	}
+    	
+
         super.onStart();
     }
     
@@ -139,6 +145,10 @@ public class Main extends Activity implements Constants{
 			}catch (RemoteException e) {
 				e.printStackTrace();
 			} 
+    			if (box == -1){
+    				choiceBox();
+    			}
+
 		}
 		
 	};
@@ -294,4 +304,92 @@ public class Main extends Activity implements Constants{
 	d.show();
     	
     }    
+    
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+    	menu.add("Choisir le boitier");
+    	return super.onPrepareOptionsMenu(menu);
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+    	choiceBox();
+    	return super.onOptionsItemSelected(item);
+    }
+    
+    private void choiceBox(){
+    	
+    	final CharSequence[] items = {"Boitier 1", "Boitier 2"};
+
+    	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    	builder.setTitle("Indiquer le boitier");
+    	builder.setSingleChoiceItems(items, box, new DialogInterface.OnClickListener() {
+    		
+    	    public void onClick(DialogInterface dialog, int item) {    	    	
+    	    	try {
+					if (mRemoteControl.isBoxActivated(item+1)){
+						box = item;
+					    dialog.cancel();
+					}else{
+				    	final AlertDialog.Builder builderProblem = new AlertDialog.Builder(Main.this);
+				    	builderProblem.setTitle("Boitier non configuré");
+				    	builderProblem.setMessage("Allez dans la configuration de Freebox Mobile pour activer le code et activer le boitier");
+				    	builderProblem.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+														
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								dialog.cancel();
+							}
+						});
+				    	AlertDialog alert = builderProblem.create();
+				    	alert.show();
+					}
+				} catch (RemoteException e) {
+					e.printStackTrace();
+				}
+    	    	
+    	    }
+    	});
+    	final AlertDialog alert = builder.create();
+    	alert.setOnCancelListener(new OnCancelListener() {
+			
+			@Override
+			public void onCancel(DialogInterface dialog) {
+				if (box != -1){
+					dialog.cancel();
+				}else{
+			    	final AlertDialog.Builder builderProblem = new AlertDialog.Builder(Main.this);
+			    	builderProblem.setTitle("Aucun boitier choisi");
+			    	builderProblem.setMessage("Aucun boitier choisi. La touche OK fermera l'application");
+			    	builderProblem.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+													
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.cancel();
+							finish();
+						}
+					});
+			    	builderProblem.setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
+						
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.cancel();
+							alert.show();
+						}
+					});
+			    	AlertDialog alert = builderProblem.create();
+			    	alert.setCancelable(false);
+			    	alert.show();
+					
+				}
+			}
+		});
+    	alert.show();
+//		try {
+//			if (mRemoteControl != null)
+//			Toast.makeText(Main.this, "box 0 validated = "+mRemoteControl.isBoxActivated(0), Toast.LENGTH_SHORT).show();
+//		} catch (RemoteException e) {
+//			e.printStackTrace();
+//		}
+    }
 }

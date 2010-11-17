@@ -23,7 +23,7 @@ public class MyImageButton extends ImageButton implements Constants{
 					@Override
 					public void run() {
 						try {
-							Main.mRemoteControl.sendCommand(getTag().toString(), false, 0);
+							Main.mRemoteControl.sendCommand(getTag().toString(), false, 0, Main.box+1);
 						} catch (RemoteException e) {
 							e.printStackTrace();
 						}
@@ -41,7 +41,7 @@ public class MyImageButton extends ImageButton implements Constants{
 			if (Main.mRemoteControl != null){
 				try {
 					Log.d(LOGNAME, "appui long sur : "+getTag());
-					Main.mRemoteControl.sendCommand(getTag().toString(), true, 0);
+					Main.mRemoteControl.sendCommand(getTag().toString(), true, 0, Main.box+1);
 				} catch (RemoteException e) {
 					e.printStackTrace();
 				}
