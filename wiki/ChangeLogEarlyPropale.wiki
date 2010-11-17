@@ -1,0 +1,12 @@
+#summary Historique des versions de EarlyPropale (télécommande).
+
+<wiki:toc max_depth="2" />
+
+= Versions publiques du module !ActuFreenautes =
+
+= Versions beta du module !EarlyPropale =
+== 1.0.0rc1 ==
+Sortie le 17/12/2010<br>
+Release : <br>
+Révision : 
+ * Première version en module
