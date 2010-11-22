@@ -324,11 +324,11 @@ public class Main extends Activity implements Constants{
 		d.show();
 
 	}    
-
+	
 	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
+	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.add("Choisir le boitier");
-		return super.onPrepareOptionsMenu(menu);
+		return super.onCreateOptionsMenu(menu);
 	}
 
 	@Override
