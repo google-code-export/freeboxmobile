@@ -19,7 +19,7 @@ TELECOMMANDE : Le module de télécommande
 == 0.51.0 ==
 Sortie le 22/11/2010<br>
 Release : 51<br>
-Revision : 662
+Revision : 670
  * Modularisation de la télécommande
  * Quelques petites améliorations sur le guide
 
