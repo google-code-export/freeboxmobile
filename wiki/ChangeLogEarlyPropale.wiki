@@ -8,7 +8,7 @@
 == 1.0.0 ==
 Sortie le 22/11/2010<br>
 Release : 2<br>
-Révision : 664
+Révision : 667
  * Première version publique en module
  * app2sd
 
