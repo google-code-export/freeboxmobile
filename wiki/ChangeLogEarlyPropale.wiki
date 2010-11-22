@@ -4,9 +4,17 @@
 
 = Versions publiques du module !EarlyPropale =
 
+= Versions publiques du module !EarlyPropale =
+== 1.0.0 ==
+Sortie le 22/11/2010<br>
+Release : 2<br>
+Révision : 664
+ * Première version publique en module
+ * app2sd
+
 = Versions beta du module !EarlyPropale =
 == 1.0.0rc1 ==
-Sortie le 17/12/2010<br>
+Sortie le 17/11/2010<br>
 Release : 1<br>
 Révision : 660
  * Première version en module
