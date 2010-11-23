@@ -508,16 +508,20 @@ public class GuideCheck extends WakefullIntentService implements GuideConstants
 				{
 					public void run()
 					{
-						if (pos != 0)
+						if (myProgressDialog != null)
 						{
-							myProgressDialog.setProgress(pos);						
-						}
-						else
-						{
-							myProgressDialog.setMessage(message);
-							myProgressDialog.setMax(max);
-							myProgressDialog.setProgress(pos);
-							myProgressDialog.show();
+							if (pos != 0)
+							{
+								myProgressDialog.setProgress(pos);						
+							}
+							else
+							{
+								myProgressDialog.setMessage(message);
+								myProgressDialog.setMax(max);
+								myProgressDialog.setProgress(pos);
+								if (CUR_ACTIVITY != null)
+									myProgressDialog.show();
+							}
 						}
 					}
 				});
@@ -541,7 +545,8 @@ public class GuideCheck extends WakefullIntentService implements GuideConstants
 						myProgressDialog.setMessage(message);
 						myProgressDialog.setCancelable(false);
 						myProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-						myProgressDialog.show();
+						if (CUR_ACTIVITY != null) // CUR_ACTIVITY a pu passer à null entre temps
+							myProgressDialog.show();
 					}
 				});
 		}
