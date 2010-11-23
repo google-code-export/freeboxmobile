@@ -5,6 +5,12 @@
 = Versions publiques du module !EarlyPropale =
 
 = Versions publiques du module !EarlyPropale =
+== 1.0.1 ==
+Sortie le 23/11/2010<br>
+Release : 3<br>
+Révision : 674
+ * Debug touche menu
+
 == 1.0.0 ==
 Sortie le 22/11/2010<br>
 Release : 2<br>
