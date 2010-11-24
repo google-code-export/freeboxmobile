@@ -3,6 +3,12 @@
 <wiki:toc max_depth="2" />
 
 = Versions publiques du module !EarlyPropale =
+== 1.0.2 ==
+Sortie le 24/11/2010<br>
+Release : 4<br>
+Révision : 680
+ * Debug petits écrans
+
 == 1.0.1 ==
 Sortie le 23/11/2010<br>
 Release : 3<br>
