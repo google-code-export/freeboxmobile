@@ -3,6 +3,13 @@
 <wiki:toc max_depth="2" />
 
 = Versions publiques du module !ActuFreenautes =
+== 1.2.3 ==
+Sortie le 26/11/2010<br>
+Release : 10<br>
+Révision : 69
+ * Debug consommation batterie
+ * Debug application bloquée sur téléchargement des news
+
 == 1.2.2 ==
 Sortie le 25/11/2010<br>
 Release : 9<br>
