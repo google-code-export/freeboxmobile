@@ -11,7 +11,7 @@ Révision : 72
  * Algorithm of news synchronisation changed
  * Algorithm of comments synchronisation changed
  * Possibility to add/remove icon in launcher
- * Possibility to share a news
+ * Possibility to share a news (beta)
  * Possibility to delete/restore a news
 
 == 1.2.3 ==
