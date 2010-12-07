@@ -7,12 +7,12 @@
 Sortie le 07/12/2010<br>
 Release : 11<br>
 Révision : 75
- * New interface (Android Style)
- * Algorithm of news synchronisation changed
- * Algorithm of comments synchronisation changed
- * Possibility to add/remove icon in launcher
- * Possibility to share a news (beta)
- * Possibility to delete/restore a news
+ * Nouvelle interface (Android Style)
+ * Algorithme de synchronisation des news modifé
+ * Algorithme de synchronisation des commentaires modifié
+ * Possibilité de mettre ou d'enlever l'icône du launcher
+ * Possibilité de partager une news (beta)
+ * Possibilité de supprimer / restaurer une news
 
 == 1.2.3 ==
 Sortie le 26/11/2010<br>
