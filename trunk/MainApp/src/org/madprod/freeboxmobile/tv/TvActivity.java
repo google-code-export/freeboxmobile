@@ -81,8 +81,8 @@ public class TvActivity extends ListActivity implements TvConstants
 		d.setIcon(R.drawable.icon_fbm_reverse);
     	d.setMessage(
     		"Cette fonctionnalité ne fonctionnera QUE si vous êtes sur le réseau Free : soit connecté à une Freebox, soit connecté au réseau FreeWifi (lorsque vous êtes en déplacement).\n\n"+
-			"Pour utiliser cette fonctionnalité, vous devez installer une application capable de lire les flux vidéos 'TS' comme 'vplayer'.\n\n"+
-			"- Cliquez sur 'Installer' pour installer vplayer à partir du market.\n"+
+			"Pour utiliser cette fonctionnalité, vous devez installer une application capable de lire les flux vidéos 'TS' comme 'VPlayer'.\n\n"+
+			"- Cliquez sur 'Installer' pour installer VPlayer à partir du market.\n"+
 			"- Cliquez sur 'Continuer' si vous avez déjà installé vplayer ou une autre application capable de lire de tels flux.\n"+
 			"- Cliquez sur 'Annuler' pour ne rien faire et revenir à l'écran précédent.\n"
 		);
@@ -136,7 +136,7 @@ public class TvActivity extends ListActivity implements TvConstants
     {
     	switch (item.getItemId())
     	{
-	        case 0:
+	        case 1:
 	        	displayWarningTv();
 	        	return true;
         }
