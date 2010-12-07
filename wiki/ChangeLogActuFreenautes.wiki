@@ -13,6 +13,7 @@ Révision : 75
  * Possibilité de mettre ou d'enlever l'icône du launcher
  * Possibilité de partager une news (beta)
  * Possibilité de supprimer / restaurer une news
+ * Application beaucoup + légère (382 Ko contre 1200 Ko avant)
 
 == 1.2.3 ==
 Sortie le 26/11/2010<br>
