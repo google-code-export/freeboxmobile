@@ -267,6 +267,12 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     {
     	Map<String,Object> map;
 
+    	map = new HashMap<String,Object>();
+		map.put(M_ICON, R.drawable.fm_television);
+		map.put(M_TITRE, getString(R.string.buttonTv));
+		map.put(M_DESC, "NOUVEAU : Regardez les chaînes de TV Freebox ! (BETA)");
+		map.put(M_CLASS, TvActivity.class);			
+		modulesList.add(map);
 		map = new HashMap<String,Object>();
 		map.put(M_ICON, R.drawable.fm_guide_tv);
 		map.put(M_TITRE, getString(R.string.buttonGuide));
@@ -276,7 +282,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		map = new HashMap<String,Object>();
 		map.put(M_ICON, R.drawable.fm_actus_freenautes);
 		map.put(M_TITRE, getString(R.string.buttonActu));
-		map.put(M_DESC, "NOUVEAU : Consultez l'actualité de Free et de la Freebox");
+		map.put(M_DESC, "Consultez l'actualité de Free et de la Freebox");
 		map.put(M_CLASS, null);
 		modulesList.add(map);    	
     	map = new HashMap<String,Object>();
@@ -329,23 +335,9 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		map.put(M_CLASS, null);
 		modulesList.add(map);
     	map = new HashMap<String,Object>();
-		map.put(M_ICON, R.drawable.fm_television);
-		map.put(M_TITRE, getString(R.string.buttonTv));
-		if (Utils.getFBMVersion(this).contains("rc") == false)
-		{
-			map.put(M_DESC, "Regardez vos chaînes de TV Freebox\n\nCette fonctionnalité n'est pas encore disponible");
-			map.put(M_CLASS, null);
-		}
-		else
-		{
-			map.put(M_DESC, "Regardez les chaînes de TV Freebox");
-			map.put(M_CLASS, TvActivity.class);			
-		}
-		modulesList.add(map);
-    	map = new HashMap<String,Object>();
 		map.put(M_ICON, R.drawable.fm_radios);
-		map.put(M_TITRE, getString(R.string.buttonRadios));
-		map.put(M_DESC, "Ecoutez les radios Freebox\n\nCette fonctionnalité n'est pas encore disponible");
+		map.put(M_TITRE, getString(R.string.buttonMusique));
+		map.put(M_DESC, "Ecoutez la musique présente chez vous\n\nCette fonctionnalité n'est pas encore disponible");
 		map.put(M_CLASS, null);
 		modulesList.add(map);
 		map = new HashMap<String,Object>();
@@ -378,6 +370,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 	        	showNonADSL();
 	        	return;
 	        }
+//	    		checkExtApp("me.abitno.vplayer", "", "VPLayer");
 	    	if (moduleName.equals(getString(R.string.buttonAssistance)))
 	    	{
 //	    		FBMHttpConnection.connectAssistance();

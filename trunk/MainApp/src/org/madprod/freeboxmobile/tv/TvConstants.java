@@ -17,4 +17,5 @@ public interface TvConstants extends Constants
     static final String M_TITRE = "titre";
     static final String M_SHORT = "short";
     static final String M_ID = "id";
+    static final String KEY_SPLASH_TV = "splashscreen_mevo";
 }
