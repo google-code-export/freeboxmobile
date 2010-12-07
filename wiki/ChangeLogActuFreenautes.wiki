@@ -6,7 +6,7 @@
 == 1.2.4 ==
 Sortie le 07/12/2010<br>
 Release : 11<br>
-Révision : 72
+Révision : 73
  * New interface (Android Style)
  * Algorithm of news synchronisation changed
  * Algorithm of comments synchronisation changed
