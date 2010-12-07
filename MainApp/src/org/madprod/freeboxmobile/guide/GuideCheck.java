@@ -199,7 +199,7 @@ public class GuideCheck extends WakefullIntentService implements GuideConstants
 		amgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, /*System.currentTimeMillis(),*/SystemClock.elapsedRealtime(),AlarmManager.INTERVAL_HALF_DAY/* AlarmManager.INTERVAL_DAY*/, pi);
 		Log.i(TAG, "GuideTimer set");
 	}
-	
+
 	private int getData(Context context, String datetime, Integer duree_h, boolean getChaines, boolean forceRefresh)
 	{
     	Log.d(TAG,"GUIDESYNCDATA START "+datetime+" "+duree_h+" "+getChaines+" "+forceRefresh);
