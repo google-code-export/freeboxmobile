@@ -270,7 +270,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     	map = new HashMap<String,Object>();
 		map.put(M_ICON, R.drawable.fm_television);
 		map.put(M_TITRE, getString(R.string.buttonTv));
-		map.put(M_DESC, "NOUVEAU : Regardez les chaînes de TV Freebox ! (BETA) - Android 2.1 ou plus.");
+		map.put(M_DESC, "NOUVEAU : Regardez les chaînes de TV Freebox ! (BETA)");
 		map.put(M_CLASS, TvActivity.class);			
 		modulesList.add(map);
 		map = new HashMap<String,Object>();
