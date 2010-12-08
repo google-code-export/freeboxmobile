@@ -8,7 +8,6 @@ import java.util.Map;
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.Utils;
-import org.madprod.freeboxmobile.mvv.MevoSync;
 
 import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 
@@ -19,6 +18,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -56,8 +56,14 @@ public class TvActivity extends ListActivity implements TvConstants
 			Editor editor = mgr.edit();
 			editor.putString(KEY_SPLASH_TV, Utils.getFBMVersion(this));
 			editor.commit();
-			displayWarningTv();
+			displayHelp();
 		}
+		/*
+		else
+		{
+			displayHelp();
+		}
+		*/
     }
 
     @Override
@@ -74,14 +80,137 @@ public class TvActivity extends ListActivity implements TvConstants
     	super.onStart();
     }
 
+    /*
+     *  Fonctionne sur :
+     *  - Google Nexus One (2.2)
+     *  - Samsung Galaxy S (2.2)
+     *  - HTC Desire HD (2.2)
+     *  - HTC Desire
+     *  - Acer Liquid (2.2)
+     *  - Archos 70 (2.2)
+     *  - Archos 10.1
+     *  - Motorola Milestone (2.2)
+     * 
+     *  Ne Fonctionne pas sur :
+     *  - Dell Streak (2.2)
+     *  
+     *  Inivisible sur :
+     *  - HTC Hero (2.1) (2.2)
+     *  - HTC Legend
+     *  - HTC Dream
+     *  - HTC Wildfire
+     *  - HTC Magic (2.2)
+     *  - HTC Tatoo ?
+     *  - Sony Xperia X10 (2.1) ??
+     *  - Samsung Galaxy (Original)
+     *  - Samsung Galaxy Spica
+     *  - Samsung Naos
+     *  
+     */
+    
+    private void displayHelp()
+    {
+    	AlertDialog d3 = new AlertDialog.Builder(TvActivity.this).create();
+		d3.setIcon(R.drawable.icon_fbm_reverse);
+		d3.setTitle("Aide");
+		d3.setMessage("A tout moment, vous pouvez relire les informations qui vont suivre en utilisant la touche menu -> Aide.\n\n");
+		d3.setButton(DialogInterface.BUTTON_POSITIVE, "Continuer", new DialogInterface.OnClickListener()
+		{
+			public void onClick(DialogInterface dialog, int which)
+			{
+				dialog.dismiss();
+				checkOS();
+			}
+		});
+		d3.show();    	    	
+    }
+
+    private void displayWrongOS()
+    {
+		tracker.trackPageView("TV/DisplayWrongOS");
+    	AlertDialog d3 = new AlertDialog.Builder(TvActivity.this).create();
+		d3.setIcon(R.drawable.icon_fbm_reverse);
+		d3.setTitle("Problème de version d'Android");
+		d3.setMessage("La version d'Android de votre téléphone ("+Build.VERSION.RELEASE+") ne devrait pas être compatible avec le player vidéo nécessaire à la visualisation des chaînes TV.\n\n"+
+				"Si c'est le cas, Vplayer ne sera pas visible sur le market ou ne fonctionnera pas après installation.\n");
+		d3.setButton(DialogInterface.BUTTON_POSITIVE, "J'ai compris", new DialogInterface.OnClickListener()
+		{
+			public void onClick(DialogInterface dialog, int which)
+			{
+				dialog.dismiss();
+				checkPhone();
+			}
+		});
+		d3.show();    	
+    }
+
+    private void displayWrongPhone()
+    {
+		tracker.trackPageView("TV/DisplayWrongPhone");
+    	AlertDialog d3 = new AlertDialog.Builder(TvActivity.this).create();
+		d3.setIcon(R.drawable.icon_fbm_reverse);
+		d3.setTitle("Problème de compatibilité");
+		d3.setMessage("Il se peut que votre appareil ne soit pas compatible avec le player vidéo nécessaire à la visualisation de la télévision.\n\n"+
+				"Si c'est le cas, Vplayer ne sera pas visible sur le market ou ne fonctionnera pas après installation.\n");
+		d3.setButton(DialogInterface.BUTTON_POSITIVE, "J'ai compris", new DialogInterface.OnClickListener()
+		{
+			public void onClick(DialogInterface dialog, int which)
+			{
+				dialog.dismiss();
+				downloadPlayer();
+			}
+		});
+		d3.show();
+    }
+    
+    private void checkOS()
+    {
+    	if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ECLAIR_MR1)
+    	{
+    		displayWrongOS();
+    	}
+    	else
+    	{
+    		checkPhone();
+    	}
+    }
+    
+    private void checkPhone()
+    {
+    	String b = Build.MODEL.toLowerCase();
+    	if (
+    			b.contains("legend") ||
+    			b.contains("hero") ||
+    			b.contains("dream") ||
+    			b.contains("magic") ||
+    			b.contains("tatoo") ||
+    			b.contains("steak") ||
+    			b.contains("legend") ||
+    			b.contains("gt-i5801") ||	// Naos
+    			b.contains("gt-i5700") ||	// Galaxy Spica
+    			b.contains("gt-i7500")		// Galaxy
+    		)
+    	{
+    		displayWrongPhone();
+    	}
+    	else
+    	{
+    		downloadPlayer();
+    	}
+    }
+    
     private void displayWarningTv()
+    {
+    }
+    
+    private void downloadPlayer()
     {
     	AlertDialog d = new AlertDialog.Builder(this).create();
 		d.setTitle("Attention ! Merci de lire");
 		d.setIcon(R.drawable.icon_fbm_reverse);
     	d.setMessage(
-    		"Cette fonctionnalité ne fonctionnera QUE si vous êtes sur le réseau Free : soit connecté à une Freebox, soit connecté au réseau FreeWifi (lorsque vous êtes en déplacement).\n\n"+
-			"Pour utiliser cette fonctionnalité, vous devez installer une application capable de lire les flux vidéos 'TS' comme 'VPlayer' (disponible sur Android 2.1 et +).\n\n"+
+    		"Cette fonctionnalité ne fonctionnera QUE si vous êtes sur le réseau Free :\n- soit connecté à une Freebox,\n- soit connecté au réseau FreeWifi (lorsque vous êtes en déplacement).\n\n"+
+			"Pour utiliser cette fonctionnalité, vous devez installer une application capable de lire les flux vidéos 'TS' comme 'VPlayer' (disponible sur Android 2.1 et +) :\n"+
 			"- Cliquez sur 'Installer' pour installer VPlayer à partir du market.\n"+
 			"- Cliquez sur 'Continuer' si vous avez déjà installé vplayer ou une autre application capable de lire de tels flux.\n"+
 			"- Cliquez sur 'Annuler' pour ne rien faire et revenir à l'écran précédent.\n"
@@ -92,7 +221,44 @@ public class TvActivity extends ListActivity implements TvConstants
 			{
 				dialog.dismiss();
 	    		tracker.trackPageView("TV/InstallPlayer");
-				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=me.abitno.vplayer")));
+	        	AlertDialog d2 = new AlertDialog.Builder(TvActivity.this).create();
+	    		d2.setTitle("Installer VPlayer");
+	    		d2.setIcon(R.drawable.icon_fbm_reverse);
+	        	d2.setMessage(
+	        		"Vous pouvez installer VPlayer soit à partir du market, soit en téléchargeant l'application en direct.\n"
+	    		);
+	    		d2.setButton(DialogInterface.BUTTON_NEGATIVE, "A partir du market", new DialogInterface.OnClickListener()
+	    		{
+	    			public void onClick(DialogInterface dialog, int which)
+	    			{
+	    				dialog.dismiss();
+	    	    		tracker.trackPageView("TV/InstallPlayer");	    	    		
+	    				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=me.abitno.vplayer")));
+	    				dialog.dismiss();
+	    			}
+	    		});
+	    		d2.setButton(DialogInterface.BUTTON_POSITIVE, "En téléchargement direct", new DialogInterface.OnClickListener()
+	    		{
+	    			public void onClick(DialogInterface dialog, int which)
+	    			{
+	    				dialog.dismiss();
+	    	    		tracker.trackPageView("TV/InstallPlayerDirect");
+	    	        	AlertDialog d3 = new AlertDialog.Builder(TvActivity.this).create();
+	    	    		d3.setIcon(R.drawable.icon_fbm_reverse);
+	    	    		d3.setTitle("Téléchargement de VPlayer");
+	    	    		d3.setMessage("Une fois le téléchargement terminé, cliquer sur sa notification 'VPLayer.apk' dans la barre de notification en haut de l'écran afin d'installer VPlayer.\n");
+	    	    		d3.setButton(DialogInterface.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener()
+	    	    		{
+	    	    			public void onClick(DialogInterface dialog, int which)
+	    	    			{
+	    	    				dialog.dismiss();
+	    	    				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://files-for-abitno.googlecode.com/files/VPlayer.apk")));
+	    	    			}
+	    	    		});
+	    	    		d3.show();
+	    			}
+	    		});
+	    		d2.show();
 			}
 		});
 		d.setButton(DialogInterface.BUTTON_NEUTRAL, "Continuer", new DialogInterface.OnClickListener()
