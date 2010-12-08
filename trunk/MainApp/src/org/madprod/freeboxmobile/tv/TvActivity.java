@@ -1,5 +1,6 @@
 package org.madprod.freeboxmobile.tv;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -163,9 +164,24 @@ public class TvActivity extends ListActivity implements TvConstants
 		d3.show();
     }
     
+	public static int getPlatformVersion()
+	{
+		try
+		{
+			Field verField = Class.forName("android.os.Build$VERSION").getField("SDK_INT");
+			int ver = verField.getInt(verField);
+			return ver;
+		}
+		catch (Exception e)
+		{
+			// android.os.Build$VERSION is not there on Cupcake
+			return 3;
+		}
+	}
+
     private void checkOS()
     {
-    	if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ECLAIR_MR1)
+    	if (getPlatformVersion() < Build.VERSION_CODES.ECLAIR_MR1)
     	{
     		displayWrongOS();
     	}
