@@ -16,6 +16,12 @@ NEWS : Le module actu freenautes
 TELECOMMANDE : Le module de télécommande
 
 = Versions publiques de !FreeboxMobile =
+== 0.52.4 ==
+Sortie le 10/12/2010<br>
+Release : 56<br>
+Revision : 705
+ * TV : debugs d'information
+
 == 0.52.3 ==
 Sortie le 08/12/2010<br>
 Release : 55<br>
