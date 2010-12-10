@@ -393,29 +393,6 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 	    	{
 	    		openExtApp("com.mba.freewifi", ".FreeWifiConnect", "FreeWifi Connect", false);
 	    	}
-	    	else if (false)//(moduleName.equals(getString(R.string.buttonTv)))
-	    	{
-	    		Intent i = new Intent("kr.mobilesoft.yxplayer.PLAYER");
-//	    		Intent i = new Intent("kr.mobilesoft.yxplayer.StreamsView");
-	    		i.putExtra("url", "http://vipmms9.yacast.net/bfm_bfmtv");
-	    		i.putExtra("uri", "http://vipmms9.yacast.net/bfm_bfmtv");
-//	    		i.putExtra("add", "http://vipmms9.yacast.net/bfm_bfmtv");
-//	    		i.putExtra("stream", "http://vipmms9.yacast.net/bfm_bfmtv");
-//	    		i.putExtra("streams", "http://vipmms9.yacast.net/bfm_bfmtv");
-//	    		i.putExtra("URL", "http://vipmms9.yacast.net/bfm_bfmtv");
-//	    		i.putExtra("URI", "http://vipmms9.yacast.net/bfm_bfmtv");
-//	    		i.putExtra("open", "http://vipmms9.yacast.net/bfm_bfmtv"); // fait planter
-//	    		i.putExtra("video", "http://vipmms9.yacast.net/bfm_bfmtv");
-	    		try
-	    		{
-	    			startActivity(i);
-	    		}
-	    		catch (Exception e)
-	    		{
-	    			Toast.makeText(this, "Pb ! "+e.getMessage(), 2000).show();
-	    			Log.d(TAG, "PB : "+e.getMessage());
-	    		}
-	    	}
         }
     	if (moduleClass != null)
     	{
@@ -586,14 +563,14 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 			"et éventuellement mettre un commentaire."
 		);
 		d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
+		{
+			public void onClick(DialogInterface dialog, int which)
 			{
-				public void onClick(DialogInterface dialog, int which)
-				{
-					dialog.dismiss();
-		    		tracker.trackPageView("Home/Vote");
-					startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=org.madprod.freeboxmobile")));
-				}
-			});
+				dialog.dismiss();
+	    		tracker.trackPageView("Home/Vote");
+				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=org.madprod.freeboxmobile")));
+			}
+		});
 		d.setButton(DialogInterface.BUTTON_NEGATIVE, "Plus tard", new DialogInterface.OnClickListener()
 		{
 			public void onClick(DialogInterface dialog, int which)
@@ -782,3 +759,87 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		d.show();      
     }
 }
+
+/*
+
+Reflexion sur le chargement dynamique de la home.
+
+Icône ?
+
+Lancement d'un module externe :
+
+      PackageManager packageManager = context.getPackageManager();
+      String packageName = "org.madprod.freeboxmobile";
+      Intent intent = packageManager.getLaunchIntentForPackage(packageName);
+      intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+      context.startActivity(intent);
+      
+      
+Format du json :
+{
+	"modules":
+	[
+		{
+			"name" : "Messagerie Vocale Visuelle",
+			"desc" : "Accédez à la messagerie vocale de votre Freebox",
+			"cat"  : "phone",
+			"type" : "internal",
+			"launch_activity" : "org.madprod.freebmobile.mvv",
+			"package_name" : "",
+			"ipadsl" : true,
+			"adsl" : true,
+			"ftth" : true,
+			"mobile" : false,
+			"vmin_fbx" : 1,
+			"vmax_fbx" : 9999,
+			"vmin_android" : 3,
+			"vmax_android" : 9999,
+		},
+		{
+			"name" : "Télévision sur Mobile",
+			"desc" : "Accédez lors de vos déplacements à une vingtaines des chaînes",
+			"cat"  : "tv",
+			"type" : "plugin",
+			"package_name" : "org.madprod.freebmobile.tvmobile",
+			"ipadsl" : true,
+			"adsl" : true,
+			"ftth" : true,
+			"mobile" : true,
+			"vmin_fbx" : 1,
+			"vmax_fbx" : 9999,
+			"vmin_android" : 7,
+			"vmax_android" : 9999,
+		},
+		{
+			"name" : "Télévision Multipostes",
+			"desc" : "Accédez depuis chez vous aux chaînes de votre Freebox",
+			"cat"  : "tv",
+			"type" : "plugin",
+			"package_name" : "org.madprod.freebmobile.tvmultiposte",
+			"ipadsl" : false,
+			"adsl" : true,
+			"ftth" : true,
+			"mobile" : false,
+			"vmin_fbx" : 3,
+			"vmax_fbx" : 9999,
+			"vmin_android" : 7,
+			"vmax_android" : 9999,
+		}
+		{
+			"name" : "Webmail Free.fr",
+			"desc" : "Si vous avez une adresse en @free.fr, accédez au webmail ici",
+			"cat"  : "external",
+			"type" : "external",
+			"package_name" : "org.geeek.free",
+			"ipadsl" : true,
+			"adsl" : true,
+			"ftth" : true,
+			"mobile" : true,
+			"vmin_fbx" : 1,
+			"vmax_fbx" : 9999,
+			"vmin_android" : 3,
+			"vmax_android" : 9999,
+		}
+	]
+}
+*/
