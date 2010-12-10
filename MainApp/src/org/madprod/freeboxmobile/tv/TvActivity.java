@@ -81,34 +81,6 @@ public class TvActivity extends ListActivity implements TvConstants
     	super.onStart();
     }
 
-    /*
-     *  Fonctionne sur :
-     *  - Google Nexus One (2.2)
-     *  - Samsung Galaxy S (2.2)
-     *  - HTC Desire HD (2.2)
-     *  - HTC Desire
-     *  - Acer Liquid (2.2)
-     *  - Archos 70 (2.2)
-     *  - Archos 10.1
-     *  - Motorola Milestone (2.2)
-     * 
-     *  Ne Fonctionne pas sur :
-     *  - Dell Streak (2.2)
-     *  
-     *  Inivisible sur :
-     *  - HTC Hero (2.1) (2.2)
-     *  - HTC Legend
-     *  - HTC Dream
-     *  - HTC Wildfire
-     *  - HTC Magic (2.2)
-     *  - HTC Tatoo ?
-     *  - Sony Xperia X10 (2.1) ??
-     *  - Samsung Galaxy (Original)
-     *  - Samsung Galaxy Spica
-     *  - Samsung Naos
-     *  
-     */
-    
     private void displayHelp()
     {
     	AlertDialog d3 = new AlertDialog.Builder(TvActivity.this).create();
@@ -179,6 +151,20 @@ public class TvActivity extends ListActivity implements TvConstants
 		}
 	}
 
+	// Code from enh project (enh.googlecode.com)
+	private String getFieldReflectively(Build build, String fieldName)
+	{
+		try
+		{
+			final Field field = Build.class.getField(fieldName);
+			return field.get(build).toString();
+		}
+		catch (Exception ex)
+		{
+			return "inconnu";
+		}
+	}
+
     private void checkOS()
     {
     	if (getPlatformVersion() < Build.VERSION_CODES.ECLAIR_MR1)
@@ -190,21 +176,67 @@ public class TvActivity extends ListActivity implements TvConstants
     		checkPhone();
     	}
     }
-    
+
+    /*
+     *  Fonctionne sur :
+     *  - Google Nexus One (2.2)
+     *  - Samsung Galaxy S (2.2)
+     *  - HTC Desire HD (2.2)
+     *  - HTC Desire
+     *  - Acer Liquid (2.2)
+     *  - Archos 70 (2.2)
+     *  - Archos 10.1
+     *  - Motorola Milestone (2.2)
+     * 
+     *  Ne Fonctionne pas sur :
+     *  - Dell Streak (2.2)
+     *  
+     *  Inivisible sur :
+     *  - HTC Hero (2.1) (2.2)
+     *  - HTC Legend
+     *  - HTC Dream
+     *  - HTC Wildfire
+     *  - HTC Magic (2.2)
+     *  - HTC Tattoo ?
+     *  - Motorola Dext
+     *  - Samsung Galaxy (Original)
+     *  - Samsung Galaxy Spica
+     *  - Samsung Naos
+     *  - Samsung Teos
+     *  - LG Optimus GT540
+     *  - Sony Ericsson x10 mini pro (U20i)
+     *  
+     */
+
+    /*
+     * A prendre en compte ci-dessous (chaîne MODEL inconnue) :
+     *  - Sony XPeria x10mini
+     */
+
     private void checkPhone()
     {
+		final Build build = new Build();
     	String b = Build.MODEL.toLowerCase();
+		final String cpuAbi = getFieldReflectively(build, "CPU_ABI");
+
+		// Here we check if CPU is ok (available only for OS > 1.6) and if model is ok (for 1.5...)
     	if (
+    			!cpuAbi.contains("armeabi-") ||
+    			b.contains("u20i") ||
     			b.contains("legend") ||
     			b.contains("hero") ||
     			b.contains("dream") ||
     			b.contains("magic") ||
-    			b.contains("tatoo") ||
+    			b.contains("tattoo") ||
+    			b.contains("wildfire") ||
     			b.contains("steak") ||
     			b.contains("legend") ||
-    			b.contains("gt-i5801") ||	// Naos
-    			b.contains("gt-i5700") ||	// Galaxy Spica
-    			b.contains("gt-i7500")		// Galaxy
+    			b.contains("mb200") ||		// Motorola Dext
+    			b.contains("gt540") ||		// LG Optimus
+    			b.contains("gt-i5800") ||	// Samsung Teos    			
+    			b.contains("gt-i5801") ||	// Samsung Naos
+    			b.contains("gt-i5700") ||	// Samsung Galaxy Spica
+    			b.contains("gt-i7500")		// Samsung Galaxy (Original)
     		)
     	{
     		displayWrongPhone();
@@ -213,10 +245,6 @@ public class TvActivity extends ListActivity implements TvConstants
     	{
     		downloadPlayer();
     	}
-    }
-    
-    private void displayWarningTv()
-    {
     }
     
     private void downloadPlayer()
@@ -250,7 +278,6 @@ public class TvActivity extends ListActivity implements TvConstants
 	    				dialog.dismiss();
 	    	    		tracker.trackPageView("TV/InstallPlayer");	    	    		
 	    				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=me.abitno.vplayer")));
-	    				dialog.dismiss();
 	    			}
 	    		});
 	    		d2.setButton(DialogInterface.BUTTON_POSITIVE, "En téléchargement direct", new DialogInterface.OnClickListener()
@@ -319,7 +346,7 @@ public class TvActivity extends ListActivity implements TvConstants
     	switch (item.getItemId())
     	{
 	        case 1:
-	        	displayWarningTv();
+	        	checkOS();
 	        	return true;
         }
         return super.onOptionsItemSelected(item);
@@ -360,7 +387,6 @@ public class TvActivity extends ListActivity implements TvConstants
     	    Intent intent = new Intent();
     	 	intent.setAction(android.content.Intent.ACTION_VIEW);
     	 	intent.setDataAndType(Uri.parse("http://tv.freebox.fr/stream_"+streamShort), "video/mp4");
-    	 	//intent.setDataAndType(Uri.parse("/sdcard/test.mp4"), "video/mp4");
     	 	try
     	 	{
     	 		startActivity(intent);
@@ -372,24 +398,6 @@ public class TvActivity extends ListActivity implements TvConstants
     	}
     }
 
-    //startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=cxLG2wtE7TM")));
-    
-    /*
-    Intent i = new Intent(Intent.ACTION_VIEW);
-    Uri u = Uri.withAppendedPath(MediaStore.Audio.Media.INTERNAL_CONTENT_URI, "1");
-    i.setData(u);
-    startActivity(i);
-    */
-    
-    /*
-     Intent intent = new Intent();
-	intent.setAction(android.content.Intent.ACTION_VIEW);
-	File file = new File(<my file>);
-	intent.setDataAndType(Uri.fromFile(file), <mimetype>);	
-	startActivity(intent); 
-
-	Using mp3 and "audio/*" mimetype it works OK
-     */
 	private void addChaine(String titre, String shorter, int logo, String id)
 	{
     	Map<String,Object> map = new HashMap<String,Object>();
