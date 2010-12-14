@@ -46,7 +46,7 @@ public class ManageCompte extends FBMNetTask implements Constants// AsyncTask<Co
 	@Override
 	protected void onPreExecute()
 	{
-		iProgressShow("Mon compte Freebox", "Veuillez patienter,\n\nChargement / rafraichissement des données en cours...", R.drawable.icon_fbm_reverse);
+		iProgressShow("Mon compte Freebox", "Veuillez patienter,\n\nChargement / rafraichissement des données en cours...", R.drawable.icon_fbm);
 	}
 
 	@Override
@@ -70,7 +70,7 @@ public class ManageCompte extends FBMNetTask implements Constants// AsyncTask<Co
 					"Vérifiez votre identifiant, " +
 					"votre mot de passe et votre "+	
 					"connexion à Internet (Wifi, 3G...).",
-					R.drawable.icon_fbm_reverse);
+					R.drawable.icon_fbm);
 				payload.exit = Activity.RESULT_CANCELED;
 		}
 	}
