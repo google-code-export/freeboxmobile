@@ -16,6 +16,18 @@ NEWS : Le module actu freenautes
 TELECOMMANDE : Le module de télécommande
 
 = Versions publiques de !FreeboxMobile =
+== 0.52.6 ==
+Sortie le 14/12/2010<br>
+Release : 59<br>
+Revision : 709
+ * Icônes + visuels de la nouvelle Freebox v6
+
+== 0.52.5 ==
+Sortie le 13/12/2010<br>
+Release : 58<br>
+Revision : NA
+ * Home : accès au stream TV de la conférence de presse de présentation de la Freebox v6
+
 == 0.52.4 ==
 Sortie le 10/12/2010<br>
 Release : 56<br>
