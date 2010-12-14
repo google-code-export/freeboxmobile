@@ -267,6 +267,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     {
     	Map<String,Object> map;
 
+    	
     	map = new HashMap<String,Object>();
 		map.put(M_ICON, R.drawable.fm_television);
 		map.put(M_TITRE, getString(R.string.buttonTv));
@@ -393,6 +394,10 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 	    	{
 	    		openExtApp("com.mba.freewifi", ".FreeWifiConnect", "FreeWifi Connect", false);
 	    	}
+	    	else if (moduleName.equals("Freebox v6") || moduleName.equals("Conférence de presse Free"))
+	    	{
+	    		displayV6();
+	    	}
         }
     	if (moduleClass != null)
     	{
@@ -469,6 +474,35 @@ public class HomeListActivity extends ListActivity implements HomeConstants
         }
     }
     
+    private void displayV6()
+    {
+    	AlertDialog d = new AlertDialog.Builder(this).create();
+		d.setTitle("Conférence de presse Freebox v6");
+		d.setIcon(R.drawable.icon_fbm);
+    	d.setMessage(
+			"Afin de visionner la conférence de presse en direct, vous devez avoir installé Adobe Flash Player (Android 2.2 minimum requis).\n"
+		);
+		d.setButton(DialogInterface.BUTTON_POSITIVE, "Installer Flash Player", new DialogInterface.OnClickListener()
+		{
+			public void onClick(DialogInterface dialog, int which)
+			{
+				dialog.dismiss();
+	    		tracker.trackPageView("Home/InstallFlash");
+				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.adobe.flashplayer")));
+			}
+		});
+		d.setButton(DialogInterface.BUTTON_NEGATIVE, "Regarder la diffusion live", new DialogInterface.OnClickListener()
+		{
+			public void onClick(DialogInterface dialog, int which)
+			{
+				dialog.dismiss();
+	    		tracker.trackPageView("Home/ShowV6");
+				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.universfreebox.com/live")));
+			}
+		});
+		d.show();
+    }
+
     private void openExtApp(final String packageName, final String className, final String appName, boolean plugin)
     {
 		Intent i = new Intent(Intent.ACTION_MAIN);
@@ -491,7 +525,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 				type = "l'application";
 	    	AlertDialog d = new AlertDialog.Builder(this).create();
 			d.setTitle(getString(R.string.app_name));
-			d.setIcon(R.drawable.icon_fbm_reverse);
+			d.setIcon(R.drawable.icon_fbm);
 	    	d.setMessage(
 				"Pour utiliser cette fonctionnalité, vous devez installer "+type+" '"+appName+"'.\n\n"+
 				"Cliquez sur 'Continuer' pour l'installer ou sur 'Plus tard' pour continuer à utiliser Freebox Mobile "+
@@ -512,7 +546,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 			            {
 			    	    	AlertDialog ad = new AlertDialog.Builder(HomeListActivity.this).create();
 			    			ad.setTitle(getString(R.string.app_name));
-			    			ad.setIcon(R.drawable.icon_fbm_reverse);
+			    			ad.setIcon(R.drawable.icon_fbm);
 			    	    	ad.setMessage("Impossible d'ouvrir Android Market !");
 			    			ad.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
 							{
@@ -554,7 +588,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     {
     	AlertDialog d = new AlertDialog.Builder(this).create();
 		d.setTitle(getString(R.string.app_name));
-		d.setIcon(R.drawable.icon_fbm_reverse);
+		d.setIcon(R.drawable.icon_fbm);
     	d.setMessage(
 			"Votez pour soutenir Freebox Mobile !\n\n"+
 			"Afin d'améliorer la visibilité sur l'Android Market "+
@@ -600,7 +634,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     	l.addView(tlog);
     	AlertDialog d = new AlertDialog.Builder(this).create();
 		d.setTitle(getString(R.string.app_name) + " : Rapport d'erreur");
-		d.setIcon(R.drawable.icon_fbm_reverse);
+		d.setIcon(R.drawable.icon_fbm);
     	d.setView(s);
     	d.setButton(DialogInterface.BUTTON_NEUTRAL, "Continuer", new DialogInterface.OnClickListener()
 		{
@@ -659,7 +693,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     	s.addView(t);
     	d.setView(s);
 		d.setTitle(getString(R.string.app_name));
-		d.setIcon(R.drawable.icon_fbm_reverse);
+		d.setIcon(R.drawable.icon_fbm);
 		d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
 			{
 				public void onClick(DialogInterface dialog, int which)
@@ -681,7 +715,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     {
 		AlertDialog d = new AlertDialog.Builder(this).create();
 		d.setTitle(getString(R.string.app_name));
-		d.setIcon(R.drawable.icon_fbm_reverse);
+		d.setIcon(R.drawable.icon_fbm);
 		d.setMessage(
 			"Cette fonctionnalité n'est accessible qu'aux abonnés ADSL.\n\n"+
 			"Etes-vous un chanceux en Fibre Optique ? :)\n"
@@ -700,7 +734,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     private void showNonDegroupe()
     {
 		AlertDialog d = new AlertDialog.Builder(this).create();
-		d.setIcon(R.drawable.icon_fbm_reverse);
+		d.setIcon(R.drawable.icon_fbm);
 		d.setTitle(getString(R.string.app_name));
 		d.setMessage(
 			"Cette fonctionnalité n'est accessible qu'aux abonnés dégroupés.\n"
@@ -720,7 +754,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     {
 		AlertDialog d = new AlertDialog.Builder(this).create();
 		d.setTitle("Pas de compte configuré");
-		d.setIcon(R.drawable.icon_fbm_reverse);
+		d.setIcon(R.drawable.icon_fbm);
 		d.setMessage(
 			"Veuillez configurer au moins un compte pour pouvoir utiliser cette application.\n\n"+
 			"Vous pouvez configurer des comptes en utilisant la touche MENU sur la page d'accueil "+
@@ -741,7 +775,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     {
 		AlertDialog d = new AlertDialog.Builder(this).create();
 		d.setTitle("SDCard Necessaire !");
-		d.setIcon(R.drawable.icon_fbm_reverse);
+		d.setIcon(R.drawable.icon_fbm);
 		d.setMessage(
 			"Une carte SD est nécessaire afin d'utiliser "+
 			"cette application."

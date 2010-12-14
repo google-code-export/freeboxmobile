@@ -84,7 +84,7 @@ public class TvActivity extends ListActivity implements TvConstants
     private void displayHelp()
     {
     	AlertDialog d3 = new AlertDialog.Builder(TvActivity.this).create();
-		d3.setIcon(R.drawable.icon_fbm_reverse);
+		d3.setIcon(R.drawable.icon_fbm);
 		d3.setTitle("Aide");
 		d3.setMessage("A tout moment, vous pouvez relire les informations qui vont suivre en utilisant la touche menu -> Aide.\n\n");
 		d3.setButton(DialogInterface.BUTTON_POSITIVE, "Continuer", new DialogInterface.OnClickListener()
@@ -102,10 +102,10 @@ public class TvActivity extends ListActivity implements TvConstants
     {
 		tracker.trackPageView("TV/DisplayWrongOS");
     	AlertDialog d3 = new AlertDialog.Builder(TvActivity.this).create();
-		d3.setIcon(R.drawable.icon_fbm_reverse);
+		d3.setIcon(R.drawable.icon_fbm);
 		d3.setTitle("Problème de version d'Android");
 		d3.setMessage("La version d'Android de votre téléphone ("+Build.VERSION.RELEASE+") ne devrait pas être compatible avec le player vidéo nécessaire à la visualisation des chaînes TV.\n\n"+
-				"Si c'est le cas, Vplayer ne sera pas visible sur le market ou ne fonctionnera pas après installation.\n");
+				"Si c'est le cas, VPlayer ne sera pas visible sur le market ou ne fonctionnera pas après installation.\n");
 		d3.setButton(DialogInterface.BUTTON_POSITIVE, "J'ai compris", new DialogInterface.OnClickListener()
 		{
 			public void onClick(DialogInterface dialog, int which)
@@ -121,7 +121,7 @@ public class TvActivity extends ListActivity implements TvConstants
     {
 		tracker.trackPageView("TV/DisplayWrongPhone");
     	AlertDialog d3 = new AlertDialog.Builder(TvActivity.this).create();
-		d3.setIcon(R.drawable.icon_fbm_reverse);
+		d3.setIcon(R.drawable.icon_fbm);
 		d3.setTitle("Problème de compatibilité");
 		d3.setMessage("Il se peut que votre appareil ne soit pas compatible avec le player vidéo nécessaire à la visualisation de la télévision.\n\n"+
 				"Si c'est le cas, Vplayer ne sera pas visible sur le market ou ne fonctionnera pas après installation.\n");
@@ -219,10 +219,11 @@ public class TvActivity extends ListActivity implements TvConstants
     	String b = Build.MODEL.toLowerCase();
 		final String cpuAbi = getFieldReflectively(build, "CPU_ABI");
 
-		// Here we check if CPU is ok (available only for OS > 1.6) and if model is ok (for 1.5...)
+		// Here we check if CPU is ok (available only for OS > 1.6) (bad cpu string is "armeabi", good ones is "armeabi-*"
+		// and if model is ok (for 1.5...)
     	if (
     			!cpuAbi.contains("armeabi-") ||
-    			b.contains("u20i") ||
+    			b.contains("u20i") ||		// Sony Ericsson x10 mini pro
     			b.contains("legend") ||
     			b.contains("hero") ||
     			b.contains("dream") ||
@@ -251,7 +252,7 @@ public class TvActivity extends ListActivity implements TvConstants
     {
     	AlertDialog d = new AlertDialog.Builder(this).create();
 		d.setTitle("Attention ! Merci de lire");
-		d.setIcon(R.drawable.icon_fbm_reverse);
+		d.setIcon(R.drawable.icon_fbm);
     	d.setMessage(
     		"Cette fonctionnalité ne fonctionnera QUE si vous êtes sur le réseau Free :\n- soit connecté à une Freebox,\n- soit connecté au réseau FreeWifi (lorsque vous êtes en déplacement).\n\n"+
 			"Pour utiliser cette fonctionnalité, vous devez installer une application capable de lire les flux vidéos 'TS' comme 'VPlayer' (disponible sur Android 2.1 et +) :\n"+
@@ -267,7 +268,7 @@ public class TvActivity extends ListActivity implements TvConstants
 	    		tracker.trackPageView("TV/InstallPlayer");
 	        	AlertDialog d2 = new AlertDialog.Builder(TvActivity.this).create();
 	    		d2.setTitle("Installer VPlayer");
-	    		d2.setIcon(R.drawable.icon_fbm_reverse);
+	    		d2.setIcon(R.drawable.icon_fbm);
 	        	d2.setMessage(
 	        		"Vous pouvez installer VPlayer soit à partir du market, soit en téléchargeant l'application en direct.\n"
 	    		);
@@ -287,7 +288,7 @@ public class TvActivity extends ListActivity implements TvConstants
 	    				dialog.dismiss();
 	    	    		tracker.trackPageView("TV/InstallPlayerDirect");
 	    	        	AlertDialog d3 = new AlertDialog.Builder(TvActivity.this).create();
-	    	    		d3.setIcon(R.drawable.icon_fbm_reverse);
+	    	    		d3.setIcon(R.drawable.icon_fbm);
 	    	    		d3.setTitle("Téléchargement de VPlayer");
 	    	    		d3.setMessage("Une fois le téléchargement terminé, cliquer sur sa notification 'VPLayer.apk' dans la barre de notification en haut de l'écran afin d'installer VPlayer.\n");
 	    	    		d3.setButton(DialogInterface.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener()

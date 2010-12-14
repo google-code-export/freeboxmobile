@@ -194,7 +194,7 @@ public class FaxActivity extends Activity implements FaxConstants {
     {
     	AlertDialog d = new AlertDialog.Builder(this).create();
 		d.setTitle(getString(R.string.app_name)+" Fax");
-		d.setIcon(R.drawable.icon_fbm_reverse);
+		d.setIcon(R.drawable.icon_fbm);
     	d.setMessage(
 			"Le module Fax de Freebox Mobile vous permet d'envoyer des Fax en utilisant votre compte Freebox (donc gratuit vers les numéros de fixe).\n\n"+
 			"Vous devez choisir ou saisir un numéro de fax ainsi qu'un fichier présent sur votre carte mémoire. Les formats supportés sont :\n"+

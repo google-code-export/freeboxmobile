@@ -364,7 +364,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
     	{
 	    	alertDialog = new AlertDialog.Builder(this).create();
 	    	alertDialog.setTitle("Rafraichissement en cours");
-	    	alertDialog.setIcon(R.drawable.icon_fbm_reverse);
+	    	alertDialog.setIcon(R.drawable.icon_fbm);
 	    	alertDialog.setMessage(
 				"Un rafraichissement est déjà en cours.\n\n"+
 				"Réessayez lorsqu'il sera terminé."
@@ -722,7 +722,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
     {
     	alertDialog = new AlertDialog.Builder(this).create();
     	alertDialog.setTitle("La liste des chaines du magnétoscope est vide");
-    	alertDialog.setIcon(R.drawable.icon_fbm_reverse);
+    	alertDialog.setIcon(R.drawable.icon_fbm);
     	alertDialog.setMessage(
 			"Ceci est peut être dû à un problème réseau lors du téléchargement.\n"+
 			"Vous pouvez rafraichir la liste des chaînes en utilisant le bouton MENU de votre téléphone "+
@@ -1099,7 +1099,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 	{
     	alertDialog = new AlertDialog.Builder(this).create();
     	alertDialog.setTitle("Problème");
-    	alertDialog.setIcon(R.drawable.icon_fbm_reverse);
+    	alertDialog.setIcon(R.drawable.icon_fbm);
     	alertDialog.setMessage(
 			"Une erreur est survenue lors de la récupération de la date.\n\n"+
 			"Veuillez vérifier la date de "+q+" de votre enregistrement."
