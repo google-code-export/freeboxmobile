@@ -10,10 +10,12 @@ import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -46,12 +48,12 @@ public class MainActivity extends ListActivity implements TvConstants
 		streamsList = new ArrayList< Map<String,Object> >();
         setChaines();
 		setContentView(R.layout.tv_main_list);
-		setTitle(getString(R.string.app_name)+" "+FBMHttpConnection.getTitle());
+		setTitle(getString(R.string.app_name));
 		SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
-		if (!mgr.getString(KEY_SPLASH_TV, "0").equals(Utils.getFBMVersion(this)))
+		if (!mgr.getString(KEY_SPLASH_TV, "0").equals(Utils.getMyVersion(this)))
 		{
 			Editor editor = mgr.edit();
-			editor.putString(KEY_SPLASH_TV, Utils.getFBMVersion(this));
+			editor.putString(KEY_SPLASH_TV, Utils.getMyVersion(this));
 			editor.commit();
 			displayHelp();
 		}
@@ -74,6 +76,7 @@ public class MainActivity extends ListActivity implements TvConstants
     protected void onStart()
     {
     	Log.i(TAG,"TvActivity Start");
+    	verifyInstallFbm();
     	super.onStart();
     }
 
@@ -443,4 +446,65 @@ public class MainActivity extends ListActivity implements TvConstants
 		addChaine("Luxe TV",	"luxetv",	R.drawable.tv_luxetv,	"0");
 		addChaine("Test", 		null,		R.drawable.chaine_vide,	"0");
     }
+	
+	private void verifyInstallFbm()
+	{
+		Intent i = new Intent(Intent.ACTION_MAIN);
+		i.setClassName("org.madprod.freeboxmobile", "org.madprod.freeboxmobile.home.HomeListActivity");
+		List<ResolveInfo> activitiesList = getPackageManager().queryIntentActivities(i, 0);
+		if (activitiesList.isEmpty())
+		{
+			showPopupFbm();
+		}
+	}
+	
+	private void showPopupFbm()
+	{
+		AlertDialog d = new AlertDialog.Builder(this).create();
+		d.setCancelable(false);
+		d.setTitle(getString(R.string.app_name));
+		d.setIcon(R.drawable.icon_fbm);
+		d.setMessage(
+				"Pour utiliser cette fonctionnalité, vous devez installer la derniere version de Freebox Mobile'.\n\n"+
+				"Cliquez sur 'Continuer' pour l'installer ou sur 'Annuler' pour quitter "+getString(R.string.app_name)
+		);
+		d.setButton(DialogInterface.BUTTON_POSITIVE, "Continuer", new DialogInterface.OnClickListener()
+		{
+			public void onClick(DialogInterface dialog, int which)
+			{
+				dialog.dismiss();
+				Intent marketIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=org.madprod.freeboxmobile" ));
+				marketIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				try
+				{
+					startActivity(marketIntent);
+					finish();
+				}
+				catch (ActivityNotFoundException e)
+				{
+					AlertDialog ad = new AlertDialog.Builder(MainActivity.this).create();
+					ad.setTitle(getString(R.string.app_name));
+					ad.setIcon(R.drawable.icon_fbm);
+					ad.setMessage("Impossible d'ouvrir Android Market !");
+					ad.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
+					{
+						public void onClick(DialogInterface dialog, int which)
+						{
+							dialog.dismiss();
+						}
+					});
+					ad.show();
+				}
+			}
+		});
+		d.setButton(DialogInterface.BUTTON_NEGATIVE, "Quitter", new DialogInterface.OnClickListener()
+		{
+			public void onClick(DialogInterface dialog, int which)
+			{
+				dialog.dismiss();
+				finish();
+			}
+		});
+		d.show();
+	}
 }
