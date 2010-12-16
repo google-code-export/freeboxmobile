@@ -389,9 +389,9 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 	    	{
 	    		openExtApp("com.mba.freewifi", ".FreeWifiConnect", "FreeWifi Connect", false);
 	    	}
-	    	else if (moduleName.equals("Freebox v6") || moduleName.equals("Conférence de presse Free"))
+	    	else if (moduleName.equals(getString(R.string.buttonTv)))
 	    	{
-	    		displayV6();
+	    		openExtApp("org.madprod.freeboxmobile.tv", ".MainActivity", "Freebox TV", true);
 	    	}
         }
     	if (moduleClass != null)
@@ -469,35 +469,6 @@ public class HomeListActivity extends ListActivity implements HomeConstants
         }
     }
     
-    private void displayV6()
-    {
-    	AlertDialog d = new AlertDialog.Builder(this).create();
-		d.setTitle("Conférence de presse Freebox v6");
-		d.setIcon(R.drawable.icon_fbm);
-    	d.setMessage(
-			"Afin de visionner la conférence de presse en direct, vous devez avoir installé Adobe Flash Player (Android 2.2 minimum requis).\n"
-		);
-		d.setButton(DialogInterface.BUTTON_POSITIVE, "Installer Flash Player", new DialogInterface.OnClickListener()
-		{
-			public void onClick(DialogInterface dialog, int which)
-			{
-				dialog.dismiss();
-	    		tracker.trackPageView("Home/InstallFlash");
-				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.adobe.flashplayer")));
-			}
-		});
-		d.setButton(DialogInterface.BUTTON_NEGATIVE, "Regarder la diffusion live", new DialogInterface.OnClickListener()
-		{
-			public void onClick(DialogInterface dialog, int which)
-			{
-				dialog.dismiss();
-	    		tracker.trackPageView("Home/ShowV6");
-				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.universfreebox.com/live")));
-			}
-		});
-		d.show();
-    }
-
     private void openExtApp(final String packageName, final String className, final String appName, boolean plugin)
     {
 		Intent i = new Intent(Intent.ACTION_MAIN);
