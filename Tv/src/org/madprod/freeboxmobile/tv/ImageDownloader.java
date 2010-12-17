@@ -72,7 +72,8 @@ public class ImageDownloader {
     private void forceDownload(String url, ImageView imageView) {
         // State sanity: url is guaranteed to never be null in DownloadedDrawable and cache keys.
         if (url == null) {
-            imageView.setImageDrawable(null);
+//            imageView.setImageDrawable(null);
+        	imageView.setImageResource(R.drawable.chaine_vide);
             return;
         }
 
@@ -269,7 +270,7 @@ public class ImageDownloader {
      * Garbage Collector.
      */
     
-    private static final int HARD_CACHE_CAPACITY = 10;
+    private static final int HARD_CACHE_CAPACITY = 50;
     private static final int DELAY_BEFORE_PURGE = 10 * 1000; // in milliseconds
 
     // Hard cache, with a fixed maximum capacity and a life duration
