@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,7 +39,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
 /**
@@ -60,7 +61,6 @@ public class MainActivity extends ListActivity implements TvConstants
 		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
 		tracker.trackPageView("Tv/HomeTv");
 		streamsList = new ArrayList< Map<String,Object> >();
-//        setChaines();
 		setContentView(R.layout.tv_main_list);
 		setTitle(getString(R.string.app_name));
 		SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
@@ -97,42 +97,59 @@ public class MainActivity extends ListActivity implements TvConstants
 
     private void getStreams()
     {
-    	String json = getPage(getJson("http://tv.freeboxmobile.net/streams_fbm.json"));
-		try
-		{
-			JSONArray jStreams;
-			int nbStreams;
-			int nbChannels;
-			JSONObject jChannel, jStream;
-			JSONArray jChannels = new JSONObject(json).getJSONArray("channels");
-			nbChannels = jChannels.length();
-			Log.i(TAG, "number chaines : "+ nbChannels);
-			for (int i = 0; i < nbChannels; i++)
+    	boolean isFree = testFree();
+    	streamsList.clear();
+    	String json = getPage(getJson("http://tv.freeboxmobile.net/json/streams_fbm.json"));
+    	if (json != null)
+    	{
+			try
 			{
-				jChannel = jChannels.getJSONObject(i);
-				Log.i(TAG, "Name : "+jChannel.getString("name"));
-				jStreams = jChannel.getJSONArray("streams");
-				nbStreams = jStreams.length();
-				for (int j = 0; j < nbStreams; j++)
+				JSONArray jStreams;
+				int nbStreams;
+				int nbChannels;
+				int type;
+
+				JSONObject jChannel, jStream;
+				JSONArray jChannels = new JSONObject(json).getJSONArray("channels");
+				nbChannels = jChannels.length();
+				Log.i(TAG, "number chaines : "+ nbChannels);
+				for (int i = 0; i < nbChannels; i++)
 				{
-					jStream = jStreams.getJSONObject(j);
-					if (jStream.getInt("type") == 1)
+					jChannel = jChannels.getJSONObject(i);
+					Log.i(TAG, "Name : "+jChannel.getString("name"));
+					jStreams = jChannel.getJSONArray("streams");
+					nbStreams = jStreams.length();
+					for (int j = 0; j < nbStreams; j++)
 					{
-						try
+						jStream = jStreams.getJSONObject(j);
+						type = jStream.getInt("type");
+						if (
+								(isFree && type == 1) ||
+								(type == 2)
+							)
 						{
-							addChannel(jChannel.getString("name"), jChannel.getInt("num"), jChannel.getString("icon"), jStream.getString("url"), jStream.getString("mime"));
-						}
-						catch (JSONException e)
-						{
-							e.printStackTrace();
+							try
+							{
+								addChannel(jChannel.getString("name"), jChannel.getInt("num"), jChannel.getString("icon"), jStream.getString("url"), jStream.getString("mime"));
+								break;
+							}
+							catch (JSONException e)
+							{
+								e.printStackTrace();
+							}
 						}
 					}
 				}
 			}
-		}
-		catch (JSONException e)
+			catch (JSONException e)
+			{
+				e.printStackTrace();
+			}
+    	}
+		else
 		{
-			e.printStackTrace();
+			Log.e(TAG, "Pas de réseau !");
+			// TODO : Popup à ouvrir ici !
 		}
     }
 
@@ -370,7 +387,7 @@ public class MainActivity extends ListActivity implements TvConstants
     {
 		Log.i(TAG,"TvActivity Resume");
     	super.onResume();
-        SimpleAdapter mList = new SimpleAdapter(this, streamsList, R.layout.tv_main_list_row, new String[] {M_TITRE, M_LOGO}, new int[] {R.id.tv_main_row_titre, R.id.tv_main_row_img});
+//        SimpleAdapter mList = new SimpleAdapter(this, streamsList, R.layout.tv_main_list_row, new String[] {M_TITRE, M_LOGO}, new int[] {R.id.tv_main_row_titre, R.id.tv_main_row_img});
         //setListAdapter(mList);
         setListAdapter(new ImageAdapter(this, streamsList));
     }
@@ -400,8 +417,8 @@ public class MainActivity extends ListActivity implements TvConstants
     protected void onListItemClick(ListView l, View v, int position, long id)
     {
         super.onListItemClick(l, v, position, id);
-        String streamUrl = (String) streamsList.get((int) id).get(M_URL);
-        String mimeType = (String) streamsList.get((int) id).get(M_MIME);
+        String streamUrl = (String) streamsList.get((int) position).get(M_URL);
+        String mimeType = (String) streamsList.get((int) position).get(M_MIME);
 
     	if (streamUrl != null)
     	{
@@ -473,6 +490,36 @@ public class MainActivity extends ListActivity implements TvConstants
 		return sb.toString();
 	}
 
+	private boolean testFree()
+	{
+		try
+		{
+			URL u = new URL("http://tv.freebox.fr");
+			HttpURLConnection c = (HttpURLConnection) u.openConnection();
+			c.setRequestMethod("GET");
+			c.setAllowUserInteraction(false);
+			c.setUseCaches(false);
+			c.setInstanceFollowRedirects(false);
+			c.connect();
+			Log.d(TAG, "TEST FREE : "+c.getResponseMessage());
+			if (c.getResponseCode() != 200)
+			{
+				c.disconnect();
+				return false;
+			}
+			else
+			{
+				c.disconnect();
+				return true;
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
 	private InputStreamReader getJson(String url)
 	{
 		if (USER_AGENT == null)
