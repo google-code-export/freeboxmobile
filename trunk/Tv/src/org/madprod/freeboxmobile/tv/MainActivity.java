@@ -387,8 +387,6 @@ public class MainActivity extends ListActivity implements TvConstants
     {
 		Log.i(TAG,"TvActivity Resume");
     	super.onResume();
-//        SimpleAdapter mList = new SimpleAdapter(this, streamsList, R.layout.tv_main_list_row, new String[] {M_TITRE, M_LOGO}, new int[] {R.id.tv_main_row_titre, R.id.tv_main_row_img});
-        //setListAdapter(mList);
         setListAdapter(new ImageAdapter(this, streamsList));
     }
 
@@ -581,6 +579,7 @@ public class MainActivity extends ListActivity implements TvConstants
 						public void onClick(DialogInterface dialog, int which)
 						{
 							dialog.dismiss();
+							finish();
 						}
 					});
 					ad.show();
