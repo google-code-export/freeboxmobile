@@ -33,6 +33,4 @@
 		android:smallScreens="true"
 	>
 	</supports-screens>
-
-
 </manifest> 
