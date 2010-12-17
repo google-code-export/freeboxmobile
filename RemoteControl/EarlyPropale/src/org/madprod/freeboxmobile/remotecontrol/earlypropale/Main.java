@@ -255,6 +255,7 @@ public class Main extends Activity implements Constants{
 						public void onClick(DialogInterface dialog, int which)
 						{
 							dialog.dismiss();
+							finish();
 						}
 					});
 					ad.show();
