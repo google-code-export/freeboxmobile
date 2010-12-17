@@ -15,6 +15,8 @@ public interface TvConstants
     static final String M_TITRE = "titre";
     static final String M_SHORT = "short";
     static final String M_ID = "id";
+    static final String M_URL = "url";
+    static final String M_MIME = "mime";
     static final String KEY_SPLASH_TV = "splashscreen_mevo";
     
     static final String ANALYTICS_MAIN_TRACKER = "UA-9016955-4";

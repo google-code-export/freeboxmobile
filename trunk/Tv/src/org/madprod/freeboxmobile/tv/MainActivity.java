@@ -1,10 +1,23 @@
 package org.madprod.freeboxmobile.tv;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 
@@ -35,8 +48,9 @@ import android.widget.Toast;
 
 public class MainActivity extends ListActivity implements TvConstants
 {
-	private List< Map<String,Object> > streamsList;
 	GoogleAnalyticsTracker tracker;
+	private List< Map<String,Object> > streamsList;
+	String USER_AGENT = null;
 	
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -46,7 +60,7 @@ public class MainActivity extends ListActivity implements TvConstants
 		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
 		tracker.trackPageView("Tv/HomeTv");
 		streamsList = new ArrayList< Map<String,Object> >();
-        setChaines();
+//        setChaines();
 		setContentView(R.layout.tv_main_list);
 		setTitle(getString(R.string.app_name));
 		SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
@@ -75,9 +89,51 @@ public class MainActivity extends ListActivity implements TvConstants
     @Override
     protected void onStart()
     {
+    	super.onStart();
     	Log.i(TAG,"TvActivity Start");
     	verifyInstallFbm();
-    	super.onStart();
+    	getStreams();
+    }
+
+    private void getStreams()
+    {
+    	String json = getPage(getJson("http://tv.freeboxmobile.net/streams_fbm.json"));
+		try
+		{
+			JSONArray jStreams;
+			int nbStreams;
+			int nbChannels;
+			JSONObject jChannel, jStream;
+			JSONArray jChannels = new JSONObject(json).getJSONArray("channels");
+			nbChannels = jChannels.length();
+			Log.i(TAG, "number chaines : "+ nbChannels);
+			for (int i = 0; i < nbChannels; i++)
+			{
+				jChannel = jChannels.getJSONObject(i);
+				Log.i(TAG, "Name : "+jChannel.getString("name"));
+				jStreams = jChannel.getJSONArray("streams");
+				nbStreams = jStreams.length();
+				for (int j = 0; j < nbStreams; j++)
+				{
+					jStream = jStreams.getJSONObject(j);
+					if (jStream.getInt("type") == 1)
+					{
+						try
+						{
+							addChannel(jChannel.getString("name"), jChannel.getInt("num"), jChannel.getString("icon"), jStream.getString("url"), jStream.getString("mime"));
+						}
+						catch (JSONException e)
+						{
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+		}
+		catch (JSONException e)
+		{
+			e.printStackTrace();
+		}
     }
 
     private void displayHelp()
@@ -150,20 +206,6 @@ public class MainActivity extends ListActivity implements TvConstants
 		}
 	}
 
-	// Code from enh project (enh.googlecode.com)
-	private String getFieldReflectively(Build build, String fieldName)
-	{
-		try
-		{
-			final Field field = Build.class.getField(fieldName);
-			return field.get(build).toString();
-		}
-		catch (Exception ex)
-		{
-			return "inconnu";
-		}
-	}
-
     private void checkOS()
     {
     	if (getPlatformVersion() < Build.VERSION_CODES.ECLAIR_MR1)
@@ -216,7 +258,7 @@ public class MainActivity extends ListActivity implements TvConstants
     {
 		final Build build = new Build();
     	String b = Build.MODEL.toLowerCase();
-		final String cpuAbi = getFieldReflectively(build, "CPU_ABI");
+		final String cpuAbi = Utils.getFieldReflectively(build, "CPU_ABI");
 
 		// Here we check if CPU is ok (available only for OS > 1.6) (bad cpu string is "armeabi", good ones is "armeabi-*"
 		// and if model is ok (for 1.5...)
@@ -329,7 +371,8 @@ public class MainActivity extends ListActivity implements TvConstants
 		Log.i(TAG,"TvActivity Resume");
     	super.onResume();
         SimpleAdapter mList = new SimpleAdapter(this, streamsList, R.layout.tv_main_list_row, new String[] {M_TITRE, M_LOGO}, new int[] {R.id.tv_main_row_titre, R.id.tv_main_row_img});
-        setListAdapter(mList);
+        //setListAdapter(mList);
+        setListAdapter(new ImageAdapter(this, streamsList));
     }
 
 	@Override
@@ -348,7 +391,7 @@ public class MainActivity extends ListActivity implements TvConstants
     	{
 	        case 1:
 	        	checkOS();
-	        	return true;
+        	return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -357,37 +400,14 @@ public class MainActivity extends ListActivity implements TvConstants
     protected void onListItemClick(ListView l, View v, int position, long id)
     {
         super.onListItemClick(l, v, position, id);
-        String streamName = (String) streamsList.get((int) id).get(M_TITRE);
-        String streamShort = (String) streamsList.get((int) id).get(M_SHORT);
+        String streamUrl = (String) streamsList.get((int) id).get(M_URL);
+        String mimeType = (String) streamsList.get((int) id).get(M_MIME);
 
-    	if (false)//(moduleName.equals(getString(R.string.buttonTv)))
-    	{
-    		Intent i = new Intent("kr.mobilesoft.yxplayer.PLAYER");
-//	    		Intent i = new Intent("kr.mobilesoft.yxplayer.StreamsView");
-    		i.putExtra("url", "http://vipmms9.yacast.net/bfm_bfmtv");
-    		i.putExtra("uri", "http://vipmms9.yacast.net/bfm_bfmtv");
-//	    		i.putExtra("add", "http://vipmms9.yacast.net/bfm_bfmtv");
-//	    		i.putExtra("stream", "http://vipmms9.yacast.net/bfm_bfmtv");
-//	    		i.putExtra("streams", "http://vipmms9.yacast.net/bfm_bfmtv");
-//	    		i.putExtra("URL", "http://vipmms9.yacast.net/bfm_bfmtv");
-//	    		i.putExtra("URI", "http://vipmms9.yacast.net/bfm_bfmtv");
-//	    		i.putExtra("open", "http://vipmms9.yacast.net/bfm_bfmtv"); // fait planter
-//	    		i.putExtra("video", "http://vipmms9.yacast.net/bfm_bfmtv");
-    		try
-    		{
-    			startActivity(i);
-    		}
-    		catch (Exception e)
-    		{
-    			Toast.makeText(this, "Pb ! "+e.getMessage(), 2000).show();
-    			Log.d(TAG, "PB : "+e.getMessage());
-    		}
-    	}
-    	if (streamShort != null)
+    	if (streamUrl != null)
     	{
     	    Intent intent = new Intent();
     	 	intent.setAction(android.content.Intent.ACTION_VIEW);
-    	 	intent.setDataAndType(Uri.parse("http://tv.freebox.fr/stream_"+streamShort), "video/mp4");
+    	 	intent.setDataAndType(Uri.parse(streamUrl), mimeType);
     	 	try
     	 	{
     	 		startActivity(intent);
@@ -396,55 +416,18 @@ public class MainActivity extends ListActivity implements TvConstants
     	 	{
     	 		Toast.makeText(this, "Problème : "+e.getMessage(), Toast.LENGTH_LONG).show();
     	 	}
-    	}
-    	else
-    	{
-    	    Intent intent = new Intent();
-    	 	intent.setAction(android.content.Intent.ACTION_VIEW);
-    	 	try
-    	 	{
-    	 		startActivity(intent);
-    	 	}
-    	 	catch (Exception e)
-    	 	{
-    	 		Toast.makeText(this, "Problème : "+e.getMessage(), Toast.LENGTH_LONG).show();
-    	 	}    		
     	}
     }
 
-	private void addChaine(String titre, String shorter, int logo, String id)
-	{
-    	Map<String,Object> map = new HashMap<String,Object>();
-		map.put(M_TITRE, titre);
-		map.put(M_SHORT, shorter);
-		map.put(M_LOGO, logo);
-		map.put(M_ID, id);
-		streamsList.add(map);		
-	}
-
-	private void setChaines()
+    private void addChannel(String name, int nb, String logoUrl, String streamUrl, String mimeType)
     {
-		addChaine("France 2",	"france2",	R.drawable.tv_fr2,		"201");
-		addChaine("France 3",	"france3",	R.drawable.tv_fr3,		"202");
-		addChaine("France 4",	"france4",	R.drawable.tv_fr4,		"376");
-		addChaine("France 5",	"france5",	R.drawable.tv_fr5,		"203");
-		addChaine("Direct 8",	"direct8",	R.drawable.tv_direct8,	"372");
-		addChaine("NT1",		"nt1",		R.drawable.tv_nt1,		"374");
-		addChaine("NRJ 12",		"nrj12",	R.drawable.tv_nrj12,	"375");
-		addChaine("LCP",		"lcp",		R.drawable.tv_lcp,		"226");
-		addChaine("BFM TV",		"bfmtv",	R.drawable.tv_bfm,		"400");
-		addChaine("TV5",		"tv5",		R.drawable.tv_tv5,		"206");
-		addChaine("France O",	"franceo",	R.drawable.tv_franceo,	"238");
-		addChaine("AlJazeera",	"aljazeera",R.drawable.tv_aljazeerai,"494");
-		addChaine("Demain",		"demain",	R.drawable.tv_demaintv,	"227");
-		addChaine("Liberty Tv",	"libertytv",R.drawable.tv_libertytv,"215");
-		addChaine("Fashion Tv",	"fashiontv",R.drawable.chaine_vide,	"0");
-		addChaine("Guysen",		"guysen",	R.drawable.chaine_vide,	"0");
-		addChaine("NRJ Hits",	"nrjhits",	R.drawable.tv_nrjhits,	"620");
-		addChaine("NRJ Paris",	"nrjparis",	R.drawable.tv_nrjparis,	"0");
-		addChaine("KTO",		"kto",		R.drawable.tv_kto,		"0");
-		addChaine("Luxe TV",	"luxetv",	R.drawable.tv_luxetv,	"0");
-		addChaine("Test", 		null,		R.drawable.chaine_vide,	"0");
+    	Map<String,Object> map = new HashMap<String,Object>();
+		map.put(M_TITRE, ""+nb+" - "+name);
+		map.put(M_URL, streamUrl);
+		map.put(M_LOGO, logoUrl);
+		map.put(M_MIME, mimeType);
+		map.put(M_ID, nb);
+		streamsList.add(map);		    	
     }
 	
 	private void verifyInstallFbm()
@@ -458,6 +441,66 @@ public class MainActivity extends ListActivity implements TvConstants
 		}
 	}
 	
+	public static String getPage(InputStreamReader isr)
+	{
+		if (isr == null)
+		{
+			return null;
+		}
+		
+		BufferedReader reader = new BufferedReader(isr); 
+		StringBuilder sb = new StringBuilder();
+		
+		if (reader == null)
+		{
+			return null;
+		}
+
+		String line = null;
+		try 
+		{
+			while ((line = reader.readLine()) != null)
+			{
+		          sb.append(line+"\n");
+		    }
+		}
+		catch (IOException e)
+		{
+			Log.e(TAG, "getPage: "+e);
+			e.printStackTrace();
+			return null;
+		}		
+		return sb.toString();
+	}
+
+	private InputStreamReader getJson(String url)
+	{
+		if (USER_AGENT == null)
+		{
+			Build build = new Build();
+			USER_AGENT = getString(R.string.app_name)+"/"+Utils.getMyVersion(this)+" (Linux; U; Android "+Build.VERSION.RELEASE+"; "+ Utils.getFieldReflectively(build,"MANUFACTURER")+";"+Utils.getFieldReflectively(build,"MODEL")+";fr-fr;)";
+		}
+		HttpClient httpclient = new DefaultHttpClient();
+		HttpGet httpget = new HttpGet(url);
+		HttpResponse response;
+        try
+        {
+        	httpget.setHeader("User-Agent", USER_AGENT);
+        	response = httpclient.execute(httpget);
+        	HttpEntity entity = response.getEntity();
+        	return (new InputStreamReader(entity.getContent(), "UTF8"));
+        }
+        catch (ClientProtocolException e)
+        {
+            e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        return null;
+	}
+
 	private void showPopupFbm()
 	{
 		AlertDialog d = new AlertDialog.Builder(this).create();
