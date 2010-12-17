@@ -453,6 +453,10 @@ public class MainActivity extends ListActivity implements TvConstants
 		if (activitiesList.isEmpty())
 		{
 			showPopupFbm();
+			SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
+			Editor editor = mgr.edit();
+			editor.putString(KEY_SPLASH_TV, "0");
+			editor.commit();
 		}
 	}
 	
@@ -462,7 +466,7 @@ public class MainActivity extends ListActivity implements TvConstants
 		{
 			return null;
 		}
-		
+
 		BufferedReader reader = new BufferedReader(isr); 
 		StringBuilder sb = new StringBuilder();
 		
@@ -503,17 +507,20 @@ public class MainActivity extends ListActivity implements TvConstants
 			if (c.getResponseCode() != 200)
 			{
 				c.disconnect();
+				Toast.makeText(this, "En vous connectant au réseau Free, plus de chaînes seront disponibles", Toast.LENGTH_LONG).show();
 				return false;
 			}
 			else
 			{
 				c.disconnect();
+				Toast.makeText(this, "Connecté au réseau Free", Toast.LENGTH_SHORT).show();
 				return true;
 			}
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
+			Toast.makeText(this, "Problème réseau...", Toast.LENGTH_LONG).show();
 			return false;
 		}
 	}
