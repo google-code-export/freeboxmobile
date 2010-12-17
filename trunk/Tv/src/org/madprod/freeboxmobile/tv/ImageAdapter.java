@@ -53,6 +53,7 @@ public class ImageAdapter extends BaseAdapter implements TvConstants
     	TextView text = (TextView)view.findViewById(R.id.tv_main_row_titre);
     	text.setText((String) streamsList.get(position).get(M_TITRE));
     	logo = (ImageView)view.findViewById(R.id.tv_main_row_img);
+    	logo.setImageResource(R.drawable.chaine_vide);
         imageDownloader.download((String) streamsList.get(position).get(M_LOGO), (ImageView) logo);
         return view;
     }
