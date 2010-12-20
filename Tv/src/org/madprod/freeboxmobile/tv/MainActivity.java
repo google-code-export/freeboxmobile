@@ -25,6 +25,7 @@ import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -32,6 +33,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -52,6 +54,7 @@ public class MainActivity extends ListActivity implements TvConstants
 	GoogleAnalyticsTracker tracker;
 	private List< Map<String,Object> > streamsList;
 	String USER_AGENT = null;
+	private static ImageAdapter listAdapter = null; 
 	
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -92,12 +95,62 @@ public class MainActivity extends ListActivity implements TvConstants
     	super.onStart();
     	Log.i(TAG,"TvActivity Start");
     	verifyInstallFbm();
-    	getStreams();
+		new AsyncGetStreams().execute();
     }
 
-    private void getStreams()
+    @Override
+    protected void onResume()
     {
-    	boolean isFree = testFree();
+		Log.i(TAG,"TvActivity Resume");
+    	super.onResume();
+    }
+
+	@Override
+    public boolean onCreateOptionsMenu(Menu menu)
+	{
+        super.onCreateOptionsMenu(menu);
+
+        menu.add(0, 1, 0, "Aide").setIcon(android.R.drawable.ic_menu_help);
+        return true;
+    }
+	
+	@Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+    	switch (item.getItemId())
+    	{
+	        case 1:
+	        	checkOS();
+        	return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id)
+    {
+        super.onListItemClick(l, v, position, id);
+        String streamUrl = (String) streamsList.get((int) position).get(M_URL);
+        String mimeType = (String) streamsList.get((int) position).get(M_MIME);
+
+    	if (streamUrl != null)
+    	{
+    	    Intent intent = new Intent();
+    	 	intent.setAction(android.content.Intent.ACTION_VIEW);
+    	 	intent.setDataAndType(Uri.parse(streamUrl), mimeType);
+    	 	try
+    	 	{
+    	 		startActivity(intent);
+    	 	}
+    	 	catch (Exception e)
+    	 	{
+    	 		Toast.makeText(this, "Problème : "+e.getMessage(), Toast.LENGTH_LONG).show();
+    	 	}
+    	}
+    }
+
+    private void getStreams(boolean isFree)
+    {
     	streamsList.clear();
     	String json = getPage(getJson("http://tv.freeboxmobile.net/json/streams_fbm.json"));
     	if (json != null)
@@ -382,58 +435,6 @@ public class MainActivity extends ListActivity implements TvConstants
     	d.show();    	
     }
     
-    @Override
-    protected void onResume()
-    {
-		Log.i(TAG,"TvActivity Resume");
-    	super.onResume();
-        setListAdapter(new ImageAdapter(this, streamsList));
-    }
-
-	@Override
-    public boolean onCreateOptionsMenu(Menu menu)
-	{
-        super.onCreateOptionsMenu(menu);
-
-        menu.add(0, 1, 0, "Aide").setIcon(android.R.drawable.ic_menu_help);
-        return true;
-    }
-	
-	@Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-    	switch (item.getItemId())
-    	{
-	        case 1:
-	        	checkOS();
-        	return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onListItemClick(ListView l, View v, int position, long id)
-    {
-        super.onListItemClick(l, v, position, id);
-        String streamUrl = (String) streamsList.get((int) position).get(M_URL);
-        String mimeType = (String) streamsList.get((int) position).get(M_MIME);
-
-    	if (streamUrl != null)
-    	{
-    	    Intent intent = new Intent();
-    	 	intent.setAction(android.content.Intent.ACTION_VIEW);
-    	 	intent.setDataAndType(Uri.parse(streamUrl), mimeType);
-    	 	try
-    	 	{
-    	 		startActivity(intent);
-    	 	}
-    	 	catch (Exception e)
-    	 	{
-    	 		Toast.makeText(this, "Problème : "+e.getMessage(), Toast.LENGTH_LONG).show();
-    	 	}
-    	}
-    }
-
     private void addChannel(String name, int nb, String logoUrl, String streamUrl, String mimeType)
     {
     	Map<String,Object> map = new HashMap<String,Object>();
@@ -492,39 +493,6 @@ public class MainActivity extends ListActivity implements TvConstants
 		return sb.toString();
 	}
 
-	private boolean testFree()
-	{
-		try
-		{
-			URL u = new URL("http://tv.freebox.fr");
-			HttpURLConnection c = (HttpURLConnection) u.openConnection();
-			c.setRequestMethod("GET");
-			c.setAllowUserInteraction(false);
-			c.setUseCaches(false);
-			c.setInstanceFollowRedirects(false);
-			c.connect();
-			Log.d(TAG, "TEST FREE : "+c.getResponseMessage());
-			if (c.getResponseCode() != 200)
-			{
-				c.disconnect();
-				Toast.makeText(this, "En vous connectant au réseau Free, plus de chaînes seront disponibles", Toast.LENGTH_LONG).show();
-				return false;
-			}
-			else
-			{
-				c.disconnect();
-				Toast.makeText(this, "Connecté au réseau Free", Toast.LENGTH_SHORT).show();
-				return true;
-			}
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			Toast.makeText(this, "Problème réseau...", Toast.LENGTH_LONG).show();
-			return false;
-		}
-	}
-	
 	private InputStreamReader getJson(String url)
 	{
 		if (USER_AGENT == null)
@@ -602,5 +570,96 @@ public class MainActivity extends ListActivity implements TvConstants
 			}
 		});
 		d.show();
+	}
+	
+    private class AsyncGetStreams extends AsyncTask<Void, Void, Void>
+    {
+    	ProgressDialog myProgressDialog = null;
+    	int result = -1;
+    	
+		@Override
+		protected Void doInBackground(Void... v)
+		{
+			result = testNet();
+			getStreams(result == 1);
+			return null;
+		}
+
+		@Override
+		protected void onPreExecute()
+		{
+	        Log.d(TAG, "onPreExecute started");
+			myProgressDialog = new ProgressDialog(MainActivity.this);
+			myProgressDialog.setIcon(R.drawable.icon_fbm);
+			myProgressDialog.setTitle("Freebox Tv Mobile");
+			myProgressDialog.setMessage("Téléchargement de la liste des chaînes...");
+			myProgressDialog.show();
+		}
+
+		@Override
+		protected void onPostExecute(Void r)
+		{
+			if ((myProgressDialog != null) && (myProgressDialog.isShowing()))
+			{
+				myProgressDialog.dismiss();
+			}
+			displayNet(result);
+			MainActivity.listAdapter = new ImageAdapter(MainActivity.this, streamsList);
+	        setListAdapter(MainActivity.listAdapter);
+	        Log.d(TAG, "onPostExecute finished");
+		}
+		
+		private void displayNet(int n)
+		{
+			switch (n)
+			{
+				case -1:
+					Toast.makeText(MainActivity.this, "Problème réseau...", Toast.LENGTH_LONG).show();
+				break;
+				case 0:
+					Toast.makeText(MainActivity.this, "En vous connectant au réseau Free, plus de chaînes seront disponibles", Toast.LENGTH_LONG).show();
+				break;
+				case 1:
+					Toast.makeText(MainActivity.this, "Connecté au réseau Free", Toast.LENGTH_SHORT).show();
+				break;
+			}
+		}
+		
+		/*
+		 *  Returns :
+		 *  -1 : network problem
+		 *  0 : normal network
+		 *  1 : Free network
+		 */
+		
+		private int testNet()
+		{
+			try
+			{
+				URL u = new URL("http://tv.freebox.fr");
+				HttpURLConnection c = (HttpURLConnection) u.openConnection();
+				c.setRequestMethod("GET");
+				c.setAllowUserInteraction(false);
+				c.setUseCaches(false);
+				c.setInstanceFollowRedirects(false);
+				c.connect();
+				Log.d(TAG, "TEST FREE : "+c.getResponseMessage());
+				if (c.getResponseCode() != 200)
+				{
+					c.disconnect();
+					return 0;
+				}
+				else
+				{
+					c.disconnect();
+					return 1;
+				}
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+				return -1;
+			}
+		}
 	}
 }
