@@ -1,5 +1,6 @@
 package org.madprod.freeboxmobile;
 
+import java.lang.reflect.Field;
 import java.nio.channels.FileChannel;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -58,6 +59,21 @@ public class Utils implements Constants
 	            pInfo = null;
 	            Log.d(TAG, "getFBMVersion ERROR");
 		    }
+		}
+	}
+
+	public static int getPlatformVersion()
+	{
+		try
+		{
+			Field verField = Class.forName("android.os.Build$VERSION").getField("SDK_INT");
+			int ver = verField.getInt(verField);
+			return ver;
+		}
+		catch (Exception e)
+		{
+			// android.os.Build$VERSION is not there on Cupcake
+			return 3;
 		}
 	}
 

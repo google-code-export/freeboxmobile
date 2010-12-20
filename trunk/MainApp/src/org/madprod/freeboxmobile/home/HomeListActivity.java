@@ -25,8 +25,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.SpannableString;
@@ -261,14 +263,23 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     {
     	Map<String,Object> map;
 
-    	
-    	map = new HashMap<String,Object>();
-		map.put(M_ICON, R.drawable.fm_television);
-		map.put(M_TITRE, getString(R.string.buttonTv));
-		map.put(M_DESC, "NOUVEAU : Regardez les chaînes de TV Freebox ! (BETA)");
-//		map.put(M_CLASS, TvActivity.class);
-		map.put(M_CLASS, null);
-		modulesList.add(map);
+
+    	if (checkOS(Build.VERSION_CODES.ECLAIR_MR1))
+    	{
+	    	map = new HashMap<String,Object>();
+			map.put(M_ICON, R.drawable.fm_television);
+			map.put(M_TITRE, getString(R.string.buttonTv));
+	        if (isModuleInstalled("org.madprod.freeboxmobile", "org.madprod.freeboxmobile.home.HomeListActivity"))
+	        {
+	        	map.put(M_DESC, "NOUVEAU : Regardez les chaînes de TV Freebox ! (BETA)");
+	        }
+	        else
+	        {
+	        	map.put(M_DESC, "Téléchargez le module 'Freebox TV Mobile' afin de regarder les chaînes de TV Freebox !");	        	
+	        }
+			map.put(M_CLASS, null);
+			modulesList.add(map);
+    	}
 		map = new HashMap<String,Object>();
 		map.put(M_ICON, R.drawable.fm_guide_tv);
 		map.put(M_TITRE, getString(R.string.buttonGuide));
@@ -330,6 +341,15 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		map.put(M_DESC, "Si vous avez une adresse email en @free.fr, accèdez au webmail ici");
 		map.put(M_CLASS, null);
 		modulesList.add(map);
+    	if (!checkOS(Build.VERSION_CODES.ECLAIR_MR1))
+    	{
+	    	map = new HashMap<String,Object>();
+			map.put(M_ICON, R.drawable.fm_television);
+			map.put(M_TITRE, getString(R.string.buttonTv));
+        	map.put(M_DESC, "Le module 'Freebox TV Mobile' n'est pas compatible avec votre version d'Android.");	        	
+			map.put(M_CLASS, null);
+			modulesList.add(map);
+    	}
     	map = new HashMap<String,Object>();
 		map.put(M_ICON, R.drawable.fm_radios);
 		map.put(M_TITRE, getString(R.string.buttonMusique));
@@ -366,7 +386,6 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 	        	showNonADSL();
 	        	return;
 	        }
-//	    		checkExtApp("me.abitno.vplayer", "", "VPLayer");
 	    	if (moduleName.equals(getString(R.string.buttonAssistance)))
 	    	{
 //	    		FBMHttpConnection.connectAssistance();
@@ -383,7 +402,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		    	openExtApp("org.madprod.infofreenautes", ".splashscreen.SplashScreen", "Actu Freenautes", true);
 		    }else if (moduleName.equals(getString(R.string.buttonTelecommande)))
 		    {
-			    	openExtApp("org.madprod.freeboxmobile.remotecontrol.earlypropale", ".Main", "Early Propale", true);		    		
+		    	openExtApp("org.madprod.freeboxmobile.remotecontrol.earlypropale", ".Main", "Early Propale", true);		    		
 		    }
 	    	else if (moduleName.equals(getString(R.string.buttonFreeWifi)))
 	    	{
@@ -391,7 +410,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 	    	}
 	    	else if (moduleName.equals(getString(R.string.buttonTv)))
 	    	{
-	    		openExtApp("org.madprod.freeboxmobile.tv", ".MainActivity", "Freebox TV", true);
+	    		openExtApp("org.madprod.freeboxmobile.tv", ".MainActivity", "Freebox TV Mobile", true);
 	    	}
         }
     	if (moduleClass != null)
@@ -643,6 +662,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 			"- Benoit Duffez : Magnétosocope\n"+
 			"- Ludovic Meurillon : Fax\n"+
 			"- Alban Pelé : Icônes de la page d'accueil\n"+
+			"- Kevin Gigean : Tests\n"+
 			"\n"+
 			"Cette application opensource utilise :\n"+
 			"- Android-XMLRPC : http://code.google.com/p/android-xmlrpc/\n"+
@@ -758,6 +778,38 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		);
 		d.show();      
     }
+    
+	private boolean isModuleInstalled(String module, String activity)
+	{
+		Intent i = new Intent(Intent.ACTION_MAIN);
+		i.setClassName(module, activity);
+//		i.setClassName("org.madprod.freeboxmobile", "org.madprod.freeboxmobile.home.HomeListActivity");
+		List<ResolveInfo> activitiesList = getPackageManager().queryIntentActivities(i, 0);
+		if (activitiesList.isEmpty())
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	}
+
+	/*
+	 * returns true if os version is >= version, false otherwise
+	 */
+	private boolean checkOS(int version)
+	{
+		if (Utils.getPlatformVersion() < Build.VERSION_CODES.ECLAIR_MR1)
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	}
+
 }
 
 /*
