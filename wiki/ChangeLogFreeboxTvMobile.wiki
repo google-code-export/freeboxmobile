@@ -2,7 +2,14 @@
 
 <wiki:toc max_depth="2" />
 
-= Versions publiques du module !EarlyPropale =
+= Versions publiques du module !Freebox Tv Mobile =
+== 1.0.1 ==
+Sortie le 20/12/2010<br>
+Release : 3<br>
+Révision : 732
+ * Correction bugs crash durant rotation & refresh liste chaines
+ * Liste des chaînes n'est plus rafraichie à chaque fois
+
 == 1.0.0 ==
 Sortie le 20/12/2010<br>
 Release : 2<br>
