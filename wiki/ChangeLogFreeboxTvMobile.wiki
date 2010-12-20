@@ -1,0 +1,14 @@
+#summary Historique des versions de Freebox Tv Mobile.
+
+<wiki:toc max_depth="2" />
+
+= Versions publiques du module !EarlyPropale =
+== 1.0.0 ==
+Sortie le 20/12/2010<br>
+Release : 2<br>
+Révision : 729
+ * Première version publique en module
+ * app2sd
+ * bouquet de chaînes Free
+ * bouquet de chaînes Internet
+ * chargement dynamique de la liste des chaînes
