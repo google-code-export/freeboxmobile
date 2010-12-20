@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,7 +66,7 @@ public class MainActivity extends ListActivity implements TvConstants
 		tracker.trackPageView("Tv/HomeTv");
 		streamsList = new ArrayList< Map<String,Object> >();
 		setContentView(R.layout.tv_main_list);
-		setTitle(getString(R.string.app_name));
+		setTitle(getString(R.string.app_name)+" "+Utils.getMyVersion(this));
 		SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 		if (!mgr.getString(KEY_SPLASH_TV, "0").equals(Utils.getMyVersion(this)))
 		{
@@ -151,6 +152,7 @@ public class MainActivity extends ListActivity implements TvConstants
 
     private void getStreams(boolean isFree)
     {
+    	Log.d(TAG, "getStreams started");
     	streamsList.clear();
     	String json = getPage(getJson("http://tv.freeboxmobile.net/json/streams_fbm.json"));
     	if (json != null)
@@ -388,7 +390,7 @@ public class MainActivity extends ListActivity implements TvConstants
 	    			public void onClick(DialogInterface dialog, int which)
 	    			{
 	    				dialog.dismiss();
-	    	    		tracker.trackPageView("TV/InstallPlayer");	    	    		
+	    	    		tracker.trackPageView("TV/InstallPlayer");
 //	    				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=me.abitno.vplayer")));
 	    				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://search?q=pub:ABitNo")));
 	    			}
@@ -446,12 +448,24 @@ public class MainActivity extends ListActivity implements TvConstants
 		streamsList.add(map);		    	
     }
 	
-	private void verifyInstallFbm()
+	private boolean isModuleInstalled(String module, String activity)
 	{
 		Intent i = new Intent(Intent.ACTION_MAIN);
-		i.setClassName("org.madprod.freeboxmobile", "org.madprod.freeboxmobile.home.HomeListActivity");
+		i.setClassName(module, activity);
 		List<ResolveInfo> activitiesList = getPackageManager().queryIntentActivities(i, 0);
 		if (activitiesList.isEmpty())
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	}
+
+	private void verifyInstallFbm()
+	{
+		if (!isModuleInstalled("org.madprod.freeboxmobile", "org.madprod.freeboxmobile.home.HomeListActivity"))
 		{
 			showPopupFbm();
 			SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
@@ -580,7 +594,8 @@ public class MainActivity extends ListActivity implements TvConstants
 		@Override
 		protected Void doInBackground(Void... v)
 		{
-			result = testNet();
+			Log.d(TAG, "doInBackground started");
+			result = testNet(false);
 			getStreams(result == 1);
 			return null;
 		}
@@ -599,7 +614,7 @@ public class MainActivity extends ListActivity implements TvConstants
 		@Override
 		protected void onPostExecute(Void r)
 		{
-			if ((myProgressDialog != null) && (myProgressDialog.isShowing()))
+//			if ((myProgressDialog != null) && (myProgressDialog.isShowing()))
 			{
 				myProgressDialog.dismiss();
 			}
@@ -632,17 +647,33 @@ public class MainActivity extends ListActivity implements TvConstants
 		 *  1 : Free network
 		 */
 		
-		private int testNet()
+		private int testNet(boolean retry)
 		{
+			HttpURLConnection c = null;
 			try
 			{
+				Log.d(TAG, "testNet : 1");
 				URL u = new URL("http://tv.freebox.fr");
-				HttpURLConnection c = (HttpURLConnection) u.openConnection();
+				c = (HttpURLConnection) u.openConnection();
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+				Log.d(TAG, "testNet : 1 -> 0");
+				return -1;
+			}
+			try
+			{
 				c.setRequestMethod("GET");
-				c.setAllowUserInteraction(false);
-				c.setUseCaches(false);
-				c.setInstanceFollowRedirects(false);
+//				c.setAllowUserInteraction(false);
+//				c.setUseCaches(false);
+//				c.setInstanceFollowRedirects(false);
+//				c.setDoInput(true);
+				c.setConnectTimeout(5000);
+				c.setReadTimeout(5000);
+				Log.d(TAG, "testNet : 2");
 				c.connect();
+				Log.d(TAG, "testNet : 3");
 				Log.d(TAG, "TEST FREE : "+c.getResponseMessage());
 				if (c.getResponseCode() != 200)
 				{
@@ -658,8 +689,9 @@ public class MainActivity extends ListActivity implements TvConstants
 			catch (Exception e)
 			{
 				e.printStackTrace();
+				Log.d(TAG, "testNet : 3 -> 0");
 				return -1;
-			}
+			}			
 		}
 	}
 }
