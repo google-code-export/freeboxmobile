@@ -53,9 +53,10 @@ import android.widget.Toast;
 public class MainActivity extends ListActivity implements TvConstants
 {
 	GoogleAnalyticsTracker tracker;
-	private List< Map<String,Object> > streamsList;
-	String USER_AGENT = null;
+	private static List< Map<String,Object> > streamsList = null;
+	static String USER_AGENT = null;
 	private static ImageAdapter listAdapter = null; 
+	private static ProgressDialog pd = null;
 	
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -64,7 +65,10 @@ public class MainActivity extends ListActivity implements TvConstants
 		tracker = GoogleAnalyticsTracker.getInstance();
 		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
 		tracker.trackPageView("Tv/HomeTv");
-		streamsList = new ArrayList< Map<String,Object> >();
+		if (streamsList == null)
+		{
+			streamsList = new ArrayList< Map<String,Object> >();
+		}
 		setContentView(R.layout.tv_main_list);
 		setTitle(getString(R.string.app_name)+" "+Utils.getMyVersion(this));
 		SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
@@ -96,7 +100,18 @@ public class MainActivity extends ListActivity implements TvConstants
     	super.onStart();
     	Log.i(TAG,"TvActivity Start");
     	verifyInstallFbm();
-		new AsyncGetStreams().execute();
+    	if (pd != null)
+    	{
+    		pd.show();
+    	}
+    	if (listAdapter == null)
+    	{
+    		new AsyncGetStreams().execute();
+    	}
+    	else
+    	{
+    		setListAdapter(MainActivity.listAdapter);
+    	}
     }
 
     @Override
@@ -106,12 +121,24 @@ public class MainActivity extends ListActivity implements TvConstants
     	super.onResume();
     }
 
+    @Override
+    protected void onPause()
+    {
+		Log.i(TAG,"TvActivity Pause");
+    	super.onResume();
+    	if (pd != null)
+    	{
+    		pd.dismiss();
+    	}
+    }
+
 	@Override
     public boolean onCreateOptionsMenu(Menu menu)
 	{
         super.onCreateOptionsMenu(menu);
 
         menu.add(0, 1, 0, "Aide").setIcon(android.R.drawable.ic_menu_help);
+        menu.add(0, 2, 0, "Rafraichir").setIcon(android.R.drawable.ic_menu_rotate);
         return true;
     }
 	
@@ -122,6 +149,9 @@ public class MainActivity extends ListActivity implements TvConstants
     	{
 	        case 1:
 	        	checkOS();
+        	return true;
+	        case 2:
+	        	new AsyncGetStreams().execute();
         	return true;
         }
         return super.onOptionsItemSelected(item);
@@ -588,7 +618,6 @@ public class MainActivity extends ListActivity implements TvConstants
 	
     private class AsyncGetStreams extends AsyncTask<Void, Void, Void>
     {
-    	ProgressDialog myProgressDialog = null;
     	int result = -1;
     	
 		@Override
@@ -604,19 +633,23 @@ public class MainActivity extends ListActivity implements TvConstants
 		protected void onPreExecute()
 		{
 	        Log.d(TAG, "onPreExecute started");
-			myProgressDialog = new ProgressDialog(MainActivity.this);
-			myProgressDialog.setIcon(R.drawable.icon_fbm);
-			myProgressDialog.setTitle("Freebox Tv Mobile");
-			myProgressDialog.setMessage("Téléchargement de la liste des chaînes...");
-			myProgressDialog.show();
+	        if (pd == null)
+	        {
+				pd = new ProgressDialog(MainActivity.this);
+				pd.setIcon(R.drawable.icon_fbm);
+				pd.setTitle("Freebox Tv Mobile");
+				pd.setMessage("Téléchargement de la liste des chaînes...");
+				pd.show();
+	        }
 		}
 
 		@Override
 		protected void onPostExecute(Void r)
 		{
-//			if ((myProgressDialog != null) && (myProgressDialog.isShowing()))
+			if (pd != null)
 			{
-				myProgressDialog.dismiss();
+				pd.dismiss();
+				pd = null;
 			}
 			displayNet(result);
 			MainActivity.listAdapter = new ImageAdapter(MainActivity.this, streamsList);
