@@ -38,7 +38,7 @@ public class ImageAdapter extends BaseAdapter implements TvConstants
 
     public long getItemId(int position)
     {
-        return (long) Integer.decode(streamsList.get(position).get(M_ID).toString());
+   		return (long) Integer.decode(streamsList.get(position).get(M_ID).toString());
     }
 
     public View getView(int position, View view, ViewGroup parent)

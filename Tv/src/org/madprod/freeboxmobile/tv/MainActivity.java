@@ -5,9 +5,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
-import java.net.ProtocolException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,9 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -57,6 +61,7 @@ public class MainActivity extends ListActivity implements TvConstants
 	static String USER_AGENT = null;
 	private static ImageAdapter listAdapter = null; 
 	private static ProgressDialog pd = null;
+	private static long startPlay = 0;
 	
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -85,6 +90,7 @@ public class MainActivity extends ListActivity implements TvConstants
 			displayHelp();
 		}
 		*/
+		// TODO : si lors d'un restart (retour de player), moins de 15 secs se sont écoulées -> message de bande passante...
     }
 
     @Override
@@ -112,6 +118,12 @@ public class MainActivity extends ListActivity implements TvConstants
     	{
     		setListAdapter(MainActivity.listAdapter);
     	}
+    	Log.d(TAG, "DELAIS : "+startPlay+" - "+(Calendar.getInstance().getTimeInMillis() - startPlay));
+    	if ((Calendar.getInstance().getTimeInMillis() - startPlay) < (10 * 1000))
+    	{
+			Toast.makeText(MainActivity.this, "La lecture n'a pas été longue... Vous avez peut être un problème de débit sur votre réseau.", Toast.LENGTH_LONG).show();
+    	}
+    	// TODO : checker qu'on est bien en 3G ou Wifi (pas en GPRS ou EDGE)
     }
 
     @Override
@@ -171,6 +183,7 @@ public class MainActivity extends ListActivity implements TvConstants
     	 	intent.setDataAndType(Uri.parse(streamUrl), mimeType);
     	 	try
     	 	{
+				startPlay = Calendar.getInstance().getTimeInMillis();
     	 		startActivity(intent);
     	 	}
     	 	catch (Exception e)
@@ -179,7 +192,7 @@ public class MainActivity extends ListActivity implements TvConstants
     	 	}
     	}
     }
-
+    
     private void getStreams(boolean isFree)
     {
     	Log.d(TAG, "getStreams started");
@@ -234,7 +247,6 @@ public class MainActivity extends ListActivity implements TvConstants
 		else
 		{
 			Log.e(TAG, "Pas de réseau !");
-			// TODO : Popup à ouvrir ici !
 		}
     }
 
@@ -391,80 +403,101 @@ public class MainActivity extends ListActivity implements TvConstants
     	}
     }
     
-    private void downloadPlayer()
+    private void showNetworkRestrictions()
     {
     	AlertDialog d = new AlertDialog.Builder(this).create();
 		d.setTitle("Attention ! Merci de lire");
 		d.setIcon(R.drawable.icon_fbm);
     	d.setMessage(
-    		"Cette fonctionnalité ne fonctionnera QUE si vous êtes sur le réseau Free :\n- soit connecté à une Freebox,\n- soit connecté au réseau FreeWifi (lorsque vous êtes en déplacement).\n\n"+
-			"Pour utiliser cette fonctionnalité, vous devez installer une application capable de lire les flux vidéos 'TS' comme 'VPlayer' (disponible sur Android 2.1 et +) :\n"+
-			"- Cliquez sur 'Installer' pour installer VPlayer à partir du market.\n"+
-			"- Cliquez sur 'Continuer' si vous avez déjà installé vplayer ou une autre application capable de lire de tels flux.\n"+
-			"- Cliquez sur 'Annuler' pour ne rien faire et revenir à l'écran précédent.\n"
+    		"En étant connecté au réseau Free (sur une Freebox, réseau FreeWifi, réseau FreeMobile...) vous aurez plus de chaînes à votre disposition.\n\n"+
+    		"Si vous n'arrivez pas à ouvrir une chaîne, cela peut être dû à un manque de bande passante à l'endroit où vous vous trouvez."
 		);
-		d.setButton(DialogInterface.BUTTON_POSITIVE, "Installer", new DialogInterface.OnClickListener()
-		{
-			public void onClick(DialogInterface dialog, int which)
-			{
-				dialog.dismiss();
-	    		tracker.trackPageView("TV/InstallPlayer");
-	        	AlertDialog d2 = new AlertDialog.Builder(MainActivity.this).create();
-	    		d2.setTitle("Installer VPlayer");
-	    		d2.setIcon(R.drawable.icon_fbm);
-	        	d2.setMessage(
-	        		"Vous pouvez installer VPlayer soit à partir du market, soit en téléchargeant l'application en direct.\n"
-	    		);
-	    		d2.setButton(DialogInterface.BUTTON_NEGATIVE, "A partir du market", new DialogInterface.OnClickListener()
-	    		{
-	    			public void onClick(DialogInterface dialog, int which)
-	    			{
-	    				dialog.dismiss();
-	    	    		tracker.trackPageView("TV/InstallPlayer");
-//	    				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=me.abitno.vplayer")));
-	    				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://search?q=pub:ABitNo")));
-	    			}
-	    		});
-	    		d2.setButton(DialogInterface.BUTTON_POSITIVE, "En téléchargement direct", new DialogInterface.OnClickListener()
-	    		{
-	    			public void onClick(DialogInterface dialog, int which)
-	    			{
-	    				dialog.dismiss();
-	    	    		tracker.trackPageView("TV/InstallPlayerDirect");
-	    	        	AlertDialog d3 = new AlertDialog.Builder(MainActivity.this).create();
-	    	    		d3.setIcon(R.drawable.icon_fbm);
-	    	    		d3.setTitle("Téléchargement de VPlayer");
-	    	    		d3.setMessage("Une fois le téléchargement terminé, cliquer sur sa notification 'VPLayer.apk' dans la barre de notification en haut de l'écran afin d'installer VPlayer.\n");
-	    	    		d3.setButton(DialogInterface.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener()
-	    	    		{
-	    	    			public void onClick(DialogInterface dialog, int which)
-	    	    			{
-	    	    				dialog.dismiss();
-	    	    				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://files-for-abitno.googlecode.com/files/VPlayer.apk")));
-	    	    			}
-	    	    		});
-	    	    		d3.show();
-	    			}
-	    		});
-	    		d2.show();
-			}
-		});
-		d.setButton(DialogInterface.BUTTON_NEUTRAL, "Continuer", new DialogInterface.OnClickListener()
+		d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
 		{
 			public void onClick(DialogInterface dialog, int which)
 			{
 				dialog.dismiss();
 			}
 		});
-		d.setButton(DialogInterface.BUTTON_NEGATIVE, "Annnuler", new DialogInterface.OnClickListener()
+    	d.show();
+    }
+
+    private void downloadPlayer()
+    {
+    	showNetworkRestrictions();
+		if (!isModuleInstalled("me.abitno.vplayer", "me.abitno.media.explorer.FileExplorer"))
 		{
-			public void onClick(DialogInterface dialog, int which)
+	    	AlertDialog d = new AlertDialog.Builder(this).create();
+			d.setTitle("Attention ! Merci de lire");
+			d.setIcon(R.drawable.icon_fbm);
+	    	d.setMessage(
+				"Pour utiliser cette fonctionnalité, vous devez installer une application capable de lire les flux vidéos 'TS' comme 'VPlayer' (disponible sur Android 2.1 et +) :\n"+
+				"- Cliquez sur 'Installer' pour installer VPlayer à partir du market.\n"+
+				"- Cliquez sur 'Continuer' si vous avez déjà installé vplayer ou une autre application capable de lire de tels flux.\n"+
+				"- Cliquez sur 'Annuler' pour ne rien faire et revenir à l'écran précédent.\n"
+			);
+			d.setButton(DialogInterface.BUTTON_POSITIVE, "Installer", new DialogInterface.OnClickListener()
 			{
-				dialog.dismiss();
-				finish();
-			}
-		});
-    	d.show();    	
+				public void onClick(DialogInterface dialog, int which)
+				{
+					dialog.dismiss();
+		    		tracker.trackPageView("TV/InstallPlayer");
+		        	AlertDialog d2 = new AlertDialog.Builder(MainActivity.this).create();
+		    		d2.setTitle("Installer VPlayer");
+		    		d2.setIcon(R.drawable.icon_fbm);
+		        	d2.setMessage(
+		        		"Vous pouvez installer VPlayer soit à partir du market, soit en téléchargeant l'application en direct.\n"
+		    		);
+		    		d2.setButton(DialogInterface.BUTTON_NEGATIVE, "A partir du market", new DialogInterface.OnClickListener()
+		    		{
+		    			public void onClick(DialogInterface dialog, int which)
+		    			{
+		    				dialog.dismiss();
+		    	    		tracker.trackPageView("TV/InstallPlayer");
+		    				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://search?q=pub:ABitNo")));
+		    			}
+		    		});
+		    		d2.setButton(DialogInterface.BUTTON_POSITIVE, "En téléchargement direct", new DialogInterface.OnClickListener()
+		    		{
+		    			public void onClick(DialogInterface dialog, int which)
+		    			{
+		    				dialog.dismiss();
+		    	    		tracker.trackPageView("TV/InstallPlayerDirect");
+		    	        	AlertDialog d3 = new AlertDialog.Builder(MainActivity.this).create();
+		    	    		d3.setIcon(R.drawable.icon_fbm);
+		    	    		d3.setTitle("Téléchargement de VPlayer");
+		    	    		d3.setMessage("Une fois le téléchargement terminé, cliquer sur sa notification 'VPLayer.apk' dans la barre de notification en haut de l'écran afin d'installer VPlayer.\n");
+		    	    		d3.setButton(DialogInterface.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener()
+		    	    		{
+		    	    			public void onClick(DialogInterface dialog, int which)
+		    	    			{
+		    	    				dialog.dismiss();
+		    	    				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://files-for-abitno.googlecode.com/files/VPlayer.apk")));
+		    	    			}
+		    	    		});
+		    	    		d3.show();
+		    			}
+		    		});
+		    		d2.show();
+				}
+			});
+			d.setButton(DialogInterface.BUTTON_NEUTRAL, "Continuer", new DialogInterface.OnClickListener()
+			{
+				public void onClick(DialogInterface dialog, int which)
+				{
+					dialog.dismiss();
+				}
+			});
+			d.setButton(DialogInterface.BUTTON_NEGATIVE, "Annnuler", new DialogInterface.OnClickListener()
+			{
+				public void onClick(DialogInterface dialog, int which)
+				{
+					dialog.dismiss();
+					finish();
+				}
+			});
+	    	d.show();
+		}
     }
     
     private void addChannel(String name, int nb, String logoUrl, String streamUrl, String mimeType)
@@ -662,7 +695,7 @@ public class MainActivity extends ListActivity implements TvConstants
 			switch (n)
 			{
 				case -1:
-					Toast.makeText(MainActivity.this, "Problème réseau...", Toast.LENGTH_LONG).show();
+					Toast.makeText(MainActivity.this, "Problème réseau... Essayez de rafraichir via la touche menu.", Toast.LENGTH_LONG).show();
 				break;
 				case 0:
 					Toast.makeText(MainActivity.this, "En vous connectant au réseau Free, plus de chaînes seront disponibles", Toast.LENGTH_LONG).show();
@@ -673,19 +706,57 @@ public class MainActivity extends ListActivity implements TvConstants
 			}
 		}
 		
+		
 		/*
 		 *  Returns :
 		 *  -1 : network problem
 		 *  0 : normal network
 		 *  1 : Free network
+		 *  
+		 *  Merci Fabien :)
 		 */
 		
 		private int testNet(boolean retry)
 		{
+			HttpParams params = new BasicHttpParams();
+			HttpConnectionParams.setConnectionTimeout(params, 5000);
+			HttpConnectionParams.setSoTimeout(params, 5000);
+			HttpClient client = new DefaultHttpClient(params);
+			Log.d(TAG, "TESTNET 1");
+	        HttpGet request = new HttpGet("http://tv.freebox.fr");
+			Log.d(TAG, "TESTNET 2");
+	        try
+	        {
+	            HttpResponse response = client.execute(request);
+				Log.d(TAG, "TESTNET 3");
+	            if (response.getStatusLine().getStatusCode() != 200)
+	            {
+	    			Log.d(TAG, "TESTNET 4");
+	            	return 0;
+	            }
+	            else
+	            {
+	    			Log.d(TAG, "TESTNET 5");
+	            	return 1;
+	            }
+	        }
+	        catch (Exception e)
+	        {
+				Log.d(TAG, "TESTNET 6");
+				e.printStackTrace();
+				return -1;
+	        }   
+		}
+		
+		private int testNet2(boolean retry)
+		{
+			try{
+			Thread.sleep(1000);
+		} catch (InterruptedException e1) {
+		}
 			HttpURLConnection c = null;
 			try
 			{
-				Log.d(TAG, "testNet : 1");
 				URL u = new URL("http://tv.freebox.fr");
 				c = (HttpURLConnection) u.openConnection();
 			}
@@ -693,38 +764,29 @@ public class MainActivity extends ListActivity implements TvConstants
 			{
 				e.printStackTrace();
 				Log.d(TAG, "testNet : 1 -> 0");
-				return -1;
 			}
 			try
 			{
 				c.setRequestMethod("GET");
-//				c.setAllowUserInteraction(false);
-//				c.setUseCaches(false);
-//				c.setInstanceFollowRedirects(false);
-//				c.setDoInput(true);
-				c.setConnectTimeout(5000);
 				c.setReadTimeout(5000);
-				Log.d(TAG, "testNet : 2");
-				c.connect();
-				Log.d(TAG, "testNet : 3");
-				Log.d(TAG, "TEST FREE : "+c.getResponseMessage());
 				if (c.getResponseCode() != 200)
 				{
 					c.disconnect();
+					Log.i(TAG, "NOT FREE");
 					return 0;
 				}
 				else
 				{
 					c.disconnect();
+					Log.i(TAG, "FREE !");
 					return 1;
 				}
 			}
 			catch (Exception e)
 			{
 				e.printStackTrace();
-				Log.d(TAG, "testNet : 3 -> 0");
 				return -1;
-			}			
+			}
 		}
 	}
 }
