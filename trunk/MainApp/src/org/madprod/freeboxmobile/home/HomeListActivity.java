@@ -25,6 +25,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -302,7 +303,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		map.put(M_ICON, R.drawable.fm_repondeur);
 		map.put(M_TITRE, getString(R.string.buttonMevo));
 		map.put(M_DESC, "Accédez à la messagerie vocale de votre Freebox");
-		map.put(M_CLASS, org.madprod.freeboxmobile.mvv.MevoActivity.class);
+//		map.put(M_CLASS, org.madprod.freeboxmobile.mvv.MevoActivity.class);
 		modulesList.add(map);
 		map = new HashMap<String,Object>();
 		map.put(M_ICON, R.drawable.fm_telecommande);
@@ -412,6 +413,10 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 	    	{
 	    		openExtApp("org.madprod.freeboxmobile.tv", ".MainActivity", "Freebox TV Mobile", true);
 	    	}
+	    	else if (moduleName.equals(getString(R.string.buttonMevo)))
+	    	{
+	    		openExtApp("org.madprod.mevo", "FBM Repondeur", true);
+	    	}
         }
     	if (moduleClass != null)
     	{
@@ -487,6 +492,68 @@ public class HomeListActivity extends ListActivity implements HomeConstants
         		break;
         }
     }
+    
+    private void openExtApp(final String packageName, final String appName, boolean plugin){
+    	PackageManager packageManager = getPackageManager();
+        Intent intent = packageManager.getLaunchIntentForPackage(packageName);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        try{
+        	startActivity(intent);
+        }catch (ActivityNotFoundException e)
+		{
+			String type;
+			if (plugin)
+				type = "le module";
+			else
+				type = "l'application";
+	    	AlertDialog d = new AlertDialog.Builder(this).create();
+			d.setTitle(getString(R.string.app_name));
+			d.setIcon(R.drawable.icon_fbm);
+	    	d.setMessage(
+				"Pour utiliser cette fonctionnalité, vous devez installer "+type+" '"+appName+"'.\n\n"+
+				"Cliquez sur 'Continuer' pour l'installer ou sur 'Plus tard' pour continuer à utiliser Freebox Mobile "+
+				"sans cette fonctionnalité.\n"
+			);
+			d.setButton(DialogInterface.BUTTON_POSITIVE, "Continuer", new DialogInterface.OnClickListener()
+				{
+					public void onClick(DialogInterface dialog, int which)
+					{
+						dialog.dismiss();
+			            Intent marketIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + packageName));
+			            marketIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			            try
+			            {
+			            	startActivity(marketIntent);
+			            }
+			            catch (ActivityNotFoundException e)
+			            {
+			    	    	AlertDialog ad = new AlertDialog.Builder(HomeListActivity.this).create();
+			    			ad.setTitle(getString(R.string.app_name));
+			    			ad.setIcon(R.drawable.icon_fbm);
+			    	    	ad.setMessage("Impossible d'ouvrir Android Market !");
+			    			ad.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
+							{
+								public void onClick(DialogInterface dialog, int which)
+								{
+									dialog.dismiss();
+								}
+							});
+			    	    	ad.show();
+			            }
+					}
+				});
+			d.setButton(DialogInterface.BUTTON_NEGATIVE, "Plus tard", new DialogInterface.OnClickListener()
+			{
+				public void onClick(DialogInterface dialog, int which)
+				{
+					dialog.dismiss();
+				}
+			});
+			d.show();
+		}    	
+        
+    }
+    
     
     private void openExtApp(final String packageName, final String className, final String appName, boolean plugin)
     {

@@ -49,21 +49,6 @@ public class GuideTVService extends Service{
 		}
 	};
 
-	private void sendAnswer(int status, String message){
-		synchronized(lock){
-			final int N = callbacks.beginBroadcast(); 
-			for (int i = 0; i < N; i++) { 
-				try { 
-					callbacks.getBroadcastItem(i).dataChanged(status, message); 
-				}  
-				catch (RemoteException e) {} 
-			} 
-			callbacks.finishBroadcast();
-		}
-	}
-
-
-
 
 	@Override
 	public void onDestroy() {

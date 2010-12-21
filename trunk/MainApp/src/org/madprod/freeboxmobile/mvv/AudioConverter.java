@@ -1,7 +1,5 @@
 package org.madprod.freeboxmobile.mvv;
 
-import android.util.Log;
-
 /**
 *
 * @author Olivier Rosello

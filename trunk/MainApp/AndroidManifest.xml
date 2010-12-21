@@ -66,6 +66,15 @@
     	<service android:name=".ligne.InfoAdslCheck"></service>
     	<service android:name=".guide.GuideCheck"></service>
     	<service 
+    		android:name=".services.MevoService" 
+    		android:exported="true" 
+    		android:enabled="true"
+    	>
+    		<intent-filter>
+    			<action android:name="org.madprod.freeboxmobile.services.MevoService"/>
+    		</intent-filter>
+    	</service>
+    	<service 
     		android:name=".services.RemoteControlService" 
     		android:exported="true" 
     		android:enabled="true"
@@ -79,7 +88,6 @@
 
 	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
 	<uses-permission android:name="android.permission.READ_CONTACTS"></uses-permission>
-	<uses-permission android:name="android.permission.CALL_PHONE"></uses-permission>
 	<uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"></uses-permission>
 	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"></uses-permission>
 	<uses-permission android:name="android.permission.WAKE_LOCK"></uses-permission>

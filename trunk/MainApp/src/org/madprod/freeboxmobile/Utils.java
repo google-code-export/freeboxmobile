@@ -2,6 +2,9 @@ package org.madprod.freeboxmobile;
 
 import java.lang.reflect.Field;
 import java.nio.channels.FileChannel;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.io.*;
@@ -146,6 +149,41 @@ public class Utils implements Constants
 			}
 		}
 	}
+
+	public static String convertDateTimeHR(String org)
+	{
+		String ret = "";
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		try
+		{
+			Date deb = sdf.parse(org);
+			Date fin = new Date();//sdf.parse(new Date());
+			long diff = fin.getTime() - deb.getTime();
+			int nbJours = (int) (diff / 86400000);
+			String[] datetime = org.split(" ");
+//			if (nbJours == 0)
+//				ret = datetime[1];
+//			else if (nbJours == 1)
+//				ret = "Hier "+datetime[1];
+//			else
+			String[] date = datetime[0].split("-");
+			if (nbJours <366)
+			{
+				ret = date[2]+"/"+date[1]+" "+datetime[1];
+			}
+			else
+			{
+				ret = date[2]+"/"+date[1]+"/"+date[0]+" "+datetime[1];				
+			}
+		}
+		catch (ParseException e)
+		{
+			Log.e(TAG,"PARSE DATETIME HR "+e.getMessage());
+			e.printStackTrace();
+		}
+		return ret;
+	}
+	
 
 	
 }
