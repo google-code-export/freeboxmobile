@@ -1,0 +1,43 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_alignParentBottom="true"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="@drawable/shapes"
+	android:id="@+id/admob"
+    android:gravity="center"		
+>
+        
+  	<SeekBar 
+		android:layout_height="wrap_content" 
+		android:id="@+id/message_seekbar" 
+		android:layout_width="fill_parent" 
+		android:visibility="visible"
+	/>
+	<TextView 
+		android:layout_width="wrap_content" 
+		android:layout_height="wrap_content" 
+		android:id="@+id/caller_name" 
+		android:textStyle="bold" 
+		android:text="name" 
+		android:layout_gravity="center_horizontal" 
+		android:visibility="visible" 
+		android:layout_marginLeft="5dip" 
+		android:layout_marginTop="5dip" 
+		android:textSize="16dip"
+	/>
+		
+	<TextView 
+		android:layout_width="wrap_content" 
+		android:layout_height="wrap_content" 
+		android:id="@+id/caller_number" 
+		android:textColor="#2b77c8" 
+		android:text="number" 
+		android:layout_gravity="center_horizontal" 
+		android:visibility="visible" 
+		android:textSize="16dip" 
+		android:layout_marginLeft="5dip"
+	/>
+            
+</LinearLayout>

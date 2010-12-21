@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+        
+	<string name="mevo_msgtype_fax_home">Fax personnel</string>
+	<string name="mevo_msgtype_fax_work">Fax professionnel</string>
+	<string name="mevo_msgtype_home">Domicile</string>
+	<string name="mevo_msgtype_mobile">Mobile</string>
+	<string name="mevo_msgtype_other">Autre</string>
+	<string name="mevo_msgtype_work">Professionel</string>
+	<string name="mevo_msgtype_pager">Pager</string>
+		
+</resources>

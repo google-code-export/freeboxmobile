@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:id="@+id/screen"
+>
+<LinearLayout
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:orientation="vertical"
+>
+	<LinearLayout style="@style/TitleBar">
+		<ImageView 
+			style="@style/TitleBarLogo"
+			android:src="@drawable/title_logo" 
+		/>
+
+		<View style="@style/TitleBarSpring" />
+	
+    	<ImageView style="@style/TitleBarSeparator" />
+        <ImageButton style="@style/TitleBarAction"
+        	android:id="@+id/btn_title_play"
+        	android:src="@drawable/ic_media_play"
+        	android:onClick="onPlay" />
+            
+        <ImageButton style="@style/TitleBarAction"
+        	android:id="@+id/btn_title_pause"
+        	android:src="@drawable/ic_media_pause"
+        	android:onClick="onPause" 
+        	android:visibility="gone"
+        />
+
+        <ImageView 
+        	style="@style/TitleBarSeparator" 
+        />
+        <ImageButton 
+        	style="@style/TitleBarAction"
+           	android:src="@drawable/ic_volume"
+           	android:onClick="onHpOn" 
+			android:id="@+id/btn_title_hp_on"
+		/>
+        <ImageButton 
+        	style="@style/TitleBarAction"
+           	android:src="@drawable/stat_sys_headset"
+           	android:onClick="onHpOff" 
+			android:id="@+id/btn_title_hp_off"
+			android:visibility="gone"
+		/>
+    </LinearLayout>
+	<LinearLayout
+			android:layout_width="fill_parent" 
+			android:layout_height="wrap_content" 		
+			android:orientation="vertical"
+			android:background="@drawable/my_border"
+			android:layout_margin="5dip"
+	>
+		<org.madprod.mevo.icons.IconView
+			android:layout_width="75dip" 
+			android:layout_height="75dip" 
+			android:scaleType="fitXY" 
+			android:layout_margin="5dip"
+			android:adjustViewBounds="true"
+			android:layout_gravity="center"
+			android:src="@drawable/fm_repondeur" 	
+			android:id="@+id/imgPerson"
+		/>
+		<TextView
+			android:layout_width="fill_parent" 
+			android:layout_height="wrap_content" 		
+			android:layout_gravity="center"		
+			android:gravity="center"
+			android:text="Nom de la personne"		
+			android:textStyle="bold"
+			android:id="@+id/namePerson"	
+			android:textSize="16dip"			
+		/>	
+		<RelativeLayout
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+		>
+			<TextView
+				android:layout_width="wrap_content" 
+				android:layout_height="wrap_content" 		
+				android:layout_alignParentLeft="true"
+				android:text="060606060606 (mobile)"		
+				android:textStyle="italic"
+				android:id="@+id/phonePerson"	
+				android:textSize="14dip"			
+			/>		
+			<TextView
+				android:layout_width="wrap_content" 
+				android:layout_height="wrap_content" 		
+				android:layout_alignParentRight="true"
+				android:text="18/12 12h04"		
+				android:textStyle="italic"
+				android:id="@+id/dateCall"	
+				android:textSize="14dip"			
+			/>		
+		</RelativeLayout>
+	</LinearLayout>		
+	
+	<RelativeLayout
+		android:layout_height="wrap_content"
+		android:layout_width="fill_parent"
+		android:layout_margin="5dip"
+	>
+		<TextView
+			android:layout_width="wrap_content" 
+			android:layout_height="wrap_content" 		
+			android:layout_alignParentLeft="true"
+			android:layout_centerVertical="true"
+			android:id="@+id/zeroLength"
+			android:text="0"		
+			android:textSize="14dip"		
+			android:layout_margin="5dip"	
+			android:textStyle="bold"
+		/>		
+		
+		<SeekBar 
+			android:layout_height="wrap_content" 
+			android:layout_width="fill_parent" 
+			android:id="@+id/seekbarCall" 
+			android:layout_toLeftOf="@+id/lengthCall"
+			android:layout_toRightOf="@+id/zeroLength"
+			android:layout_marginLeft="5dip"
+			android:layout_marginRight="5dip"
+		/>
+		
+		<TextView
+			android:layout_width="wrap_content" 
+			android:layout_height="wrap_content" 		
+			android:layout_alignParentRight="true"
+			android:layout_centerVertical="true"
+			android:text="182"		
+			android:id="@+id/lengthCall"	
+			android:textSize="14dip"			
+			android:textStyle="bold"
+		/>		
+	</RelativeLayout>
+	<LinearLayout
+		android:layout_width="fill_parent"	
+		android:layout_height="fill_parent"	
+		android:layout_margin="5dip"
+		android:orientation="vertical"
+	>
+		<Button
+			android:id="@+id/callback"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:text="Rappeler"
+			android:drawableLeft="@drawable/ic_menu_call"
+			android:textStyle="bold"
+			android:textSize="16dip"
+			android:onClick="onCallback"
+		/>
+	
+		<Button
+			android:id="@+id/delete"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:text="Supprimer"
+			android:drawableLeft="@drawable/ic_menu_close_clear_cancel"
+			android:textStyle="bold"
+			android:textSize="16dip"
+			android:onClick="onDelete"
+		/>
+
+		<Button
+			android:id="@+id/sendSms"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:text="Répondre par sms"
+			android:drawableLeft="@drawable/ic_menu_send"
+			android:textStyle="bold"
+			android:textSize="16dip"
+			android:onClick="onSendSms"
+		/>
+	
+		<Button
+			android:id="@+id/findNumber"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:text="Annuaire inversé"
+			android:drawableLeft="@drawable/ic_menu_search"
+			android:textStyle="bold"
+			android:textSize="16dip"
+			android:onClick="onSearchNumber"
+		/>
+		
+		<Button
+			android:id="@+id/addContact"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:text="Ajouter le numéro au répertoire"
+			android:drawableLeft="@drawable/ic_menu_add"
+			android:textStyle="bold"
+			android:textSize="16dip"
+			android:onClick="onAddContact"
+		/>
+	</LinearLayout>
+</LinearLayout>
+</ScrollView>	
