@@ -1,7 +1,7 @@
 package org.madprod.freeboxmobile;
 
-import org.madprod.freeboxmobile.guide.GuideCheck;
-import org.madprod.freeboxmobile.mvv.MevoSync;
+import org.madprod.freeboxmobile.guide.GuideCheck; 
+//import org.madprod.freeboxmobile.mvv.MevoSync;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -27,11 +27,11 @@ public class OnUpgradeReceiver extends BroadcastReceiver implements Constants
 		{
 			if (!ms.equals("-1"))  // Si une valeur était mise
 			{
-				MevoSync.changeTimer(Integer.parseInt(ms), context);
+//				MevoSync.changeTimer(Integer.parseInt(ms), context);
 			}
 			else // Si pas configuré : valeur par défaut
 			{
-				MevoSync.changeTimer(DEFAULT_MEVO_FREQ, context);
+//				MevoSync.changeTimer(DEFAULT_MEVO_FREQ, context);
 			}
 		}
 

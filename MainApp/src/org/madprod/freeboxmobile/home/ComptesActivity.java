@@ -1,12 +1,11 @@
 package org.madprod.freeboxmobile.home;
 
-import java.util.Date;
+import java.util.Date; 
 
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.guide.GuideCheck;
-import org.madprod.freeboxmobile.mvv.MevoSync;
 
 import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 
@@ -326,14 +325,14 @@ public class ComptesActivity extends ListActivity implements HomeConstants
 				String ms = getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_MEVO_PREFS_FREQ, "-1");
 				if (!ms.equals("0")) // Si "0" : l'utilisateur ne veut pas de relève périodique
 				{
-					if (!ms.equals("-1"))  // Si une valeur était mise
-					{
-						MevoSync.changeTimer(Integer.parseInt(ms), this);
-					}
-					else // Si pas configuré : valeur par défaut
-					{
-						MevoSync.changeTimer(DEFAULT_MEVO_FREQ, this);
-					}
+//					if (!ms.equals("-1"))  // Si une valeur était mise
+//					{
+//						MevoSync.changeTimer(Integer.parseInt(ms), this);
+//					}
+//					else // Si pas configuré : valeur par défaut
+//					{
+//						MevoSync.changeTimer(DEFAULT_MEVO_FREQ, this);
+//					}
 				}
 				GuideCheck.setTimer(this);
         	}

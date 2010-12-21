@@ -1,6 +1,6 @@
 package org.madprod.freeboxmobile.ligne;
 
-import java.net.URI;
+import java.net.URI; 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -11,8 +11,8 @@ import org.madprod.freeboxmobile.Constants;
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
+import org.madprod.freeboxmobile.Utils;
 import org.madprod.freeboxmobile.home.ComptesDbAdapter;
-import org.madprod.freeboxmobile.mvv.MevoMessage;
 import org.xmlrpc.android.XMLRPCClient;
 
 import com.google.android.apps.analytics.GoogleAnalyticsTracker;
@@ -132,8 +132,8 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
     	startManagingCursor(c);
     	AlertDialog d = new AlertDialog.Builder(this).create();
 		d.setTitle(c.getString(c.getColumnIndexOrThrow(KEY_TITLE)));
-    	d.setMessage("Début : "+MevoMessage.convertDateTimeHR(c.getString(c.getColumnIndexOrThrow(KEY_START)))+"\n"+
-    			"Fin : "+MevoMessage.convertDateTimeHR(c.getString(c.getColumnIndexOrThrow(KEY_END)))+"\n\n"+
+    	d.setMessage("Début : "+Utils.convertDateTimeHR(c.getString(c.getColumnIndexOrThrow(KEY_START)))+"\n"+
+    			"Fin : "+Utils.convertDateTimeHR(c.getString(c.getColumnIndexOrThrow(KEY_END)))+"\n\n"+
     			c.getString(c.getColumnIndexOrThrow(KEY_DESC)));
 		d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
 			{
@@ -330,7 +330,7 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
 				Map<String, Object> map = (Map<String, Object>) client.call("getExchangeInfo", nra);
 				loc = (String) map.get("localisation");
 				DSLAM_Info = map.get("commune") + (loc.equals("") ? "" : " - "+(String) map.get("localisation"));
-				DSLAM_Date = MevoMessage.convertDateTimeHR((String) client.call("getLastDSLAMResultSetDate"));
+				DSLAM_Date = Utils.convertDateTimeHR((String) client.call("getLastDSLAMResultSetDate"));
 				DSLAM_ok = (Boolean) client.call("getDSLAMStatus", mgr.getString(KEY_DSLAM, ""));
 				Object[] response = (Object[]) client.call("getTicketListForDSLAM", mgr.getString(KEY_DSLAM, ""));
 //				Object[] response = (Object[]) client.call("getTicketListForDSLAM", "bas33-1");

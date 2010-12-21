@@ -156,6 +156,20 @@ public class MevoDbAdapter implements MevoConstants
 	{
 		return mDb.delete(DATABASE_TABLE, KEY_ROWID + "=" + rowId, null) > 0;
 	}
+	
+	public boolean setMessageRead(long rowId)
+	{
+		ContentValues args = new ContentValues();
+		args.put(KEY_STATUS, MSG_STATUS_LISTENED);
+		return mDb.update(DATABASE_TABLE, args, KEY_ROWID+"='" + rowId+"'", null) > 0;		
+	}
+	
+	public boolean setMessageUnRead(long rowId)
+	{
+		ContentValues args = new ContentValues();
+		args.put(KEY_STATUS, MSG_STATUS_UNLISTENED);
+		return mDb.update(DATABASE_TABLE, args, KEY_ROWID+"='" + rowId+"'", null) > 0;		
+	}
 
 	public boolean deleteAllMessages()
 	{
@@ -173,7 +187,7 @@ public class MevoDbAdapter implements MevoConstants
 		                                            { KEY_ROWID, KEY_STATUS, KEY_PRESENCE, KEY_SOURCE,
 				 									  KEY_QUAND, KEY_LINK, KEY_DEL, KEY_LENGTH,
 													  KEY_NAME
-	                                            	}, KEY_PRESENCE + "> '0'", null, null, null, KEY_QUAND+" DESC");
+	                                            	}, null, null, null, null, KEY_QUAND+" DESC");
 	}
 	
 	/**
@@ -220,6 +234,7 @@ public class MevoDbAdapter implements MevoConstants
 		return mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE + " WHERE "+KEY_PRESENCE+" > '0'").simpleQueryForLong();
 	}
 
+	
 	/**
 	 * Update the message using the details provided. The message to be updated is
 	 * specified using its name

@@ -1,19 +1,14 @@
 package org.madprod.freeboxmobile.services;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
+import java.io.IOException; 
 
-import org.madprod.freeboxmobile.home.HomeListActivity;
 import org.madprod.freeboxmobile.remotecontrol.CommandManager;
 
 import android.app.Service;
 import android.content.Intent;
-import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
-import android.widget.Toast;
 
 public class RemoteControlService extends Service{
 
