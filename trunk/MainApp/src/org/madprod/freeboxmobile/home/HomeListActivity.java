@@ -496,11 +496,10 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     private void openExtApp(final String packageName, final String appName, boolean plugin){
     	PackageManager packageManager = getPackageManager();
         Intent intent = packageManager.getLaunchIntentForPackage(packageName);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        try{
-        	startActivity(intent);
-        }catch (ActivityNotFoundException e)
-		{
+        	if (intent != null){
+            	intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            	startActivity(intent);
+        	}else{
 			String type;
 			if (plugin)
 				type = "le module";
