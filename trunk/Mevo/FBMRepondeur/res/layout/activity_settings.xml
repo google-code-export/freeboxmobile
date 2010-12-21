@@ -1,0 +1,63 @@
+<PreferenceScreen 
+	xmlns:android="http://schemas.android.com/apk/res/android" 
+	android:summary="Configuration" 
+	android:title="Configuration"
+>
+	<PreferenceCategory 
+		android:title="Rafraichissement" 
+		android:order="20">
+		<ListPreference 
+			android:entries="@array/entries_list_pref_pollinterval" 
+			android:entryValues="@array/entryvalue_list_pref_pollinterval" 
+			android:title="Fréquence de vérification" 
+			android:enabled="true" 
+			android:summary="Fréquence de vérification de nouveaux messages" 
+			android:key="@string/key_refresh" 
+			android:defaultValue="@integer/default_refresh"
+		>
+		</ListPreference>
+		
+		
+	</PreferenceCategory>
+
+
+	<PreferenceCategory 
+		android:title="Notifications" 
+		android:order="30">
+		<CheckBoxPreference
+			android:title="Visuelle"
+			android:enabled="true" 
+			android:key="@string/key_notifvisu"
+			android:defaultValue="@bool/default_notifvisu"
+		/>
+	
+		<CheckBoxPreference
+			android:title="Sonore"
+			android:enabled="true" 
+			android:key="@string/key_notifson"
+			android:defaultValue="@bool/default_notifson"
+			android:dependency="@string/key_notifvisu"
+		/>
+	</PreferenceCategory>
+	
+	<PreferenceCategory 
+		android:title="Capteur" 
+		android:order="40">
+		<CheckBoxPreference
+			android:title="Capteur de proximite"
+			android:enabled="true" 
+			android:key="@string/key_proximity"
+			android:defaultValue="@bool/default_proximity"
+		/>
+	</PreferenceCategory>	
+	<PreferenceCategory 
+		android:title="Icone de lancement" 
+		android:order="50">
+		<CheckBoxPreference
+			android:title="Afficher icone dans le launcher"
+			android:enabled="true" 
+			android:key="@string/key_icon"
+			android:defaultValue="@bool/default_icon"
+		/>
+	</PreferenceCategory>	
+</PreferenceScreen>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+
+	package="org.madprod.mevo" android:versionCode="14"
+	android:versionName="1.0.0" android:installLocation="internalOnly">
+	<application android:icon="@drawable/fm_repondeur"
+		android:label="@string/app_name" android:theme="@style/Theme.IOSched">
+
+		<activity android:name=".HomeActivity"
+			android:label="@string/app_name" android:launchMode="singleInstance">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN"></action>
+				<category android:name="android.intent.category.INFO"></category>
+			</intent-filter>
+
+		</activity>
+
+
+		<activity android:name=".LaunchActivity"
+			android:label="@string/app_name" android:launchMode="singleInstance">
+			>
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN"></action>
+				<category android:name="android.intent.category.LAUNCHER"></category>
+			</intent-filter>
+
+		</activity>
+		<activity android:name=".PlayerActivity" android:configChanges="orientation"></activity>
+		<activity android:name=".SettingsActivity" android:windowSoftInputMode="stateHidden" />
+		
+		
+		
+		<service android:name=".services.MevoSync" />
+
+
+		<receiver android:name=".services.OnMevoAlarmReceiver"></receiver>
+		<receiver android:name=".services.OnBootReceiver">
+			<intent-filter>
+				<action android:name="android.intent.action.BOOT_COMPLETED" />
+			</intent-filter>
+		</receiver>
+		<receiver android:name=".services.OnUpgradeReceiver">
+			<intent-filter>
+				<action android:name="android.intent.action.PACKAGE_REPLACED" />
+				<data android:scheme="package" android:path="org.madprod.mevo" />
+			</intent-filter>
+		</receiver>
+	</application>
+	<uses-sdk android:minSdkVersion="3" android:targetSdkVersion="7">
+	</uses-sdk>
+
+	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
+	<uses-permission android:name="android.permission.WAKE_LOCK"></uses-permission>
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
+	<uses-permission android:name="android.permission.READ_CONTACTS"></uses-permission>
+	<uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"></uses-permission>
+
+	<supports-screens android:resizeable="true"
+		android:anyDensity="true" android:largeScreens="true"
+		android:normalScreens="true" android:smallScreens="true">
+	</supports-screens>
+
+</manifest> 

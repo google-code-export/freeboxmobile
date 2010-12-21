@@ -1,0 +1,363 @@
+package org.madprod.mevo;
+
+
+import java.io.IOException; 
+import java.util.Timer;
+import java.util.TimerTask;
+
+import org.madprod.freeboxmobile.services.MevoMessage;
+import org.madprod.mevo.icons.IconView;
+import org.madprod.mevo.tools.Constants;
+import org.madprod.mevo.tools.Utils;
+import org.madprod.mevo.tracker.TrackerConstants;
+import android.media.MediaPlayer.OnCompletionListener;
+import android.media.MediaPlayer.OnErrorListener;
+
+import com.google.android.apps.analytics.GoogleAnalyticsTracker;
+
+import android.app.Activity;
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.Context;
+import android.database.Cursor;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.net.Uri;
+import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.provider.Contacts;
+import android.provider.Contacts.People;
+import android.provider.Contacts.Phones;
+import android.util.Log;
+import android.view.View;
+import android.widget.SeekBar;
+import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.SeekBar.OnSeekBarChangeListener;
+@SuppressWarnings("deprecation")
+public class PlayerActivity extends Activity implements Constants, SensorEventListener{
+
+	private GoogleAnalyticsTracker tracker;
+	private MevoMessage message;
+	private final Contact contact = new Contact();
+	private MediaPlayer mp ;
+	private SeekBar messageSeekBar;
+	private final Timer messageTimer = new Timer();
+	private TimerTask messageUpdateTask = null;
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		setContentView(R.layout.activity_player);
+
+
+		if (getIntent().getExtras() != null){
+			Bundle b = getIntent().getExtras();
+			message = (MevoMessage)b.get("message");
+		}
+
+
+		super.onCreate(savedInstanceState);
+		if (message == null) finish();
+
+		if (mp == null){
+
+			getContact();
+
+			mp = MediaPlayer.create(this, Uri.parse(message.getFileName()));
+			try {
+				mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+				mp.prepare();
+
+			} catch (IllegalStateException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			mp.setScreenOnWhilePlaying(true);
+			mp.setVolume(1000,1000);
+			mp.setOnCompletionListener(new OnCompletionListener() {
+
+				@Override
+				public void onCompletion(MediaPlayer mp) {
+					messageUpdateTask.cancel();
+					messageTimer.purge();
+					setMessageSeekBar(0, mp.getDuration(), mp.getDuration());
+				}
+			});
+
+			mp.setOnErrorListener(new OnErrorListener() {
+
+				@Override
+				public boolean onError(MediaPlayer mp, int what, int extra) {
+					Log.i(TAG,"onERROR "+what+" "+extra);
+					if (mp != null)
+					{
+						mp.stop();
+					}	
+					setMessageSeekBar(-1, 0, 0);
+					return true;
+				}
+			});	
+
+
+			tracker = GoogleAnalyticsTracker.getInstance();
+			tracker.start(TrackerConstants.ANALYTICS_MAIN_TRACKER, 20, this);
+			tracker.trackPageView(TrackerConstants.MESSAGE);		
+
+			messageSeekBar = (SeekBar)findViewById(R.id.seekbarCall);
+			setSeekBarBehavior();
+			if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getString(R.string.key_proximity), getResources().getBoolean(R.bool.default_proximity))){
+				SensorManager sensorMgr = (SensorManager)getSystemService(SENSOR_SERVICE);
+				boolean proximitySupported = sensorMgr.registerListener(this, sensorMgr.getDefaultSensor(Sensor.TYPE_PROXIMITY), SensorManager.SENSOR_DELAY_UI);
+
+				if (!proximitySupported){
+					sensorMgr.unregisterListener(this, sensorMgr.getDefaultSensor(Sensor.TYPE_PROXIMITY));
+				}				
+			}
+			//		findViewById(R.id.ic_btn_search_go).setOnClickListener(new View.OnClickListener() {public void onClick(View v) {onViewArticleClick(v);}});
+			//		findViewById(R.id.btn_sym_action_chat).setOnClickListener(new View.OnClickListener() {public void onClick(View v) {onViewCommentsClick(v);}});
+			//		findViewById(R.id.videoButton).setOnClickListener(new View.OnClickListener() {public void onClick(View v) {onViewVideoClick(v);}});
+			//		findViewById(R.id.btn_title_home).setOnClickListener(new View.OnClickListener() {public void onClick(View v) {onHomeClick(v);}});
+		}
+	}
+
+	private void getContact(){
+
+
+		ContentResolver resolver = getContentResolver();
+
+		// define the columns I want the query to return
+		String[] projection = new String[]{
+				Contacts.Phones.DISPLAY_NAME,
+				Contacts.Phones.TYPE,
+				Contacts.Phones.NUMBER,
+				Contacts.Phones.LABEL,
+				Contacts.Phones.PERSON_ID
+
+		};
+
+
+		String numberUri = Uri.encode(message.getSource());
+
+		if (numberUri != null){
+
+			Uri contactUri = Uri.withAppendedPath(Phones.CONTENT_FILTER_URL, numberUri);
+			Cursor c = resolver.query(contactUri, projection, null, null, null);
+			// if the query returns 1 or more results
+			// return the first result
+			try{
+				if (c.moveToFirst()){
+					contact.setId(c.getLong(c.getColumnIndex(Contacts.Phones.PERSON_ID)));
+					contact.setName(c.getString(c.getColumnIndex(Contacts.Phones.DISPLAY_NAME)));
+					contact.setLabel(c.getString(c.getColumnIndex(Contacts.Phones.LABEL)));
+					contact.setPhone(message.getSource());
+					contact.setPhoneType(c.getInt(c.getColumnIndex(Contacts.Phones.TYPE)));
+
+				}
+
+			}finally{
+				c.close();				
+			}
+
+
+
+			if (contact.getId() != null){
+				Uri uri = ContentUris.withAppendedId(People.CONTENT_URI, contact.getId());				
+				((IconView)findViewById(R.id.imgPerson)).setImageBitmap(Contacts.People.loadContactPhoto(this, uri, R.drawable.fm_repondeur, null));				
+				((TextView)findViewById(R.id.namePerson)).setText(contact.getName());
+				((TextView)findViewById(R.id.phonePerson)).setText(contact.getPhone() + " ( "+Utils.getPhoneTypeString(this, contact.getPhoneType(), contact.getLabel())+" ) ");
+				findViewById(R.id.findNumber).setVisibility(View.GONE);
+				findViewById(R.id.addContact).setVisibility(View.GONE);
+			}else{
+				((TextView)findViewById(R.id.namePerson)).setText("Inconnu");
+				((TextView)findViewById(R.id.phonePerson)).setText(message.getSource());
+			}
+
+
+			((TextView)findViewById(R.id.dateCall)).setText(Utils.convertDateTimeHR(message.getDate()));
+			((TextView)findViewById(R.id.lengthCall)).setText(message.getLength());					
+
+
+
+		}
+
+	}
+
+
+
+
+
+
+
+	@Override
+	protected void onDestroy() {
+		//		tracker.stop();
+		messageTimer.cancel();
+		if (messageUpdateTask != null) {
+			messageUpdateTask.cancel();	
+		}
+		if (mp != null) mp.release();
+
+		super.onDestroy();
+	}
+
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		getContact();
+	}
+
+
+	private void setSeekBarBehavior(){
+
+		messageSeekBar.setMax(mp.getDuration());
+		messageSeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener()
+		{
+			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser){
+			}
+
+			public void onStartTrackingTouch(SeekBar seekBar)
+			{
+				if (messageUpdateTask != null) messageUpdateTask.cancel();
+				if (messageTimer != null) messageTimer.purge();
+			}
+
+			public void onStopTrackingTouch(SeekBar seekBar)
+			{
+
+				if (mp != null)
+				{
+					mp.seekTo(seekBar.getProgress());
+				}
+				messageTimer.schedule(messageUpdateTask = new UpdateTimeTask(), 250, 250);
+			}
+		});
+	}	
+
+	class UpdateTimeTask extends TimerTask{
+
+		public void run(){				
+			if (mp != null)	
+				setMessageSeekBar(0, mp.getCurrentPosition(), mp.getDuration());	
+
+		}
+
+	}	
+
+	public void setMessageSeekBar(int visibility, int position, int maximum){
+
+		this.messageSeekBar.setMax(maximum);	
+		this.messageSeekBar.setProgress(position);
+		this.messageSeekBar.setVisibility(visibility);
+	}
+
+	/** Handle "home" action. */
+	public void onHomeClick(View v) {
+		Utils.goHome(this);
+	}
+
+	/** Handle "home" action. */
+	public void onPlay(View v) {
+		if (mp != null){
+			this.messageTimer.schedule(messageUpdateTask = new UpdateTimeTask(), 250, 250);
+			findViewById(R.id.btn_title_pause).setVisibility(View.VISIBLE);
+			findViewById(R.id.btn_title_play).setVisibility(View.GONE);
+			mp.start();
+		}
+	}
+
+	/** Handle "home" action. */
+	public void onPause(View v) {
+		if (mp != null){
+			findViewById(R.id.btn_title_pause).setVisibility(View.GONE);
+			findViewById(R.id.btn_title_play).setVisibility(View.VISIBLE);
+			mp.pause();
+		}
+	}
+
+	/** Handle "home" action. */
+	public void onHpOn(View v) {
+		if (mp != null){
+			findViewById(R.id.btn_title_hp_off).setVisibility(View.VISIBLE);
+			findViewById(R.id.btn_title_hp_on).setVisibility(View.GONE);
+			AudioManager mAudioManager = ((AudioManager) getSystemService(Context.AUDIO_SERVICE));
+			mAudioManager.setMode(AudioManager.MODE_NORMAL);
+			mAudioManager.setSpeakerphoneOn(true);
+		}
+
+	}
+
+	/** Handle "home" action. */
+	public void onHpOff(View v) {
+		findViewById(R.id.btn_title_hp_off).setVisibility(View.GONE);
+		findViewById(R.id.btn_title_hp_on).setVisibility(View.VISIBLE);
+		AudioManager mAudioManager = ((AudioManager) getSystemService(Context.AUDIO_SERVICE));
+		mAudioManager.setMode(AudioManager.MODE_NORMAL);
+		mAudioManager.setSpeakerphoneOn(false);
+
+	}
+
+	/** Handle "home" action. */
+	public void onCallback(View v) {
+		Utils.callback(this, message);
+		tracker.trackPageView("Mevo/Callback");
+	}
+
+	/** Handle "home" action. */
+	public void onSendSms(View v) {
+		Utils.sendSms(this, message);
+		tracker.trackPageView("Mevo/SendSms");
+	}
+
+	/** Handle "home" action. */
+	public void onDelete(View v) {
+		Utils.removeMessage(this, message);
+		tracker.trackPageView("Mevo/RemoveMessage");
+	}
+
+
+	/** Handle "home" action. */
+	public void onSearchNumber(View v) {
+		Utils.searchNumber(this, message);
+		tracker.trackPageView("Mevo/AnnuaireInverse");
+	}
+
+	/** Handle "home" action. */
+	public void onAddContact(View v) {
+		Utils.addContact(this, message);
+		tracker.trackPageView("Mevo/AddNumber");
+	}
+	
+	
+	@Override
+	public void onAccuracyChanged(Sensor sensor, int accuracy) {
+	}
+
+	
+	@Override
+	public void onSensorChanged(SensorEvent event) {
+		float x = event.values[0];	
+		if (x<1.0f){
+			findViewById(R.id.screen).setVisibility(View.INVISIBLE);
+		}else{
+			findViewById(R.id.screen).setVisibility(View.VISIBLE);
+		}
+		
+	}
+	
+	
+
+
+}
