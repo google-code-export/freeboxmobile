@@ -1,6 +1,6 @@
 /*
  * This file is auto-generated.  DO NOT MODIFY.
- * Original file: C:\\User\\U282994\\Documents\\Loisirs\\Workspaces\\android\\FBMRepondeur\\src\\org\\madprod\\freeboxmobile\\services\\IRemoteControlServiceCallback.aidl
+ * Original file: /home/olivier/workspace_fbm/FBMobile/freeboxmobile/Mevo/FBMRepondeur/src/org/madprod/freeboxmobile/services/IRemoteControlServiceCallback.aidl
  */
 package org.madprod.freeboxmobile.services;
 public interface IRemoteControlServiceCallback extends android.os.IInterface
