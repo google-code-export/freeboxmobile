@@ -5,8 +5,8 @@
 = Versions publiques du module !FreeboxActuMobile =
 == 1.2.8 ==
 Sortie le 22/12/2010<br>
-Release : 15<br>
-Révision : 84
+Release : 16<br>
+Révision : 85
  * Icônes de la Freebox v6
  * Changement de nom
 
