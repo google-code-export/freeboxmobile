@@ -1,8 +1,15 @@
-#summary Historique des versions de ActuFreenautes.
+#summary Historique des versions de Freebox Actu Mobile
 
 <wiki:toc max_depth="2" />
 
-= Versions publiques du module !ActuFreenautes =
+= Versions publiques du module !FreeboxActuMobile =
+== 1.2.8 ==
+Sortie le 22/12/2010<br>
+Release : 15<br>
+Révision : 84
+ * Icônes de la Freebox v6
+ * Changement de nom
+
 == 1.2.6 ==
 Sortie le 08/12/2010<br>
 Release : 13<br>
