@@ -93,7 +93,7 @@ Release : 2<br>
 Revision : 45
  * Première version
 
-= Versions beta du module !ActuFreenautes =
+= Versions beta du module !FreeboxActuMobile =
 == 1.2.0rc1 ==
 Sortie le 17/11/2010<br>
 Release : 6<br>
