@@ -12,6 +12,6 @@ public interface Constants
 {
 
     static final String TAG		= "FBM";
-	public final int NOTIF_NEWS = 1;
+	public final int NOTIF_MEVO = 1;
 
 }

@@ -12,7 +12,7 @@ import android.util.Log;
 /**
 *
 * @author Olivier Rosello
-* $Id: OnNewsAlarmReceiver.java 65 2010-11-25 10:18:23Z clement $
+* $Id: OnMevoAlarmReceiver.java 65 2010-11-25 10:18:23Z clement $
 * 
 */
 

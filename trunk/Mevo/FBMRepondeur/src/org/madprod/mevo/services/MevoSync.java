@@ -31,7 +31,7 @@ import android.util.Log;
 /**
  *
  * @author Clément Beslon
- * $Id: NewsSync.java 71 2010-12-07 08:41:46Z clement $
+ * $Id: MevoSync.java 71 2010-12-07 08:41:46Z clement $
  * 
  */
 
@@ -104,7 +104,7 @@ public class MevoSync extends IntentService implements Constants
 
 
 		if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(context.getString(R.string.key_notifvisu), context.getResources().getBoolean(R.bool.default_notifvisu)))
-			mNotificationManager.notify(NOTIF_NEWS, notification);
+			mNotificationManager.notify(NOTIF_MEVO, notification);
 		
 	}
 
