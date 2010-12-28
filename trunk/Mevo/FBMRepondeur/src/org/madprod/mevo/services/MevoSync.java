@@ -27,6 +27,7 @@ import android.os.ResultReceiver;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.Toast;
 
 /**
  *
@@ -38,7 +39,6 @@ import android.util.Log;
 public class MevoSync extends IntentService implements Constants
 {
 
-	static NotificationManager mNotificationManager = null;
 
 
 	//	/**
@@ -66,47 +66,6 @@ public class MevoSync extends IntentService implements Constants
 	}
 
 	
-	public static void cancelNotif(int id)
-	{
-		if (mNotificationManager != null)
-			mNotificationManager.cancel(id);
-	}
-
-	private void _initNotif(int newmsg)
-	{
-		int icon = R.drawable.fm_repondeur;
-		CharSequence tickerText;
-		CharSequence contentText;
-
-		if (mNotificationManager == null)
-		{
-			mNotificationManager= (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		}
-
-		tickerText = getString(R.string.app_name)+" : "+newmsg+" nouveaux messages";
-		contentText = newmsg+" nouveaux messages";
-
-
-		long when = System.currentTimeMillis();
-
-		Notification notification = new Notification(icon, tickerText, when);
-		Context context = getApplicationContext();
-		CharSequence contentTitle = getString(R.string.app_name);
-
-		Intent notificationIntent = new Intent(this, HomeActivity.class);
-		
-		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
-		notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
-		notification.flags = notification.flags | Notification.FLAG_AUTO_CANCEL;
-		
-		if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(context.getString(R.string.key_notifson), context.getResources().getBoolean(R.bool.default_notifson)))
-			notification.defaults |= Notification.DEFAULT_SOUND;
-
-
-		if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(context.getString(R.string.key_notifvisu), context.getResources().getBoolean(R.bool.default_notifvisu)))
-			mNotificationManager.notify(NOTIF_MEVO, notification);
-		
-	}
 
 
 
@@ -124,7 +83,7 @@ public class MevoSync extends IntentService implements Constants
 	public static final int STATUS_RUNNING = 0x1;
 	public static final int STATUS_ERROR = 0x2;
 	public static final int STATUS_FINISHED = 0x3;
-
+	public static ResultReceiver receiver = null;
 
 
 
@@ -142,16 +101,16 @@ public class MevoSync extends IntentService implements Constants
 	protected void onHandleIntent(Intent intent) {
 		Log.d(TAG, "onHandleIntent(intent=" + intent.toString() + ")");
 
-		final ResultReceiver receiver = intent.getParcelableExtra(EXTRA_STATUS_RECEIVER);
+		receiver = intent.getParcelableExtra(EXTRA_STATUS_RECEIVER);
 		if (receiver != null) receiver.send(STATUS_RUNNING, Bundle.EMPTY);
 		try{
 			final long startRemote = System.currentTimeMillis();
-			int nbNews = 0;
 			
 			
 			if (HomeActivity.mMevo == null){
 				try{
 					if (!bindService(new Intent("org.madprod.freeboxmobile.services.MevoService"), mMevoConnection, Context.BIND_AUTO_CREATE)){
+						Toast.makeText(this, "problem", Toast.LENGTH_SHORT).show();
 					}
 				}catch(SecurityException e){
 					e.printStackTrace();
@@ -160,15 +119,11 @@ public class MevoSync extends IntentService implements Constants
 			
 			
 			try {
-				nbNews = HomeActivity.mMevo.checkMessages();
+				HomeActivity.mMevo.checkMessages();
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
 
-			if (nbNews > 0)
-			{
-				_initNotif(nbNews);
-			}
 
 			Log.d(TAG, "remote sync took " + (System.currentTimeMillis() - startRemote) + "ms");
 
@@ -184,7 +139,6 @@ public class MevoSync extends IntentService implements Constants
 		}
 
 		Log.d(TAG, "sync finished");
-		if (receiver != null) receiver.send(STATUS_FINISHED, Bundle.EMPTY);
 	}
 
 
@@ -208,12 +162,6 @@ public class MevoSync extends IntentService implements Constants
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			Log.e("REMOTE", "Connecte");
-			HomeActivity.mMevo = IMevo.Stub.asInterface(service);
-			try { 
-				HomeActivity.mMevo.registerCallback(callback); 
-			}catch (RemoteException e) {
-				e.printStackTrace();
-			} 
 		}
 
 	};

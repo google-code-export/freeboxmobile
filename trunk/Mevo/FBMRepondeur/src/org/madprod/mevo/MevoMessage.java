@@ -1,4 +1,4 @@
-package org.madprod.freeboxmobile.services;
+package org.madprod.mevo;
 
 
 

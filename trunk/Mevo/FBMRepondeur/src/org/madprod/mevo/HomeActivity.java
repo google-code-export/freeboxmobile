@@ -2,12 +2,10 @@ package org.madprod.mevo;
 
 
 import java.util.ArrayList; 
-import java.util.Arrays;
 import java.util.List;
 
 import org.madprod.freeboxmobile.services.IMevo;
 import org.madprod.freeboxmobile.services.IRemoteControlServiceCallback;
-import org.madprod.freeboxmobile.services.MevoMessage;
 import org.madprod.mevo.quickactions.ActionItem;
 import org.madprod.mevo.quickactions.QuickAction;
 import org.madprod.mevo.services.MevoSync;
@@ -19,6 +17,7 @@ import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -26,8 +25,11 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.ResolveInfo;
+import android.database.ContentObserver;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -46,7 +48,7 @@ import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 public class HomeActivity extends ListActivity implements TrackerConstants , DetachableResultReceiver.Receiver{
 	private GoogleAnalyticsTracker tracker;
 	private StateMevoRefresh mState;
-	private List<MevoMessage> listMessages = new ArrayList<MevoMessage>();
+	private ContentResolver resolver;
 
 
 
@@ -164,7 +166,25 @@ public class HomeActivity extends ListActivity implements TrackerConstants , Det
 			@Override
 			public boolean onItemLongClick(AdapterView<?> av, View v, final int
 					pos, long id) {
-				final MevoMessage message = (MevoMessage)((myAdapter)lv.getAdapter()).getItem(pos);
+				Cursor cMessages = (Cursor)lv.getAdapter().getItem(pos);
+				Long idMessage = cMessages.getLong(cMessages.getColumnIndex(KEY_ROWID));
+				int status = cMessages.getInt(cMessages.getColumnIndex(KEY_STATUS));
+				String presence = cMessages.getString(cMessages.getColumnIndex(KEY_PRESENCE));
+				String source = cMessages.getString(cMessages.getColumnIndex(KEY_SOURCE));
+				String date = cMessages.getString(cMessages.getColumnIndex(KEY_QUAND));
+				String link = cMessages.getString(cMessages.getColumnIndex(KEY_LINK));
+				String delete = cMessages.getString(cMessages.getColumnIndex(KEY_DEL));
+				String name = cMessages.getString(cMessages.getColumnIndex(KEY_NAME));				
+				String length = cMessages.getString(cMessages.getColumnIndex(KEY_LENGTH));
+				String filename = "";
+				try {
+					filename = mMevo.getMessageFile(idMessage);
+				} catch (RemoteException e) {
+					e.printStackTrace();
+				}
+				if (filename == null) filename = "";
+				Log.e(TAG, "file = "+filename);
+				final MevoMessage message = new MevoMessage(idMessage, status, presence, source, date, link, delete, name, length, filename);
 
 
 
@@ -197,10 +217,10 @@ public class HomeActivity extends ListActivity implements TrackerConstants , Det
 				});					
 				qa.addActionItem(sendSMS);
 
-				final ActionItem delete= new ActionItem();
-				delete.setIcon(getResources().getDrawable(android.R.drawable.ic_menu_close_clear_cancel));				
-				delete.setTitle("Supprimer");
-				delete.setOnClickListener(new OnClickListener() {
+				final ActionItem deleteAction = new ActionItem();
+				deleteAction.setIcon(getResources().getDrawable(android.R.drawable.ic_menu_close_clear_cancel));				
+				deleteAction.setTitle("Supprimer");
+				deleteAction.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View v) {
 						Utils.removeMessage(HomeActivity.this, message);
@@ -208,7 +228,7 @@ public class HomeActivity extends ListActivity implements TrackerConstants , Det
 						qa.dismiss();
 					}
 				});					
-				qa.addActionItem(delete);
+				qa.addActionItem(deleteAction);
 
 
 				qa.setAnimStyle(QuickAction.ANIM_AUTO);
@@ -225,6 +245,18 @@ public class HomeActivity extends ListActivity implements TrackerConstants , Det
 
 		findViewById(R.id.btn_title_refresh).setOnClickListener(new View.OnClickListener() {public void onClick(View v) {onRefreshClick(v);}});
 		findViewById(R.id.btn_title_settings).setOnClickListener(new View.OnClickListener() {public void onClick(View v) {onSettings(v);}});
+		
+		
+		resolver = getContentResolver();
+		
+		resolver.registerContentObserver(Uri.parse("content://org.madprod.freeboxmobile.Provider/messages"), true, new ContentObserver(new Handler()) {
+			@Override
+			public void onChange(boolean selfChange) {
+				dataBind();	
+				super.onChange(selfChange);
+			}
+		});
+
 		dataBind();
 	}
 
@@ -245,14 +277,9 @@ public class HomeActivity extends ListActivity implements TrackerConstants , Det
 
 
 	private void dataBind(){
-		if (mMevo != null){
-			try{
-				listMessages = Arrays.asList((MevoMessage[])mMevo.getListOfMessages());
-			}catch (RemoteException e) {
-				e.printStackTrace();
-			}
-		}
-		setListAdapter(new myAdapter(HomeActivity.this, listMessages));
+		Cursor c = managedQuery(Uri.parse("content://org.madprod.freeboxmobile.Provider/messages"), null, null, null, null);
+		startManagingCursor(c);
+		setListAdapter(new myAdapter(HomeActivity.this, R.layout.mevo_messages_row, c));
 	}
 
 	private ServiceConnection mMevoConnection = new ServiceConnection() {
@@ -266,12 +293,6 @@ public class HomeActivity extends ListActivity implements TrackerConstants , Det
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			Log.e("REMOTE", "Connecte");
 			mMevo = IMevo.Stub.asInterface(service);
-			try { 
-				mMevo.registerCallback(callback); 
-				dataBind();
-			}catch (RemoteException e) {
-				e.printStackTrace();
-			} 
 		}
 
 	};
@@ -327,7 +348,7 @@ public class HomeActivity extends ListActivity implements TrackerConstants , Det
 	protected void onResume() {
 		StateMevoRefresh.mReceiver.setReceiver(this);
 		updateRefreshStatus();
-		dataBind();
+//		dataBind();
 		super.onResume();
 	}
 
@@ -354,30 +375,35 @@ public class HomeActivity extends ListActivity implements TrackerConstants , Det
 	public void onListItemClick(ListView l, View v, int pos, long id)
 	{
 		super.onListItemClick(l, v, pos, id);
-		MevoMessage message = (MevoMessage)((myAdapter)l.getAdapter()).getItem(pos);
+		Cursor cMessages = (Cursor)l.getAdapter().getItem(pos);
+		Long idMessage = cMessages.getLong(cMessages.getColumnIndex(KEY_ROWID));
+		int status = cMessages.getInt(cMessages.getColumnIndex(KEY_STATUS));
+		String presence = cMessages.getString(cMessages.getColumnIndex(KEY_PRESENCE));
+		String source = cMessages.getString(cMessages.getColumnIndex(KEY_SOURCE));
+		String date = cMessages.getString(cMessages.getColumnIndex(KEY_QUAND));
+		String link = cMessages.getString(cMessages.getColumnIndex(KEY_LINK));
+		String delete = cMessages.getString(cMessages.getColumnIndex(KEY_DEL));
+		String name = cMessages.getString(cMessages.getColumnIndex(KEY_NAME));				
+		String length = cMessages.getString(cMessages.getColumnIndex(KEY_LENGTH));
+		String filename = "";
+		try {
+			filename = mMevo.getMessageFile(idMessage);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		if (filename == null) filename = "";
+		Log.e(TAG, "file = "+filename);
+		MevoMessage message = new MevoMessage(idMessage, status, presence, source, date, link, delete, name, length, filename);
 
 		Intent i = new Intent(this, PlayerActivity.class);
 		i.putExtra("message", message);
 		startActivity(i);
 
 		try{
-			mMevo.setMessageRead(message);
+			mMevo.setMessageRead(idMessage);
 		}catch (RemoteException e) {
 			e.printStackTrace();
 		} 
-		//		MediaPlayer mp = new MediaPlayer();
-		//		try {
-		//			mp.setDataSource(message.getFileName());
-		//			mp.prepare();
-		//		} catch (IllegalArgumentException e) {
-		//			e.printStackTrace();
-		//		} catch (IllegalStateException e) {
-		//			e.printStackTrace();
-		//		} catch (IOException e) {
-		//			e.printStackTrace();
-		//		}
-		//		mp.start();
-
 
 	}
 
@@ -409,10 +435,8 @@ public class HomeActivity extends ListActivity implements TrackerConstants , Det
 			break;
 		}
 		case MevoSync.STATUS_ERROR: {
-			// Error happened down in SyncService, show as toast.
 			StateMevoRefresh.mSyncing = false;
 			updateRefreshStatus();
-			//			final String errorText = resultData.getString(Intent.EXTRA_TEXT);
 			Toast.makeText(HomeActivity.this, "Probleme de réception des messages", Toast.LENGTH_LONG).show();
 			break;
 		}
