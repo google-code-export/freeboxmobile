@@ -36,10 +36,10 @@ public class OnMessageReceiver extends BroadcastReceiver implements Constants
 		this.context = context;
 		//getTruc
 
-//		if (nbNews > 0)
-//		{
+		if (nbNews > 0)
+		{
 			_initNotif(nbNews);
-//		}
+		}
 
 		Log.d(TAG, "sync finished");
 		
