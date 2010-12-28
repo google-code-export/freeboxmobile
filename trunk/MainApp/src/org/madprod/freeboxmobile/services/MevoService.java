@@ -43,11 +43,11 @@ import android.view.View;
 
 public class MevoService extends Service implements MevoConstants{
 
-	
+
 	private static final String mevoUrl = "https://adsls.free.fr/admin/tel/";
 	private static final String mevoDelPage = "efface_message.pl";
 	private static final String mevoListPage = "notification_tel.pl";
-    private static MevoDbAdapter mDbHelper;
+	private static MevoDbAdapter mDbHelper;
 
 	final RemoteCallbackList<IRemoteControlServiceCallback> callbacks = new RemoteCallbackList<IRemoteControlServiceCallback>(); 
 	final static Object lock = new Object();
@@ -67,29 +67,22 @@ public class MevoService extends Service implements MevoConstants{
 
 		@Override
 		public void checkMessages() throws RemoteException {	
-			Thread t = new Thread(new Runnable() {
-				
-				@Override
-				public void run() {
-					new SearchMessages().execute();
-				}
-			});
-			t.run();
+			new SearchMessages().execute();
 		}
 
-		
+
 		@Override
 		public void deleteMessage(long id) throws RemoteException{
 			MevoDbAdapter mda = new MevoDbAdapter(getApplicationContext());
 			Log.e(TAG, "message "+id);
 			boolean deleted = false;
-			
+
 			Cursor c = mda.fetchMessage(id);
 			if (c== null || !c.moveToFirst()){
 				return;
 			}
-			
-						
+
+
 			File file = new File(getMessageFile(id));
 			if (file.delete())
 			{
@@ -100,19 +93,19 @@ public class MevoService extends Service implements MevoConstants{
 				Log.d(TAG, "Delete file not ok");
 			}
 
-    		String tel = c.getString(c.getColumnIndex(KEY_DEL));
+			String tel = c.getString(c.getColumnIndex(KEY_DEL));
 			if (!(tel.equals("")))
 			{
-	   			if (tel.indexOf("tel=")>-1)
-	   			{
-	   				tel = tel.substring(tel.indexOf("tel=")+4);
-	   				if (tel.indexOf("&")>-1)
-	   				{
-	   					tel = tel.substring(0, tel.indexOf('&'));
-	   				}
-	    		}
+				if (tel.indexOf("tel=")>-1)
+				{
+					tel = tel.substring(tel.indexOf("tel=")+4);
+					if (tel.indexOf("&")>-1)
+					{
+						tel = tel.substring(0, tel.indexOf('&'));
+					}
+				}
 
-	   			List<NameValuePair> params = new ArrayList<NameValuePair>();
+				List<NameValuePair> params = new ArrayList<NameValuePair>();
 				params.add(new BasicNameValuePair("tel",tel));
 				String msgFile = c.getString(c.getColumnIndex(KEY_NAME));
 				if (msgFile.endsWith(".wav"))
@@ -125,7 +118,7 @@ public class MevoService extends Service implements MevoConstants{
 				FBMHttpConnection.getAuthRequest(mevoUrl+mevoDelPage, params, true, false, "ISO8859_1");
 			}
 
-			
+
 			mda.deleteMessage(id);
 		}
 
@@ -133,16 +126,16 @@ public class MevoService extends Service implements MevoConstants{
 		public void setMessageRead(long id){
 			MevoDbAdapter mda = new MevoDbAdapter(getApplicationContext());
 			Log.e(TAG, "message "+id);
-			
+
 			mda.setMessageRead(id);
-			
+
 		}
 
 		@Override
 		public void setMessageUnRead(long id){
 			MevoDbAdapter mda = new MevoDbAdapter(getApplicationContext());
 			Log.e(TAG, "message "+id);
-			
+
 			mda.setMessageUnRead(id);
 		}
 
@@ -152,7 +145,14 @@ public class MevoService extends Service implements MevoConstants{
 			MevoDbAdapter mda = new MevoDbAdapter(getApplicationContext());
 			Cursor c = mda.fetchMessage(messageId);
 			if (c != null && c.moveToFirst()){
-				String path = Environment.getExternalStorageDirectory().toString()+DIR_FBM+FBMHttpConnection.getIdentifiant()+DIR_MEVO+c.getString(c.getColumnIndex(KEY_NAME));
+				
+				String login = FBMHttpConnection.getIdentifiant();
+				if (login == null){
+					login = getApplicationContext().getSharedPreferences(KEY_PREFS, Context.MODE_PRIVATE).getString(KEY_USER, null);
+
+				}
+				
+				String path = Environment.getExternalStorageDirectory().toString()+DIR_FBM+login+DIR_MEVO+c.getString(c.getColumnIndex(KEY_NAME));
 				Log.e(TAG, "path = "+path);
 				return path;
 			}
@@ -167,82 +167,77 @@ public class MevoService extends Service implements MevoConstants{
 		this.callbacks.kill();
 		super.onDestroy();
 	}
-	
-    private class SearchMessages extends AsyncTask<Void, Void, Integer>
-    {
+
+	private class SearchMessages extends AsyncTask<Void, Void, Void>
+	{
 
 		@Override
-		protected Integer doInBackground(Void... params) {
+		protected Void doInBackground(Void... params) {
 			int newmsg = 0;
-			
-						Log.i(TAG,"MevoSync onHandleIntent ");
-			
-						File log = new File(Environment.getExternalStorageDirectory()+DIR_FBM, file_log);
-						Log.d(TAG,"File log created ");
-						try
-						{
-							BufferedWriter out = new BufferedWriter (new FileWriter(log.getAbsolutePath(), true));
-							out.write("mevosync_start: ");
-							out.write(new Date().toString());
-							out.write("\n");
-							out.close();
-						}
-						catch (IOException e)
-						{
-							Log.e(TAG,"Exception appending to log file "+e.getMessage());
-							e.printStackTrace();
-						}
-						Log.d(TAG,"Buffered ok ");
-			
-				        if (Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED) == true)
-				        {
-							mDbHelper = new MevoDbAdapter(getApplicationContext());
-							Log.d(TAG,"mDbHelper ok ");
-					
-							FBMHttpConnection.initVars(null, getBaseContext());
-							Log.d(TAG,"start to get message list");
-							newmsg = getMessageList();
-							Log.d(TAG,"end to get message list");
-				        }
-				        else
-				        {
-							Log.e(TAG,"SD Card not mounted");        	
-				        }
-				        
-						try
-						{
-							BufferedWriter out = new BufferedWriter (new FileWriter(log.getAbsolutePath(), true));
-							out.write("mevosync_end: ");
-							out.write(new Date().toString());
-							out.write("\n");
-							out.close();
-						}
-						catch (IOException e)
-						{
-							Log.e(TAG,"Exception appending to log file "+e.getMessage());
-							e.printStackTrace();
-						}
-			
-						Log.d(TAG,"newmsg = "+newmsg);
-						
-						return newmsg;
-		}
-    	
-		@Override
-		protected void onPostExecute(Integer result) {
-			super.onPostExecute(result);
+
+			Log.i(TAG,"MevoSync onHandleIntent ");
+
+			File log = new File(Environment.getExternalStorageDirectory()+DIR_FBM, file_log);
+			Log.d(TAG,"File log created ");
+			try
+			{
+				BufferedWriter out = new BufferedWriter (new FileWriter(log.getAbsolutePath(), true));
+				out.write("mevosync_start: ");
+				out.write(new Date().toString());
+				out.write("\n");
+				out.close();
+			}
+			catch (IOException e)
+			{
+				Log.e(TAG,"Exception appending to log file "+e.getMessage());
+				e.printStackTrace();
+			}
+			Log.d(TAG,"Buffered ok ");
+
+			if (Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED) == true)
+			{
+				mDbHelper = new MevoDbAdapter(getApplicationContext());
+				Log.d(TAG,"mDbHelper ok ");
+
+				FBMHttpConnection.initVars(null, getBaseContext());
+				Log.d(TAG,"start to get message list");
+				newmsg = getMessageList();
+				Log.d(TAG,"end to get message list");
+			}
+			else
+			{
+				Log.e(TAG,"SD Card not mounted");        	
+			}
+
+			try
+			{
+				BufferedWriter out = new BufferedWriter (new FileWriter(log.getAbsolutePath(), true));
+				out.write("mevosync_end: ");
+				out.write(new Date().toString());
+				out.write("\n");
+				out.close();
+			}
+			catch (IOException e)
+			{
+				Log.e(TAG,"Exception appending to log file "+e.getMessage());
+				e.printStackTrace();
+			}
+
+			Log.d(TAG,"newmsg = "+newmsg);
+
 			Intent i = new Intent();
 			i.setAction("org.madprod.freeboxmobile.action.MEVO_SERVICE_COMPLETED");
-			i.putExtra("NEW", result);
+			i.putExtra("NEW", newmsg);
 			sendBroadcast(i);
+			return null;
 		}
-		
+
 		public int getMessageList()
 		{
 			int newmsg = -1;
 			try
 			{
-		    	BufferedReader br = new BufferedReader(FBMHttpConnection.getAuthRequest(mevoUrl+mevoListPage, null, true, true, "ISO8859_1"));
+				BufferedReader br = new BufferedReader(FBMHttpConnection.getAuthRequest(mevoUrl+mevoListPage, null, true, true, "ISO8859_1"));
 				String s = " ";
 				String status = null;
 				String from = null;
@@ -257,13 +252,13 @@ public class MevoService extends Service implements MevoConstants{
 				Cursor curs;
 				File file, filet;
 
-		        newmsg = 0;
-		        file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+FBMHttpConnection.getIdentifiant()+DIR_MEVO);
-		        file.mkdirs();
+				newmsg = 0;
+				file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+FBMHttpConnection.getIdentifiant()+DIR_MEVO);
+				file.mkdirs();
 
 				mDbHelper.initTempValues();
 				Log.d(TAG,"mDbHelper initTempValues OK");
-		
+
 				while ( (s=br.readLine())!= null && s.indexOf("Provenance") == -1)
 				{
 				}
@@ -311,16 +306,16 @@ public class MevoService extends Service implements MevoConstants{
 								{
 									intstatus = 1;
 								}
-		
-					    	    // Get the mevo file and store it on sdcard
-						        file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+FBMHttpConnection.getIdentifiant()+DIR_MEVO,name+".wav");
-						        if (file.exists() == false)
-						        {
-							        filet = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+FBMHttpConnection.getIdentifiant()+DIR_MEVO,name+"_temp");
+
+								// Get the mevo file and store it on sdcard
+								file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+FBMHttpConnection.getIdentifiant()+DIR_MEVO,name+".wav");
+								if (file.exists() == false)
+								{
+									filet = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+FBMHttpConnection.getIdentifiant()+DIR_MEVO,name+"_temp");
 									FBMHttpConnection.getFile(filet, mevoUrl+link, null, false);
 									FileInputStream is = new FileInputStream(filet);
 									try
-								    {
+									{
 										byte[] byteData = null;
 										byte[] byteDataPCM = null;
 										int iSize = -1;
@@ -335,20 +330,20 @@ public class MevoService extends Service implements MevoConstants{
 										AudioConverter.free2pcm(byteData, 0, byteDataPCM, 0, iSize, false, 1);
 
 										FileOutputStream fstream = new FileOutputStream(file);
-										
+
 										// WAV writer
 										fstream.write("RIFF".getBytes());
 										wavSize = iSize*2 + 36;
 										fstream.write(AudioConverter.longToBytes32(wavSize));
 										fstream.write("WAVE".getBytes()); //WAVE
-										
+
 										fstream.write("fmt ".getBytes()); // fmt
-										
+
 										fstream.write(0x10); // 16 for PCM
 										fstream.write(0x00);
 										fstream.write(0x00);
 										fstream.write(0x00);
-										
+
 										fstream.write(0x01);		// PCM
 										fstream.write(0x00);
 
@@ -359,48 +354,48 @@ public class MevoService extends Service implements MevoConstants{
 										fstream.write(0x1f);
 										fstream.write(0x00);
 										fstream.write(0x00);
-										
+
 										fstream.write(0x80);	// byte rate : 16000
 										fstream.write(0x3E);
 										fstream.write(0x00);
 										fstream.write(0x00);
-										
+
 										fstream.write(0x02);		// Block align = numchannels * bits per sample / 8
 										fstream.write(0x00);
-										
+
 										fstream.write(0x10);		// bits per sample (16)
 										fstream.write(0x00);
-										
+
 										fstream.write("data".getBytes());	// data
-										
+
 										wavSize = iSize*2;
 										fstream.write(AudioConverter.longToBytes32(wavSize));
-										
+
 										fstream.write(byteDataPCM);
 										fstream.close();
 										Log.i(TAG,"File converted ! "+name+".wav");
-								    }
+									}
 									catch (FileNotFoundException e)
 									{
 										Log.e(TAG,"Error while converting data "+e.getMessage());
-								    }
-						        }
-						        presence = 4;
-						        curs = mDbHelper.fetchMessage(name+".wav");
+									}
+								}
+								presence = 4;
+								curs = mDbHelper.fetchMessage(name+".wav");
 								if (curs.moveToFirst() == false)
-					        	{
+								{
 									// Store data in db if the message is not present in the db
 									Log.i(TAG,"STORING IN DB");
-						        	mDbHelper.createMessage(intstatus, presence, from, when, link, del, Integer.parseInt(length), name+".wav");
-						        	newmsg++;
-					        	}
-					        	else
-					        	{
+									mDbHelper.createMessage(intstatus, presence, from, when, link, del, Integer.parseInt(length), name+".wav");
+									newmsg++;
+								}
+								else
+								{
 									// Update data in db if the message is already present in the db
-					        		Log.i(TAG,"UPDATING DB");
-					        		mDbHelper.updateMessage(presence, link, del, name+".wav");
-					        	}
-					        	curs.close();
+									Log.i(TAG,"UPDATING DB");
+									mDbHelper.updateMessage(presence, link, del, name+".wav");
+								}
+								curs.close();
 							}
 						}
 					}
@@ -418,6 +413,6 @@ public class MevoService extends Service implements MevoConstants{
 			}
 			Log.i(TAG,"getmessage end "+newmsg);
 			return newmsg;
-	 	}
-    }
+		}
+	}
 }
