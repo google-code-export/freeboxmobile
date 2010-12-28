@@ -2,6 +2,7 @@ package org.madprod.mevo.services;
 
 
 
+import org.madprod.freeboxmobile.services.IMevo;
 import org.madprod.mevo.HomeActivity;
 import org.madprod.mevo.tools.Constants;
 
@@ -153,6 +154,7 @@ public class MevoSync extends IntentService implements Constants
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			Log.e("REMOTE", "Connecte");
+			HomeActivity.mMevo = IMevo.Stub.asInterface(service);
 		}
 
 	};
