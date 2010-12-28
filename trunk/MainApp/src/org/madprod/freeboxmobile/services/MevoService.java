@@ -8,24 +8,38 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.madprod.freeboxmobile.FBMHttpConnection;
+import org.madprod.freeboxmobile.FBMNetTask;
+import org.madprod.freeboxmobile.R;
+import org.madprod.freeboxmobile.guide.GuideChoixChainesActivity;
+import org.madprod.freeboxmobile.home.HomeListActivity;
 import org.madprod.freeboxmobile.mvv.AudioConverter;
 import org.madprod.freeboxmobile.mvv.MevoConstants;
 import org.madprod.freeboxmobile.mvv.MevoDbAdapter;
+import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
+
+import android.app.Activity;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.IBinder;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.util.Log;
+import android.view.View;
 
 public class MevoService extends Service implements MevoConstants{
 
@@ -50,73 +64,178 @@ public class MevoService extends Service implements MevoConstants{
 	private final IMevo.Stub mMevoBinder = new IMevo.Stub(){
 
 
+
 		@Override
-		public void registerCallback(IRemoteControlServiceCallback cb)
-		throws RemoteException {
-			if(cb != null){ 
-				getCallbacks().register(cb); 
-			} 
+		public void checkMessages() throws RemoteException {	
+			Thread t = new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					new SearchMessages().execute();
+				}
+			});
+			t.run();
 		}
 
-		@Override
-		public void unregisterCallback(IRemoteControlServiceCallback cb)
-		throws RemoteException {
-			if(cb != null){ 
-				getCallbacks().unregister(cb); 
-			} 
-		}
-
-		@Override
-		public int checkMessages() throws RemoteException {
-			int newmsg = 0;
-
-			Log.i(TAG,"MevoSync onHandleIntent ");
-
-			File log = new File(Environment.getExternalStorageDirectory()+DIR_FBM, file_log);
-			try
-			{
-				BufferedWriter out = new BufferedWriter (new FileWriter(log.getAbsolutePath(), true));
-				out.write("mevosync_start: ");
-				out.write(new Date().toString());
-				out.write("\n");
-				out.close();
-			}
-			catch (IOException e)
-			{
-				Log.e(TAG,"Exception appending to log file "+e.getMessage());
-				e.printStackTrace();
-			}
-
-	        if (Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED) == true)
-	        {
-				mDbHelper = new MevoDbAdapter(getApplicationContext());
 		
-				FBMHttpConnection.initVars(null, getBaseContext());
-				newmsg = getMessageList();
-	        }
-	        else
-	        {
-				Log.e(TAG,"SD Card not mounted");        	
-	        }
-	        
-			try
-			{
-				BufferedWriter out = new BufferedWriter (new FileWriter(log.getAbsolutePath(), true));
-				out.write("mevosync_end: ");
-				out.write(new Date().toString());
-				out.write("\n");
-				out.close();
+		@Override
+		public void deleteMessage(long id) throws RemoteException{
+			MevoDbAdapter mda = new MevoDbAdapter(getApplicationContext());
+			Log.e(TAG, "message "+id);
+			boolean deleted = false;
+			
+			Cursor c = mda.fetchMessage(id);
+			if (c== null || !c.moveToFirst()){
+				return;
 			}
-			catch (IOException e)
+			
+						
+			File file = new File(getMessageFile(id));
+			if (file.delete())
 			{
-				Log.e(TAG,"Exception appending to log file "+e.getMessage());
-				e.printStackTrace();
+				Log.d(TAG, "Delete file ok");
+			}
+			else
+			{
+				Log.d(TAG, "Delete file not ok");
 			}
 
+    		String tel = c.getString(c.getColumnIndex(KEY_DEL));
+			if (!(tel.equals("")))
+			{
+	   			if (tel.indexOf("tel=")>-1)
+	   			{
+	   				tel = tel.substring(tel.indexOf("tel=")+4);
+	   				if (tel.indexOf("&")>-1)
+	   				{
+	   					tel = tel.substring(0, tel.indexOf('&'));
+	   				}
+	    		}
 
-			return newmsg;
+	   			List<NameValuePair> params = new ArrayList<NameValuePair>();
+				params.add(new BasicNameValuePair("tel",tel));
+				String msgFile = c.getString(c.getColumnIndex(KEY_NAME));
+				if (msgFile.endsWith(".wav"))
+				{
+					msgFile = msgFile.substring(0, msgFile.length() - 4);
+				}
+				params.add(new BasicNameValuePair("fichier",msgFile));
+
+				Log.d(TAG, "Deleting on server "+params);
+				FBMHttpConnection.getAuthRequest(mevoUrl+mevoDelPage, params, true, false, "ISO8859_1");
+			}
+
+			
+			mda.deleteMessage(id);
 		}
 
+		@Override
+		public void setMessageRead(long id){
+			MevoDbAdapter mda = new MevoDbAdapter(getApplicationContext());
+			Log.e(TAG, "message "+id);
+			
+			mda.setMessageRead(id);
+			
+		}
+
+		@Override
+		public void setMessageUnRead(long id){
+			MevoDbAdapter mda = new MevoDbAdapter(getApplicationContext());
+			Log.e(TAG, "message "+id);
+			
+			mda.setMessageUnRead(id);
+		}
+
+
+		@Override
+		public String getMessageFile(long messageId) throws RemoteException {
+			MevoDbAdapter mda = new MevoDbAdapter(getApplicationContext());
+			Cursor c = mda.fetchMessage(messageId);
+			if (c != null && c.moveToFirst()){
+				String path = Environment.getExternalStorageDirectory().toString()+DIR_FBM+FBMHttpConnection.getIdentifiant()+DIR_MEVO+c.getString(c.getColumnIndex(KEY_NAME));
+				Log.e(TAG, "path = "+path);
+				return path;
+			}
+			return "";
+		}
+
+	};
+
+
+	@Override
+	public void onDestroy() {
+		this.callbacks.kill();
+		super.onDestroy();
+	}
+	
+    private class SearchMessages extends AsyncTask<Void, Void, Integer>
+    {
+
+		@Override
+		protected Integer doInBackground(Void... params) {
+			int newmsg = 0;
+			
+						Log.i(TAG,"MevoSync onHandleIntent ");
+			
+						File log = new File(Environment.getExternalStorageDirectory()+DIR_FBM, file_log);
+						Log.d(TAG,"File log created ");
+						try
+						{
+							BufferedWriter out = new BufferedWriter (new FileWriter(log.getAbsolutePath(), true));
+							out.write("mevosync_start: ");
+							out.write(new Date().toString());
+							out.write("\n");
+							out.close();
+						}
+						catch (IOException e)
+						{
+							Log.e(TAG,"Exception appending to log file "+e.getMessage());
+							e.printStackTrace();
+						}
+						Log.d(TAG,"Buffered ok ");
+			
+				        if (Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED) == true)
+				        {
+							mDbHelper = new MevoDbAdapter(getApplicationContext());
+							Log.d(TAG,"mDbHelper ok ");
+					
+							FBMHttpConnection.initVars(null, getBaseContext());
+							Log.d(TAG,"start to get message list");
+							newmsg = getMessageList();
+							Log.d(TAG,"end to get message list");
+				        }
+				        else
+				        {
+							Log.e(TAG,"SD Card not mounted");        	
+				        }
+				        
+						try
+						{
+							BufferedWriter out = new BufferedWriter (new FileWriter(log.getAbsolutePath(), true));
+							out.write("mevosync_end: ");
+							out.write(new Date().toString());
+							out.write("\n");
+							out.close();
+						}
+						catch (IOException e)
+						{
+							Log.e(TAG,"Exception appending to log file "+e.getMessage());
+							e.printStackTrace();
+						}
+			
+						Log.d(TAG,"newmsg = "+newmsg);
+						
+						return newmsg;
+		}
+    	
+		@Override
+		protected void onPostExecute(Integer result) {
+			super.onPostExecute(result);
+			Intent i = new Intent();
+			i.setAction("org.madprod.freeboxmobile.action.MEVO_SERVICE_COMPLETED");
+			i.putExtra("NEW", result);
+			sendBroadcast(i);
+		}
 		
 		public int getMessageList()
 		{
@@ -141,8 +260,10 @@ public class MevoService extends Service implements MevoConstants{
 		        newmsg = 0;
 		        file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+FBMHttpConnection.getIdentifiant()+DIR_MEVO);
 		        file.mkdirs();
-		        mDbHelper.open();
-		        mDbHelper.initTempValues();
+
+				mDbHelper.initTempValues();
+				Log.d(TAG,"mDbHelper initTempValues OK");
+		
 				while ( (s=br.readLine())!= null && s.indexOf("Provenance") == -1)
 				{
 				}
@@ -288,7 +409,6 @@ public class MevoService extends Service implements MevoConstants{
 				{
 					Log.d(TAG,"pb extract");
 				}
-				mDbHelper.close();
 			}
 
 			catch (Exception e)
@@ -299,129 +419,5 @@ public class MevoService extends Service implements MevoConstants{
 			Log.i(TAG,"getmessage end "+newmsg);
 			return newmsg;
 	 	}
-
-		
-		
-		@Override
-		public MevoMessage[] getListOfMessages() throws RemoteException {
-			MevoDbAdapter mda = new MevoDbAdapter(getApplicationContext()).open();
-			Cursor cMessages = mda.fetchAllMessages();
-			cMessages.moveToFirst();
-
-			int nbMessages = cMessages.getCount();
-			Log.e(TAG, "nbMessages = "+nbMessages);
-			MevoMessage[] listMessage = new MevoMessage[nbMessages];
-			try{
-				for (int i = 0; i<nbMessages; i++){
-					Long id = cMessages.getLong(cMessages.getColumnIndex(KEY_ROWID));
-					int status = cMessages.getInt(cMessages.getColumnIndex(KEY_STATUS));
-					String presence = cMessages.getString(cMessages.getColumnIndex(KEY_PRESENCE));
-					String source = cMessages.getString(cMessages.getColumnIndex(KEY_SOURCE));
-					String date = cMessages.getString(cMessages.getColumnIndex(KEY_QUAND));
-					String link = cMessages.getString(cMessages.getColumnIndex(KEY_LINK));
-					String delete = cMessages.getString(cMessages.getColumnIndex(KEY_DEL));
-					String name = cMessages.getString(cMessages.getColumnIndex(KEY_NAME));				
-					String length = cMessages.getString(cMessages.getColumnIndex(KEY_LENGTH));
-					String filename = Environment.getExternalStorageDirectory().toString()+DIR_FBM+FBMHttpConnection.getIdentifiant()+DIR_MEVO+name;
-					listMessage[i] = new MevoMessage(id, status, presence, source, date, link, delete, name, length, filename);
-					cMessages.moveToNext();
-				}
-			}finally{
-				mda.close();
-			}
-			
-			
-			return listMessage;
-		}
-
-		@Override
-		public int deleteMessage(MevoMessage message) throws RemoteException {
-			MevoDbAdapter mda = new MevoDbAdapter(getApplicationContext()).open();
-			Log.e(TAG, "message "+message.getId());
-			boolean deleted = false;
-			
-			File file = new File(message.getFileName());
-			if (file.delete())
-			{
-				Log.d(TAG, "Delete file ok");
-			}
-			else
-			{
-				Log.d(TAG, "Delete file not ok");
-			}
-
-    		String tel = message.getDelete();
-			if (!(tel.equals("")))
-			{
-	   			if (tel.indexOf("tel=")>-1)
-	   			{
-	   				tel = tel.substring(tel.indexOf("tel=")+4);
-	   				if (tel.indexOf("&")>-1)
-	   				{
-	   					tel = tel.substring(0, tel.indexOf('&'));
-	   				}
-	    		}
-
-	   			List<NameValuePair> params = new ArrayList<NameValuePair>();
-				params.add(new BasicNameValuePair("tel",tel));
-				String msgFile = message.getName();
-				if (msgFile.endsWith(".wav"))
-				{
-					msgFile = msgFile.substring(0, msgFile.length() - 4);
-				}
-				params.add(new BasicNameValuePair("fichier",msgFile));
-
-				Log.d(TAG, "Deleting on server "+params);
-				FBMHttpConnection.getAuthRequest(mevoUrl+mevoDelPage, params, true, false, "ISO8859_1");
-			}
-
-			
-			try{
-				deleted = mda.deleteMessage(message.getId());
-			}finally{
-				mda.close();
-			}
-			return (deleted)?1:0;
-		}
-
-		@Override
-		public int setMessageRead(MevoMessage message) throws RemoteException {
-			MevoDbAdapter mda = new MevoDbAdapter(getApplicationContext()).open();
-			Log.e(TAG, "message "+message.getId());
-			
-			boolean setRead = false;
-			
-			try{
-				setRead = mda.setMessageRead(message.getId());
-			}finally{
-				mda.close();
-			}
-			return (setRead)?1:0;
-			
-		}
-
-		@Override
-		public int setMessageUnRead(MevoMessage message) throws RemoteException {
-			MevoDbAdapter mda = new MevoDbAdapter(getApplicationContext()).open();
-			Log.e(TAG, "message "+message.getId());
-			
-			boolean setUnRead = false;
-			
-			try{
-				setUnRead = mda.setMessageUnRead(message.getId());
-			}finally{
-				mda.close();
-			}
-			return (setUnRead)?1:0;
-		}
-
-	};
-
-
-	@Override
-	public void onDestroy() {
-		this.callbacks.kill();
-		super.onDestroy();
-	}
-
+    }
 }
