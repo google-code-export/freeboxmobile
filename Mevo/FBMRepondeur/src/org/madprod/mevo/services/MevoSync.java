@@ -8,12 +8,16 @@ import org.madprod.mevo.tools.Constants;
 
 import android.app.Activity;
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.IntentService;
 import android.app.PendingIntent;
+import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -103,6 +107,7 @@ public class MevoSync extends IntentService implements Constants
 			if (HomeActivity.mMevo == null){
 				try{
 					if (!bindService(new Intent("org.madprod.freeboxmobile.services.MevoService"), mMevoConnection, Context.BIND_AUTO_CREATE)){
+						return;
 					}
 				}catch(SecurityException e){
 					e.printStackTrace();

@@ -124,6 +124,7 @@ public class HomeActivity extends ListActivity implements TrackerConstants , Det
 					}
 				});
 				d.show();
+				return;
 			}else{
 
 
@@ -144,10 +145,20 @@ public class HomeActivity extends ListActivity implements TrackerConstants , Det
 					editor.putBoolean("FIRSTEXEC", false);
 					editor.commit();
 				}
+				
+				
 			}
 		}
 
 
+		try{
+			if (!bindService(new Intent("org.madprod.freeboxmobile.services.MevoService"), mMevoConnection, Context.BIND_AUTO_CREATE)){
+				showPopupFbm();		
+				return;
+			}
+		}catch(SecurityException e){
+			e.printStackTrace();
+		}
 
 		tracker = GoogleAnalyticsTracker.getInstance();
 		tracker.start(TrackerConstants.ANALYTICS_MAIN_TRACKER, 20, this);
@@ -243,15 +254,6 @@ public class HomeActivity extends ListActivity implements TrackerConstants , Det
 		findViewById(R.id.btn_title_settings).setOnClickListener(new View.OnClickListener() {public void onClick(View v) {onSettings(v);}});
 		
 		
-		resolver = getContentResolver();
-		
-		resolver.registerContentObserver(Uri.parse("content://org.madprod.freeboxmobile.Provider/messages"), true, new ContentObserver(new Handler()) {
-			@Override
-			public void onChange(boolean selfChange) {
-				dataBind();	
-				super.onChange(selfChange);
-			}
-		});
 
 		dataBind();
 	}
@@ -259,14 +261,6 @@ public class HomeActivity extends ListActivity implements TrackerConstants , Det
 	@Override
 	protected void onStart() {
 		super.onStart();
-
-		try{
-			if (!bindService(new Intent("org.madprod.freeboxmobile.services.MevoService"), mMevoConnection, Context.BIND_AUTO_CREATE)){
-			}
-		}catch(SecurityException e){
-			e.printStackTrace();
-		}
-
 	}
 
 
@@ -422,6 +416,58 @@ public class HomeActivity extends ListActivity implements TrackerConstants , Det
 	public void onFBMClick(View v) {
 		Utils.goFBM(this);
 	}
+	
+	private void showPopupFbm(){
+		AlertDialog d = new AlertDialog.Builder(this).create();
+		d.setCancelable(false);
+		d.setTitle(getString(R.string.app_name));
+		//		d.setIcon(R.drawable.fm_actus_freenautes);
+		d.setMessage(
+				"Pour utiliser cette fonctionnalité, vous devez installer la derniere version de Freebox Mobile'.\n\n"+
+				"Cliquez sur 'Continuer' pour l'installer ou sur 'Annuler' pour quitter Early Propale"
+		);
+		d.setButton(DialogInterface.BUTTON_POSITIVE, "Continuer", new DialogInterface.OnClickListener()
+		{
+			public void onClick(DialogInterface dialog, int which)
+			{
+				dialog.dismiss();
+				Intent marketIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=org.madprod.freeboxmobile" ));
+				marketIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				try
+				{
+					startActivity(marketIntent);
+					finish();
+				}
+				catch (ActivityNotFoundException e)
+				{
+					AlertDialog ad = new AlertDialog.Builder(HomeActivity.this).create();
+					ad.setTitle(getString(R.string.app_name));
+					//	    			ad.setIcon(R.drawable.fm_actus_freenautes);
+					ad.setMessage("Impossible d'ouvrir Android Market !");
+					ad.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
+					{
+						public void onClick(DialogInterface dialog, int which)
+						{
+							dialog.dismiss();
+						}
+					});
+					ad.show();
+				}
+			}
+		});
+		d.setButton(DialogInterface.BUTTON_NEGATIVE, "Quitter", new DialogInterface.OnClickListener()
+		{
+			public void onClick(DialogInterface dialog, int which)
+			{
+				dialog.dismiss();
+				finish();
+			}
+		});
+		d.show();
+
+	}    
+
+
 
 }
 
