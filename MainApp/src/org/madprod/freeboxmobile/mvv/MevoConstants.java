@@ -3,6 +3,7 @@ package org.madprod.freeboxmobile.mvv;
 
 import org.madprod.freeboxmobile.Constants;
 
+import android.net.Uri;
 import android.view.Menu;
 
 /**
@@ -65,4 +66,6 @@ public interface MevoConstants extends Constants
 	public static final int PLAY_STATUS_STOP = 0;
 	public static final int PLAY_STATUS_PLAY = 1;
 	public static final int PLAY_STATUS_PAUSE = 2;
+	
+	static final Uri CONTENT_URI = Uri.parse("content://org.madprod.freeboxmobile.Provider/messages");
 }

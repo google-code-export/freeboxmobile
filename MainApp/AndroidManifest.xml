@@ -29,7 +29,6 @@
     	<activity android:name=".Config" android:exported="true" >
     	</activity>
     	<activity android:theme="@style/Theme.FreeboxMobile.NoTitleBar" android:name=".ligne.LigneInfoActivity"></activity>
-		<activity android:theme="@style/Theme.FreeboxMobile.TitleBar" android:name=".mvv.MevoActivity"></activity>
 		<activity android:theme="@style/Theme.FreeboxMobile.TitleBar" android:name=".pvr.EnregistrementsActivity"></activity>
 		<activity android:theme="@style/Theme.FreeboxMobile.TitleBar" android:name=".pvr.ProgrammationActivity"></activity>
 		<activity android:theme="@style/Theme.FreeboxMobile.TitleBar" android:name=".guide.GuideActivity"></activity>
@@ -84,6 +83,10 @@
     			<action android:name="org.madprod.freeboxmobile.services.RemoteControlService"/>
     		</intent-filter>
     	</service>
+		<provider
+			android:name=".mvv.MevoProvider"
+			android:authorities="org.madprod.freeboxmobile.Provider"
+		/>
 	</application>
 
 	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
