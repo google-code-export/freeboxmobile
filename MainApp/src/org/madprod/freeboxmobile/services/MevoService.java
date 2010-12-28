@@ -36,6 +36,7 @@ import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.util.Log;
@@ -67,7 +68,10 @@ public class MevoService extends Service implements MevoConstants{
 
 		@Override
 		public void checkMessages() throws RemoteException {	
-			new SearchMessages().execute();
+			
+			Thread t = new Thread(r);
+			t.setDaemon(true);
+			t.run();
 		}
 
 
@@ -168,11 +172,11 @@ public class MevoService extends Service implements MevoConstants{
 		super.onDestroy();
 	}
 
-	private class SearchMessages extends AsyncTask<Void, Void, Void>
-	{
-
+	
+	private Runnable r = new Runnable() {
+		
 		@Override
-		protected Void doInBackground(Void... params) {
+		public void run() {
 			int newmsg = 0;
 
 			Log.i(TAG,"MevoSync onHandleIntent ");
@@ -229,7 +233,6 @@ public class MevoService extends Service implements MevoConstants{
 			i.setAction("org.madprod.freeboxmobile.action.MEVO_SERVICE_COMPLETED");
 			i.putExtra("NEW", newmsg);
 			sendBroadcast(i);
-			return null;
 		}
 
 		public int getMessageList()
@@ -413,6 +416,15 @@ public class MevoService extends Service implements MevoConstants{
 			}
 			Log.i(TAG,"getmessage end "+newmsg);
 			return newmsg;
+			
 		}
-	}
+	};
+	
+//	private class SearchMessages extends AsyncTask<Void, Void, Void>
+//	{
+//
+//		@Override
+//		protected Void doInBackground(Void... params) {
+//		}
+//	}
 }
