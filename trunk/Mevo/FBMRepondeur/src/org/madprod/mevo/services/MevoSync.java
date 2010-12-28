@@ -2,29 +2,22 @@ package org.madprod.mevo.services;
 
 
 
-import org.madprod.freeboxmobile.services.IMevo; 
 import org.madprod.mevo.HomeActivity;
-import org.madprod.mevo.R;
 import org.madprod.mevo.tools.Constants;
 
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.IntentService;
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
 import android.os.RemoteException;
 import android.os.ResultReceiver;
 import android.os.SystemClock;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -109,7 +102,6 @@ public class MevoSync extends IntentService implements Constants
 			if (HomeActivity.mMevo == null){
 				try{
 					if (!bindService(new Intent("org.madprod.freeboxmobile.services.MevoService"), mMevoConnection, Context.BIND_AUTO_CREATE)){
-						Toast.makeText(this, "problem", Toast.LENGTH_SHORT).show();
 					}
 				}catch(SecurityException e){
 					e.printStackTrace();
@@ -165,17 +157,5 @@ public class MevoSync extends IntentService implements Constants
 
 	};
 
-
-	private Handler mHandler = new Handler() {
-		@Override public void handleMessage(Message msg) {
-			switch (msg.what) {
-			case 0:
-				break;
-			default:
-				super.handleMessage(msg);
-			}
-		}
-
-	};
 
 }

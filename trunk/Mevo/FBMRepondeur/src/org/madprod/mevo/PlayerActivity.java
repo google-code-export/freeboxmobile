@@ -1,7 +1,7 @@
 package org.madprod.mevo;
 
 
-import java.io.IOException;  
+import java.io.IOException;   
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -36,8 +36,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.SeekBar.OnSeekBarChangeListener;
+
 @SuppressWarnings("deprecation")
 public class PlayerActivity extends Activity implements Constants, SensorEventListener{
 
@@ -68,49 +68,53 @@ public class PlayerActivity extends Activity implements Constants, SensorEventLi
 			getContact();
 			Uri file = Uri.parse(message.getFileName());
 			mp = MediaPlayer.create(this, file);
-			try {
-				mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
-				mp.prepare();
+			if (mp != null) {
+				try {
+					mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+					mp.prepare();
 
-			} catch (IllegalStateException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
+				} catch (IllegalStateException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+
+				mp.setScreenOnWhilePlaying(true);
+				mp.setVolume(1000,1000);
+				mp.setOnCompletionListener(new OnCompletionListener() {
+
+					@Override
+					public void onCompletion(MediaPlayer mp) {
+						messageUpdateTask.cancel();
+						messageTimer.purge();
+						setMessageSeekBar(0, mp.getDuration(), mp.getDuration());
+					}
+				});
+				
+				mp.setOnErrorListener(new OnErrorListener() {
+					
+					@Override
+					public boolean onError(MediaPlayer mp, int what, int extra) {
+						Log.i(TAG,"onERROR "+what+" "+extra);
+						if (mp != null)
+						{
+							mp.stop();
+						}	
+						setMessageSeekBar(-1, 0, 0);
+						return true;
+					}
+				});	
+				messageSeekBar = (SeekBar)findViewById(R.id.seekbarCall);
+				setSeekBarBehavior();
+
+			}else{
+				findViewById(R.id.seekbarCall).setEnabled(false);
+				
 			}
-
-			mp.setScreenOnWhilePlaying(true);
-			mp.setVolume(1000,1000);
-			mp.setOnCompletionListener(new OnCompletionListener() {
-
-				@Override
-				public void onCompletion(MediaPlayer mp) {
-					messageUpdateTask.cancel();
-					messageTimer.purge();
-					setMessageSeekBar(0, mp.getDuration(), mp.getDuration());
-				}
-			});
-
-			mp.setOnErrorListener(new OnErrorListener() {
-
-				@Override
-				public boolean onError(MediaPlayer mp, int what, int extra) {
-					Log.i(TAG,"onERROR "+what+" "+extra);
-					if (mp != null)
-					{
-						mp.stop();
-					}	
-					setMessageSeekBar(-1, 0, 0);
-					return true;
-				}
-			});	
-
-
 			tracker = GoogleAnalyticsTracker.getInstance();
 			tracker.start(TrackerConstants.ANALYTICS_MAIN_TRACKER, 20, this);
 			tracker.trackPageView(TrackerConstants.MESSAGE);		
 
-			messageSeekBar = (SeekBar)findViewById(R.id.seekbarCall);
-			setSeekBarBehavior();
 			if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getString(R.string.key_proximity), getResources().getBoolean(R.bool.default_proximity))){
 				SensorManager sensorMgr = (SensorManager)getSystemService(SENSOR_SERVICE);
 				boolean proximitySupported = sensorMgr.registerListener(this, sensorMgr.getDefaultSensor(Sensor.TYPE_PROXIMITY), SensorManager.SENSOR_DELAY_UI);
@@ -119,6 +123,9 @@ public class PlayerActivity extends Activity implements Constants, SensorEventLi
 					sensorMgr.unregisterListener(this, sensorMgr.getDefaultSensor(Sensor.TYPE_PROXIMITY));
 				}				
 			}
+			
+			setHpEnabled(false);
+			
 			//		findViewById(R.id.ic_btn_search_go).setOnClickListener(new View.OnClickListener() {public void onClick(View v) {onViewArticleClick(v);}});
 			//		findViewById(R.id.btn_sym_action_chat).setOnClickListener(new View.OnClickListener() {public void onClick(View v) {onViewCommentsClick(v);}});
 			//		findViewById(R.id.videoButton).setOnClickListener(new View.OnClickListener() {public void onClick(View v) {onViewVideoClick(v);}});
@@ -289,23 +296,16 @@ public class PlayerActivity extends Activity implements Constants, SensorEventLi
 	/** Handle "home" action. */
 	public void onHpOn(View v) {
 		if (mp != null){
-			findViewById(R.id.btn_title_hp_off).setVisibility(View.VISIBLE);
-			findViewById(R.id.btn_title_hp_on).setVisibility(View.GONE);
-			AudioManager mAudioManager = ((AudioManager) getSystemService(Context.AUDIO_SERVICE));
-			mAudioManager.setMode(AudioManager.MODE_NORMAL);
-			mAudioManager.setSpeakerphoneOn(true);
+			setHpEnabled(true);
 		}
 
 	}
 
 	/** Handle "home" action. */
 	public void onHpOff(View v) {
-		findViewById(R.id.btn_title_hp_off).setVisibility(View.GONE);
-		findViewById(R.id.btn_title_hp_on).setVisibility(View.VISIBLE);
-		AudioManager mAudioManager = ((AudioManager) getSystemService(Context.AUDIO_SERVICE));
-		mAudioManager.setMode(AudioManager.MODE_NORMAL);
-		mAudioManager.setSpeakerphoneOn(false);
-
+		if (mp != null){
+			setHpEnabled(false);
+		}
 	}
 
 	/** Handle "home" action. */
@@ -324,6 +324,7 @@ public class PlayerActivity extends Activity implements Constants, SensorEventLi
 	public void onDelete(View v) {
 		Utils.removeMessage(this, message);
 		tracker.trackPageView("Mevo/RemoveMessage");
+		finish();
 	}
 
 
@@ -357,6 +358,22 @@ public class PlayerActivity extends Activity implements Constants, SensorEventLi
 	}
 	
 	
-
+	private void setHpEnabled(boolean state){
+		AudioManager mAudioManager = ((AudioManager) getSystemService(Context.AUDIO_SERVICE));
+		if (state){
+			findViewById(R.id.btn_title_hp_off).setVisibility(View.VISIBLE);
+			findViewById(R.id.btn_title_hp_on).setVisibility(View.GONE);
+			mAudioManager.setMode(AudioManager.MODE_NORMAL);
+			mAudioManager.setSpeakerphoneOn(true);			
+		}else{
+			findViewById(R.id.btn_title_hp_off).setVisibility(View.GONE);
+			findViewById(R.id.btn_title_hp_on).setVisibility(View.VISIBLE);
+			mAudioManager.setMode(AudioManager.MODE_IN_CALL);
+			mAudioManager.setSpeakerphoneOn(false);
+			
+		}
+			
+			
+	}
 
 }

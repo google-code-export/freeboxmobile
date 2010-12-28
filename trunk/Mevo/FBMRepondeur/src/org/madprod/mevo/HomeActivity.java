@@ -1,7 +1,6 @@
 package org.madprod.mevo;
 
 
-import java.util.ArrayList;  
 import java.util.List;
 
 import org.madprod.freeboxmobile.services.IMevo;
@@ -28,10 +27,8 @@ import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -292,20 +289,6 @@ public class HomeActivity extends ListActivity implements TrackerConstants , Det
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			Log.e("REMOTE", "Connecte");
 			mMevo = IMevo.Stub.asInterface(service);
-		}
-
-	};
-
-
-
-	private Handler mHandler = new Handler() {
-		@Override public void handleMessage(Message msg) {
-			switch (msg.what) {
-			case 0:
-				break;
-			default:
-				super.handleMessage(msg);
-			}
 		}
 
 	};
