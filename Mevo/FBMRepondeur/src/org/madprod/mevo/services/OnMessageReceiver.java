@@ -1,7 +1,7 @@
 package org.madprod.mevo.services;
 
 
-import org.madprod.mevo.HomeActivity;
+import org.madprod.mevo.HomeActivity; 
 import org.madprod.mevo.R;
 import org.madprod.mevo.tools.Constants;
 
@@ -13,11 +13,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.RemoteException;
-import android.os.ResultReceiver;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.widget.Toast;
 
 /**
  *
