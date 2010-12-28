@@ -2,8 +2,7 @@ package org.madprod.mevo.services;
 
 
 
-import org.madprod.freeboxmobile.services.IMevo;
-import org.madprod.freeboxmobile.services.IRemoteControlServiceCallback;
+import org.madprod.freeboxmobile.services.IMevo; 
 import org.madprod.mevo.HomeActivity;
 import org.madprod.mevo.R;
 import org.madprod.mevo.tools.Constants;
@@ -165,20 +164,6 @@ public class MevoSync extends IntentService implements Constants
 		}
 
 	};
-	
-	final IRemoteControlServiceCallback callback = new IRemoteControlServiceCallback.Stub() {
-
-		@Override
-		public void dataChanged(int status, String message)
-		throws RemoteException {
-			if (status == 1){
-				mHandler.sendMessage(mHandler.obtainMessage(0,"Erreur "+message));
-			}
-
-		} 
-
-	}; 
-
 
 
 	private Handler mHandler = new Handler() {
