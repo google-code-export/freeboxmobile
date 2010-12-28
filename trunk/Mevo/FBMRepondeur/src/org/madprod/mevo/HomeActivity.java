@@ -1,11 +1,10 @@
 package org.madprod.mevo;
 
 
-import java.util.ArrayList; 
+import java.util.ArrayList;  
 import java.util.List;
 
 import org.madprod.freeboxmobile.services.IMevo;
-import org.madprod.freeboxmobile.services.IRemoteControlServiceCallback;
 import org.madprod.mevo.quickactions.ActionItem;
 import org.madprod.mevo.quickactions.QuickAction;
 import org.madprod.mevo.services.MevoSync;
@@ -296,20 +295,6 @@ public class HomeActivity extends ListActivity implements TrackerConstants , Det
 		}
 
 	};
-
-
-	final IRemoteControlServiceCallback callback = new IRemoteControlServiceCallback.Stub() {
-
-		@Override
-		public void dataChanged(int status, String message)
-		throws RemoteException {
-			if (status == 1){
-				mHandler.sendMessage(mHandler.obtainMessage(0,"Erreur "+message));
-			}
-
-		} 
-
-	}; 
 
 
 
