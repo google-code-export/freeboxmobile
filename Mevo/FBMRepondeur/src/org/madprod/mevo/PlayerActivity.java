@@ -1,11 +1,10 @@
 package org.madprod.mevo;
 
 
-import java.io.IOException; 
+import java.io.IOException;  
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.madprod.freeboxmobile.services.MevoMessage;
 import org.madprod.mevo.icons.IconView;
 import org.madprod.mevo.tools.Constants;
 import org.madprod.mevo.tools.Utils;
@@ -32,6 +31,7 @@ import android.preference.PreferenceManager;
 import android.provider.Contacts;
 import android.provider.Contacts.People;
 import android.provider.Contacts.Phones;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.SeekBar;
@@ -61,13 +61,13 @@ public class PlayerActivity extends Activity implements Constants, SensorEventLi
 
 
 		super.onCreate(savedInstanceState);
-		if (message == null) finish();
+		if (message == null || TextUtils.isEmpty(message.getFileName())) finish();
 
 		if (mp == null){
 
 			getContact();
-
-			mp = MediaPlayer.create(this, Uri.parse(message.getFileName()));
+			Uri file = Uri.parse(message.getFileName());
+			mp = MediaPlayer.create(this, file);
 			try {
 				mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
 				mp.prepare();
@@ -145,7 +145,7 @@ public class PlayerActivity extends Activity implements Constants, SensorEventLi
 		String numberUri = Uri.encode(message.getSource());
 
 		if (numberUri != null){
-
+			
 			Uri contactUri = Uri.withAppendedPath(Phones.CONTENT_FILTER_URL, numberUri);
 			Cursor c = resolver.query(contactUri, projection, null, null, null);
 			// if the query returns 1 or more results
@@ -157,7 +157,6 @@ public class PlayerActivity extends Activity implements Constants, SensorEventLi
 					contact.setLabel(c.getString(c.getColumnIndex(Contacts.Phones.LABEL)));
 					contact.setPhone(message.getSource());
 					contact.setPhoneType(c.getInt(c.getColumnIndex(Contacts.Phones.TYPE)));
-
 				}
 
 			}finally{

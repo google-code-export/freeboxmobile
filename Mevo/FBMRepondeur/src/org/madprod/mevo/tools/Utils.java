@@ -1,11 +1,11 @@
 package org.madprod.mevo.tools;
 
-import java.text.ParseException; 
+import java.text.ParseException;  
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.madprod.freeboxmobile.services.MevoMessage;
 import org.madprod.mevo.HomeActivity;
+import org.madprod.mevo.MevoMessage;
 import org.madprod.mevo.R;
 
 
@@ -157,14 +157,15 @@ public class Utils implements Constants{
 	
 	public static void removeMessage(Context context, MevoMessage message){
 		try {
-			HomeActivity.mMevo.deleteMessage(message);
+			HomeActivity.mMevo.deleteMessage(message.getId());
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}		
 	}	
 	
 	public static void searchNumber(Context context, MevoMessage message){
-		Intent searchIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://mobile.118218.fr/wap/resultats.php?requete="+message.getSource()+"&particulier=on&activite=&page=1"));
+//		Intent searchIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://mobile.118218.fr/wap/resultats.php?page=1&requete="+message.getSource()));
+		Intent searchIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://mobile.118218.fr/wap/resultats.php?requete=0134786141&activite=&page=1"));
 		searchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		context.startActivity(searchIntent);	
 	}
