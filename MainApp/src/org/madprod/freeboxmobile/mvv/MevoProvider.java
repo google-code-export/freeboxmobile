@@ -26,7 +26,7 @@ public class MevoProvider extends ContentProvider implements MevoConstants{
 
 	public static final String DATABASE_NAME = "freeboxmobile";
 	private static final String DATABASE_TABLE = "mevo";
-	private static final int DATABASE_VERSION = 3;
+	private static final int DATABASE_VERSION = 4;
 
 
 	
@@ -59,8 +59,11 @@ public class MevoProvider extends ContentProvider implements MevoConstants{
 		{
 			Log.w(TAG, "MevoDbAdapter : Upgrading database from version " + oldVersion + " to "
 					+ newVersion + ", which will destroy all old data");
-			db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE);
-			onCreate(db);
+			if (oldVersion == 3 && newVersion == 4){
+			}else{
+				db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE);
+				onCreate(db);
+			}
 		}
 	}
 
