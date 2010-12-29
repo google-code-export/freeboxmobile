@@ -59,11 +59,11 @@ public class MevoProvider extends ContentProvider implements MevoConstants{
 		{
 			Log.w(TAG, "MevoDbAdapter : Upgrading database from version " + oldVersion + " to "
 					+ newVersion + ", which will destroy all old data");
-			if (oldVersion == 3 && newVersion == 4){
-			}else{
-				db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE);
-				onCreate(db);
-			}
+//			if (oldVersion == 3 && newVersion == 4){
+//			}else{
+//				db.execSQL("DROP TABLE IF EXISTS "+DATABASE_TABLE);
+//				onCreate(db);
+//			}
 		}
 	}
 
