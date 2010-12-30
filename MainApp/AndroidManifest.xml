@@ -58,7 +58,6 @@
     			<action android:name="android.intent.action.EXTERNAL_APPLICATIONS_AVAILABLE"/>
   			</intent-filter>
 		</receiver>
-		<receiver android:name=".mvv.OnMevoAlarmReceiver"></receiver>
 		<receiver android:name=".ligne.OnInfoAdslAlarmReceiver"></receiver>
 		<receiver android:name=".guide.OnGuideAlarmReceiver"></receiver>
 		<service android:name=".mvv.MevoSync"></service>
