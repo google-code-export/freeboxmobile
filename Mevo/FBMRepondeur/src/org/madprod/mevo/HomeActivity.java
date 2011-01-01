@@ -250,6 +250,7 @@ public class HomeActivity extends ListActivity implements TrackerConstants , Det
 
 
 
+		findViewById(R.id.btn_fbm).setOnClickListener(new View.OnClickListener() {public void onClick(View v) {onFBMClick(v);}});
 		findViewById(R.id.btn_title_refresh).setOnClickListener(new View.OnClickListener() {public void onClick(View v) {onRefreshClick(v);}});
 		findViewById(R.id.btn_title_settings).setOnClickListener(new View.OnClickListener() {public void onClick(View v) {onSettings(v);}});
 		

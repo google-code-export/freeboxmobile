@@ -37,6 +37,7 @@ import android.view.View;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.Toast;
 
 @SuppressWarnings("deprecation")
 public class PlayerActivity extends Activity implements Constants, SensorEventListener{
@@ -48,7 +49,7 @@ public class PlayerActivity extends Activity implements Constants, SensorEventLi
 	private SeekBar messageSeekBar;
 	private final Timer messageTimer = new Timer();
 	private TimerTask messageUpdateTask = null;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		setContentView(R.layout.activity_player);
@@ -87,12 +88,13 @@ public class PlayerActivity extends Activity implements Constants, SensorEventLi
 					public void onCompletion(MediaPlayer mp) {
 						messageUpdateTask.cancel();
 						messageTimer.purge();
-						setMessageSeekBar(0, mp.getDuration(), mp.getDuration());
+						setMessageSeekBar(0, 0, mp.getDuration());
+						setIconPlay(false);
 					}
 				});
-				
+
 				mp.setOnErrorListener(new OnErrorListener() {
-					
+
 					@Override
 					public boolean onError(MediaPlayer mp, int what, int extra) {
 						Log.i(TAG,"onERROR "+what+" "+extra);
@@ -109,7 +111,7 @@ public class PlayerActivity extends Activity implements Constants, SensorEventLi
 
 			}else{
 				findViewById(R.id.seekbarCall).setEnabled(false);
-				
+
 			}
 			tracker = GoogleAnalyticsTracker.getInstance();
 			tracker.start(TrackerConstants.ANALYTICS_MAIN_TRACKER, 20, this);
@@ -123,13 +125,19 @@ public class PlayerActivity extends Activity implements Constants, SensorEventLi
 					sensorMgr.unregisterListener(this, sensorMgr.getDefaultSensor(Sensor.TYPE_PROXIMITY));
 				}				
 			}
-			
+
 			setHpEnabled(false);
-			
-			//		findViewById(R.id.ic_btn_search_go).setOnClickListener(new View.OnClickListener() {public void onClick(View v) {onViewArticleClick(v);}});
-			//		findViewById(R.id.btn_sym_action_chat).setOnClickListener(new View.OnClickListener() {public void onClick(View v) {onViewCommentsClick(v);}});
-			//		findViewById(R.id.videoButton).setOnClickListener(new View.OnClickListener() {public void onClick(View v) {onViewVideoClick(v);}});
-			//		findViewById(R.id.btn_title_home).setOnClickListener(new View.OnClickListener() {public void onClick(View v) {onHomeClick(v);}});
+
+			findViewById(R.id.btn_title_home).setOnClickListener(new View.OnClickListener() {public void onClick(View v) {onHomeClick(v);}});
+			findViewById(R.id.btn_title_play).setOnClickListener(new View.OnClickListener() {public void onClick(View v) {onPlay(v);}});
+			findViewById(R.id.btn_title_pause).setOnClickListener(new View.OnClickListener() {public void onClick(View v) {onPause(v);}});
+			findViewById(R.id.btn_title_hp_on).setOnClickListener(new View.OnClickListener() {public void onClick(View v) {onHpOn(v);}});
+			findViewById(R.id.btn_title_hp_off).setOnClickListener(new View.OnClickListener() {public void onClick(View v) {onHpOff(v);}});
+			findViewById(R.id.callback).setOnClickListener(new View.OnClickListener() {public void onClick(View v) {onCallback(v);}});
+			findViewById(R.id.delete).setOnClickListener(new View.OnClickListener() {public void onClick(View v) {onDelete(v);}});
+			findViewById(R.id.sendSms).setOnClickListener(new View.OnClickListener() {public void onClick(View v) {onSendSms(v);}});			
+			findViewById(R.id.findNumber).setOnClickListener(new View.OnClickListener() {public void onClick(View v) {onSearchNumber(v);}});
+			findViewById(R.id.addContact).setOnClickListener(new View.OnClickListener() {public void onClick(View v) {onAddContact(v);}});
 		}
 	}
 
@@ -152,7 +160,7 @@ public class PlayerActivity extends Activity implements Constants, SensorEventLi
 		String numberUri = Uri.encode(message.getSource());
 
 		if (numberUri != null){
-			
+
 			Uri contactUri = Uri.withAppendedPath(Phones.CONTENT_FILTER_URL, numberUri);
 			Cursor c = resolver.query(contactUri, projection, null, null, null);
 			// if the query returns 1 or more results
@@ -218,7 +226,7 @@ public class PlayerActivity extends Activity implements Constants, SensorEventLi
 		super.onStart();
 
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -238,6 +246,7 @@ public class PlayerActivity extends Activity implements Constants, SensorEventLi
 			{
 				if (messageUpdateTask != null) messageUpdateTask.cancel();
 				if (messageTimer != null) messageTimer.purge();
+
 			}
 
 			public void onStopTrackingTouch(SeekBar seekBar)
@@ -247,7 +256,7 @@ public class PlayerActivity extends Activity implements Constants, SensorEventLi
 				{
 					mp.seekTo(seekBar.getProgress());
 				}
-				messageTimer.schedule(messageUpdateTask = new UpdateTimeTask(), 250, 250);
+				messageTimer.schedule(messageUpdateTask = new UpdateTimeTask(), 10, 250);
 			}
 		});
 	}	
@@ -278,8 +287,7 @@ public class PlayerActivity extends Activity implements Constants, SensorEventLi
 	public void onPlay(View v) {
 		if (mp != null){
 			this.messageTimer.schedule(messageUpdateTask = new UpdateTimeTask(), 250, 250);
-			findViewById(R.id.btn_title_pause).setVisibility(View.VISIBLE);
-			findViewById(R.id.btn_title_play).setVisibility(View.GONE);
+			setIconPlay(true);
 			mp.start();
 		}
 	}
@@ -287,9 +295,18 @@ public class PlayerActivity extends Activity implements Constants, SensorEventLi
 	/** Handle "home" action. */
 	public void onPause(View v) {
 		if (mp != null){
+			setIconPlay(false);
+			mp.pause();
+		}
+	}
+
+	public void setIconPlay(boolean state){
+		if (state){
+			findViewById(R.id.btn_title_pause).setVisibility(View.VISIBLE);
+			findViewById(R.id.btn_title_play).setVisibility(View.GONE);			
+		}else{
 			findViewById(R.id.btn_title_pause).setVisibility(View.GONE);
 			findViewById(R.id.btn_title_play).setVisibility(View.VISIBLE);
-			mp.pause();
 		}
 	}
 
@@ -322,9 +339,9 @@ public class PlayerActivity extends Activity implements Constants, SensorEventLi
 
 	/** Handle "home" action. */
 	public void onDelete(View v) {
-		Utils.removeMessage(this, message);
 		tracker.trackPageView("Mevo/RemoveMessage");
 		finish();
+		Utils.removeMessage(this, message);
 	}
 
 
@@ -338,14 +355,13 @@ public class PlayerActivity extends Activity implements Constants, SensorEventLi
 	public void onAddContact(View v) {
 		Utils.addContact(this, message);
 		tracker.trackPageView("Mevo/AddNumber");
-	}
-	
-	
+	}	
+
 	@Override
 	public void onAccuracyChanged(Sensor sensor, int accuracy) {
 	}
 
-	
+
 	@Override
 	public void onSensorChanged(SensorEvent event) {
 		float x = event.values[0];	
@@ -354,10 +370,10 @@ public class PlayerActivity extends Activity implements Constants, SensorEventLi
 		}else{
 			findViewById(R.id.screen).setVisibility(View.VISIBLE);
 		}
-		
+
 	}
-	
-	
+
+
 	private void setHpEnabled(boolean state){
 		AudioManager mAudioManager = ((AudioManager) getSystemService(Context.AUDIO_SERVICE));
 		if (state){
@@ -370,10 +386,10 @@ public class PlayerActivity extends Activity implements Constants, SensorEventLi
 			findViewById(R.id.btn_title_hp_on).setVisibility(View.VISIBLE);
 			mAudioManager.setMode(AudioManager.MODE_IN_CALL);
 			mAudioManager.setSpeakerphoneOn(false);
-			
+
 		}
-			
-			
+
+
 	}
 
 }
