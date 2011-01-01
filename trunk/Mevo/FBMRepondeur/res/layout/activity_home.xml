@@ -28,8 +28,11 @@
 	>
 
     	<LinearLayout style="@style/TitleBar">
-        	<ImageView style="@style/TitleBarLogo"
+        	<ImageButton style="@style/TitleBarLogo"
         	    android:src="@drawable/title_logo" 
+        	    android:id="@+id/btn_fbm"
+        	    android:onClick="onFBMClick"
+        	    android:background="#00000000"
 			/>
 
 	       <View style="@style/TitleBarSpring" />
