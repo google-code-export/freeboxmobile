@@ -11,10 +11,15 @@
 	android:orientation="vertical"
 >
 	<LinearLayout style="@style/TitleBar">
-		<ImageView 
-			style="@style/TitleBarLogo"
-			android:src="@drawable/title_logo" 
-		/>
+        <ImageButton 
+        	android:id="@+id/btn_title_home"
+        	style="@style/TitleBarAction"
+            android:src="@drawable/ic_title_home"
+            android:onClick="onHomeClick" />
+
+        <ImageView style="@style/TitleBarSeparator" />
+        <TextView style="@style/TitleBarText" 
+        android:text="Message" />
 
 		<View style="@style/TitleBarSpring" />
 	
