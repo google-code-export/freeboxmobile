@@ -1,7 +1,7 @@
 package org.madprod.mevo;
 
 
-import java.util.List;
+import java.util.List; 
 
 import org.madprod.freeboxmobile.services.IMevo;
 import org.madprod.mevo.quickactions.ActionItem;
@@ -15,7 +15,6 @@ import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -23,11 +22,9 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.ResolveInfo;
-import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
@@ -44,7 +41,6 @@ import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 public class HomeActivity extends ListActivity implements TrackerConstants , DetachableResultReceiver.Receiver{
 	private GoogleAnalyticsTracker tracker;
 	private StateMevoRefresh mState;
-	private ContentResolver resolver;
 
 
 
