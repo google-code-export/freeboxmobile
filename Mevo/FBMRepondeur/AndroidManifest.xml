@@ -28,8 +28,6 @@
 		<activity android:name=".PlayerActivity" android:configChanges="orientation"></activity>
 		<activity android:name=".SettingsActivity" android:windowSoftInputMode="stateHidden" />
 		
-		
-		
 		<service android:name=".services.MevoSync" />
 
 

@@ -1,7 +1,7 @@
 package org.madprod.mevo;
 
 
-import java.io.IOException;   
+import java.io.IOException;    
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -37,7 +37,6 @@ import android.view.View;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.SeekBar.OnSeekBarChangeListener;
-import android.widget.Toast;
 
 @SuppressWarnings("deprecation")
 public class PlayerActivity extends Activity implements Constants, SensorEventListener{
