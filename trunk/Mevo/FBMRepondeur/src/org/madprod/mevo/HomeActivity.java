@@ -41,6 +41,7 @@ import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 public class HomeActivity extends ListActivity implements TrackerConstants , DetachableResultReceiver.Receiver{
 	private GoogleAnalyticsTracker tracker;
 	private StateMevoRefresh mState;
+	private boolean binded = false;
 
 
 
@@ -152,7 +153,7 @@ public class HomeActivity extends ListActivity implements TrackerConstants , Det
 
 
 		try{
-			if (!bindService(new Intent("org.madprod.freeboxmobile.services.MevoService"), mMevoConnection, Context.BIND_AUTO_CREATE)){
+			if (!(binded = bindService(new Intent("org.madprod.freeboxmobile.services.MevoService"), mMevoConnection, Context.BIND_AUTO_CREATE))){
 				showPopupFbm();		
 				return;
 			}
@@ -291,7 +292,7 @@ public class HomeActivity extends ListActivity implements TrackerConstants , Det
 
 	@Override
 	protected void onDestroy() {
-		if (mMevoConnection != null) {
+		if (mMevoConnection != null && binded){
 			unbindService(mMevoConnection);
 			mMevoConnection = null;
 		}
