@@ -76,7 +76,7 @@ public class MevoSync extends IntentService implements Constants
 	public static final int STATUS_ERROR = 0x2;
 	public static final int STATUS_FINISHED = 0x3;
 	public static ResultReceiver receiver = null;
-
+	private boolean binded = false;
 
 
 	public MevoSync() {
@@ -98,10 +98,10 @@ public class MevoSync extends IntentService implements Constants
 		try{
 			final long startRemote = System.currentTimeMillis();
 			
-			
 			if (HomeActivity.mMevo == null){
 				try{
-					if (!bindService(new Intent("org.madprod.freeboxmobile.services.MevoService"), mMevoConnection, Context.BIND_AUTO_CREATE)){
+					Intent serviceIntent = new Intent("org.madprod.freeboxmobile.services.MevoService");
+					if (!(binded = bindService(serviceIntent , mMevoConnection, Context.BIND_AUTO_CREATE))){
 						return;
 					}
 				}catch(SecurityException e){
@@ -159,5 +159,11 @@ public class MevoSync extends IntentService implements Constants
 
 	};
 
+	public void onDestroy() {
+		if (mMevoConnection != null && binded){
+			unbindService(mMevoConnection);
+			mMevoConnection = null;
+		}
+	};
 
 }
