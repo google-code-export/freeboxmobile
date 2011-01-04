@@ -1,0 +1,16 @@
+#summary Historique des versions de Freebox Actu Mobile
+
+<wiki:toc max_depth="2" />
+
+= Versions publiques du module !FreeboxActuMobile =
+== 1.0.0 ==
+Sortie le 04/01/2011<br>
+Release : 1<br>
+Révision : 774
+ * Possibilité d'ouvrir l'application depuis le market 
+ * Ouverture d'une popup si Freebox Mobile n'est pas installé
+ * Possibilité de désactiver les notifications (visuelle + sonore)
+ * Ajout d'un bouton pour rafraichir les messages immédiatement
+ * Possibilité d'envoyer un sms au numéro
+ * Synchronisation avec les contacts du répertoire
+ * Possibilité de rechercher sur l'annuaire inversé
