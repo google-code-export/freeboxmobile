@@ -415,7 +415,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 	    	}
 	    	else if (moduleName.equals(getString(R.string.buttonMevo)))
 	    	{
-	    		openExtApp("org.madprod.mevo", "FBM Repondeur", true);
+	    		openExtApp("org.madprod.mevo", "Freebox Messagerie Mobile", true);
 	    	}
         }
     	if (moduleClass != null)
