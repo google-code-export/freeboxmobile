@@ -137,9 +137,13 @@ public class HomeActivity extends ListActivity implements TrackerConstants , Det
 				if (prefs.getBoolean("FIRSTEXEC", true)){
 					if (!StateMevoRefresh.mSyncing)
 						onRefreshClick(null);
+					
 					Editor editor = prefs.edit();
 					editor.putBoolean("FIRSTEXEC", false);
 					editor.commit();
+					int time = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(this).getString(getString(R.string.key_refresh), getString(R.integer.default_refresh)));
+					Log.d(TAG, "On First Exec (Mevo) : time set to "+time+" minutes");
+					MevoSync.changeTimer(time, this);
 				}
 				
 				
