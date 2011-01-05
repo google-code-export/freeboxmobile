@@ -97,8 +97,9 @@ public class SettingsActivity extends PreferenceActivity implements Constants, O
 						ad.dismiss();
 					}
 				});
-				ad.show();
-				
+				try{
+					ad.show();
+				}catch (Exception e){}
 				
 				
 			}
