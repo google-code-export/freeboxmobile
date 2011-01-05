@@ -238,6 +238,18 @@ public class HomeActivity extends ListActivity implements TrackerConstants , Det
 				});					
 				qa.addActionItem(deleteAction);
 
+				final ActionItem unreadAction = new ActionItem();
+				unreadAction.setIcon(getResources().getDrawable(R.drawable.bouton_vide_small));				
+				unreadAction.setTitle("Marquer non lu");
+				unreadAction.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						Utils.setUnreadMessage(HomeActivity.this, message);
+						tracker.trackPageView("Mevo/SetUnread");
+						qa.dismiss();
+					}
+				});					
+				qa.addActionItem(unreadAction);
 
 				qa.setAnimStyle(QuickAction.ANIM_AUTO);
 
