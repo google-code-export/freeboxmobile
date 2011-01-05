@@ -165,9 +165,17 @@ public class Utils implements Constants{
 		}		
 	}	
 	
+	public static void setUnreadMessage(Context context, MevoMessage message){
+		try {
+			HomeActivity.mMevo.setMessageUnRead(message.getId());
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}		
+	}	
+
+	
 	public static void searchNumber(Context context, MevoMessage message){
-//		Intent searchIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://mobile.118218.fr/wap/resultats.php?page=1&requete="+message.getSource()));
-		Intent searchIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://mobile.118218.fr/wap/resultats.php?requete=0134786141&activite=&page=1"));
+		Intent searchIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://mobile.118218.fr/wap/resultats.php?PHPSESSID=1&activite=&page=1&requete="+message.getSource()));
 		searchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		context.startActivity(searchIntent);	
 	}
