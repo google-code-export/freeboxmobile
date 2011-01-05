@@ -3,6 +3,13 @@
 <wiki:toc max_depth="2" />
 
 = Versions publiques du module !FreeboxMessagerieMobile =
+== 1.0.2 ==
+Sortie le 05/01/2011<br>
+Release : 3<br>
+Révision : 783
+ * Possibilité de marquer un message non lu
+ * Correction d'un bug dans l annuaire inversé
+
 == 1.0.1 ==
 Sortie le 05/01/2011<br>
 Release : 2<br>
