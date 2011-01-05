@@ -158,7 +158,7 @@ public class PlayerActivity extends Activity implements Constants, SensorEventLi
 
 		String numberUri = Uri.encode(message.getSource());
 
-		if (numberUri != null){
+		if (numberUri != null && numberUri.length() > 0){
 
 			Uri contactUri = Uri.withAppendedPath(Phones.CONTENT_FILTER_URL, numberUri);
 			Cursor c = resolver.query(contactUri, projection, null, null, null);
@@ -177,27 +177,36 @@ public class PlayerActivity extends Activity implements Constants, SensorEventLi
 				c.close();				
 			}
 
-
-
-			if (contact.getId() != null){
-				Uri uri = ContentUris.withAppendedId(People.CONTENT_URI, contact.getId());				
-				((IconView)findViewById(R.id.imgPerson)).setImageBitmap(Contacts.People.loadContactPhoto(this, uri, R.drawable.fm_repondeur, null));				
-				((TextView)findViewById(R.id.namePerson)).setText(contact.getName());
-				((TextView)findViewById(R.id.phonePerson)).setText(contact.getPhone() + " ( "+Utils.getPhoneTypeString(this, contact.getPhoneType(), contact.getLabel())+" ) ");
-				findViewById(R.id.findNumber).setVisibility(View.GONE);
-				findViewById(R.id.addContact).setVisibility(View.GONE);
-			}else{
-				((TextView)findViewById(R.id.namePerson)).setText("Inconnu");
-				((TextView)findViewById(R.id.phonePerson)).setText(message.getSource());
-			}
-
-
-			((TextView)findViewById(R.id.dateCall)).setText(Utils.convertDateTimeHR(message.getDate()));
-			((TextView)findViewById(R.id.lengthCall)).setText(message.getLength());					
-
-
+		}else{
+			contact.setName("Inconnu");
+			contact.setLabel("Inconnu");
+			contact.setPhone("Inconnu");
+			findViewById(R.id.callback).setVisibility(View.GONE);
+			findViewById(R.id.sendSms).setVisibility(View.GONE);			
+			findViewById(R.id.findNumber).setVisibility(View.GONE);
+			findViewById(R.id.addContact).setVisibility(View.GONE);
 
 		}
+
+
+		if (contact.getId() != null){
+			Uri uri = ContentUris.withAppendedId(People.CONTENT_URI, contact.getId());				
+			((IconView)findViewById(R.id.imgPerson)).setImageBitmap(Contacts.People.loadContactPhoto(this, uri, R.drawable.fm_repondeur, null));				
+			((TextView)findViewById(R.id.namePerson)).setText(contact.getName());
+			((TextView)findViewById(R.id.phonePerson)).setText(contact.getPhone() + " ( "+Utils.getPhoneTypeString(this, contact.getPhoneType(), contact.getLabel())+" ) ");
+			findViewById(R.id.findNumber).setVisibility(View.GONE);
+			findViewById(R.id.addContact).setVisibility(View.GONE);
+		}else{
+			((TextView)findViewById(R.id.namePerson)).setText("Inconnu");
+			((TextView)findViewById(R.id.phonePerson)).setText(message.getSource());
+		}
+
+
+		((TextView)findViewById(R.id.dateCall)).setText(Utils.convertDateTimeHR(message.getDate()));
+		((TextView)findViewById(R.id.lengthCall)).setText(message.getLength());					
+
+
+
 
 	}
 

@@ -85,6 +85,8 @@ public class Utils implements Constants{
 			}finally{
 				c.close();				
 			}
+		}else{
+			number = "Inconnu";
 		}
 		return number;
 	}
