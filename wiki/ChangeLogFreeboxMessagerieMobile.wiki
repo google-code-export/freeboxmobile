@@ -1,8 +1,8 @@
-#summary Historique des versions de Freebox Actu Mobile
+#summary Historique des versions de Freebox Messagerie Mobile
 
 <wiki:toc max_depth="2" />
 
-= Versions publiques du module !FreeboxActuMobile =
+= Versions publiques du module !FreeboxMessagerieMobile =
 == 1.0.1 ==
 Sortie le 05/01/2011<br>
 Release : 2<br>
