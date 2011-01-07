@@ -711,10 +711,11 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     	TextView t = new TextView(this);
     	t.setLinksClickable(true);
     	t.setAutoLinkMask(Linkify.ALL);
-    	t.setText("Freebox Mobile est une application indépendante de Free.\n\n"+
+    	t.setText(
     		"Info : Installation sur carte SD : L'installation sur SD n'est possible sur Android que "+
     		"pour des applications simples, n'utilisant pas des fonctionnalités avancées. "+
     		"A cause de ces contraintes liées à Android, cette application n'est pas installable sur SD. "+
+    		"Cependant, certains des modules optionnels sont installables sur SD. "+
     		"Consultez la FAQ sur notre site web pour plus d'information.\n\n"+
 			"Site web :\nhttp://www.freeboxmobile.org\n\n"+
 			"Contact :\ncontact@freeboxmobile.org\n\n"+
@@ -735,7 +736,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 			"- Icônes Tango : http://tango.freedesktop.org/\n" +
 			"- Frimousse : http://www.frimousse.org\n"+
 			"\n"+
-			"Les serveurs de Freebox Mobile sont gracieusement fournis par Ovea:\nhttp://www.oveaconnect.me/\n"
+			"Les serveurs de Freebox Mobile sont gracieusement fournis par Ovea:\nhttp://www.oveaconnect.me/\n\n"
 			);
     	s.setPadding(10,10,10,10);
     	t.setMovementMethod(LinkMovementMethod.getInstance());
@@ -849,7 +850,6 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 	{
 		Intent i = new Intent(Intent.ACTION_MAIN);
 		i.setClassName(module, activity);
-//		i.setClassName("org.madprod.freeboxmobile", "org.madprod.freeboxmobile.home.HomeListActivity");
 		List<ResolveInfo> activitiesList = getPackageManager().queryIntentActivities(i, 0);
 		if (activitiesList.isEmpty())
 		{
