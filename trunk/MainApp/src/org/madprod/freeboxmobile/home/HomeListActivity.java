@@ -624,7 +624,8 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     private void shareApp()
     {
     	SpannableString ss = new SpannableString(getResources().getString(R.string.mail_link));
-    	ss.setSpan(new URLSpan(getResources().getString(R.string.app_url)), 0, ss.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+    	ss.setSpan(new URLSpan("http://market.android.com/search?q=pub:%22Freebox%20Mobile%22"), 0, ss.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+    	
     	SpannableStringBuilder ssb = new SpannableStringBuilder(getResources().getString(R.string.mail_text1)).append(' ').append(ss);
     	Intent i = new Intent(Intent.ACTION_SEND)
     		.putExtra(Intent.EXTRA_TEXT, ssb)
@@ -653,7 +654,8 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 			{
 				dialog.dismiss();
 	    		tracker.trackPageView("Home/Vote");
-				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=org.madprod.freeboxmobile")));
+				//startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=org.madprod.freeboxmobile")));
+				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://search?q=pub:\"Freebox Mobile\"")));
 			}
 		});
 		d.setButton(DialogInterface.BUTTON_NEGATIVE, "Plus tard", new DialogInterface.OnClickListener()
