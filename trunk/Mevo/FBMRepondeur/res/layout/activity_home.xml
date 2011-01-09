@@ -55,7 +55,7 @@
         	<ImageButton 
         		style="@style/TitleBarAction"
             	android:src="@drawable/ic_title_settings"
-            	android:onClick="onSettingsClick" 
+            	android:onClick="onSettings" 
 				android:id="@+id/btn_title_settings"
             />
     	</LinearLayout>
