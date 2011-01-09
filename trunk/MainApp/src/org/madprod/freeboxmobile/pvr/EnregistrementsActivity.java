@@ -664,7 +664,7 @@ public class EnregistrementsActivity extends ExpandableListActivity implements C
 		
 		protected void onPostExecute(Void v)
 		{
-			progressDialog.dismiss();
+			if (progressDialog != null) progressDialog.dismiss();
 			progressDialog = null;
 			((EnregistrementsActivity) activity).updaterEnregistrements(false);
 		}
