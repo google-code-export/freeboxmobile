@@ -2,8 +2,7 @@ package org.madprod.mevo.services;
 
 
 
-import org.madprod.freeboxmobile.services.IMevo; 
-import org.madprod.mevo.HomeActivity;
+import org.madprod.freeboxmobile.services.IMevo;  
 import org.madprod.mevo.tools.Constants;
 
 import android.app.Activity;
@@ -41,7 +40,7 @@ public class MevoSync extends IntentService implements Constants
 	public static void changeTimer(int minute,  Context c)
 	{
 		
-				AlarmManager amgr = (AlarmManager) c.getSystemService(HomeActivity.ALARM_SERVICE);
+				AlarmManager amgr = (AlarmManager) c.getSystemService(ALARM_SERVICE);
 				Intent i = new Intent(c, OnMevoAlarmReceiver.class);
 				int ms = minute * 60000;
 				PendingIntent pi = PendingIntent.getBroadcast(c, 0, i, 0);
@@ -98,7 +97,7 @@ public class MevoSync extends IntentService implements Constants
 		try{
 			final long startRemote = System.currentTimeMillis();
 			
-			if (HomeActivity.mMevo == null){
+			if (mMevo == null){
 				try{
 					Intent serviceIntent = new Intent("org.madprod.freeboxmobile.services.MevoService");
 					if (!(binded = bindService(serviceIntent , mMevoConnection, Context.BIND_AUTO_CREATE))){
@@ -111,7 +110,7 @@ public class MevoSync extends IntentService implements Constants
 			
 			
 			try {
-				HomeActivity.mMevo.checkMessages();
+				mMevo.checkMessages();
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
@@ -154,7 +153,8 @@ public class MevoSync extends IntentService implements Constants
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			Log.e("REMOTE", "Connecte");
-			HomeActivity.mMevo = IMevo.Stub.asInterface(service);
+			mMevo = IMevo.Stub.asInterface(service);
+
 		}
 
 	};
@@ -166,4 +166,8 @@ public class MevoSync extends IntentService implements Constants
 		}
 	};
 
+	
+	public static IMevo mMevo = null;
+
+	
 }
