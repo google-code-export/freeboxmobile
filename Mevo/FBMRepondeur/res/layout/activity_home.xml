@@ -66,6 +66,17 @@
         	android:layout_height="fill_parent" 
         	android:longClickable="true"
         />
+
+    	<TextView
+        	android:id="@+id/noMessage"
+        	android:layout_width="fill_parent"
+        	android:layout_height="fill_parent" 
+        	android:text="Pas de messages"
+        	android:gravity="center"
+        	android:textStyle="bold"
+        	android:visibility="gone"
+        	android:textSize="20dip"
+        />
         
 	</LinearLayout>
 

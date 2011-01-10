@@ -23,6 +23,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
+import android.database.DataSetObserver;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -67,9 +68,6 @@ public class HomeActivity extends ListActivity implements TrackerConstants , Det
 			updateRefreshStatus();
 
 		} else {
-
-
-
 			Intent i = new Intent(Intent.ACTION_MAIN);
 			i.setClassName("org.madprod.freeboxmobile", "org.madprod.freeboxmobile.home.HomeListActivity");
 			List<ResolveInfo> activitiesList = getPackageManager().queryIntentActivities(i, 0);
@@ -123,11 +121,6 @@ public class HomeActivity extends ListActivity implements TrackerConstants , Det
 				d.show();
 				return;
 			}else{
-
-
-
-
-
 
 				mState = new StateMevoRefresh();
 				StateMevoRefresh.mReceiver.setReceiver(this);
@@ -282,8 +275,27 @@ public class HomeActivity extends ListActivity implements TrackerConstants , Det
 
 	private void dataBind(){
 		Cursor c = managedQuery(Uri.parse("content://org.madprod.freeboxmobile.Provider/messages"), null, null, null, null);
+
+		if (c.getCount() == 0){
+			findViewById(R.id.noMessage).setVisibility(View.VISIBLE);
+			getListView().setVisibility(View.GONE);
+		}else{
+			findViewById(R.id.noMessage).setVisibility(View.GONE);
+			getListView().setVisibility(View.VISIBLE);			
+		}
+
+		
 		startManagingCursor(c);
+		
 		setListAdapter(new myAdapter(HomeActivity.this, R.layout.mevo_messages_row, c));
+		getListAdapter().registerDataSetObserver(new DataSetObserver() {
+			@Override
+			public void onChanged() {
+				dataBind();
+				super.onChanged();
+			}
+		});
+		
 	}
 
 	private ServiceConnection mMevoConnection = new ServiceConnection() {
@@ -478,7 +490,6 @@ public class HomeActivity extends ListActivity implements TrackerConstants , Det
 			}
 		});
 		d.show();
-
 	}    
 
 
