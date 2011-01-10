@@ -967,7 +967,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
         			
         			msgErreur = (erreurPos != 42 ? resultat.substring(erreurPos) : "");
         			debutErr = msgErreur.indexOf("<span style=\"color: #cc0000\">") + 29;
-        			if (debutErr != -1)
+        			if (debutErr > 28)
         			{
         				finErr = msgErreur.substring(debutErr).indexOf("<");
         				msgErreur = msgErreur.substring(debutErr, debutErr+finErr);
