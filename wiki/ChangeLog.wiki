@@ -20,12 +20,12 @@ TELECOMMANDE : Le module de télécommande
 Sortie le 12/01/2011<br>
 Release : 62<br>
 Revision : 792
- * Correction de bugs
+ * Correction d'un bug dans la partie magnéto
 
 
 == 0.52.8 ==
 Sortie le 04/01/2011<br>
-Release : 60<br>
+Release : 61<br>
 Revision : 776
  * Messagerie en module externe
 
