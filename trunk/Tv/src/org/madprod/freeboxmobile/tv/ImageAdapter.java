@@ -1,5 +1,6 @@
 package org.madprod.freeboxmobile.tv;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -14,31 +15,31 @@ import android.widget.TextView;
 
 public class ImageAdapter extends BaseAdapter implements TvConstants
 {
-	private List< Map<String,Object> > streamsList;
+	private ArrayList<Chaine> listeChaines;
 	String USER_AGENT = null;
 	Context c;
 
-	public ImageAdapter(Context c, List< Map<String,Object> > sl)
+	public ImageAdapter(Context c, ArrayList<Chaine> lc)
 	{
 		this.c = c;
-		streamsList = sl;
+		listeChaines = lc;
 	}
     
     private final ImageDownloader imageDownloader = new ImageDownloader();
     
     public int getCount()
     {
-        return streamsList.size();
+        return listeChaines.size();
     }
 
     public Object getItem(int position)
     {
-        return streamsList.get(position);
+        return listeChaines.get(position);
     }
 
     public long getItemId(int position)
     {
-   		return (long) Integer.decode(streamsList.get(position).get(M_ID).toString());
+   		return (long) listeChaines.get(position).getChannelId();
     }
 
     public View getView(int position, View view, ViewGroup parent)
@@ -51,10 +52,10 @@ public class ImageAdapter extends BaseAdapter implements TvConstants
         	view = inflater.inflate(R.layout.tv_main_list_row, null);
         }
     	TextView text = (TextView)view.findViewById(R.id.tv_main_row_titre);
-    	text.setText((String) streamsList.get(position).get(M_TITRE));
+    	text.setText((String) listeChaines.get(position).getName());
     	logo = (ImageView)view.findViewById(R.id.tv_main_row_img);
     	logo.setImageResource(R.drawable.chaine_vide);
-        imageDownloader.download((String) streamsList.get(position).get(M_LOGO), (ImageView) logo);
+        imageDownloader.download((String) listeChaines.get(position).getLogoUrl(), (ImageView) logo);
         return view;
     }
 

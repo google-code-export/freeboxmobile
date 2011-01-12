@@ -4,11 +4,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,21 +30,30 @@ import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.ResolveInfo;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.ListView;
 import android.widget.Toast;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 
 /**
  * @author olivier rosello
@@ -57,25 +64,27 @@ import android.widget.Toast;
 public class MainActivity extends ListActivity implements TvConstants
 {
 	GoogleAnalyticsTracker tracker;
-	private static List< Map<String,Object> > streamsList = null;
+	public static Map<Integer, Chaine> mapChaines = new HashMap<Integer, Chaine>();
+	private static ArrayList<Chaine> listChaines = new ArrayList<Chaine>();
 	static String USER_AGENT = null;
 	private static ImageAdapter listAdapter = null; 
 	private static ProgressDialog pd = null;
 	private static long startPlay = 0;
+	private int networkState = -1;
 	
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+		setContentView(R.layout.tv_main_list);
+		setTitle(getString(R.string.app_name)+" "+Utils.getMyVersion(this));
 		tracker = GoogleAnalyticsTracker.getInstance();
 		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
 		tracker.trackPageView("Tv/HomeTv");
-		if (streamsList == null)
-		{
-			streamsList = new ArrayList< Map<String,Object> >();
-		}
-		setContentView(R.layout.tv_main_list);
-		setTitle(getString(R.string.app_name)+" "+Utils.getMyVersion(this));
+//		if (streamsList == null)
+//		{
+//			streamsList = new ArrayList< Map<String,Object> >();
+//		}
 		SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 		if (!mgr.getString(KEY_SPLASH_TV, "0").equals(Utils.getMyVersion(this)))
 		{
@@ -84,13 +93,6 @@ public class MainActivity extends ListActivity implements TvConstants
 			editor.commit();
 			displayHelp();
 		}
-		/*
-		else
-		{
-			displayHelp();
-		}
-		*/
-		// TODO : si lors d'un restart (retour de player), moins de 15 secs se sont écoulées -> message de bande passante...
     }
 
     @Override
@@ -106,24 +108,34 @@ public class MainActivity extends ListActivity implements TvConstants
     	super.onStart();
     	Log.i(TAG,"TvActivity Start");
     	verifyInstallFbm();
-    	if (pd != null)
+    	if (!isConnectionOk())
     	{
-    		pd.show();
-    	}
-    	if (listAdapter == null)
-    	{
-    		new AsyncGetStreams().execute();
+    		showPopupNetwork();
     	}
     	else
     	{
-    		setListAdapter(MainActivity.listAdapter);
+        	if (pd != null)
+        	{
+        		pd.show();
+        	}
+	    	if (listAdapter == null)
+	    	{
+	    		new AsyncGetStreams().execute();
+	    	}
+	    	else
+	    	{
+	    		setListAdapter(MainActivity.listAdapter);
+	            registerForContextMenu(getListView());
+	    	}
+	    	if ((Calendar.getInstance().getTimeInMillis() - startPlay) < (10 * 1000))
+	    	{
+		    	Log.d(TAG, "DELAIS : "+startPlay+" - "+(Calendar.getInstance().getTimeInMillis() - startPlay));
+				Toast.makeText(MainActivity.this, "La lecture n'a pas été longue... Vous avez peut être un problème de débit sur votre réseau.", Toast.LENGTH_LONG).show();
+	    	}
+	    	WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+	    	WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+	    	Toast.makeText(MainActivity.this, "Check for current connection: SSID: "+wifiInfo.getBSSID()+" "+wifiInfo.getSSID(), Toast.LENGTH_LONG).show();
     	}
-    	Log.d(TAG, "DELAIS : "+startPlay+" - "+(Calendar.getInstance().getTimeInMillis() - startPlay));
-    	if ((Calendar.getInstance().getTimeInMillis() - startPlay) < (10 * 1000))
-    	{
-			Toast.makeText(MainActivity.this, "La lecture n'a pas été longue... Vous avez peut être un problème de débit sur votre réseau.", Toast.LENGTH_LONG).show();
-    	}
-    	// TODO : checker qu'on est bien en 3G ou Wifi (pas en GPRS ou EDGE)
     }
 
     @Override
@@ -153,7 +165,7 @@ public class MainActivity extends ListActivity implements TvConstants
         menu.add(0, 2, 0, "Rafraichir").setIcon(android.R.drawable.ic_menu_rotate);
         return true;
     }
-	
+
 	@Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
@@ -173,9 +185,51 @@ public class MainActivity extends ListActivity implements TvConstants
     protected void onListItemClick(ListView l, View v, int position, long id)
     {
         super.onListItemClick(l, v, position, id);
-        String streamUrl = (String) streamsList.get((int) position).get(M_URL);
-        String mimeType = (String) streamsList.get((int) position).get(M_MIME);
 
+        callStream(
+        		listChaines.get(position).getStream(Chaine.STREAM_TYPE_INTERNET).get(Chaine.M_URL),
+        		listChaines.get(position).getStream(Chaine.STREAM_TYPE_INTERNET).get(Chaine.M_MIME)
+        );
+    }
+
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View view, ContextMenuInfo menuInfo)
+	{
+		AdapterContextMenuInfo info;
+
+		super.onCreateContextMenu(menu, view, menuInfo);
+		info = (AdapterContextMenuInfo) menuInfo;
+	    menu.setHeaderTitle("Sélectionnez le flux "+listChaines.get((int)info.position).getName());
+	    
+	    if (listChaines.get((int)info.position).getStream(Chaine.STREAM_TYPE_INTERNET) != null)
+	    {
+		    menu.add(0, Chaine.STREAM_TYPE_INTERNET, Chaine.STREAM_TYPE_INTERNET, "Flux Internet");	    	
+	    }
+	    if (listChaines.get((int)info.position).getStream(Chaine.STREAM_TYPE_MULTIPOSTE_SD) != null)
+	    {
+		    menu.add(0, Chaine.STREAM_TYPE_MULTIPOSTE_SD, Chaine.STREAM_TYPE_MULTIPOSTE_SD, "Flux Multiposte");	    	
+	    }
+	    if (listChaines.get((int)info.position).getStream(Chaine.STREAM_TYPE_TVFREEBOX) != null)
+	    {
+		    menu.add(0, Chaine.STREAM_TYPE_TVFREEBOX, Chaine.STREAM_TYPE_TVFREEBOX, "Flux PC");	    	
+	    }
+	}
+
+	@Override
+	public boolean onContextItemSelected(MenuItem item)
+	{
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+
+        callStream(
+        		listChaines.get(info.position).getStream(item.getItemId()).get(Chaine.M_URL),
+        		listChaines.get(info.position).getStream(item.getItemId()).get(Chaine.M_MIME)
+        );
+
+    	return super.onContextItemSelected(item);
+	}
+
+	private void callStream(String streamUrl, String mimeType)
+	{
     	if (streamUrl != null)
     	{
     	    Intent intent = new Intent();
@@ -191,12 +245,45 @@ public class MainActivity extends ListActivity implements TvConstants
     	 		Toast.makeText(this, "Problème : "+e.getMessage(), Toast.LENGTH_LONG).show();
     	 	}
     	}
-    }
-    
-    private void getStreams(boolean isFree)
+    	else
+    	{
+	 		Toast.makeText(this, "Problème avec le flux (null)", Toast.LENGTH_LONG).show();    		
+    	}
+	}
+
+    private boolean isConnectionOk()
     {
-    	Log.d(TAG, "getStreams started");
-    	streamsList.clear();
+    	ConnectivityManager mConnectivity = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+    	TelephonyManager mTelephony = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+    	// Skip if no connection, or background data disabled
+    	NetworkInfo info = mConnectivity.getActiveNetworkInfo();
+    	if (info == null || !mConnectivity.getBackgroundDataSetting())
+    	{
+    	    return false;
+    	}
+    	int netType = info.getType();
+    	int netSubtype = info.getSubtype();
+    	if (netType == ConnectivityManager.TYPE_WIFI)
+    	{
+    	    return info.isConnected();
+    	}
+    	else if (netType == ConnectivityManager.TYPE_MOBILE
+    	    && netSubtype >= TelephonyManager.NETWORK_TYPE_UMTS
+    	    && !mTelephony.isNetworkRoaming())
+    	{
+    	        return info.isConnected();
+    	}
+    	else
+    	{
+    		Log.d(TAG, "CONNECTION : "+netSubtype);
+    	    return false;
+    	}
+    }
+
+    private void getStreamsFBM()
+    {
+    	Log.d(TAG, "getStreamsFBM started");
+    	mapChaines.clear();
     	String json = getPage(getJson("http://tv.freeboxmobile.net/json/streams_fbm.json"));
     	if (json != null)
     	{
@@ -211,33 +298,44 @@ public class MainActivity extends ListActivity implements TvConstants
 				JSONArray jChannels = new JSONObject(json).getJSONArray("channels");
 				nbChannels = jChannels.length();
 				Log.i(TAG, "number chaines : "+ nbChannels);
+				Chaine c;
 				for (int i = 0; i < nbChannels; i++)
 				{
 					jChannel = jChannels.getJSONObject(i);
 					Log.i(TAG, "Name : "+jChannel.getString("name"));
-					jStreams = jChannel.getJSONArray("streams");
-					nbStreams = jStreams.length();
-					for (int j = 0; j < nbStreams; j++)
+					try
 					{
-						jStream = jStreams.getJSONObject(j);
-						type = jStream.getInt("type");
-						if (
-								(isFree && type == 1) ||
-								(type == 2)
-							)
+						c = new Chaine(jChannel.getInt("num"), jChannel.getString("icon"), jChannel.getString("name"));
+						jStreams = jChannel.getJSONArray("streams");
+						nbStreams = jStreams.length();
+						for (int j = 0; j < nbStreams; j++)
 						{
+							jStream = jStreams.getJSONObject(j);
+							type = jStream.getInt("type");
 							try
 							{
-								addChannel(jChannel.getString("name"), jChannel.getInt("num"), jChannel.getString("icon"), jStream.getString("url"), jStream.getString("mime"));
-								break;
+								c.addStream(type, jStream.getString("url"), jStream.getString("mime"));
 							}
 							catch (JSONException e)
 							{
 								e.printStackTrace();
 							}
 						}
+						mapChaines.put(jChannel.getInt("num"), c);
 					}
+					catch (JSONException e)
+					{
+						e.printStackTrace();
+					}					
 				}
+				c = mapChaines.get(2);
+				if (c != null)
+				{
+					c.addStream(Chaine.STREAM_TYPE_MULTIPOSTE_LD, "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=201&flavour=ld", "video/mp4");
+					c.addStream(Chaine.STREAM_TYPE_MULTIPOSTE_SD, "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=201&flavour=sd", "video/mp4");
+					c.addStream(Chaine.STREAM_TYPE_MULTIPOSTE_HD, "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=201&flavour=hd", "video/mp4");
+				}
+				mapChaines.put(2, c);
 			}
 			catch (JSONException e)
 			{
@@ -248,6 +346,8 @@ public class MainActivity extends ListActivity implements TvConstants
 		{
 			Log.e(TAG, "Pas de réseau !");
 		}
+    	listChaines.addAll(mapChaines.values());// = (ArrayList<Chaine>) mapChaines.values().toArray();
+    	Collections.sort(listChaines);
     }
 
     private void displayHelp()
@@ -342,6 +442,8 @@ public class MainActivity extends ListActivity implements TvConstants
      *  - Archos 70 (2.2)
      *  - Archos 10.1
      *  - Motorola Milestone (2.2)
+     *  - Motorola Milestone 2
+     *  - Google Nexus S
      * 
      *  Ne Fonctionne pas sur :
      *  - Dell Streak (2.2)
@@ -500,17 +602,6 @@ public class MainActivity extends ListActivity implements TvConstants
 		}
     }
     
-    private void addChannel(String name, int nb, String logoUrl, String streamUrl, String mimeType)
-    {
-    	Map<String,Object> map = new HashMap<String,Object>();
-		map.put(M_TITRE, ""+nb+" - "+name);
-		map.put(M_URL, streamUrl);
-		map.put(M_LOGO, logoUrl);
-		map.put(M_MIME, mimeType);
-		map.put(M_ID, nb);
-		streamsList.add(map);		    	
-    }
-	
 	private boolean isModuleInstalled(String module, String activity)
 	{
 		Intent i = new Intent(Intent.ACTION_MAIN);
@@ -598,6 +689,26 @@ public class MainActivity extends ListActivity implements TvConstants
         return null;
 	}
 
+	private void showPopupNetwork()
+	{
+		AlertDialog d = new AlertDialog.Builder(this).create();
+		d.setCancelable(false);
+		d.setTitle(getString(R.string.app_name)+"\nDésolé !");
+		d.setIcon(R.drawable.icon_fbm);
+		d.setMessage(
+				"Pour utiliser ce module, vous devez être connecté en Wifi ou en 3G afin d'avoir suffisament de débit.\n"
+		);
+		d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
+		{
+			public void onClick(DialogInterface dialog, int which)
+			{
+				dialog.dismiss();
+				finish();
+			}
+		});
+		d.show();
+	}
+	
 	private void showPopupFbm()
 	{
 		AlertDialog d = new AlertDialog.Builder(this).create();
@@ -605,7 +716,7 @@ public class MainActivity extends ListActivity implements TvConstants
 		d.setTitle(getString(R.string.app_name));
 		d.setIcon(R.drawable.icon_fbm);
 		d.setMessage(
-				"Pour utiliser cette fonctionnalité, vous devez installer la derniere version de Freebox Mobile'.\n\n"+
+				"Pour utiliser cette fonctionnalité, vous devez installer la derniere version de Freebox Mobile.\n\n"+
 				"Cliquez sur 'Continuer' pour l'installer ou sur 'Annuler' pour quitter "+getString(R.string.app_name)
 		);
 		d.setButton(DialogInterface.BUTTON_POSITIVE, "Continuer", new DialogInterface.OnClickListener()
@@ -657,8 +768,8 @@ public class MainActivity extends ListActivity implements TvConstants
 		protected Void doInBackground(Void... v)
 		{
 			Log.d(TAG, "doInBackground started");
-			result = testNet(false);
-			getStreams(result == 1);
+			result = testNet();
+			getStreamsFBM();
 			return null;
 		}
 
@@ -685,8 +796,9 @@ public class MainActivity extends ListActivity implements TvConstants
 				pd = null;
 			}
 			displayNet(result);
-			MainActivity.listAdapter = new ImageAdapter(MainActivity.this, streamsList);
+			MainActivity.listAdapter = new ImageAdapter(MainActivity.this, listChaines);
 	        setListAdapter(MainActivity.listAdapter);
+	        registerForContextMenu(getListView());
 	        Log.d(TAG, "onPostExecute finished");
 		}
 		
@@ -709,14 +821,16 @@ public class MainActivity extends ListActivity implements TvConstants
 		
 		/*
 		 *  Returns :
-		 *  -1 : network problem
-		 *  0 : normal network
-		 *  1 : Free network
+		 *  -1 : unknown state (default)
+		 *  0 : network problem
+		 *  1 : normal network
+		 *  2 : Free network
+		 *  3 : multiposte
 		 *  
 		 *  Merci Fabien :)
 		 */
 		
-		private int testNet(boolean retry)
+		private int testNet()
 		{
 			HttpParams params = new BasicHttpParams();
 			HttpConnectionParams.setConnectionTimeout(params, 5000);
@@ -732,61 +846,21 @@ public class MainActivity extends ListActivity implements TvConstants
 	            if (response.getStatusLine().getStatusCode() != 200)
 	            {
 	    			Log.d(TAG, "TESTNET 4");
-	            	return 0;
+	    			networkState = 1;
 	            }
 	            else
 	            {
 	    			Log.d(TAG, "TESTNET 5");
-	            	return 1;
+	    			networkState = 2;
 	            }
 	        }
 	        catch (Exception e)
 	        {
 				Log.d(TAG, "TESTNET 6");
 				e.printStackTrace();
-				return -1;
-	        }   
+				networkState = 0;
+	        }
+	        return networkState;
 		}
-		
-		private int testNet2(boolean retry)
-		{
-			try{
-			Thread.sleep(1000);
-		} catch (InterruptedException e1) {
-		}
-			HttpURLConnection c = null;
-			try
-			{
-				URL u = new URL("http://tv.freebox.fr");
-				c = (HttpURLConnection) u.openConnection();
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-				Log.d(TAG, "testNet : 1 -> 0");
-			}
-			try
-			{
-				c.setRequestMethod("GET");
-				c.setReadTimeout(5000);
-				if (c.getResponseCode() != 200)
-				{
-					c.disconnect();
-					Log.i(TAG, "NOT FREE");
-					return 0;
-				}
-				else
-				{
-					c.disconnect();
-					Log.i(TAG, "FREE !");
-					return 1;
-				}
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-				return -1;
-			}
-		}
-	}
+    }
 }
