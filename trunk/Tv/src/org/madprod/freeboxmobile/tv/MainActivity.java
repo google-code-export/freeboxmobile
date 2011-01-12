@@ -81,10 +81,6 @@ public class MainActivity extends ListActivity implements TvConstants
 		tracker = GoogleAnalyticsTracker.getInstance();
 		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
 		tracker.trackPageView("Tv/HomeTv");
-//		if (streamsList == null)
-//		{
-//			streamsList = new ArrayList< Map<String,Object> >();
-//		}
 		SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 		if (!mgr.getString(KEY_SPLASH_TV, "0").equals(Utils.getMyVersion(this)))
 		{
@@ -199,7 +195,7 @@ public class MainActivity extends ListActivity implements TvConstants
 
 		super.onCreateContextMenu(menu, view, menuInfo);
 		info = (AdapterContextMenuInfo) menuInfo;
-	    menu.setHeaderTitle("Sélectionnez le flux "+listChaines.get((int)info.position).getName());
+	    menu.setHeaderTitle("Sélectionnez le flux pour "+listChaines.get((int)info.position).getName());
 	    
 	    if (listChaines.get((int)info.position).getStream(Chaine.STREAM_TYPE_INTERNET) != null)
 	    {
@@ -280,54 +276,69 @@ public class MainActivity extends ListActivity implements TvConstants
     	}
     }
 
-    private void getStreamsFBM()
+    private void getStreamsFBM(int networkType)
     {
     	Log.d(TAG, "getStreamsFBM started");
-    	mapChaines.clear();
-    	String json = getPage(getJson("http://tv.freeboxmobile.net/json/streams_fbm.json"));
-    	if (json != null)
+    	if (networkType > 0)
     	{
-			try
-			{
-				JSONArray jStreams;
-				int nbStreams;
-				int nbChannels;
-				int type;
-
-				JSONObject jChannel, jStream;
-				JSONArray jChannels = new JSONObject(json).getJSONArray("channels");
-				nbChannels = jChannels.length();
-				Log.i(TAG, "number chaines : "+ nbChannels);
-				Chaine c;
-				for (int i = 0; i < nbChannels; i++)
+			Chaine c;
+	    	mapChaines.clear();
+	    	String json = getPage(getUrl("http://tv.freeboxmobile.net/json/streams_fbm.json"));
+	    	if (json != null)
+	    	{
+				try
 				{
-					jChannel = jChannels.getJSONObject(i);
-					Log.i(TAG, "Name : "+jChannel.getString("name"));
-					try
+					JSONArray jStreams;
+					int nbStreams;
+					int nbChannels;
+					int type;
+	
+					JSONObject jChannel, jStream;
+					JSONArray jChannels = new JSONObject(json).getJSONArray("channels");
+					nbChannels = jChannels.length();
+					Log.i(TAG, "number chaines : "+ nbChannels);
+					for (int i = 0; i < nbChannels; i++)
 					{
-						c = new Chaine(jChannel.getInt("num"), jChannel.getString("icon"), jChannel.getString("name"));
-						jStreams = jChannel.getJSONArray("streams");
-						nbStreams = jStreams.length();
-						for (int j = 0; j < nbStreams; j++)
+						jChannel = jChannels.getJSONObject(i);
+						Log.i(TAG, "Name : "+jChannel.getString("name"));
+						try
 						{
-							jStream = jStreams.getJSONObject(j);
-							type = jStream.getInt("type");
-							try
+							c = new Chaine(jChannel.getInt("num"), jChannel.getString("icon"), jChannel.getString("name"));
+							jStreams = jChannel.getJSONArray("streams");
+							nbStreams = jStreams.length();
+							for (int j = 0; j < nbStreams; j++)
 							{
-								c.addStream(type, jStream.getString("url"), jStream.getString("mime"));
+								jStream = jStreams.getJSONObject(j);
+								type = jStream.getInt("type");
+								try
+								{
+									c.addStream(type, jStream.getString("url"), jStream.getString("mime"));
+								}
+								catch (JSONException e)
+								{
+									e.printStackTrace();
+								}
 							}
-							catch (JSONException e)
-							{
-								e.printStackTrace();
-							}
+							mapChaines.put(jChannel.getInt("num"), c);
 						}
-						mapChaines.put(jChannel.getInt("num"), c);
+						catch (JSONException e)
+						{
+							e.printStackTrace();
+						}					
 					}
-					catch (JSONException e)
-					{
-						e.printStackTrace();
-					}					
 				}
+				catch (JSONException e)
+				{
+					e.printStackTrace();
+				}
+	    	}
+			else
+			{
+				Log.e(TAG, "Impossible de charger le json !");
+			}
+	    	if (networkType == 3)
+	    	{
+		    	String m3u = getPage(getUrl("http://mafreebox.freebox.fr/freeboxtv/playlist.m3u"));
 				c = mapChaines.get(2);
 				if (c != null)
 				{
@@ -336,18 +347,10 @@ public class MainActivity extends ListActivity implements TvConstants
 					c.addStream(Chaine.STREAM_TYPE_MULTIPOSTE_HD, "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=201&flavour=hd", "video/mp4");
 				}
 				mapChaines.put(2, c);
-			}
-			catch (JSONException e)
-			{
-				e.printStackTrace();
-			}
+	    	}
+	    	listChaines.addAll(mapChaines.values());
+	    	Collections.sort(listChaines);
     	}
-		else
-		{
-			Log.e(TAG, "Pas de réseau !");
-		}
-    	listChaines.addAll(mapChaines.values());// = (ArrayList<Chaine>) mapChaines.values().toArray();
-    	Collections.sort(listChaines);
     }
 
     private void displayHelp()
@@ -661,7 +664,7 @@ public class MainActivity extends ListActivity implements TvConstants
 		return sb.toString();
 	}
 
-	private InputStreamReader getJson(String url)
+	private InputStreamReader getUrl(String url)
 	{
 		if (USER_AGENT == null)
 		{
@@ -762,14 +765,14 @@ public class MainActivity extends ListActivity implements TvConstants
 	
     private class AsyncGetStreams extends AsyncTask<Void, Void, Void>
     {
-    	int result = -1;
+    	int networkType = -1;
     	
 		@Override
 		protected Void doInBackground(Void... v)
 		{
 			Log.d(TAG, "doInBackground started");
-			result = testNet();
-			getStreamsFBM();
+			networkType = testNet();
+			getStreamsFBM(networkType);
 			return null;
 		}
 
@@ -795,7 +798,7 @@ public class MainActivity extends ListActivity implements TvConstants
 				pd.dismiss();
 				pd = null;
 			}
-			displayNet(result);
+			displayNet(networkType);
 			MainActivity.listAdapter = new ImageAdapter(MainActivity.this, listChaines);
 	        setListAdapter(MainActivity.listAdapter);
 	        registerForContextMenu(getListView());
@@ -807,13 +810,17 @@ public class MainActivity extends ListActivity implements TvConstants
 			switch (n)
 			{
 				case -1:
+				case 0:
 					Toast.makeText(MainActivity.this, "Problème réseau... Essayez de rafraichir via la touche menu.", Toast.LENGTH_LONG).show();
 				break;
-				case 0:
+				case 1:
 					Toast.makeText(MainActivity.this, "En vous connectant au réseau Free, plus de chaînes seront disponibles", Toast.LENGTH_LONG).show();
 				break;
-				case 1:
+				case 2:
 					Toast.makeText(MainActivity.this, "Connecté au réseau Free", Toast.LENGTH_SHORT).show();
+				break;
+				case 3:
+					Toast.makeText(MainActivity.this, "Connecté à une Freebox", Toast.LENGTH_SHORT).show();
 				break;
 			}
 		}
@@ -826,37 +833,52 @@ public class MainActivity extends ListActivity implements TvConstants
 		 *  1 : normal network
 		 *  2 : Free network
 		 *  3 : multiposte
-		 *  
-		 *  Merci Fabien :)
 		 */
 		
 		private int testNet()
 		{
 			HttpParams params = new BasicHttpParams();
-			HttpConnectionParams.setConnectionTimeout(params, 5000);
-			HttpConnectionParams.setSoTimeout(params, 5000);
+			HttpConnectionParams.setConnectionTimeout(params, 500);
+			HttpConnectionParams.setSoTimeout(params, 500);
 			HttpClient client = new DefaultHttpClient(params);
-			Log.d(TAG, "TESTNET 1");
-	        HttpGet request = new HttpGet("http://tv.freebox.fr");
-			Log.d(TAG, "TESTNET 2");
+	        HttpGet request = new HttpGet("http://192.168.27.14");
 	        try
 	        {
 	            HttpResponse response = client.execute(request);
-				Log.d(TAG, "TESTNET 3");
+	            if (response.getStatusLine().getStatusCode() == 403)
+	            {
+	    			Log.d(TAG, "Multiposte network");
+	    			networkState = 3;
+	    			return networkState;
+	            }
+	        }
+	        catch (Exception e)
+	        {
+				Log.d(TAG, "network problem while checking multiposte");
+				e.printStackTrace();
+				networkState = 0;
+	        }
+			HttpConnectionParams.setConnectionTimeout(params, 5000);
+			HttpConnectionParams.setSoTimeout(params, 5000);
+			client = new DefaultHttpClient(params);
+	        request = new HttpGet("http://tv.freebox.fr");
+	        try
+	        {
+	            HttpResponse response = client.execute(request);
 	            if (response.getStatusLine().getStatusCode() != 200)
 	            {
-	    			Log.d(TAG, "TESTNET 4");
+	    			Log.d(TAG, "normal network");
 	    			networkState = 1;
 	            }
 	            else
 	            {
-	    			Log.d(TAG, "TESTNET 5");
+	    			Log.d(TAG, "Free network");
 	    			networkState = 2;
 	            }
 	        }
 	        catch (Exception e)
 	        {
-				Log.d(TAG, "TESTNET 6");
+				Log.d(TAG, "network problem");
 				e.printStackTrace();
 				networkState = 0;
 	        }
