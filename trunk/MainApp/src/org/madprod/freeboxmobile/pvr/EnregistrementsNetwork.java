@@ -68,11 +68,10 @@ public class EnregistrementsNetwork implements Constants
 			        	f = boitiers.indexOf("\"");
 			        	Log.d(TAG,"Boitier parse : "+boitiers.substring(4, f));
 			        	bNum = Integer.parseInt(boitiers.substring(4, f));
-			        	d = boitiers.indexOf("Boitier HD");
+			        	d = boitiers.indexOf("HD n");
 			        	boitiers = boitiers.substring(d);
 
 	        			f = boitiers.indexOf("</");
-//	        			bName = boitiers.substring(0, f);
 	        			boitiers = boitiers.substring(f);
 	        			nbBoitiers++;
 	        			Log.d(TAG,"Boitier : "+bNum);
@@ -80,7 +79,6 @@ public class EnregistrementsNetwork implements Constants
 	        	}
 	        	else
 	        	{
-//	        		bName = "Freebox HD";
 	        		bNum = 0;
 	        	}
 			}
@@ -107,7 +105,7 @@ public class EnregistrementsNetwork implements Constants
     private static boolean recupererEnregistrements(Context c, int bId)
     {
     	int debut;
-    	String chaine, date, heure, duree, nom, ide, chaine_id, service_id;
+    	String chaine, date, heure, duree, nom, ide, chaine_id, service_id, interne;
     	String h, min, dur, name, where_id, repeat_a;
         
         // SQLite
@@ -127,6 +125,7 @@ public class EnregistrementsNetwork implements Constants
 				date =			recupererChamp("<strong>", "<");
 				heure =			recupererChamp("<strong>", "<");
 				duree =			recupererChamp("<strong>", "<");
+				interne =		recupererChamp("<strong>", "<");
 				nom =			recupererChamp("<strong>", "<");
 				ide =			recupererChamp("value=\"", "\"");
 				chaine_id =		recupererChamp("value=\"", "\"");

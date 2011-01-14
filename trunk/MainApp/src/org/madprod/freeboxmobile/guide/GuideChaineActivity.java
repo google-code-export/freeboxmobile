@@ -120,7 +120,10 @@ public class GuideChaineActivity extends GuideUtils implements GuideConstants
         datesSpinner = (Spinner) findViewById(R.id.DatesSpinner);
 		spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, GuideUtils.dates);
 		spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		datesSpinner.setAdapter(spinnerAdapter);
+		if (datesSpinner != null)
+		{
+			datesSpinner.setAdapter(spinnerAdapter);
+		}
 
         final Bundle extras = getIntent().getExtras();
     	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:00:00");
