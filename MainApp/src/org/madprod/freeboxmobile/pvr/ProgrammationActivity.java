@@ -402,7 +402,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 	protected void onResume()
 	{
 		super.onResume();
-		if (alertDialog != null)
+		if ((alertDialog != null) && (ProgrammationActivity.progAct != null))
 		{
 			alertDialog.show();
 		}
