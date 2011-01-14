@@ -14,7 +14,7 @@ public interface Constants
     static final int ACTIVITY_COMPTES = 0;
 
     // For database & prefs
-    static final String KEY_ROWID = "_id";
+    static final String KEY_ROWID		= "_id";
     static final String KEY_USER		= "user";
     static final String KEY_PASSWORD	= "password";
     static final String KEY_TITLE		= "title";
@@ -24,8 +24,9 @@ public interface Constants
     static final String KEY_TEL			= "tel";
     static final String KEY_LINELENGTH	= "length";
     static final String KEY_ATTN		= "attn";
-    static final String KEY_LINETYPE	= "linetype"; // 0 = non dégroupé / 1 = dégroupé
+    static final String KEY_LINETYPE	= "linetype"; // 0 = non dégroupé / 1 = dégroupé / 2 = ftth (cf + bas)
     static final String KEY_FBMVERSION	= "fbmversion"; // version de FBM qui a généré les infos du compte
+    static final String KEY_BOXTYPE		= "boxtype";
 
     static final String KEY_LAST_REFRESH = "lastrefresh_";
 

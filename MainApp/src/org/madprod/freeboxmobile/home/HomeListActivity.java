@@ -364,7 +364,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		map.put(M_CLASS, null);
 		modulesList.add(map);
     }
-    
+
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id)
     {
@@ -654,7 +654,6 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 			{
 				dialog.dismiss();
 	    		tracker.trackPageView("Home/Vote");
-				//startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=org.madprod.freeboxmobile")));
 				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://search?q=pub:\"Freebox Mobile\"")));
 			}
 		});
