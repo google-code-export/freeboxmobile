@@ -36,7 +36,6 @@ import android.util.Log;
 public class MevoSync extends IntentService implements Constants
 {
 
-	private boolean force = false;
 
 	//	/**
 	//	 * Change timer to ms value (or cancel if ms == 0)
@@ -52,8 +51,6 @@ public class MevoSync extends IntentService implements Constants
 		PendingIntent pi = PendingIntent.getBroadcast(c, 0, i, 0);
 		if (ms != 0)
 		{
-			
-			
 			long last = Long.parseLong(PreferenceManager.getDefaultSharedPreferences(c).getString(c.getString(R.string.last_refresh), c.getString(R.string.default_last_refresh)));
 			Log.d(TAG, "MevoTimer last success sync : "+(System.currentTimeMillis()-last)/1000 +" seconds");
 						
@@ -104,7 +101,6 @@ public class MevoSync extends IntentService implements Constants
 		
 		
 		
-//		if (mMevo == null){
 			try{
 				Intent serviceIntent = new Intent("org.madprod.freeboxmobile.services.MevoService");
 				if (!(binded = bindService(serviceIntent , mMevoConnection, Context.BIND_AUTO_CREATE))){
@@ -115,7 +111,6 @@ public class MevoSync extends IntentService implements Constants
 			}catch(SecurityException e){
 				e.printStackTrace();
 			}
-//		}
 
 
 	}
@@ -150,12 +145,10 @@ public class MevoSync extends IntentService implements Constants
 					e.printStackTrace();
 				}
 
-				if (!force){
 					SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MevoSync.this);
 					Editor e = prefs.edit();
 					e.putString(getString(R.string.last_refresh), ""+System.currentTimeMillis());
 					e.commit();
-				}
 				if (receiver != null) {
 					// Pass back error to surface listener
 					final Bundle bundle = new Bundle();
