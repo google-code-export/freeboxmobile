@@ -48,11 +48,16 @@ public class PlayerActivity extends Activity implements Constants, SensorEventLi
 	private SeekBar messageSeekBar;
 	private final Timer messageTimer = new Timer();
 	private TimerTask messageUpdateTask = null;
+	private boolean audioSpeaker = false;
+	private int audioMode = AudioManager.MODE_NORMAL;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		setContentView(R.layout.activity_player);
 
+		AudioManager mAudioManager = ((AudioManager) getSystemService(Context.AUDIO_SERVICE));
+		audioMode = mAudioManager.getMode();
+		audioSpeaker = mAudioManager.isSpeakerphoneOn();
 
 		if (getIntent().getExtras() != null){
 			Bundle b = getIntent().getExtras();
@@ -219,6 +224,11 @@ public class PlayerActivity extends Activity implements Constants, SensorEventLi
 	@Override
 	protected void onDestroy() {
 		//		tracker.stop();
+		AudioManager mAudioManager = ((AudioManager) getSystemService(Context.AUDIO_SERVICE));
+		mAudioManager.setMode(audioMode);
+		mAudioManager.setSpeakerphoneOn(audioSpeaker);			
+
+			
 		messageTimer.cancel();
 		if (messageUpdateTask != null) {
 			messageUpdateTask.cancel();	
