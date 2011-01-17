@@ -1,6 +1,9 @@
 package org.madprod.freeboxmobile.tv;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
@@ -128,9 +131,6 @@ public class MainActivity extends ListActivity implements TvConstants
 		    	Log.d(TAG, "DELAIS : "+startPlay+" - "+(Calendar.getInstance().getTimeInMillis() - startPlay));
 				Toast.makeText(MainActivity.this, "La lecture n'a pas été longue... Vous avez peut être un problème de débit sur votre réseau.", Toast.LENGTH_LONG).show();
 	    	}
-	    	WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-	    	WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-	    	Toast.makeText(MainActivity.this, "Check for current connection: SSID: "+wifiInfo.getBSSID()+" "+wifiInfo.getSSID(), Toast.LENGTH_LONG).show();
     	}
     }
 
@@ -204,6 +204,14 @@ public class MainActivity extends ListActivity implements TvConstants
 	    if (listChaines.get((int)info.position).getStream(Chaine.STREAM_TYPE_MULTIPOSTE_SD) != null)
 	    {
 		    menu.add(0, Chaine.STREAM_TYPE_MULTIPOSTE_SD, Chaine.STREAM_TYPE_MULTIPOSTE_SD, "Flux Multiposte");	    	
+	    }
+	    if (listChaines.get((int)info.position).getStream(Chaine.STREAM_TYPE_MULTIPOSTE_LD) != null)
+	    {
+		    menu.add(0, Chaine.STREAM_TYPE_MULTIPOSTE_LD, Chaine.STREAM_TYPE_MULTIPOSTE_LD, "Flux Multiposte Bas débit");	    	
+	    }
+	    if (listChaines.get((int)info.position).getStream(Chaine.STREAM_TYPE_MULTIPOSTE_HD) != null)
+	    {
+		    menu.add(0, Chaine.STREAM_TYPE_MULTIPOSTE_HD, Chaine.STREAM_TYPE_MULTIPOSTE_HD, "Flux Multiposte HD");	    	
 	    }
 	    if (listChaines.get((int)info.position).getStream(Chaine.STREAM_TYPE_TVFREEBOX) != null)
 	    {
@@ -336,17 +344,85 @@ public class MainActivity extends ListActivity implements TvConstants
 			{
 				Log.e(TAG, "Impossible de charger le json !");
 			}
-	    	if (networkType == 3)
+	    	if (networkType > 0)
+//			TODO : for prod, remove comments below
+//			if (networkType == 3)
 	    	{
-		    	String m3u = getPage(getUrl("http://mafreebox.freebox.fr/freeboxtv/playlist.m3u"));
-				c = mapChaines.get(2);
-				if (c != null)
+//		    	InputStreamReader m3u = getUrl("http://mafreebox.freebox.fr/freeboxtv/playlist.m3u");
+		    	File f=new File("/sdcard/freeboxmobile/playlist.m3u");
+		    	FileInputStream m3ufis;
+				try
 				{
+					m3ufis = new FileInputStream(f);
+			    	InputStreamReader m3u = new InputStreamReader(m3ufis);
+		    		
+				if (m3u != null)
+				{
+					BufferedReader reader = new BufferedReader(m3u); 
+					StringBuilder sb = new StringBuilder();
+
+					if (reader != null)
+					{
+						String line = null;
+						String name = null;
+						String num = null;
+						Integer cnum = null;
+						try 
+						{
+							line = reader.readLine();
+							do
+							{
+								if (line.contains("EXTINF"))
+								{
+									num = line.substring(line.indexOf(",") + 1, line.indexOf(" "));
+									try
+									{
+										cnum = new Integer(num);
+										c = mapChaines.get(cnum);
+										if (c  == null) // If we already have the channel into the map (due to another existing stream) 
+										{
+											c = new Chaine(cnum, "http://tv.freeboxmobile.net/tv_"+cnum+".png", line.substring(line.indexOf("-") + 2));
+										}
+										while ((line != null) && line.contains("rtsp") == false)
+										{
+											line = reader.readLine();
+										}
+										if (line != null)
+										{
+											if (line.contains("flavour=sd"))
+											{
+												c.addStream(Chaine.STREAM_TYPE_MULTIPOSTE_SD, line, "video/mp2");
+												mapChaines.put(cnum, c);													
+											}
+										}
+									}
+									catch (Exception e)
+									{
+										Log.d(TAG, "pb conversion num chaine : "+num);
+									}
+								}
+						          sb.append(line+"\n");
+						    }
+							while ((line = reader.readLine()) != null);
+						}
+						catch (IOException e)
+						{
+							Log.e(TAG, "parse m3u : "+e);
+							e.printStackTrace();
+						}		
+					}
+					c = mapChaines.get(2);
 					c.addStream(Chaine.STREAM_TYPE_MULTIPOSTE_LD, "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=201&flavour=ld", "video/mp4");
-					c.addStream(Chaine.STREAM_TYPE_MULTIPOSTE_SD, "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=201&flavour=sd", "video/mp4");
+//					c.addStream(Chaine.STREAM_TYPE_MULTIPOSTE_SD, "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=201&flavour=sd", "video/mp4");
 					c.addStream(Chaine.STREAM_TYPE_MULTIPOSTE_HD, "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=201&flavour=hd", "video/mp4");
+					mapChaines.put(2, c);
 				}
-				mapChaines.put(2, c);
+				}
+				catch (FileNotFoundException e1)
+				{
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 	    	}
 	    	listChaines.addAll(mapChaines.values());
 	    	Collections.sort(listChaines);
@@ -841,11 +917,13 @@ public class MainActivity extends ListActivity implements TvConstants
 			HttpConnectionParams.setConnectionTimeout(params, 500);
 			HttpConnectionParams.setSoTimeout(params, 500);
 			HttpClient client = new DefaultHttpClient(params);
-	        HttpGet request = new HttpGet("http://192.168.27.14");
+//	        HttpGet request = new HttpGet("http://192.168.27.14");
+	        HttpGet request = new HttpGet("http://mafreebox.freebox.fr/freeboxtv/playlist.m3u");
 	        try
 	        {
 	            HttpResponse response = client.execute(request);
-	            if (response.getStatusLine().getStatusCode() == 403)
+//	            if (response.getStatusLine().getStatusCode() == 403)
+	            if (response.getStatusLine().getStatusCode() == 200)
 	            {
 	    			Log.d(TAG, "Multiposte network");
 	    			networkState = 3;

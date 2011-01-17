@@ -44,7 +44,6 @@ public class ImageAdapter extends BaseAdapter implements TvConstants
 
     public View getView(int position, View view, ViewGroup parent)
     {
-    	Log.i(TAG, "ici : "+position);
     	ImageView logo;
         if (view == null)
         {
