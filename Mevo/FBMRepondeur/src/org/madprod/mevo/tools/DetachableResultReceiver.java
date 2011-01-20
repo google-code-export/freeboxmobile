@@ -7,9 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.util.Log;
-public class DetachableResultReceiver extends ResultReceiver {
-
-    private static final String TAG = "DetachableResultReceiver";
+public class DetachableResultReceiver extends ResultReceiver implements Constants{
 
     private ArrayList<Receiver> mReceivers = new ArrayList<DetachableResultReceiver.Receiver>();
 

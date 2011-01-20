@@ -52,9 +52,21 @@ public class MevoSync extends IntentService implements Constants
 		if (ms != 0)
 		{
 			long last = Long.parseLong(PreferenceManager.getDefaultSharedPreferences(c).getString(c.getString(R.string.last_refresh), c.getString(R.string.default_last_refresh)));
-			Log.d(TAG, "MevoTimer last success sync : "+(System.currentTimeMillis()-last)/1000 +" seconds");
-						
-			amgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, last+ms, ms, pi);
+			long periodInMilliSeconds = (System.currentTimeMillis()-last);
+			long periodInSeconds = periodInMilliSeconds/1000;
+			int periodMinutes = (int)(periodInSeconds/60);
+			long periodSeconds = periodInSeconds - (periodMinutes*60);
+			Log.d(TAG, "MevoTimer last success sync : "+periodInSeconds+" seconds (~ "+periodMinutes+" minutes "+periodSeconds+" seconds)");
+			Log.d(TAG, "MevoTimer last : "+last +" period : "+periodInSeconds + " ms : "+ms);
+
+			//			if (periodInMilliSeconds > ms){
+			//				Log.d(TAG, "MevoTimer set repeating now ");
+			//				amgr.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), ms, pi);
+			//			}
+			//			else{
+			//				Log.d(TAG, "MevoTimer set repeating in "+(last+ms)+" ms");
+			amgr.setRepeating(AlarmManager.RTC_WAKEUP, last+ms, ms, pi);
+			//			}		
 			Log.i(TAG,"MevoTimer  changed to "+ms);
 		}
 		else
@@ -63,7 +75,7 @@ public class MevoSync extends IntentService implements Constants
 			Log.i(TAG,"MevoTimer canceled");			
 		}
 	}
-	
+
 	public static final String EXTRA_STATUS_RECEIVER =
 		"org.madprod.mevo.extra.STATUS_RECEIVER";
 
@@ -90,27 +102,27 @@ public class MevoSync extends IntentService implements Constants
 
 		receiver = intent.getParcelableExtra(EXTRA_STATUS_RECEIVER);
 		if (receiver != null) receiver.send(STATUS_RUNNING, Bundle.EMPTY);
-		
+
 		ConnectivityManager cm = (ConnectivityManager)getSystemService(CONNECTIVITY_SERVICE);
-		
-		if (cm == null || cm.getActiveNetworkInfo() == null){
+
+		if (cm == null || cm.getActiveNetworkInfo() == null || !cm.getActiveNetworkInfo().isConnected()){
 			Log.d(TAG, "airplane mode");
 			if (receiver != null) receiver.send(STATUS_ERROR, Bundle.EMPTY);
 			return;
 		}
-		
-		
-		
-			try{
-				Intent serviceIntent = new Intent("org.madprod.freeboxmobile.services.MevoService");
-				if (!(binded = bindService(serviceIntent , mMevoConnection, Context.BIND_AUTO_CREATE))){
-					Log.d(TAG, "Serice not binded");
-					sendError("Service not binded");
-					return;
-				}
-			}catch(SecurityException e){
-				e.printStackTrace();
+
+
+
+		try{
+			Intent serviceIntent = new Intent("org.madprod.freeboxmobile.services.MevoService");
+			if (!(binded = bindService(serviceIntent , mMevoConnection, Context.BIND_AUTO_CREATE))){
+				Log.d(TAG, "Serice not binded");
+				sendError("Service not binded");
+				return;
 			}
+		}catch(SecurityException e){
+			e.printStackTrace();
+		}
 
 
 	}
@@ -130,25 +142,28 @@ public class MevoSync extends IntentService implements Constants
 
 		@Override
 		public void onServiceDisconnected(ComponentName name) {
-			Log.e("REMOTE", "Deconnecte");
+			Log.e(TAG, "Deconnecte");
 		}
 
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
-			Log.e("REMOTE", "Connecte");
+			Log.d(TAG, "Connecte");
 			try{
 				mMevo = IMevo.Stub.asInterface(service);
 				final long startRemote = System.currentTimeMillis();
+				Log.d(TAG, "Check message");
 				try {
 					mMevo.checkMessages();
 				} catch (RemoteException e) {
+					Log.d(TAG, "Remote exception");
 					e.printStackTrace();
 				}
 
-					SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MevoSync.this);
-					Editor e = prefs.edit();
-					e.putString(getString(R.string.last_refresh), ""+System.currentTimeMillis());
-					e.commit();
+				Log.d(TAG, "Write end date");
+				SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MevoSync.this);
+				Editor e = prefs.edit();
+				e.putString(getString(R.string.last_refresh), ""+System.currentTimeMillis());
+				e.commit();
 				if (receiver != null) {
 					// Pass back error to surface listener
 					final Bundle bundle = new Bundle();
@@ -188,6 +203,6 @@ public class MevoSync extends IntentService implements Constants
 		}
 
 	}
-	
+
 
 }
