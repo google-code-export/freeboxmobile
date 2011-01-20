@@ -3,6 +3,13 @@
 <wiki:toc max_depth="2" />
 
 = Versions publiques du module !FreeboxMessagerieMobile =
+== 1.0.3 ==
+Sortie le 05/01/2011<br>
+Release : 4<br>
+Révision : 783
+ * Ajout du apps2sd
+ * Correction d'un bug en mode avion
+
 == 1.0.2 ==
 Sortie le 05/01/2011<br>
 Release : 3<br>
