@@ -11,7 +11,7 @@ package org.madprod.mevo.tools;
 public interface Constants
 {
 
-    static final String TAG		= "FBM";
+    static final String TAG		= "FBMMEVO";
 	public final int NOTIF_MEVO = 1;
 
 	public static final String KEY_STATUS = "status";
