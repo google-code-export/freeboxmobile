@@ -2,7 +2,7 @@ package org.madprod.mevo.services;
 
 
 
-import org.madprod.freeboxmobile.services.IMevo;  
+import org.madprod.freeboxmobile.services.IMevo;   
 import org.madprod.mevo.R;
 import org.madprod.mevo.tools.Constants;
 
@@ -17,12 +17,10 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.os.ResultReceiver;
-import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -108,6 +106,8 @@ public class MevoSync extends IntentService implements Constants
 		if (cm == null || cm.getActiveNetworkInfo() == null || !cm.getActiveNetworkInfo().isConnected()){
 			Log.d(TAG, "airplane mode");
 			if (receiver != null) receiver.send(STATUS_ERROR, Bundle.EMPTY);
+			
+			
 			return;
 		}
 
@@ -126,7 +126,6 @@ public class MevoSync extends IntentService implements Constants
 
 
 	}
-
 
 	public static void resetActivity(){
 

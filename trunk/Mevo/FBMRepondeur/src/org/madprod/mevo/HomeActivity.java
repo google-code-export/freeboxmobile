@@ -1,7 +1,7 @@
 package org.madprod.mevo;
 
 
-import java.util.List; 
+import java.util.List;  
 
 import org.madprod.freeboxmobile.services.IMevo;
 import org.madprod.mevo.quickactions.ActionItem;
@@ -287,7 +287,7 @@ public class HomeActivity extends ListActivity implements TrackerConstants , Det
 		
 		startManagingCursor(c);
 		
-		setListAdapter(new myAdapter(HomeActivity.this, R.layout.mevo_messages_row, c));
+		setListAdapter(new MevoMessageAdapter(HomeActivity.this, R.layout.mevo_messages_row, c));
 		getListAdapter().registerDataSetObserver(new DataSetObserver() {
 			@Override
 			public void onChanged() {
