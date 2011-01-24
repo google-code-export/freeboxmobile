@@ -10,10 +10,10 @@ import android.widget.ImageView;
 import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
 
-public class myAdapter extends ResourceCursorAdapter implements Constants{
+public class MevoMessageAdapter extends ResourceCursorAdapter implements Constants{
 
 
-	public myAdapter(Context _context, int _layout, Cursor _cursor) {
+	public MevoMessageAdapter(Context _context, int _layout, Cursor _cursor) {
 		super(_context, _layout, _cursor);
 	}
 
@@ -23,7 +23,6 @@ public class myAdapter extends ResourceCursorAdapter implements Constants{
 			((TextView) _convertView.findViewById(R.id.length)).setText(_cursor.getString(_cursor.getColumnIndex(KEY_LENGTH)) + " "+ _context.getResources().getString(R.string.seconds));
 			((TextView) _convertView.findViewById(R.id.source)).setText(Utils.getContactFromNumber(_context, _cursor.getString(_cursor.getColumnIndex(KEY_SOURCE))));
 			((ImageView) _convertView.findViewById(R.id.boutonLecture)).setVisibility((_cursor.getInt(_cursor.getColumnIndex(KEY_STATUS))==0)?View.VISIBLE:View.INVISIBLE);
-			
 	}
 
 

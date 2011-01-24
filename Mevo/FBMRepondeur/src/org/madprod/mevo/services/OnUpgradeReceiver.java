@@ -1,7 +1,7 @@
 package org.madprod.mevo.services;
 
 
-import org.madprod.mevo.LaunchActivity;
+import org.madprod.mevo.LaunchActivity;  
 import org.madprod.mevo.R;
 import org.madprod.mevo.tools.Constants;
 
@@ -26,11 +26,10 @@ public class OnUpgradeReceiver extends BroadcastReceiver implements Constants
 	public void onReceive(Context context, Intent intent)
 	{
 		Log.d(TAG, "On Upgrade Receiver (Mevo) ! ");
-
-		
 		
 		int time = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(context).getString(context.getString(R.string.key_refresh), context.getString(R.integer.default_refresh)));
 		Log.d(TAG, "OnUpgradeReceiver (Mevo) : time set to "+time+" minutes ");
+		
 		MevoSync.changeTimer(time, context);
 
 		Boolean icon = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(context.getString(R.string.key_icon), Boolean.parseBoolean(context.getString(R.bool.default_icon)));
@@ -42,8 +41,6 @@ public class OnUpgradeReceiver extends BroadcastReceiver implements Constants
 			pm.setComponentEnabledSetting(new ComponentName(context, LaunchActivity.class), PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
 			
 		}
-
-		
 
 	}
 
