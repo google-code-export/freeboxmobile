@@ -82,7 +82,14 @@ public class ImageDownloader {
                     DownloadedDrawable downloadedDrawable = new DownloadedDrawable(task);
                     imageView.setImageDrawable(downloadedDrawable);
                     imageView.setMinimumHeight(156);
-                    task.execute(url);
+                    try
+                    {
+                    	task.execute(url);
+                    }
+                    catch (Exception e)
+                    {
+                    	Log.e(LOG_TAG, "Image task : "+e.getMessage());
+                    }
         }
     }
 

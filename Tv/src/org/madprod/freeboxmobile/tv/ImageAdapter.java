@@ -1,8 +1,6 @@
 package org.madprod.freeboxmobile.tv;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 import android.content.Context;
 import android.util.Log;

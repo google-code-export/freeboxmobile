@@ -42,8 +42,6 @@ import android.content.pm.ResolveInfo;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -182,6 +180,9 @@ public class MainActivity extends ListActivity implements TvConstants
     {
         super.onListItemClick(l, v, position, id);
 
+        Log.d(TAG, "LOG : "+listChaines);
+        Log.d(TAG, " POS : "+listChaines.get(position));
+        Log.d(TAG, " STREAM : "+listChaines.get(position).getStream(Chaine.STREAM_TYPE_INTERNET));
         callStream(
         		listChaines.get(position).getStream(Chaine.STREAM_TYPE_INTERNET).get(Chaine.M_URL),
         		listChaines.get(position).getStream(Chaine.STREAM_TYPE_INTERNET).get(Chaine.M_MIME)
@@ -196,26 +197,14 @@ public class MainActivity extends ListActivity implements TvConstants
 		super.onCreateContextMenu(menu, view, menuInfo);
 		info = (AdapterContextMenuInfo) menuInfo;
 	    menu.setHeaderTitle("Sélectionnez le flux pour "+listChaines.get((int)info.position).getName());
-	    
-	    if (listChaines.get((int)info.position).getStream(Chaine.STREAM_TYPE_INTERNET) != null)
+	    Integer i = 1;
+	    while (i<Chaine.STREAM_MAX)
 	    {
-		    menu.add(0, Chaine.STREAM_TYPE_INTERNET, Chaine.STREAM_TYPE_INTERNET, "Flux Internet");	    	
-	    }
-	    if (listChaines.get((int)info.position).getStream(Chaine.STREAM_TYPE_MULTIPOSTE_SD) != null)
-	    {
-		    menu.add(0, Chaine.STREAM_TYPE_MULTIPOSTE_SD, Chaine.STREAM_TYPE_MULTIPOSTE_SD, "Flux Multiposte");	    	
-	    }
-	    if (listChaines.get((int)info.position).getStream(Chaine.STREAM_TYPE_MULTIPOSTE_LD) != null)
-	    {
-		    menu.add(0, Chaine.STREAM_TYPE_MULTIPOSTE_LD, Chaine.STREAM_TYPE_MULTIPOSTE_LD, "Flux Multiposte Bas débit");	    	
-	    }
-	    if (listChaines.get((int)info.position).getStream(Chaine.STREAM_TYPE_MULTIPOSTE_HD) != null)
-	    {
-		    menu.add(0, Chaine.STREAM_TYPE_MULTIPOSTE_HD, Chaine.STREAM_TYPE_MULTIPOSTE_HD, "Flux Multiposte HD");	    	
-	    }
-	    if (listChaines.get((int)info.position).getStream(Chaine.STREAM_TYPE_TVFREEBOX) != null)
-	    {
-		    menu.add(0, Chaine.STREAM_TYPE_TVFREEBOX, Chaine.STREAM_TYPE_TVFREEBOX, "Flux PC");	    	
+		    if (listChaines.get((int)info.position).getStream(i) != null)
+		    {
+			    menu.add(0, i, i, Chaine.STREAM_NAME[i]);	    	
+		    }	    	
+	    	i++;
 	    }
 	}
 
@@ -346,16 +335,22 @@ public class MainActivity extends ListActivity implements TvConstants
 			}
 	    	if (networkType > 0)
 //			TODO : for prod, remove comments below
-//			if (networkType == 3)
+			if (networkType == 3)
 	    	{
-//		    	InputStreamReader m3u = getUrl("http://mafreebox.freebox.fr/freeboxtv/playlist.m3u");
-		    	File f=new File("/sdcard/freeboxmobile/playlist.m3u");
-		    	FileInputStream m3ufis;
+	    		InputStreamReader m3u;
+		    	m3u = getUrl("http://mafreebox.freebox.fr/freeboxtv/playlist.m3u");
+/*		    	File f=new File("/sdcard/freeboxmobile/playlist.m3u");
+		    	FileInputStream m3ufis = null;
 				try
 				{
 					m3ufis = new FileInputStream(f);
-			    	InputStreamReader m3u = new InputStreamReader(m3ufis);
-		    		
+			    }
+				catch (FileNotFoundException e1)
+				{
+					e1.printStackTrace();
+				}
+		    	m3u = new InputStreamReader(m3ufis);
+*/
 				if (m3u != null)
 				{
 					BufferedReader reader = new BufferedReader(m3u); 
@@ -364,7 +359,6 @@ public class MainActivity extends ListActivity implements TvConstants
 					if (reader != null)
 					{
 						String line = null;
-						String name = null;
 						String num = null;
 						Integer cnum = null;
 						try 
@@ -381,7 +375,10 @@ public class MainActivity extends ListActivity implements TvConstants
 										c = mapChaines.get(cnum);
 										if (c  == null) // If we already have the channel into the map (due to another existing stream) 
 										{
-											c = new Chaine(cnum, "http://tv.freeboxmobile.net/tv_"+cnum+".png", line.substring(line.indexOf("-") + 2));
+											if (line.indexOf("(") != -1)
+												c = new Chaine(cnum, "http://tv.freeboxmobile.net/tv_"+cnum+".png", line.substring(line.indexOf("-") + 2, line.indexOf("(")));
+											else
+												c = new Chaine(cnum, "http://tv.freeboxmobile.net/tv_"+cnum+".png", line.substring(line.indexOf("-") + 2));
 										}
 										while ((line != null) && line.contains("rtsp") == false)
 										{
@@ -417,13 +414,8 @@ public class MainActivity extends ListActivity implements TvConstants
 					c.addStream(Chaine.STREAM_TYPE_MULTIPOSTE_HD, "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=201&flavour=hd", "video/mp4");
 					mapChaines.put(2, c);
 				}
-				}
-				catch (FileNotFoundException e1)
-				{
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
 	    	}
+	    	listChaines.clear();
 	    	listChaines.addAll(mapChaines.values());
 	    	Collections.sort(listChaines);
     	}
@@ -613,7 +605,7 @@ public class MainActivity extends ListActivity implements TvConstants
 			d.setIcon(R.drawable.icon_fbm);
 	    	d.setMessage(
 				"Pour utiliser cette fonctionnalité, vous devez installer une application capable de lire les flux vidéos 'TS' comme 'VPlayer' (disponible sur Android 2.1 et +) :\n"+
-				"- Cliquez sur 'Installer' pour installer VPlayer à partir du market.\n"+
+				"- Cliquez sur 'Installer' pour installer VPlayer (version market ou version gratuite).\n"+
 				"- Cliquez sur 'Continuer' si vous avez déjà installé vplayer ou une autre application capable de lire de tels flux.\n"+
 				"- Cliquez sur 'Annuler' pour ne rien faire et revenir à l'écran précédent.\n"
 			);
@@ -627,7 +619,7 @@ public class MainActivity extends ListActivity implements TvConstants
 		    		d2.setTitle("Installer VPlayer");
 		    		d2.setIcon(R.drawable.icon_fbm);
 		        	d2.setMessage(
-		        		"Vous pouvez installer VPlayer soit à partir du market, soit en téléchargeant l'application en direct.\n"
+		        		"Vous pouvez installer VPlayer soit à partir du market (version d'essai ou version payante), soit en téléchargeant l'application en direct (version gratuite).\n"
 		    		);
 		    		d2.setButton(DialogInterface.BUTTON_NEGATIVE, "A partir du market", new DialogInterface.OnClickListener()
 		    		{
@@ -653,7 +645,8 @@ public class MainActivity extends ListActivity implements TvConstants
 		    	    			public void onClick(DialogInterface dialog, int which)
 		    	    			{
 		    	    				dialog.dismiss();
-		    	    				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://files-for-abitno.googlecode.com/files/VPlayer.apk")));
+//		    	    				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://files-for-abitno.googlecode.com/files/VPlayer.apk")));
+		    	    				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://tv.freeboxmobile.net/apk/VPlayer.apk")));
 		    	    			}
 		    	    		});
 		    	    		d3.show();
@@ -875,9 +868,16 @@ public class MainActivity extends ListActivity implements TvConstants
 				pd = null;
 			}
 			displayNet(networkType);
-			MainActivity.listAdapter = new ImageAdapter(MainActivity.this, listChaines);
-	        setListAdapter(MainActivity.listAdapter);
-	        registerForContextMenu(getListView());
+			if (listAdapter == null)
+			{
+				MainActivity.listAdapter = new ImageAdapter(MainActivity.this, listChaines);
+		        setListAdapter(MainActivity.listAdapter);
+		        registerForContextMenu(getListView());
+			}
+			else
+			{
+				listAdapter.notifyDataSetChanged();
+			}
 	        Log.d(TAG, "onPostExecute finished");
 		}
 		
