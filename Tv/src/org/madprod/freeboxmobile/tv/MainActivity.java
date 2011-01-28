@@ -53,6 +53,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
@@ -78,10 +79,13 @@ public class MainActivity extends ListActivity implements TvConstants
     {
         super.onCreate(savedInstanceState);
 		setContentView(R.layout.tv_main_list);
-		setTitle(getString(R.string.app_name)+" "+Utils.getMyVersion(this));
+//		setTitle(getString(R.string.app_name)+" "+Utils.getMyVersion(this));
 		tracker = GoogleAnalyticsTracker.getInstance();
 		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
 		tracker.trackPageView("Tv/HomeTv");
+		TextView t = (TextView) findViewById(R.id.module_version);
+		t.setText(getString(R.string.module_name)+" "+Utils.getMyVersion(this));
+
 		SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 		if (!mgr.getString(KEY_SPLASH_TV, "0").equals(Utils.getMyVersion(this)))
 		{
@@ -219,6 +223,21 @@ public class MainActivity extends ListActivity implements TvConstants
         );
 
     	return super.onContextItemSelected(item);
+	}
+
+	public void onFBMClick(View v)
+	{
+		Utils.goFBM(this);
+	}
+
+	public void onRefreshClick(View v)
+	{
+    	new AsyncGetStreams().execute();
+	}
+
+	public void onSettings(View v)
+	{
+    	checkOS();
 	}
 
 	private void callStream(String streamUrl, String mimeType)
@@ -376,9 +395,9 @@ public class MainActivity extends ListActivity implements TvConstants
 										if (c  == null) // If we already have the channel into the map (due to another existing stream) 
 										{
 											if (line.indexOf("(") != -1)
-												c = new Chaine(cnum, "http://tv.freeboxmobile.net/tv_"+cnum+".png", line.substring(line.indexOf("-") + 2, line.indexOf("(")));
+												c = new Chaine(cnum, "http://tv.freeboxmobile.net/"+cnum+".png", line.substring(line.indexOf("-") + 2, line.indexOf("(")));
 											else
-												c = new Chaine(cnum, "http://tv.freeboxmobile.net/tv_"+cnum+".png", line.substring(line.indexOf("-") + 2));
+												c = new Chaine(cnum, "http://tv.freeboxmobile.net/"+cnum+".png", line.substring(line.indexOf("-") + 2));
 										}
 										while ((line != null) && line.contains("rtsp") == false)
 										{
