@@ -4,21 +4,16 @@ import org.madprod.freeboxmobile.tv.TvConstants;
 import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 
 import android.app.AlertDialog;
-import android.content.ComponentName;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.Preference;
+import android.preference.ListPreference;
 import android.preference.PreferenceActivity;
+import android.text.Layout;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.view.WindowManager;
-import android.view.View.OnClickListener;
-import android.widget.ImageButton;
-import android.widget.TextView;
+import android.widget.LinearLayout;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 
 /**
 *
@@ -41,10 +36,22 @@ public class SettingsActivity extends PreferenceActivity implements TvConstants,
 		tracker = GoogleAnalyticsTracker.getInstance();
 		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
 		tracker.trackPageView("Tv/SettingsTv");
-		Preference p = findPreference("test");
+		ListPreference lp = (ListPreference)findPreference(getString(R.string.key_fav1));
+		CharSequence[] streamNames = new CharSequence[Chaine.STREAM_NAME.length];
+		CharSequence[] streamTypes = new CharSequence[Chaine.STREAM_NAME.length];
+	    Integer i = 0;
+	    Log.d(TAG, "STREAM length : "+Chaine.STREAM_NAME.length);
+	    while (i<Chaine.STREAM_NAME.length)
+	    {
+	    	streamNames[i] = Chaine.STREAM_NAME[i];
+	    	streamTypes[i] = Chaine.STREAM_TYPE[i].toString();
+	    	i++;
+	    }
+	    lp.setEntries(streamNames);
+	    lp.setEntryValues(streamTypes);
+	    lp.setDefaultValue(Chaine.STREAM_TYPE_MULTIPOSTE_SD);
    }
 
-    
     @Override
     protected void onDestroy()
     {

@@ -201,13 +201,20 @@ public class MainActivity extends ListActivity implements TvConstants
 		super.onCreateContextMenu(menu, view, menuInfo);
 		info = (AdapterContextMenuInfo) menuInfo;
 	    menu.setHeaderTitle("Sélectionnez le flux pour "+listChaines.get((int)info.position).getName());
-	    Integer i = 1;
-	    while (i<Chaine.STREAM_MAX)
+	    Integer i = 0;
+	    int max = Chaine.STREAM_NAME.length;
+	    while (i<max)
 	    {
-		    if (listChaines.get((int)info.position).getStream(i) != null)
+	    	Log.d(TAG, "i:"+i+" NAME:"+Chaine.STREAM_NAME[i]+" TYPE:"+Chaine.STREAM_TYPE[i]);
+		    if (listChaines.get((int)info.position).getStream(Chaine.STREAM_TYPE[i]) != null)
 		    {
-			    menu.add(0, i, i, Chaine.STREAM_NAME[i]);	    	
-		    }	    	
+			    menu.add(0, i, i, Chaine.STREAM_NAME[i]);
+			    Log.d(TAG, "ok");
+		    }
+		    else
+		    {
+		    	Log.d(TAG, "nok");
+		    }
 	    	i++;
 	    }
 	}
@@ -326,7 +333,18 @@ public class MainActivity extends ListActivity implements TvConstants
 							for (int j = 0; j < nbStreams; j++)
 							{
 								jStream = jStreams.getJSONObject(j);
-								type = jStream.getInt("type");
+								switch (jStream.getInt("type"))
+								{
+									case 2:
+										type = Chaine.STREAM_TYPE_INTERNET;
+										break;
+									case 1:
+										type = Chaine.STREAM_TYPE_TVFREEBOX;
+										break;
+									default:
+										type = -1;
+										break;
+								}
 								try
 								{
 									c.addStream(type, jStream.getString("url"), jStream.getString("mime"));
