@@ -23,19 +23,34 @@ public class Chaine implements Comparable <Chaine>
 	public static final int STREAM_TYPE_MULTIPOSTE_TNTSD = 7;
 	public static final int STREAM_TYPE_MULTIPOSTE_TNTHD = 8;
 	public static final int STREAM_TYPE_MULTIPOSTE_3D = 9;
-	public static final int STREAM_MAX = 10;
+
+	/* Ci dessous certains flux sont commentés afin qu'ils ne soient pas listés
+	 * Il ne sert à rien de les lister (sauf à complexifier l'affichage)
+	 * car ils ne sont pas pris en charge sur Android par aucun player
+	 * (pour l'instant)
+	 */
 	public static final String[] STREAM_NAME={
-		"null min",					// 0
 		"Flux PC",					// STREAM_TYPE_TVFREEBOX
 		"Flux Internet",			// STREAM_TYPE_INTERNET
-		"Flux Multiposte Bas débit",// STREAM_TYPE_MULTIPOSTE_LD
+//		"Flux Multiposte Bas débit",// STREAM_TYPE_MULTIPOSTE_LD
 		"Flux Multiposte",			// STREAM_TYPE_MULTIPOSTE_SD
-		"Flux Multiposte HD",		// STREAM_TYPE_MULTIPOSTE_HD
-		"Flux Multiposte (Auto)",	// STREAM_TYPE_MULTIPOSTE_AUTO
-		"Flux Multiposte TNT",		// STREAM_TYPE_MULTIPOSTE_TNTSD
-		"Flux Multiposte TNT HD",	// STREAM_TYPE_MULTIPOSTE_TNTHD
-		"Flux Multiposte 3D",		// STREAM_TYPE_MULTIPOSTE_3D
-		"null max"};
+//		"Flux Multiposte HD",		// STREAM_TYPE_MULTIPOSTE_HD
+//		"Flux Multiposte (Auto)",	// STREAM_TYPE_MULTIPOSTE_AUTO
+//		"Flux Multiposte TNT",		// STREAM_TYPE_MULTIPOSTE_TNTSD
+//		"Flux Multiposte TNT HD",	// STREAM_TYPE_MULTIPOSTE_TNTHD
+//		"Flux Multiposte 3D",		// STREAM_TYPE_MULTIPOSTE_3D
+		};
+	public static final Integer[] STREAM_TYPE={
+		STREAM_TYPE_TVFREEBOX,
+		STREAM_TYPE_INTERNET,
+//		STREAM_TYPE_MULTIPOSTE_LD,
+		STREAM_TYPE_MULTIPOSTE_SD,
+//		STREAM_TYPE_MULTIPOSTE_HD,
+//		STREAM_TYPE_MULTIPOSTE_AUTO,
+//		STREAM_TYPE_MULTIPOSTE_TNTSD,
+//		STREAM_TYPE_MULTIPOSTE_TNTHD,
+//		STREAM_TYPE_MULTIPOSTE_3D
+	};
 	
 	private Map<Integer, Map<String, String>> streamsList = null;
 

@@ -4,19 +4,17 @@
 	android:title="Configuration"
 >
 	<PreferenceCategory 
-		android:title="Rafraichissement" 
+		android:title="Flux favoris" 
 		android:order="20">
 		<ListPreference 
-			android:entries="@array/entries_list_pref_pollinterval" 
-			android:entryValues="@array/entryvalue_list_pref_pollinterval" 
-			android:title="Fréquence de vérification" 
-			android:enabled="true" 
-			android:summary="Fréquence de vérification de nouveaux messages" 
-			android:key="@string/key_refresh" 
-			android:defaultValue="@integer/default_refresh"
-		>
-		</ListPreference>
-		
+            android:entries="@array/entries_list_pref_pollinterval" 
+            android:entryValues="@array/entryvalue_list_pref_pollinterval" 
+            android:title="Fréquence de vérification" 
+            android:enabled="true" 
+            android:summary="Flux favoris utilisé lors d'un clic sur une chaîne" 
+            android:key="@string/key_fav1"
+        >
+        </ListPreference>
 		
 	</PreferenceCategory>
 
