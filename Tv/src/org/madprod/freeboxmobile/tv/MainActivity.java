@@ -237,7 +237,8 @@ public class MainActivity extends ListActivity implements TvConstants
 
 	public void onSettings(View v)
 	{
-    	checkOS();
+		startActivity(new Intent(this, SettingsActivity.class));
+//    	checkOS();
 	}
 
 	private void callStream(String streamUrl, String mimeType)
