@@ -2,4 +2,5 @@
 <resources>
     
     <string name="app_name">Freebox Tv Mobile</string>
+<string name="module_name">Tv</string>
 </resources>

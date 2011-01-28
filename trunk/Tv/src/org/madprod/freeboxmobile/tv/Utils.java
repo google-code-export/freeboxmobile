@@ -3,6 +3,7 @@ package org.madprod.freeboxmobile.tv;
 import java.lang.reflect.Field;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -39,6 +40,16 @@ public class Utils implements TvConstants
 			}
 		}
 	}
+
+    public static void goFBM(Context context)
+    {
+    	PackageManager packageManager = context.getPackageManager();
+    	String packageName = "org.madprod.freeboxmobile";
+
+    	Intent intent = packageManager.getLaunchIntentForPackage(packageName);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        context.startActivity(intent);
+    }
 
 	// Code from enh project (enh.googlecode.com)
 	public static String getFieldReflectively(Build build, String fieldName)
