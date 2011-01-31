@@ -8,10 +8,9 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.PreferenceActivity;
-import android.text.Layout;
 import android.util.Log;
 import android.view.WindowManager;
-import android.widget.LinearLayout;
+import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.PackageManager;
 
@@ -36,21 +35,15 @@ public class SettingsActivity extends PreferenceActivity implements TvConstants,
 		tracker = GoogleAnalyticsTracker.getInstance();
 		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
 		tracker.trackPageView("Tv/SettingsTv");
-		ListPreference lp = (ListPreference)findPreference(getString(R.string.key_fav1));
-		CharSequence[] streamNames = new CharSequence[Chaine.STREAM_NAME.length];
-		CharSequence[] streamTypes = new CharSequence[Chaine.STREAM_NAME.length];
-	    Integer i = 0;
-	    Log.d(TAG, "STREAM length : "+Chaine.STREAM_NAME.length);
-	    while (i<Chaine.STREAM_NAME.length)
-	    {
-	    	streamNames[i] = Chaine.STREAM_NAME[i];
-	    	streamTypes[i] = Chaine.STREAM_TYPE[i].toString();
-	    	i++;
-	    }
-	    lp.setEntries(streamNames);
-	    lp.setEntryValues(streamTypes);
-	    lp.setDefaultValue(Chaine.STREAM_TYPE_MULTIPOSTE_SD);
-   }
+
+/*
+		Editor e = getPreferenceManager().getSharedPreferences().edit();
+		e.clear();
+		e.commit();
+*/
+
+		setupLists(null);
+    }
 
     @Override
     protected void onDestroy()
@@ -59,28 +52,124 @@ public class SettingsActivity extends PreferenceActivity implements TvConstants,
     	super.onDestroy();
     }
 
+	private void setupLists(String key)
+    {
+		// Si on ajoute des listes ici, il faut ajouter dans lists, dans defaultValues et dans tv_settings.xml
+		final String[] lists={"fav1", "fav2", "fav3"};
+		String[] selected = new String[lists.length];
+		int[] defaultValues = {Chaine.STREAM_TYPE_MULTIPOSTE_SD, Chaine.STREAM_TYPE_TVFREEBOX, Chaine.STREAM_TYPE_INTERNET};
+		Integer i = 0;
+		Integer j;
+
+		// cont passe à false dès qu'on a un choix de la liste grisé. Ainsi, tous les choix suivants seront grisés
+		boolean cont = true;
+		while (i < lists.length)
+		{
+			Object value = getPreferenceManager().getSharedPreferences().getAll().get(lists[i]);
+			value = notEmpty(getPreferenceManager().getSharedPreferences().getString(lists[i], null));
+			
+			selected[i] = (value != null ? value.toString() : null);
+			ListPreference lp = (ListPreference)findPreference(lists[i]);
+
+			if (((i != 0) && (selected[i-1] == null)) || (cont == false))
+			{
+				lp.setEnabled(false);
+				lp.setSummary("");
+				cont = false;
+			}
+			else
+			{
+				CharSequence[] streamNames = new CharSequence[Chaine.STREAM_NAME.length - i];
+				CharSequence[] streamTypes = new CharSequence[Chaine.STREAM_NAME.length - i];
+				// on check si on a paas un doublon de choix
+				// (si on revient sur Choix1 pour choisir pareil que Choix2...)
+				j = 0;
+				while (j < i)
+				{
+					if ((selected[i] != null) && (selected[j].equals(selected[i])))
+					{
+						Editor editor = getPreferenceManager().getSharedPreferences().edit();
+						editor.putString(lists[i], null);
+						editor.commit();
+						selected[i] = null;
+					}
+					j++;
+				}
+			    j = 0;
+			    // Indice dans la liste qui s'affiche à l'écran
+			    Integer selectListNumber = 0;
+			    while (j<Chaine.STREAM_NAME.length)
+			    {
+			    	// Pour supprimer les flux sélectionnés dans les choix précédants
+			    	Integer k = 0;
+			    	Boolean found = false;
+			    	while (k < i)
+			    	{
+			    		if ((selected[k] != null) && (selected[k].equals(Chaine.STREAM_TYPE[j].toString())))
+			    		{
+			    			found = true;
+			    			break;
+			    		}
+			    		k++;
+			    	}
+			    	if (!found)
+			    	{
+				    	streamNames[selectListNumber] = Chaine.STREAM_NAME[j];
+				    	streamTypes[selectListNumber] = Chaine.STREAM_TYPE[j].toString();
+				    	selectListNumber++;
+			    	}
+			    	j++;
+			    }
+			    // Si on est sur le dernier choix (un seul choix possible)
+			    // et si on a modifié l'avant dernier choix (lists[lists.length - 2])
+			    // on le selectionne le seul choix possible pour le dernier
+			    if ((selectListNumber == 1) && (key != null) && (key.equals(lists[lists.length - 2])))
+			    {
+					Editor editor = getPreferenceManager().getSharedPreferences().edit();
+					editor.putString(lists[i], streamTypes[0].toString());
+					editor.commit();
+					selected[i] = streamTypes[0].toString();
+			    }
+			    lp.setEntries(streamNames);
+			    lp.setEntryValues(streamTypes);
+			    lp.setDefaultValue(defaultValues[i]);
+			    lp.setEnabled(true);
+			    if (i == 0)
+			    {
+			    	lp.setSummary("Flux utilisé en priorité : "+ (selected[i] != null ? Chaine.getStreamName(Integer.parseInt(selected[i])) : "non séléctionné"));
+			    }
+			    else
+			    {
+			    	lp.setSummary("Flux utilisé si le "+ (selected != null ? Chaine.getStreamName(Integer.parseInt(selected[i-1])) : " flux du Choix "+i)+" n'est pas disponible : "+ (selected[i] != null ? Chaine.getStreamName(Integer.parseInt(selected[i])) : "non séléctionné"));
+			    }
+			}
+			i++;
+		}
+    }
+
 	private void update(String key)
 	{
 		Object value = getPreferenceManager().getSharedPreferences().getAll().get(key);
 		Log.d(TAG, "Value changed : "+value);
 		if (value != null && value instanceof String)
 			value = notEmpty(getPreferenceManager().getSharedPreferences().getString(key, null));
+		if (value == null)
+		{
+			return;
+		}
 
-		if (key.equals("mevo_freq"))
+		if (key.equals(getResources().getString(R.string.key_icon)))
 		{
 			if (value != null)
 			{
-				int time = Integer.parseInt((String)value);
-//				MevoSync.changeTimer(time, this);
-				Log.d(TAG, "Timer changed to : "+time);
-			}
-		}else if (key.equals(getResources().getString(R.string.key_icon))){
-			if (value != null){
 				boolean iconPresent = (Boolean)value;
 				PackageManager pm = getApplicationContext().getPackageManager();
-				if (iconPresent){
+				if (iconPresent)
+				{
 //					pm.setComponentEnabledSetting(new ComponentName(this, LaunchActivity.class), PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
-				}else{
+				}
+				else
+				{
 //					pm.setComponentEnabledSetting(new ComponentName(this, LaunchActivity.class), PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
 				}
 				
@@ -93,15 +182,19 @@ public class SettingsActivity extends PreferenceActivity implements TvConstants,
 //				TextView errorMessage = (TextView)popup.findViewById(R.id.errorMessage);
 //				errorMessage.setText("La mise à jour ne sera peut être visible qu'après le redémarrage de votre téléphone");
 //				ImageButton close = (ImageButton)popup.findViewById(R.id.close);
-/*				close.setOnClickListener(new OnClickListener() {
-
-					public void onClick(View v) {
+/*				close.setOnClickListener(new OnClickListener()
+ * {
+					public void onClick(View v)
+					{
 						ad.dismiss();
 					}
 				});
-				try{
+				try
+				{
 					ad.show();
-				}catch (Exception e){}
+				}
+				catch (Exception e)
+				{}
 				
 */				
 			}
@@ -110,12 +203,12 @@ public class SettingsActivity extends PreferenceActivity implements TvConstants,
 
 
 	@Override
-	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
-			String key) {
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
+	{
+		Log.d(TAG, "Changed : "+key+" - "+sharedPreferences.getString(key, "0"));
 		update(key);
-		
+		setupLists(key);
 	}
-	
 	
 	private String notEmpty(String s)
 	{

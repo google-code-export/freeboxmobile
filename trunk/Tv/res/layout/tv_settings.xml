@@ -4,50 +4,31 @@
 	android:title="Configuration"
 >
 	<PreferenceCategory 
-		android:title="Flux favoris" 
-		android:order="20">
+		android:title="Ordonnez vos flux par ordre de préférence" 
+		android:order="20" android:summary="summary du truc" android:key="key42">
 		<ListPreference 
-            android:entries="@array/entries_list_pref_pollinterval" 
-            android:entryValues="@array/entryvalue_list_pref_pollinterval" 
-            android:title="Fréquence de vérification" 
+            android:title="Choix 1" 
             android:enabled="true" 
-            android:summary="Flux favoris utilisé lors d'un clic sur une chaîne" 
-            android:key="@string/key_fav1"
-        >
+            android:summary="Flux séléctionné en priorité" 
+            android:key="fav1"
+        android:order="1">
         </ListPreference>
-		
+		<ListPreference 
+            android:title="Choix 2" 
+            android:enabled="true" 
+            android:summary="Flux utilisé si la chaîne n'a pas le flux Choix 1" 
+            android:key="fav2"
+        android:order="2" android:dependency="fav1">
+        </ListPreference>
+		<ListPreference 
+            android:title="Choix 3" 
+            android:enabled="true" 
+            android:summary="Flux utilisé si la chaîne n'a pas le flux Choix 2" 
+            android:key="fav3"
+        android:order="3" android:dependency="fav2">
+        </ListPreference>
 	</PreferenceCategory>
 
-
-	<PreferenceCategory 
-		android:title="Notifications" 
-		android:order="30">
-		<CheckBoxPreference
-			android:title="Visuelle"
-			android:enabled="true" 
-			android:key="@string/key_notifvisu"
-			android:defaultValue="@bool/default_notifvisu"
-		/>
-	
-		<CheckBoxPreference
-			android:title="Sonore"
-			android:enabled="true" 
-			android:key="@string/key_notifson"
-			android:defaultValue="@bool/default_notifson"
-			android:dependency="@string/key_notifvisu"
-		/>
-	</PreferenceCategory>
-	
-	<PreferenceCategory 
-		android:title="Capteur" 
-		android:order="40">
-		<CheckBoxPreference
-			android:title="Capteur de proximite"
-			android:enabled="true" 
-			android:key="@string/key_proximity"
-			android:defaultValue="@bool/default_proximity"
-		/>
-	</PreferenceCategory>	
 	<PreferenceCategory 
 		android:title="Icone de lancement" 
 		android:order="50">

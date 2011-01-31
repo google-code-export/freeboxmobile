@@ -107,6 +107,18 @@ public class Chaine implements Comparable <Chaine>
     	return currentProgDesc;
     }
     
+    public static String getStreamName(Integer type)
+    {
+    	Integer i = 0;
+    	while (i < STREAM_NAME.length)
+    	{
+    		if (STREAM_TYPE[i] == type)
+    			return (STREAM_NAME[i]);
+    		i++;
+    	}
+    	return null;
+    }
+    
     public Map<String, String> getStream(int type)
     {
     	return streamsList.get(type);
