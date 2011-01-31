@@ -1,5 +1,6 @@
 #summary Quelques guides pour le code de FreeboxMobile
 #labels Phase-Implementation
+<wiki:toc max_depth="2" />
 
 = Quelques guides / règles pour le code de !FreeboxMobile =
 
