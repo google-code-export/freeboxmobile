@@ -31,6 +31,8 @@ import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.SystemClock;
 import android.util.Log;
@@ -59,6 +61,15 @@ public class GuideCheck extends WakefullIntentService implements GuideConstants
 	protected void onHandleIntent(Intent intent)
 	{
 		Log.i(TAG,"GuideCheck onHandleIntent ");
+
+		ConnectivityManager cm = (ConnectivityManager)getSystemService(CONNECTIVITY_SERVICE);
+	        
+		if (cm == null || cm.getActiveNetworkInfo() == null || !cm.getActiveNetworkInfo().isConnected())
+		{
+			Log.d(TAG, "airplane mode");
+			super.onHandleIntent(intent);
+			return;
+		}
 
 		String selectedDate = intent.getStringExtra("selectedDate");
 
@@ -137,6 +148,16 @@ public class GuideCheck extends WakefullIntentService implements GuideConstants
 		closeProgress();
 		super.onHandleIntent(intent);
 	}
+
+    @Override
+    public void onDestroy()
+    {
+    	super.onDestroy();
+    	if (myProgressDialog != null)
+    		myProgressDialog.dismiss();
+    	myProgressDialog = null;
+    	Log.d(TAG, "GuideCheck on Destroy");
+    }
 
 	/**
 	 * Défini la callback à appeler pour rafraichir l'activité une fois les données à jour
