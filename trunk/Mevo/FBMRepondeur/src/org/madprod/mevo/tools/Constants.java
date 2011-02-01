@@ -1,5 +1,7 @@
 package org.madprod.mevo.tools;
 
+import android.view.Menu;
+
 
 /**
 *
@@ -27,5 +29,6 @@ public interface Constants
 	public static final String KEY_PLAY_STATUS = "img_status";
 	public static final String KEY_NB_TYPE = "nb_type";
 	public static final String KEY_QUAND_HR = "quand_hr";
-	
+    static final int HOME_OPTION_CONFIG = Menu.FIRST + 1;
+
 }

@@ -21,7 +21,6 @@ public class OnMevoAlarmReceiver extends BroadcastReceiver implements Constants
 	public void onReceive(Context context, Intent intent)
 	{
 		Log.i(TAG,"onReceive Mevo Alarm");
-		
 		Intent service = new Intent(context, MevoSync.class);
 		context.startService(service);
 	}

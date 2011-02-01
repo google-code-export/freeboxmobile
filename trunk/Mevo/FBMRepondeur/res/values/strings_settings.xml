@@ -26,5 +26,6 @@
 <bool name="default_proximity">true</bool>
 <string name="last_refresh">last_refresh</string>
 <string name="default_last_refresh">0</string>
+<string name="home_option_config">Configuration</string>
 </resources>
 	

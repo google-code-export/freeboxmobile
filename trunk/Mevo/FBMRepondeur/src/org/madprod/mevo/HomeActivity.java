@@ -1,7 +1,7 @@
 package org.madprod.mevo;
 
 
-import java.util.List;  
+import java.util.List; 
 
 import org.madprod.freeboxmobile.services.IMevo;
 import org.madprod.mevo.quickactions.ActionItem;
@@ -30,6 +30,8 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -492,6 +494,25 @@ public class HomeActivity extends ListActivity implements TrackerConstants , Det
 		d.show();
 	}    
 
+	@Override
+    public boolean onCreateOptionsMenu(Menu menu)
+	{
+        super.onCreateOptionsMenu(menu);
+        menu.add(0, HOME_OPTION_CONFIG, 1, R.string.home_option_config).setIcon(android.R.drawable.ic_menu_preferences);
+        return true;
+    }
+	
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+    	switch (item.getItemId())
+    	{
+    		case HOME_OPTION_CONFIG:
+    			onSettings(null);
+		    	return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
 
 }
