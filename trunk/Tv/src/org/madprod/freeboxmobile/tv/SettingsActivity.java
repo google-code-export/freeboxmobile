@@ -35,13 +35,7 @@ public class SettingsActivity extends PreferenceActivity implements TvConstants,
 		tracker = GoogleAnalyticsTracker.getInstance();
 		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
 		tracker.trackPageView("Tv/SettingsTv");
-
-/*
-		Editor e = getPreferenceManager().getSharedPreferences().edit();
-		e.clear();
-		e.commit();
-*/
-
+//		clearConfig();
 		setupLists(null);
     }
 
@@ -52,12 +46,19 @@ public class SettingsActivity extends PreferenceActivity implements TvConstants,
     	super.onDestroy();
     }
 
+    private void clearConfig()
+    {
+		Editor e = getPreferenceManager().getSharedPreferences().edit();
+		e.clear();
+		e.commit();    	
+    }
+    
 	private void setupLists(String key)
     {
 		// Si on ajoute des listes ici, il faut ajouter dans lists, dans defaultValues et dans tv_settings.xml
 		final String[] lists={"fav1", "fav2", "fav3"};
 		String[] selected = new String[lists.length];
-		int[] defaultValues = {Chaine.STREAM_TYPE_MULTIPOSTE_SD, Chaine.STREAM_TYPE_TVFREEBOX, Chaine.STREAM_TYPE_INTERNET};
+		int[] defaultValues = {Chaine.STREAM_TYPE_MULTIPOSTE_TNTSD, Chaine.STREAM_TYPE_MULTIPOSTE_SD, Chaine.STREAM_TYPE_INTERNET};
 		Integer i = 0;
 		Integer j;
 
@@ -114,6 +115,7 @@ public class SettingsActivity extends PreferenceActivity implements TvConstants,
 			    	}
 			    	if (!found)
 			    	{
+			    		Log.d(TAG, "i:"+i+" selectListNumber:"+selectListNumber+" j:"+j);
 				    	streamNames[selectListNumber] = Chaine.STREAM_NAME[j];
 				    	streamTypes[selectListNumber] = Chaine.STREAM_TYPE[j].toString();
 				    	selectListNumber++;
@@ -200,7 +202,6 @@ public class SettingsActivity extends PreferenceActivity implements TvConstants,
 			}
 		}
 	}
-
 
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
