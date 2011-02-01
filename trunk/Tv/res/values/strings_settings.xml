@@ -1,30 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string-array name="entries_list_pref_pollinterval">
-		<item>30 minutes</item>
-		<item>1 heure</item>
-		<item>4 heures</item>
-		<item>8 heures</item>
-		<item>Jamais</item>
-	</string-array>
-	<string-array name="entryvalue_list_pref_pollinterval">
-		<item>30</item>
-		<item>60</item>
-		<item>240</item>
-		<item>480</item>
-		<item>0</item>
-	</string-array>
-<string name="key_refresh">mevo_freq</string>
-<string name="key_notifvisu">SNotifVisu</string>
-<string name="key_notifson">SNotifSon</string>
 <string name="key_icon">SIcon</string>
-<string name="key_proximity">SProximity</string>
-<integer name="default_refresh">60</integer>
-<bool name="default_notifvisu">true</bool>
-<bool name="default_notifson">true</bool>
 <bool name="default_icon">true</bool>
-<bool name="default_proximity">true</bool>
-<string name="last_refresh">last_refresh</string>
-<string name="default_last_refresh">0</string>
 </resources>
 	

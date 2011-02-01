@@ -205,15 +205,10 @@ public class MainActivity extends ListActivity implements TvConstants
 	    int max = Chaine.STREAM_NAME.length;
 	    while (i<max)
 	    {
-	    	Log.d(TAG, "i:"+i+" NAME:"+Chaine.STREAM_NAME[i]+" TYPE:"+Chaine.STREAM_TYPE[i]);
+//	    	Log.d(TAG, "i:"+i+" NAME:"+Chaine.STREAM_NAME[i]+" TYPE:"+Chaine.STREAM_TYPE[i]);
 		    if (listChaines.get((int)info.position).getStream(Chaine.STREAM_TYPE[i]) != null)
 		    {
-			    menu.add(0, i, i, Chaine.STREAM_NAME[i]);
-			    Log.d(TAG, "ok");
-		    }
-		    else
-		    {
-		    	Log.d(TAG, "nok");
+			    menu.add(0, Chaine.STREAM_TYPE[i], i, Chaine.STREAM_NAME[i]);
 		    }
 	    	i++;
 	    }
@@ -224,6 +219,23 @@ public class MainActivity extends ListActivity implements TvConstants
 	{
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
 
+/*
+		Chaine c;
+		Map<String, String> stream = null;
+		String smime = null;
+		String surl = null;
+		c = listChaines.get(info.position);
+		if (c != null)
+		{
+			stream = c.getStream(item.getItemId());
+		}
+		if (stream != null)
+		{
+			surl = stream.get(Chaine.M_URL);
+			smime = stream.get(Chaine.M_MIME);
+		}
+		Log.d(TAG, "onContextItemSelected : "+c+" - itemid:"+item.getItemId()+" stream:"+stream+" - "+surl+" / "+smime);
+*/
         callStream(
         		listChaines.get(info.position).getStream(item.getItemId()).get(Chaine.M_URL),
         		listChaines.get(info.position).getStream(item.getItemId()).get(Chaine.M_MIME)
@@ -927,9 +939,9 @@ public class MainActivity extends ListActivity implements TvConstants
 				case 0:
 					Toast.makeText(MainActivity.this, "Problème réseau... Essayez de rafraichir via la touche menu.", Toast.LENGTH_LONG).show();
 				break;
-				case 1:
-					Toast.makeText(MainActivity.this, "En vous connectant au réseau Free, plus de chaînes seront disponibles", Toast.LENGTH_LONG).show();
-				break;
+//				case 1:
+//					Toast.makeText(MainActivity.this, "En vous connectant au réseau Free, plus de chaînes seront disponibles", Toast.LENGTH_LONG).show();
+//				break;
 				case 2:
 					Toast.makeText(MainActivity.this, "Connecté au réseau Free", Toast.LENGTH_SHORT).show();
 				break;
@@ -955,12 +967,10 @@ public class MainActivity extends ListActivity implements TvConstants
 			HttpConnectionParams.setConnectionTimeout(params, 500);
 			HttpConnectionParams.setSoTimeout(params, 500);
 			HttpClient client = new DefaultHttpClient(params);
-//	        HttpGet request = new HttpGet("http://192.168.27.14");
 	        HttpGet request = new HttpGet("http://mafreebox.freebox.fr/freeboxtv/playlist.m3u");
 	        try
 	        {
 	            HttpResponse response = client.execute(request);
-//	            if (response.getStatusLine().getStatusCode() == 403)
 	            if (response.getStatusLine().getStatusCode() == 200)
 	            {
 	    			Log.d(TAG, "Multiposte network");
@@ -974,6 +984,9 @@ public class MainActivity extends ListActivity implements TvConstants
 				e.printStackTrace();
 				networkState = 0;
 	        }
+	        networkState = 1;
+/*
+ * Commented because tv.freebox.fr is now closed :-(
 			HttpConnectionParams.setConnectionTimeout(params, 5000);
 			HttpConnectionParams.setSoTimeout(params, 5000);
 			client = new DefaultHttpClient(params);
@@ -998,6 +1011,7 @@ public class MainActivity extends ListActivity implements TvConstants
 				e.printStackTrace();
 				networkState = 0;
 	        }
+*/
 	        return networkState;
 		}
     }
