@@ -14,6 +14,7 @@ import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.ListPreference;
 import android.preference.PreferenceActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
