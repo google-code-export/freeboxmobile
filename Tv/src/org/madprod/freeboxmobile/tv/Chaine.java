@@ -3,7 +3,9 @@ package org.madprod.freeboxmobile.tv;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Chaine implements Comparable <Chaine>
+import android.util.Log;
+
+public class Chaine implements Comparable <Chaine>, TvConstants
 {
 	private int channelId;
 	private String logoUrl;
@@ -30,24 +32,24 @@ public class Chaine implements Comparable <Chaine>
 	 * (pour l'instant)
 	 */
 	public static final String[] STREAM_NAME={
-		"Flux PC",					// STREAM_TYPE_TVFREEBOX
+//		"Flux PC",					// STREAM_TYPE_TVFREEBOX
 		"Flux Internet",			// STREAM_TYPE_INTERNET
 //		"Flux Multiposte Bas débit",// STREAM_TYPE_MULTIPOSTE_LD
 		"Flux Multiposte",			// STREAM_TYPE_MULTIPOSTE_SD
 //		"Flux Multiposte HD",		// STREAM_TYPE_MULTIPOSTE_HD
 //		"Flux Multiposte (Auto)",	// STREAM_TYPE_MULTIPOSTE_AUTO
-//		"Flux Multiposte TNT",		// STREAM_TYPE_MULTIPOSTE_TNTSD
+		"Flux Multiposte TNT",		// STREAM_TYPE_MULTIPOSTE_TNTSD
 //		"Flux Multiposte TNT HD",	// STREAM_TYPE_MULTIPOSTE_TNTHD
 //		"Flux Multiposte 3D",		// STREAM_TYPE_MULTIPOSTE_3D
 		};
 	public static final Integer[] STREAM_TYPE={
-		STREAM_TYPE_TVFREEBOX,
+//		STREAM_TYPE_TVFREEBOX,
 		STREAM_TYPE_INTERNET,
 //		STREAM_TYPE_MULTIPOSTE_LD,
 		STREAM_TYPE_MULTIPOSTE_SD,
 //		STREAM_TYPE_MULTIPOSTE_HD,
 //		STREAM_TYPE_MULTIPOSTE_AUTO,
-//		STREAM_TYPE_MULTIPOSTE_TNTSD,
+		STREAM_TYPE_MULTIPOSTE_TNTSD,
 //		STREAM_TYPE_MULTIPOSTE_TNTHD,
 //		STREAM_TYPE_MULTIPOSTE_3D
 	};
@@ -73,7 +75,7 @@ public class Chaine implements Comparable <Chaine>
     	Map<String, String> map = new HashMap<String, String>();
 		map.put(M_URL, streamUrl);
 		map.put(M_MIME, mimeType);
-		streamsList.put(type, map);		    	
+		streamsList.put(type, map);
     }
 
     public int getChannelId()
