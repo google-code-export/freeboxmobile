@@ -1,4 +1,4 @@
-#summary Historique des versions de FreeboxMobile.
+#summary Historique des versions du module principal de FreeboxMobile.
 
 <wiki:toc max_depth="2" />
 
@@ -16,6 +16,12 @@ NEWS : Le module actu freenautes
 TELECOMMANDE : Le module de télécommande
 
 = Versions publiques de !FreeboxMobile =
+== 0.52.11 ==
+Sortie le 03/02/2011<br>
+Release : 64<br>
+Revision : 824
+ * Corrections de bugs dans la partie guide
+
 == 0.52.10 ==
 Sortie le 14/01/2011<br>
 Release : 63<br>
