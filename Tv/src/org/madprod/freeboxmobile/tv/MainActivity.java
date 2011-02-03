@@ -1,9 +1,6 @@
 package org.madprod.freeboxmobile.tv;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
@@ -45,6 +42,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -73,13 +71,13 @@ public class MainActivity extends ListActivity implements TvConstants
 	private static ProgressDialog pd = null;
 	private static long startPlay = 0;
 	private int networkState = -1;
+	private Map<Integer, Integer> streamsPrefs = new HashMap<Integer, Integer>();
 	
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
 		setContentView(R.layout.tv_main_list);
-//		setTitle(getString(R.string.app_name)+" "+Utils.getMyVersion(this));
 		tracker = GoogleAnalyticsTracker.getInstance();
 		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
 		tracker.trackPageView("Tv/HomeTv");
@@ -93,6 +91,16 @@ public class MainActivity extends ListActivity implements TvConstants
 			editor.putString(KEY_SPLASH_TV, Utils.getMyVersion(this));
 			editor.commit();
 			displayHelp();
+		}
+		// A partir de quelle version il faut reseter les prefs par défaut
+		if (mgr.getInt(KEY_PREFS_VERSION, 0) < 5)
+		{
+			Log.d(TAG, "Too old prefs version : "+mgr.getInt(KEY_PREFS_VERSION, 0));
+			initDefaultPrefs();
+
+			Editor editor = mgr.edit();
+			editor.putInt(KEY_PREFS_VERSION, Utils.getMyCode(this));
+			editor.commit();
 		}
     }
 
@@ -109,6 +117,7 @@ public class MainActivity extends ListActivity implements TvConstants
     	super.onStart();
     	Log.i(TAG,"TvActivity Start");
     	verifyInstallFbm();
+    	setupStreamsPrefs();
     	if (!isConnectionOk())
     	{
     		showPopupNetwork();
@@ -188,8 +197,8 @@ public class MainActivity extends ListActivity implements TvConstants
         Log.d(TAG, " POS : "+listChaines.get(position));
         Log.d(TAG, " STREAM : "+listChaines.get(position).getStream(Chaine.STREAM_TYPE_INTERNET));
         callStream(
-        		listChaines.get(position).getStream(Chaine.STREAM_TYPE_INTERNET).get(Chaine.M_URL),
-        		listChaines.get(position).getStream(Chaine.STREAM_TYPE_INTERNET).get(Chaine.M_MIME)
+        		listChaines.get(position).getFavoriteStream(streamsPrefs).get(Chaine.M_URL),
+        		listChaines.get(position).getFavoriteStream(streamsPrefs).get(Chaine.M_MIME)
         );
     }
 
@@ -219,29 +228,49 @@ public class MainActivity extends ListActivity implements TvConstants
 	{
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
 
-/*
-		Chaine c;
-		Map<String, String> stream = null;
-		String smime = null;
-		String surl = null;
-		c = listChaines.get(info.position);
-		if (c != null)
-		{
-			stream = c.getStream(item.getItemId());
-		}
-		if (stream != null)
-		{
-			surl = stream.get(Chaine.M_URL);
-			smime = stream.get(Chaine.M_MIME);
-		}
-		Log.d(TAG, "onContextItemSelected : "+c+" - itemid:"+item.getItemId()+" stream:"+stream+" - "+surl+" / "+smime);
-*/
         callStream(
         		listChaines.get(info.position).getStream(item.getItemId()).get(Chaine.M_URL),
         		listChaines.get(info.position).getStream(item.getItemId()).get(Chaine.M_MIME)
         );
 
     	return super.onContextItemSelected(item);
+	}
+
+	private void initDefaultPrefs()
+	{
+		int i = 0;
+		
+		SharedPreferences mgr = PreferenceManager.getDefaultSharedPreferences(this);
+		Editor editor = mgr.edit();
+		while (i < listStreamsKeys.length)
+		{
+			editor.putString(listStreamsKeys[i], Integer.toString(defaultValues[i]));
+			i++;
+		}
+		editor.commit();
+	}
+	
+	private void setupStreamsPrefs()
+	{
+		boolean cont = true;
+		int i = 0;
+		String result = null;
+		
+		SharedPreferences mgr = PreferenceManager.getDefaultSharedPreferences(this);
+		while ((cont) && (i < listStreamsKeys.length))
+		{
+			result = mgr.getString(listStreamsKeys[i], null);
+			if (result != null)
+			{
+				Log.d(TAG, "add : "+i+" - "+result);
+				streamsPrefs.put(i, Integer.parseInt(result));
+			}
+			else
+			{
+				cont = false;
+			}
+			i++;
+		}
 	}
 
 	public void onFBMClick(View v)
@@ -526,24 +555,9 @@ public class MainActivity extends ListActivity implements TvConstants
 		d3.show();
     }
     
-	public static int getPlatformVersion()
-	{
-		try
-		{
-			Field verField = Class.forName("android.os.Build$VERSION").getField("SDK_INT");
-			int ver = verField.getInt(verField);
-			return ver;
-		}
-		catch (Exception e)
-		{
-			// android.os.Build$VERSION is not there on Cupcake
-			return 3;
-		}
-	}
-
     private void checkOS()
     {
-    	if (getPlatformVersion() < Build.VERSION_CODES.ECLAIR_MR1)
+    	if (Utils.getPlatformVersion() < Build.VERSION_CODES.ECLAIR_MR1)
     	{
     		displayWrongOS();
     	}
@@ -632,8 +646,9 @@ public class MainActivity extends ListActivity implements TvConstants
 		d.setTitle("Attention ! Merci de lire");
 		d.setIcon(R.drawable.icon_fbm);
     	d.setMessage(
-    		"En étant connecté au réseau Free (sur une Freebox, réseau FreeWifi, réseau FreeMobile...) vous aurez plus de chaînes à votre disposition.\n\n"+
-    		"Si vous n'arrivez pas à ouvrir une chaîne, cela peut être dû à un manque de bande passante à l'endroit où vous vous trouvez."
+//    		"En étant connecté au réseau Free (sur une Freebox, réseau FreeWifi, réseau FreeMobile...) vous aurez plus de chaînes à votre disposition.\n\n"+
+//    		"Si vous n'arrivez pas à ouvrir une chaîne, cela peut être dû à un manque de bande passante à l'endroit où vous vous trouvez."
+    		"En étant connecté à une Freebox, vous aurez plus de chaînes à votre disposition."
 		);
 		d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
 		{
@@ -966,6 +981,7 @@ public class MainActivity extends ListActivity implements TvConstants
 			HttpParams params = new BasicHttpParams();
 			HttpConnectionParams.setConnectionTimeout(params, 500);
 			HttpConnectionParams.setSoTimeout(params, 500);
+			HttpConnectionParams.setStaleCheckingEnabled(params, true);
 			HttpClient client = new DefaultHttpClient(params);
 	        HttpGet request = new HttpGet("http://mafreebox.freebox.fr/freeboxtv/playlist.m3u");
 	        try

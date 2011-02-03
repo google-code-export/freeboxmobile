@@ -4,12 +4,18 @@ import org.madprod.freeboxmobile.tv.TvConstants;
 import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.PreferenceActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.WindowManager;
+import android.view.View.OnClickListener;
+import android.widget.ImageButton;
+import android.widget.TextView;
 import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.PackageManager;
@@ -56,21 +62,20 @@ public class SettingsActivity extends PreferenceActivity implements TvConstants,
 	private void setupLists(String key)
     {
 		// Si on ajoute des listes ici, il faut ajouter dans lists, dans defaultValues et dans tv_settings.xml
-		final String[] lists={"fav1", "fav2", "fav3"};
-		String[] selected = new String[lists.length];
-		int[] defaultValues = {Chaine.STREAM_TYPE_MULTIPOSTE_TNTSD, Chaine.STREAM_TYPE_MULTIPOSTE_SD, Chaine.STREAM_TYPE_INTERNET};
+		
+		String[] selected = new String[listStreamsKeys.length];
 		Integer i = 0;
 		Integer j;
 
 		// cont passe à false dès qu'on a un choix de la liste grisé. Ainsi, tous les choix suivants seront grisés
 		boolean cont = true;
-		while (i < lists.length)
+		while (i < listStreamsKeys.length)
 		{
-			Object value = getPreferenceManager().getSharedPreferences().getAll().get(lists[i]);
-			value = notEmpty(getPreferenceManager().getSharedPreferences().getString(lists[i], null));
+			Object value = getPreferenceManager().getSharedPreferences().getAll().get(listStreamsKeys[i]);
+			value = notEmpty(getPreferenceManager().getSharedPreferences().getString(listStreamsKeys[i], null));
 			
 			selected[i] = (value != null ? value.toString() : null);
-			ListPreference lp = (ListPreference)findPreference(lists[i]);
+			ListPreference lp = (ListPreference)findPreference(listStreamsKeys[i]);
 
 			if (((i != 0) && (selected[i-1] == null)) || (cont == false))
 			{
@@ -90,7 +95,7 @@ public class SettingsActivity extends PreferenceActivity implements TvConstants,
 					if ((selected[i] != null) && (selected[j].equals(selected[i])))
 					{
 						Editor editor = getPreferenceManager().getSharedPreferences().edit();
-						editor.putString(lists[i], null);
+						editor.putString(listStreamsKeys[i], null);
 						editor.commit();
 						selected[i] = null;
 					}
@@ -125,10 +130,10 @@ public class SettingsActivity extends PreferenceActivity implements TvConstants,
 			    // Si on est sur le dernier choix (un seul choix possible)
 			    // et si on a modifié l'avant dernier choix (lists[lists.length - 2])
 			    // on le selectionne le seul choix possible pour le dernier
-			    if ((selectListNumber == 1) && (key != null) && (key.equals(lists[lists.length - 2])))
+			    if ((selectListNumber == 1) && (key != null) && (key.equals(listStreamsKeys[listStreamsKeys.length - 2])))
 			    {
 					Editor editor = getPreferenceManager().getSharedPreferences().edit();
-					editor.putString(lists[i], streamTypes[0].toString());
+					editor.putString(listStreamsKeys[i], streamTypes[0].toString());
 					editor.commit();
 					selected[i] = streamTypes[0].toString();
 			    }
@@ -168,24 +173,24 @@ public class SettingsActivity extends PreferenceActivity implements TvConstants,
 				PackageManager pm = getApplicationContext().getPackageManager();
 				if (iconPresent)
 				{
-//					pm.setComponentEnabledSetting(new ComponentName(this, LaunchActivity.class), PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+					pm.setComponentEnabledSetting(new ComponentName(this, LaunchActivity.class), PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
 				}
 				else
 				{
-//					pm.setComponentEnabledSetting(new ComponentName(this, LaunchActivity.class), PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+					pm.setComponentEnabledSetting(new ComponentName(this, LaunchActivity.class), PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
 				}
 				
 				final AlertDialog ad = new AlertDialog.Builder(this).create();
-//				final View popup = LayoutInflater.from(this).inflate(R.layout.popuperreur,null);
+				final View popup = LayoutInflater.from(this).inflate(R.layout.popuperreur,null);
 				ad.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-//				ad.setView(popup);
+				ad.setView(popup);
 
-//				TextView errorMessage = (TextView)popup.findViewById(R.id.errorMessage);
-//				errorMessage.setText("La mise à jour ne sera peut être visible qu'après le redémarrage de votre téléphone");
-//				ImageButton close = (ImageButton)popup.findViewById(R.id.close);
-/*				close.setOnClickListener(new OnClickListener()
- * {
+				TextView errorMessage = (TextView)popup.findViewById(R.id.errorMessage);
+				errorMessage.setText("La mise à jour ne sera peut être visible qu'après le redémarrage de votre téléphone");
+				ImageButton close = (ImageButton)popup.findViewById(R.id.close);
+				close.setOnClickListener(new OnClickListener()
+				{
 					public void onClick(View v)
 					{
 						ad.dismiss();
@@ -197,8 +202,6 @@ public class SettingsActivity extends PreferenceActivity implements TvConstants,
 				}
 				catch (Exception e)
 				{}
-				
-*/				
 			}
 		}
 	}
@@ -206,7 +209,6 @@ public class SettingsActivity extends PreferenceActivity implements TvConstants,
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
 	{
-		Log.d(TAG, "Changed : "+key+" - "+sharedPreferences.getString(key, "0"));
 		update(key);
 		setupLists(key);
 	}
