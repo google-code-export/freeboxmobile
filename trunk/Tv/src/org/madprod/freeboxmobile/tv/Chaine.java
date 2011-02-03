@@ -126,8 +126,28 @@ public class Chaine implements Comparable <Chaine>, TvConstants
     	return streamsList.get(type);
     }
     
-    public Map<Integer, Map<String, String>> getStreams()
+    public Map<String, String> getFavoriteStream(Map<Integer, Integer> streamsPrefs)
     {
-    	return streamsList;
+    	boolean cont = true;
+    	int streamType = -1;
+    	int i = 0;
+    	
+    	while (cont)
+    	{
+    		if (streamsPrefs.containsKey(i))
+    		{
+	    		streamType = streamsPrefs.get(i);
+	    		if (streamsList.containsKey(streamType))
+	    		{
+	    			return (streamsList.get(streamType));
+	    		}
+    		}
+    		else
+    		{
+    			cont = false;
+    		}
+    		i++;
+    	}
+    	return null;
     }
 }

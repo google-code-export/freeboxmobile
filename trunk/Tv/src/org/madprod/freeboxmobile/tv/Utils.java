@@ -82,4 +82,19 @@ public class Utils implements TvConstants
 		}
 		return MyCode;
 	}
+	
+	public static int getPlatformVersion()
+	{
+		try
+		{
+			Field verField = Class.forName("android.os.Build$VERSION").getField("SDK_INT");
+			int ver = verField.getInt(verField);
+			return ver;
+		}
+		catch (Exception e)
+		{
+			// android.os.Build$VERSION is not there on Cupcake
+			return 3;
+		}
+	}
 }
