@@ -1,6 +1,9 @@
 package org.madprod.freeboxmobile.tv;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
@@ -412,7 +415,7 @@ public class MainActivity extends ListActivity implements TvConstants
 			{
 				Log.e(TAG, "Impossible de charger le json !");
 			}
-	    	if (networkType > 0)
+//	    	if (networkType > 0)
 //			TODO : for prod, remove comments below
 			if (networkType == 3)
 	    	{
@@ -438,6 +441,7 @@ public class MainActivity extends ListActivity implements TvConstants
 					if (reader != null)
 					{
 						String line = null;
+						String channelTitle = null;
 						String num = null;
 						Integer cnum = null;
 						try 
@@ -459,6 +463,7 @@ public class MainActivity extends ListActivity implements TvConstants
 											else
 												c = new Chaine(cnum, "http://tv.freeboxmobile.net/"+cnum+".png", line.substring(line.indexOf("-") + 2));
 										}
+										channelTitle = line;
 										while ((line != null) && line.contains("rtsp") == false)
 										{
 											line = reader.readLine();
@@ -468,7 +473,32 @@ public class MainActivity extends ListActivity implements TvConstants
 											if (line.contains("flavour=sd"))
 											{
 												c.addStream(Chaine.STREAM_TYPE_MULTIPOSTE_SD, line, "video/mp2");
-												mapChaines.put(cnum, c);													
+												mapChaines.put(cnum, c);
+											}
+											if (line.contains("flavour=ld"))
+											{
+												c.addStream(Chaine.STREAM_TYPE_MULTIPOSTE_LD, line, "video/mp4");
+												mapChaines.put(cnum, c);
+											}
+											if (line.contains("flavour=hd"))
+											{
+												c.addStream(Chaine.STREAM_TYPE_MULTIPOSTE_HD, line, "video/mp4");
+												mapChaines.put(cnum, c);
+											}
+											if (line.contains("tsid"))
+											{
+												if (!channelTitle.contains("HD"))
+												{
+//													Log.d(TAG, "adding TNTSD : "+channelTitle);
+													c.addStream(Chaine.STREAM_TYPE_MULTIPOSTE_TNTSD, line, "video/mp2");
+													mapChaines.put(cnum, c);
+												}
+												else
+												{
+//													Log.d(TAG, "adding TNTHD : "+channelTitle);
+													c.addStream(Chaine.STREAM_TYPE_MULTIPOSTE_TNTHD, line, "video/mp4");
+													mapChaines.put(cnum, c);													
+												}
 											}
 										}
 									}
@@ -487,11 +517,11 @@ public class MainActivity extends ListActivity implements TvConstants
 							e.printStackTrace();
 						}		
 					}
-					c = mapChaines.get(2);
+/*					c = mapChaines.get(2);
 					c.addStream(Chaine.STREAM_TYPE_MULTIPOSTE_LD, "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=201&flavour=ld", "video/mp4");
-//					c.addStream(Chaine.STREAM_TYPE_MULTIPOSTE_SD, "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=201&flavour=sd", "video/mp4");
 					c.addStream(Chaine.STREAM_TYPE_MULTIPOSTE_HD, "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=201&flavour=hd", "video/mp4");
 					mapChaines.put(2, c);
+*/
 				}
 	    	}
 	    	listChaines.clear();
