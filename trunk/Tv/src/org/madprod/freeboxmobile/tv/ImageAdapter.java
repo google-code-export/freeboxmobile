@@ -48,8 +48,10 @@ public class ImageAdapter extends BaseAdapter implements TvConstants
         	LayoutInflater inflater = LayoutInflater.from(c);
         	view = inflater.inflate(R.layout.tv_main_list_row, null);
         }
-    	TextView text = (TextView)view.findViewById(R.id.tv_main_row_titre);
-    	text.setText((String) listeChaines.get(position).getName());
+    	TextView titre = (TextView)view.findViewById(R.id.tv_main_row_titre);
+    	TextView num = (TextView)view.findViewById(R.id.tv_main_row_num);
+    	titre.setText((String)listeChaines.get(position).getName());
+    	num.setText(listeChaines.get(position).getChannelId().toString());
     	logo = (ImageView)view.findViewById(R.id.tv_main_row_img);
     	logo.setImageResource(R.drawable.chaine_vide);
         imageDownloader.download((String) listeChaines.get(position).getLogoUrl(), (ImageView) logo);
