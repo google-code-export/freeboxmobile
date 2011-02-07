@@ -13,19 +13,18 @@
             android:key="fav1"
         android:order="1">
         </ListPreference>
+
 		<ListPreference 
             android:title="Choix 2" 
-            android:enabled="true" 
             android:summary="Flux utilisé si la chaîne n'a pas le flux Choix 1" 
             android:key="fav2"
-        android:order="2" android:dependency="fav1">
+        android:order="2" android:dependency="fav1" android:shouldDisableView="true" android:enabled="false" android:selectable="false">
         </ListPreference>
 		<ListPreference 
             android:title="Choix 3" 
-            android:enabled="true" 
             android:summary="Flux utilisé si la chaîne n'a pas le flux Choix 2" 
             android:key="fav3"
-        android:order="3" android:dependency="fav2">
+        android:order="3" android:dependency="fav2" android:enabled="false" android:selectable="false" android:shouldDisableView="true">
         </ListPreference>
 	</PreferenceCategory>
 

@@ -130,7 +130,7 @@ public class SettingsActivity extends PreferenceActivity implements TvConstants,
 			    // Si on est sur le dernier choix (un seul choix possible)
 			    // et si on a modifié l'avant dernier choix (lists[lists.length - 2])
 			    // on le selectionne le seul choix possible pour le dernier
-			    if ((selectListNumber == 1) && (key != null) && (key.equals(listStreamsKeys[listStreamsKeys.length - 2])))
+			    if ((i != 0) && (selectListNumber == 1) && (key != null) && (key.equals(listStreamsKeys[listStreamsKeys.length - 2])))
 			    {
 					Editor editor = getPreferenceManager().getSharedPreferences().edit();
 					editor.putString(listStreamsKeys[i], streamTypes[0].toString());

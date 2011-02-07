@@ -121,6 +121,10 @@ public class MainActivity extends ListActivity implements TvConstants
     	Log.i(TAG,"TvActivity Start");
     	verifyInstallFbm();
     	setupStreamsPrefs();
+    	if (modeFull)
+    	{
+			Toast.makeText(MainActivity.this, "ModeFull activé (pour tests seulement) !", Toast.LENGTH_LONG).show();
+    	}
     	if (!isConnectionOk())
     	{
     		showPopupNetwork();
@@ -416,8 +420,7 @@ public class MainActivity extends ListActivity implements TvConstants
 				Log.e(TAG, "Impossible de charger le json !");
 			}
 //	    	if (networkType > 0)
-//			TODO : for prod, remove comments below
-			if (networkType == 3)
+			if ((modeFull) && (networkType == 3))
 	    	{
 	    		InputStreamReader m3u;
 		    	m3u = getUrl("http://mafreebox.freebox.fr/freeboxtv/playlist.m3u");
@@ -517,11 +520,6 @@ public class MainActivity extends ListActivity implements TvConstants
 							e.printStackTrace();
 						}		
 					}
-/*					c = mapChaines.get(2);
-					c.addStream(Chaine.STREAM_TYPE_MULTIPOSTE_LD, "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=201&flavour=ld", "video/mp4");
-					c.addStream(Chaine.STREAM_TYPE_MULTIPOSTE_HD, "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=201&flavour=hd", "video/mp4");
-					mapChaines.put(2, c);
-*/
 				}
 	    	}
 	    	listChaines.clear();
@@ -690,9 +688,30 @@ public class MainActivity extends ListActivity implements TvConstants
     	d.show();
     }
 
+    private void showGlobalRestrictions()
+    {
+    	AlertDialog d = new AlertDialog.Builder(this).create();
+		d.setTitle("Important ! Merci de lire");
+		d.setIcon(R.drawable.icon_fbm);
+    	d.setMessage(
+    		"Suite à la fermeture par Free du service tv.freebox.fr et de l'impossibilité de lire correctement les flux multiposte avec un player Android (pour l'instant du moins).\n"+
+    		"Cette situation est indépendante de notre volonté. Nous ferons une mise à jour de l'application dès qu'il sera possible de lire les flux multiposte ou si le service tv.freebox.fr reprend..."
+		);
+		d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
+		{
+			public void onClick(DialogInterface dialog, int which)
+			{
+				dialog.dismiss();
+			}
+		});
+    	d.show();
+    }
+
     private void downloadPlayer()
     {
-    	showNetworkRestrictions();
+    	if (modeFull)
+    		showNetworkRestrictions();
+    	showGlobalRestrictions();
 		if (!isModuleInstalled("me.abitno.vplayer", "me.abitno.media.explorer.FileExplorer"))
 		{
 	    	AlertDialog d = new AlertDialog.Builder(this).create();
