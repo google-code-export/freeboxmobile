@@ -686,7 +686,7 @@ public class FBMHttpConnection implements Constants
 		}
 		catch (Exception e)
 		{
-			Log.e(TAG,"getAuthRequestISR "+e.getMessage());
+			Log.e(TAG,"getAuthRequest "+e.getMessage());
 			e.printStackTrace();
 		}
 /*		if (h != null)

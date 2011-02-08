@@ -135,7 +135,10 @@ public class PvrNetwork extends FBMNetTask implements PvrConstants // AsyncTask<
 							// il ne sera pas référencé (ce qui est voulu)
 							jDiskObject = jArray.getJSONObject(i);
 					    	db.createBoitierDisque(
-					    			"Freebox HD "+(boitier+1),
+					    			((jDiskObject.getInt("total_size")>40000000) &&
+					    			(jDiskObject.getString("mount_point").equals("/Disque dur/Enregistrements"))) ?
+					    				"Freebox Server" :
+					    				"Freebox HD "+(boitier+1),
 					    			boitier,
 					    			jDiskObject.getInt("free_size"),
 					    			jDiskObject.getInt("total_size"),
@@ -147,6 +150,7 @@ public class PvrNetwork extends FBMNetTask implements PvrConstants // AsyncTask<
 					    			jDiskObject.getString("mount_point"),
 					    			jDiskObject.getString("label")
 					    			);
+							Log.d(TAG,"GET BOITIER "+boitier+" - DISQUE SIZE : "+ jDiskObject.getInt("total_size") + " - ID : "+ jDiskObject.getInt("id"));
 						}
 						Log.d(TAG,"GET BOITIER "+boitier+" - NB DISQUES : "+i);
 					}

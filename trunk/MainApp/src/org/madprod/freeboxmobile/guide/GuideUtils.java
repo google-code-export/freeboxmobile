@@ -373,19 +373,29 @@ public abstract class GuideUtils extends ListActivity implements Constants
 
     protected void launchActivity(Class<?> cls, int pos)
     {
-		Programme p = (Programme) adapter.getItem(pos);
-		Intent i = new Intent(this, cls);
-		i.putExtra(ChainesDbAdapter.KEY_PROG_TITLE, p.titre);
-		i.putExtra(ChainesDbAdapter.KEY_PROG_CHANNEL_ID, p.channel_id);
-		i.putExtra(ChainesDbAdapter.KEY_PROG_DUREE, p.duree);
-		i.putExtra(ChainesDbAdapter.KEY_PROG_DATETIME_DEB, p.datetime_deb);
-		i.putExtra(ChainesDbAdapter.KEY_PROG_DATETIME_FIN, p.datetime_fin);
-		i.putExtra(ChainesDbAdapter.KEY_GUIDECHAINE_CANAL, p.canal);
-		i.putExtra(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE, p.image);
-		i.putExtra(ChainesDbAdapter.KEY_GUIDECHAINE_NAME, p.chaine_name);
-		i.putExtra(ChainesDbAdapter.KEY_PROG_RESUM_L, p.resum_l);
-		i.putExtra(ChainesDbAdapter.KEY_GUIDECHAINE_ID, p.guidechaine_id);
-        startActivity(i);
+    	if (adapter != null)
+    	{
+			Programme p = (Programme) adapter.getItem(pos);
+			Intent i = new Intent(this, cls);
+			if (p != null)
+			{
+				i.putExtra(ChainesDbAdapter.KEY_PROG_TITLE, p.titre);
+				i.putExtra(ChainesDbAdapter.KEY_PROG_CHANNEL_ID, p.channel_id);
+				i.putExtra(ChainesDbAdapter.KEY_PROG_DUREE, p.duree);
+				i.putExtra(ChainesDbAdapter.KEY_PROG_DATETIME_DEB, p.datetime_deb);
+				i.putExtra(ChainesDbAdapter.KEY_PROG_DATETIME_FIN, p.datetime_fin);
+				i.putExtra(ChainesDbAdapter.KEY_GUIDECHAINE_CANAL, p.canal);
+				i.putExtra(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE, p.image);
+				i.putExtra(ChainesDbAdapter.KEY_GUIDECHAINE_NAME, p.chaine_name);
+				i.putExtra(ChainesDbAdapter.KEY_PROG_RESUM_L, p.resum_l);
+				i.putExtra(ChainesDbAdapter.KEY_GUIDECHAINE_ID, p.guidechaine_id);
+			}
+	        startActivity(i);
+    	}
+    	else
+    	{
+    		Log.d(TAG, "launchActivity : adapter null !");
+    	}
     }
 
     public static class Programme
