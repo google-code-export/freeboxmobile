@@ -102,7 +102,8 @@ public class GuideDetailsActivity extends Activity implements GuideConstants
 						public void onClick(View arg0)
 						{
 							tracker.trackPageView("Guide/YouTube");
-							startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/results?search_query="+titreEmission.getText()+"&aq=f")));
+							startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://m.youtube.com/results?search_query="+titreEmission.getText()+"&aq=f")));
+//							startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/results?search_query="+titreEmission.getText()+"&aq=f")));
 						}
 					}
 				);
@@ -114,7 +115,8 @@ public class GuideDetailsActivity extends Activity implements GuideConstants
 						public void onClick(View arg0)
 						{
 							tracker.trackPageView("Guide/AlloCine");
-							startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.allocine.fr/recherche/?q="+titreEmission.getText())));
+							startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://mobile.allocine.fr/recherche/default.html?motcle="+titreEmission.getText())));
+//							startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.allocine.fr/recherche/?q="+titreEmission.getText())));
 						}
 					}
 				);
