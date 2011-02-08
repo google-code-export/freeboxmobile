@@ -730,7 +730,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 			"- Benoit Duffez : Magnétosocope\n"+
 			"- Ludovic Meurillon : Fax\n"+
 			"- Alban Pelé : Icônes de la page d'accueil\n"+
-			"- Kevin Gigean : Tests\n"+
+			"- Kevin Gigan : Tests\n"+
 			"\n"+
 			"Cette application opensource utilise :\n"+
 			"- Android-XMLRPC : http://code.google.com/p/android-xmlrpc/\n"+
