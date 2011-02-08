@@ -30,7 +30,7 @@ public class EnregistrementsNetwork implements Constants
 		String url;
 		int boitier = 0;
 		int nbBoitiers = 0;
-		int bNum;
+		int bNum = 0;
 		boolean succesChargement = false;
 		
         // Recup if tv
@@ -64,17 +64,24 @@ public class EnregistrementsNetwork implements Constants
 	        			if (d == -1) {
 		        			break;
 	        			}
-			        	boitiers = boitiers.substring(d);
-			        	f = boitiers.indexOf("\"");
-			        	Log.d(TAG,"Boitier parse : "+boitiers.substring(4, f));
-			        	bNum = Integer.parseInt(boitiers.substring(4, f));
-			        	d = boitiers.indexOf("HD n");
-			        	boitiers = boitiers.substring(d);
+	        			boitiers = boitiers.substring(d + 1);
+//			        	boitiers = boitiers.substring(d);
+//			        	f = boitiers.indexOf("Freebox Server");
+//			        	if (f == -1)
+//			        	{
+//			        		f = boitiers.indexOf("Boitier HD n");
+//			        	}
+//			        	f = boitiers.indexOf("\"");
+//			        	Log.d(TAG,"Boitier parse : "+boitiers.substring(4, f));
+//			        	bNum = Integer.parseInt(boitiers.substring(4, f));
+//			        	d = boitiers.indexOf("HD n");
+//			        	boitiers = boitiers.substring(d);
 
-	        			f = boitiers.indexOf("</");
-	        			boitiers = boitiers.substring(f);
+//	        			f = boitiers.indexOf("</");
+//	        			boitiers = boitiers.substring(f);
 	        			nbBoitiers++;
 	        			Log.d(TAG,"Boitier : "+bNum);
+	        			bNum ++;
 	        		} while (true);
 	        	}
 	        	else
