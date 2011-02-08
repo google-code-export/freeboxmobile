@@ -657,7 +657,7 @@ public class ChainesDbAdapter implements GuideConstants
 		sql_createRawChaine.bindLong(2,chaine_id);
 		sql_createRawChaine.bindLong(3, boitier_id);
 		Long r = sql_createRawChaine.executeInsert();
-		Log.d(TAG, "Try to insert chaine : "+r+" ");
+//		Log.d(TAG, "Try to insert chaine : "+r+" ");
 //		mDb.execSQL(sql);
 		return;
 	}
@@ -706,7 +706,7 @@ public class ChainesDbAdapter implements GuideConstants
     	sql_createRawService.bindLong(4, service_id);
     	sql_createRawService.bindLong(5, pvr_mode);
 		Long r = sql_createRawService.executeInsert();
-		Log.d(TAG, "Try to insert serv : "+r+" ");
+//		Log.d(TAG, "Try to insert serv : "+r+" ");
 		return;
     }
 
@@ -821,6 +821,7 @@ public class ChainesDbAdapter implements GuideConstants
         Cursor mCursor =
             mDb.query(true, DATABASE_TABLE_BOITIERSDISQUES,
             		new String[] {
+            		KEY_ROWID,
             		KEY_BOITIER_NAME,
             		KEY_BOITIER_ID,
             		}, "",

@@ -74,6 +74,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 	
 	// Id du boitier séléctionné
 	private static int mBoitierHD = 0;
+	private static int mBoitierBID = 0;
 	// Nom du boitier sélectionné
 	private static String mBoitierHDName = null;
 	// Curseur sur les boitiers
@@ -290,12 +291,13 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
 			{
-				Log.d(TAG, "Boitier HD SPinner "+position+" "+id);
+				Log.d(TAG, "Boitier HD SPinner "+position+" "+mBoitierHD+ " "+mBoitierBID);
 				if (mBoitierHD != position)
 				{
-					Log.d(TAG, "Boitier HD SPinner into"+position+" "+id);
+					Log.d(TAG, "Boitier HD Spinner into"+position+" "+id);
 	        		boitiersCursor.moveToPosition(position);
-	        		mBoitierHD = boitiersCursor.getInt(boitiersCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_BOITIER_ID));
+	        		mBoitierHD = position;
+	        		mBoitierBID = boitiersCursor.getInt(boitiersCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_BOITIER_ID));
 	        		mBoitierHDName = boitiersCursor.getString(boitiersCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_BOITIER_NAME));
 	        		remplirSpinner(R.id.pvrPrgDisque);
 	        		remplirSpinner(R.id.pvrPrgChaine);
@@ -907,7 +909,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
         		// TODO : Ici, si l'abonné n'a pas de disque dur dans sa Freebox : problème !
 
         		// TODO : créer une requete plutot que de chercher dans le cursor
-        		Cursor mDisquesCursor = db.getListeDisques(mBoitierHD);
+        		Cursor mDisquesCursor = db.getListeDisques(mBoitierBID);
        			mDisquesCursor.moveToPosition(disqueId);
        			where_id = mDisquesCursor.getInt(mDisquesCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_DISQUE_ID));
        			mDisquesCursor.close();
@@ -946,7 +948,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
             	int erreurPos;
         		// Requete HTTP
         		String url = "https://adsls.free.fr/admin/magneto.pl";
-       			postVars.add(new BasicNameValuePair("box", ""+mBoitierHD));
+       			postVars.add(new BasicNameValuePair("box", ""+mBoitierBID));
         		String resultat = FBMHttpConnection.getPage(FBMHttpConnection.postAuthRequest(url, postVars, true, true));
         		if (resultat == null)
         		{
@@ -1256,7 +1258,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 		int selection = spinner.getSelectedItemPosition();
 		switch (id) {
 			case R.id.pvrPrgChaine:
-				chainesCursor = db.fetchAllChaines(mBoitierHD);
+				chainesCursor = db.fetchAllChaines(mBoitierBID);
 				if (chainesCursor != null)
 				{
 					startManagingCursor(chainesCursor);
@@ -1272,7 +1274,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 				
 			case R.id.pvrPrgDisque:
 //				disquesCursor = db.getListeDisques(mBoitierHDName);
-				disquesCursor = db.getListeDisques(mBoitierHD);
+				disquesCursor = db.getListeDisques(mBoitierBID);
 		        if (disquesCursor.moveToFirst())
 		        {
 					startManagingCursor(disquesCursor);
@@ -1293,7 +1295,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 				break;
 
 			case R.id.pvrPrgQualite:
-				servicesCursor = db.fetchServicesChaine(mChaineID, mBoitierHD);
+				servicesCursor = db.fetchServicesChaine(mChaineID, mBoitierBID);
 				if (servicesCursor.moveToFirst())
 				{
 					startManagingCursor(servicesCursor);
@@ -1328,8 +1330,10 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 		        {
 		        	startManagingCursor(boitiersCursor);
 		            int boitierNameIndex = boitiersCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_BOITIER_NAME);
-					mBoitierHD = boitiersCursor.getInt(boitiersCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_BOITIER_ID));
+					mBoitierHD = boitiersCursor.getInt(boitiersCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_ROWID/*KEY_BOITIER_ID*/));
+					mBoitierBID = boitiersCursor.getInt(boitiersCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_BOITIER_ID));
 					mBoitierHDName = boitiersCursor.getString(boitierNameIndex);
+					Log.d(TAG, "pvrPrgBoitier : mBoitierHD = "+mBoitierHD+ " - mBoitierHDName = "+mBoitierHDName);
 		        	do
 		        	{
 		        		liste.add(boitiersCursor.getString(boitierNameIndex));
