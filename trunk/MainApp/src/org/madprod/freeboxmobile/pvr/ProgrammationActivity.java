@@ -1330,9 +1330,9 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 		        {
 		        	startManagingCursor(boitiersCursor);
 		            int boitierNameIndex = boitiersCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_BOITIER_NAME);
-					mBoitierHD = boitiersCursor.getInt(boitiersCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_ROWID/*KEY_BOITIER_ID*/));
-					mBoitierBID = boitiersCursor.getInt(boitiersCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_BOITIER_ID));
-					mBoitierHDName = boitiersCursor.getString(boitierNameIndex);
+//					mBoitierHD = boitiersCursor.getInt(boitiersCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_ROWID/*KEY_BOITIER_ID*/));
+//					mBoitierBID = boitiersCursor.getInt(boitiersCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_BOITIER_ID));
+//					mBoitierHDName = boitiersCursor.getString(boitierNameIndex);
 					Log.d(TAG, "pvrPrgBoitier : mBoitierHD = "+mBoitierHD+ " - mBoitierHDName = "+mBoitierHDName);
 		        	do
 		        	{
