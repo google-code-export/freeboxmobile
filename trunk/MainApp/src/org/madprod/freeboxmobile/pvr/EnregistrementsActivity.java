@@ -257,17 +257,22 @@ public class EnregistrementsActivity extends ExpandableListActivity implements C
      * DB --> RAM
      * Se connecte à sqlite, récupère le contenu et stocke dans l'objet listeEnregistrements
      */
-    private void updateEnregistrementsFromDb() {
-        EnregistrementsDbAdapter db = new EnregistrementsDbAdapter(this);
-        
-        db.open();
-        Cursor listCursor = db.fetchAllEnregistrements(new String[] {
+	private void updateEnregistrementsFromDb()
+	{
+    	EnregistrementsDbAdapter db = new EnregistrementsDbAdapter(this);
+    	ChainesDbAdapter dbBoitiers = new ChainesDbAdapter(this);
+
+    	dbBoitiers.open();
+    	Cursor boitiersCursor = dbBoitiers.fetchBoitiers();
+    	db.open();
+    	Cursor listCursor = db.fetchAllEnregistrements(new String[] {
         		EnregistrementsDbAdapter.KEY_ROWID,
         		EnregistrementsDbAdapter.KEY_CHAINE,
         		EnregistrementsDbAdapter.KEY_DATE,
         		EnregistrementsDbAdapter.KEY_HEURE,
         		EnregistrementsDbAdapter.KEY_DUREE,
         		EnregistrementsDbAdapter.KEY_NOM,
+        		EnregistrementsDbAdapter.KEY_BOITIER,
         		EnregistrementsDbAdapter.KEY_BOITIER_ID,
         		},
         		EnregistrementsDbAdapter.KEY_DATE + " ASC, "
@@ -295,14 +300,18 @@ public class EnregistrementsActivity extends ExpandableListActivity implements C
 //     			details.add("Nom");
 //     			details.add(listCursor.getString(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_NOM)));
      			details.add("Boitier");
-     			details.add("Boitier "+(listCursor.getInt(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_BOITIER_ID))+1));
-     			
+//     			details.add("Boitier "+(listCursor.getInt(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_BOITIER_ID))+1));
+     			boitiersCursor.moveToPosition(listCursor.getInt(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_BOITIER_ID)));
+     			Log.d(TAG, "=============+> "+ listCursor.getInt(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_BOITIER)));
+     			Log.d(TAG, "=============+> "+ listCursor.getInt(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_BOITIER_ID)));
+     			details.add(boitiersCursor.getString(boitiersCursor.getColumnIndex(ChainesDbAdapter.KEY_BOITIER_NAME)));
      			listeEnregistrements.ajouter(item, details);
      			
             } while (listCursor.moveToNext());
 		}
 		
 		listCursor.close();
+		boitiersCursor.close();
         
         db.close();
     }
