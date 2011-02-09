@@ -22,8 +22,8 @@ Release : 65<br>
 Revision : 836
  * meilleure compatibilité Freebox v6 (pensez à faire menu -> Rafraichir Compte après une migration de Freebox)
  * debug dans le magnéto & le guide
- * YouTube s'ouvre maintenant via l'appli si elle est installée, sinon via le site mobile
- * AlloCiné s'ouvre maintenant via le site mobile
+ * !YouTube s'ouvre maintenant via l'appli si elle est installée, sinon via le site mobile
+ * !AlloCiné s'ouvre maintenant via le site mobile
 
 == 0.52.11 ==
 Sortie le 03/02/2011<br>
