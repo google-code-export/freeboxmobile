@@ -256,7 +256,16 @@ public class ChainesDbAdapter implements GuideConstants
 		this.sql_createRawService = null;
         return this;
     }
-    
+
+    public ChainesDbAdapter openRead() throws SQLException
+    {
+        mDbHelper = new DatabaseHelper(mCtx);
+        mDb = mDbHelper.getReadableDatabase();
+		this.sql_createRawChaine = null;
+		this.sql_createRawService = null;
+        return this;
+    }
+
     public void close()
     {
     	close_sqls();

@@ -109,13 +109,15 @@ public class EnregistrementsDbAdapter {
      *         initialization call)
      * @throws SQLException if the database could be neither opened or created
      */
-    public EnregistrementsDbAdapter open() throws SQLException {
+    public EnregistrementsDbAdapter open() throws SQLException
+    {
         mDbHelper = new DatabaseHelper(mCtx);
         mDb = mDbHelper.getWritableDatabase();
         return this;
     }
     
-    public void close() {
+    public void close()
+    {
         mDbHelper.close();
     }
     

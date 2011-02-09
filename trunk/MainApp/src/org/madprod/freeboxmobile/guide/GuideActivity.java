@@ -100,7 +100,7 @@ public class GuideActivity extends GuideUtils implements GuideConstants
         }
 
         mDbHelper = new ChainesDbAdapter(this);
-        mDbHelper.open();
+        mDbHelper.openRead();
        
         final Bundle extras = getIntent().getExtras();
         datesSpinner = (Spinner) findViewById(R.id.DatesSpinner);

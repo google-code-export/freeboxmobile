@@ -50,7 +50,7 @@ public class GuideMenuActivity extends GuideUtils implements GuideConstants
         setContentView(R.layout.guide_menu);
 
         mDbHelper = new ChainesDbAdapter(this);
-        mDbHelper.open();
+        mDbHelper.openRead();
 //        Log.d(TAG,"Nettoyage des anciens programmes effacés : "+mDbHelper.deleteOldProgs());
 //        Log.d(TAG,"Nettoyage de l'ancienne historique : "+mDbHelper.deleteOldHisto());
     }

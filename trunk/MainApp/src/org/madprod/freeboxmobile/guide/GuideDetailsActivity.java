@@ -14,6 +14,7 @@ import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.SearchManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -125,9 +126,9 @@ public class GuideDetailsActivity extends Activity implements GuideConstants
 						public void onClick(View arg0)
 						{
 							tracker.trackPageView("Guide/AlloCine");
-/*							Intent intent = new Intent(Intent.ACTION_SEARCH);
-							intent.setPackage("com.allocine.androidapp");
-							intent.putExtra("query", titreEmission.getText());
+							Intent intent = new Intent(Intent.ACTION_SEARCH);
+							intent.setClassName("com.allocine.androidapp", "com.allocine.androidapp.activities.SearchActivity");
+							intent.putExtra(SearchManager.QUERY, titreEmission.getText());
 							intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 							try
 							{
@@ -136,9 +137,9 @@ public class GuideDetailsActivity extends Activity implements GuideConstants
 							catch (Exception e)
 							{
 								Log.e(TAG, e.getMessage());
-*/
+
 								startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://mobile.allocine.fr/recherche/default.html?motcle="+titreEmission.getText())));
-//							}
+							}
 						}
 					}
 				);
@@ -248,7 +249,7 @@ public class GuideDetailsActivity extends Activity implements GuideConstants
 		    	int i = 0;
 		    	String workString;
 		    	ChainesDbAdapter mDbHelper = new ChainesDbAdapter(GuideDetailsActivity.this);
-				mDbHelper.open();
+				mDbHelper.openRead();
 		    	Cursor c = mDbHelper.getNextProgs(extras.getInt(ChainesDbAdapter.KEY_PROG_CHANNEL_ID), extras.getString(ChainesDbAdapter.KEY_PROG_DATETIME_DEB), 5);
 		    	if (c != null)
 		    	{
