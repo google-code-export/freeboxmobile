@@ -60,6 +60,7 @@ public class PvrNetwork extends FBMNetTask implements PvrConstants // AsyncTask<
 		int max = 0;
 		int size = 0;
 		int ok = 0;
+		boolean freeboxV6 = false;
 		
 		Activity a = getActivity();
 		if (a == null)
@@ -129,16 +130,34 @@ public class PvrNetwork extends FBMNetTask implements PvrConstants // AsyncTask<
 						// ON RECUPERE LES DISQUES
 						jArray = jObject.getJSONArray("disks");
 						size = jArray.length();
+						String bName = null;
 						for (i=0 ; i < size ; i++)
 						{
 							// En insérant en base comme cela, si un boitier n'a pas de disque
 							// il ne sera pas référencé (ce qui est voulu)
 							jDiskObject = jArray.getJSONObject(i);
+							if (
+									(boitier == 0) &&
+									(jDiskObject.getInt("total_size")>40000000) &&
+					    			(jDiskObject.getString("mount_point").equals("/Disque dur/Enregistrements")) &&
+					    			(jDiskObject.getString("label").equals("internal-disk"))
+					    		)
+							{
+								freeboxV6 = true;
+							}
+							if (freeboxV6)
+							{
+								if (boitier == 0)
+									bName = "Freebox Server";
+								else
+									bName = "Freebox HD "+boitier;
+							}
+							else
+							{
+								bName = "Freebox HD "+(boitier+1);
+							}
 					    	db.createBoitierDisque(
-					    			((jDiskObject.getInt("total_size")>40000000) &&
-					    			(jDiskObject.getString("mount_point").equals("/Disque dur/Enregistrements"))) ?
-					    				"Freebox Server" :
-					    				"Freebox HD "+(boitier+1),
+					    			bName,
 					    			boitier,
 					    			jDiskObject.getInt("free_size"),
 					    			jDiskObject.getInt("total_size"),
