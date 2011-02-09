@@ -178,7 +178,7 @@ public class GuideNowActivity extends ListActivity implements GuideConstants
         	ChainesDbAdapter mDbHelper = new ChainesDbAdapter(mContext);
         	try
         	{
-        		mDbHelper.open();
+        		mDbHelper.openRead();
 	        	Cursor c = mDbHelper.getProgsNow();
 	        	if (c != null)
 	        	{    		

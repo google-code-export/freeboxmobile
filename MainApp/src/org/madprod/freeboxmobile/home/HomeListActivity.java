@@ -272,11 +272,11 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 			map.put(M_TITRE, getString(R.string.buttonTv));
 	        if (isModuleInstalled("org.madprod.freeboxmobile", "org.madprod.freeboxmobile.home.HomeListActivity"))
 	        {
-	        	map.put(M_DESC, "NOUVEAU : Regardez les chaînes de TV Freebox ! (BETA)");
+	        	map.put(M_DESC, "Regardez une sélection de chaînes de TV (BETA)");
 	        }
 	        else
 	        {
-	        	map.put(M_DESC, "Téléchargez le module 'Freebox TV Mobile' afin de regarder les chaînes de TV Freebox !");	        	
+	        	map.put(M_DESC, "Téléchargez le module 'Freebox TV Mobile' afin de regarder une sélection chaînes de TV");	        	
 	        }
 			map.put(M_CLASS, null);
 			modulesList.add(map);
@@ -303,7 +303,6 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		map.put(M_ICON, R.drawable.fm_repondeur);
 		map.put(M_TITRE, getString(R.string.buttonMevo));
 		map.put(M_DESC, "Accédez à la messagerie vocale de votre Freebox");
-//		map.put(M_CLASS, org.madprod.freeboxmobile.mvv.MevoActivity.class);
 		modulesList.add(map);
 		map = new HashMap<String,Object>();
 		map.put(M_ICON, R.drawable.fm_telecommande);
@@ -493,13 +492,19 @@ public class HomeListActivity extends ListActivity implements HomeConstants
         }
     }
     
-    private void openExtApp(final String packageName, final String appName, boolean plugin){
+    private void openExtApp(final String packageName, final String appName, boolean plugin)
+    {
     	PackageManager packageManager = getPackageManager();
         Intent intent = packageManager.getLaunchIntentForPackage(packageName);
-        	if (intent != null){
-            	intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            	startActivity(intent);
-        	}else{
+        
+    	if (intent != null)
+    	{
+        	intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			tracker.trackPageView(appName);
+        	startActivity(intent);
+    	}
+    	else
+    	{
 			String type;
 			if (plugin)
 				type = "le module";
@@ -549,8 +554,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 				}
 			});
 			d.show();
-		}    	
-        
+    	}    	
     }
     
     
