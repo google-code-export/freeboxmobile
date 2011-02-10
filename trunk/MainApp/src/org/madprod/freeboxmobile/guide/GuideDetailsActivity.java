@@ -103,18 +103,11 @@ public class GuideDetailsActivity extends Activity implements GuideConstants
 						public void onClick(View arg0)
 						{
 							tracker.trackPageView("Guide/YouTube");
-							Intent intent = new Intent(Intent.ACTION_SEARCH);
-							intent.setPackage("com.google.android.youtube");
-							intent.putExtra("query", titreEmission.getText());
-							intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-							try
-							{
-								startActivity(intent);
-							}
-							catch (Exception e)
-							{
-								startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://m.youtube.com/results?search_query="+titreEmission.getText()+"&aq=f")));
-							}
+							searchFilm(
+									"com.google.android.youtube",
+									null,
+									(String) titreEmission.getText(),
+									"http://m.youtube.com/results?search_query="+titreEmission.getText()+"&aq=f");
 						}
 					}
 				);
@@ -126,20 +119,23 @@ public class GuideDetailsActivity extends Activity implements GuideConstants
 						public void onClick(View arg0)
 						{
 							tracker.trackPageView("Guide/AlloCine");
-							Intent intent = new Intent(Intent.ACTION_SEARCH);
-							intent.setClassName("com.allocine.androidapp", "com.allocine.androidapp.activities.SearchActivity");
-							intent.putExtra(SearchManager.QUERY, titreEmission.getText());
-							intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-							try
+							// Si le programme est un film on peut chercher via l'appli AlloCiné, sinon on cherche via le site
+							if (extras.getInt(ChainesDbAdapter.KEY_PROG_GENRE_ID) == 1)
 							{
-								startActivity(intent);
+								searchFilm(
+										"com.allocine.androidapp",
+										".activities.SearchActivity",
+										(String) titreEmission.getText(),
+										"http://mobile.allocine.fr/recherche/default.html?motcle="+titreEmission.getText());
 							}
-							catch (Exception e)
+							else
 							{
-								Log.e(TAG, e.getMessage());
-
-								startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://mobile.allocine.fr/recherche/default.html?motcle="+titreEmission.getText())));
-							}
+								searchFilm(
+										null,
+										null,
+										(String) titreEmission.getText(),
+										"http://mobile.allocine.fr/recherche/default.html?motcle="+titreEmission.getText());
+							}	
 						}
 					}
 				);
@@ -220,6 +216,38 @@ public class GuideDetailsActivity extends Activity implements GuideConstants
     	tracker.stop();
     	FBMNetTask.unregister(this);
     	super.onDestroy();
+    }
+
+    private void searchFilm(final String packageName, final String className, String query, String alternateURL)
+    {
+        
+        if (packageName != null)
+        {
+            Intent i = new Intent("android.intent.action.SEARCH");
+	        if (className == null)
+	        {
+	            i.setPackage(packageName);    
+	        }
+	        else
+	        {
+	            i.setClassName(packageName, packageName+className);
+	        }
+	        i.putExtra(SearchManager.QUERY, query);
+	        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);            
+	        try
+	        {
+	            startActivity(i);
+	        }
+	        catch (Exception e)
+	        {
+				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(alternateURL)));
+				Log.e(TAG, e.getMessage());
+	        }
+        }
+        else
+        {
+			startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(alternateURL)));        	
+        }
     }
 
     private void proposerFin(final Bundle extras)
