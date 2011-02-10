@@ -389,6 +389,7 @@ public abstract class GuideUtils extends ListActivity implements Constants
 				i.putExtra(ChainesDbAdapter.KEY_GUIDECHAINE_NAME, p.chaine_name);
 				i.putExtra(ChainesDbAdapter.KEY_PROG_RESUM_L, p.resum_l);
 				i.putExtra(ChainesDbAdapter.KEY_GUIDECHAINE_ID, p.guidechaine_id);
+				i.putExtra(ChainesDbAdapter.KEY_PROG_GENRE_ID, p.genre_id);
 			}
 	        startActivity(i);
     	}
@@ -410,6 +411,7 @@ public abstract class GuideUtils extends ListActivity implements Constants
     	public int canal;
     	public String chaine_name;
     	public String resum_l;
+    	public Integer genre_id;
     }
     
     protected class ListeChaines implements Comparable<ListeChaines>
@@ -501,6 +503,7 @@ public abstract class GuideUtils extends ListActivity implements Constants
 			Programme p = new Programme();
 			listeChaines.programmes.moveToPosition(position);
 			p.channel_id = listeChaines.programmes.getInt(listeChaines.programmes.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_CHANNEL_ID));
+			p.genre_id =  listeChaines.programmes.getInt(listeChaines.programmes.getColumnIndexOrThrow(ChainesDbAdapter.KEY_PROG_GENRE_ID));
 			p.datetime_deb = listeChaines.programmes.getString(heuredebCI);
 			p.datetime_fin = listeChaines.programmes.getString(heurefinCI);
 			p.duree = listeChaines.programmes.getInt(dureeCI);
