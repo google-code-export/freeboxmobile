@@ -780,12 +780,15 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 		// Remplissage des spinners
     	remplirSpinner(R.id.pvrPrgChaine);
     	remplirSpinner(R.id.pvrPrgDisque);
+    	afficherInfosDisque();
     	
     	disqueSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
 			{
 				Log.d(TAG,"DISQUE SELECTED : "+parent.getSelectedItem().toString());
+        		boitiersCursor.moveToPosition(mBoitierHD);
+				mBoitierHDName = boitiersCursor.getString(boitiersCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_BOITIER_NAME));
 				afficherInfosDisque();
 			}
 
@@ -1214,7 +1217,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 			disqueId = disquesCursor.getInt(t1);
 	    	ChainesDbAdapter db = new ChainesDbAdapter(this);
 	    	db.open();
-	//    	Log.d(TAG,"afficherInfosDisque : "+disqueId + " "+mBoitierHDName);
+	    	Log.d(TAG,"afficherInfosDisque : "+disqueId + " "+mBoitierHDName);
 	    	Cursor c = db.fetchDisque(disqueId, mBoitierHDName);
 	    	startManagingCursor(c);
 	        if (c.moveToFirst())
