@@ -17,6 +17,13 @@ TELECOMMANDE : Le module de télécommande
 
 = Versions publiques de !FreeboxMobile =
 == 0.52.12 ==
+Sortie le 11/02/2011<br>
+Release : 66<br>
+Revision : 842
+ * debug magnéto & guide
+ * !AlloCiné s'ouvre maintenant sur l'appli si l'appli !AlloCiné est installée et que la recherche concerne un film (sinon site mobile)
+
+== 0.52.12 ==
 Sortie le 09/02/2011<br>
 Release : 65<br>
 Revision : 836
