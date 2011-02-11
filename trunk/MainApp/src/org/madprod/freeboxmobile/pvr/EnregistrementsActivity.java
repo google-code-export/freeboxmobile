@@ -73,7 +73,7 @@ public class EnregistrementsActivity extends ExpandableListActivity implements C
 	
 	static ProgressDialog progressDialog = null;
 	
-	static String curId = "";
+	private static String curId = null;
 	GoogleAnalyticsTracker tracker;
 	
     /** Called when the activity is first created. */
@@ -100,6 +100,10 @@ public class EnregistrementsActivity extends ExpandableListActivity implements C
         	{
         		Log.w(TAG,"KO");
         	}
+        }
+        if (curId == null)
+        {
+        	curId = "";
         }
         if (!curId.equals(FBMHttpConnection.getIdentifiant()))
         {
