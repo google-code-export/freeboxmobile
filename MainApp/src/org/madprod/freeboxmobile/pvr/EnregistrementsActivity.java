@@ -302,8 +302,6 @@ public class EnregistrementsActivity extends ExpandableListActivity implements C
      			details.add("Boitier");
 //     			details.add("Boitier "+(listCursor.getInt(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_BOITIER_ID))+1));
      			boitiersCursor.moveToPosition(listCursor.getInt(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_BOITIER_ID)));
-     			Log.d(TAG, "=============+> "+ listCursor.getInt(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_BOITIER)));
-     			Log.d(TAG, "=============+> "+ listCursor.getInt(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_BOITIER_ID)));
      			details.add(boitiersCursor.getString(boitiersCursor.getColumnIndex(ChainesDbAdapter.KEY_BOITIER_NAME)));
      			listeEnregistrements.ajouter(item, details);
      			
@@ -312,7 +310,7 @@ public class EnregistrementsActivity extends ExpandableListActivity implements C
 		
 		listCursor.close();
 		boitiersCursor.close();
-        
+        dbBoitiers.close();
         db.close();
     }
 
