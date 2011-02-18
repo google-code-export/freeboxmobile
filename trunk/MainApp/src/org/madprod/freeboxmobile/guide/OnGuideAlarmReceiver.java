@@ -22,7 +22,7 @@ public class OnGuideAlarmReceiver extends BroadcastReceiver implements Constants
 	public void onReceive(Context context, Intent intent)
 	{
 		Log.i(TAG,"onReceive Guide Alarm");
-		WakefullIntentService.acquireStaticLock(context);
+//		WakefullIntentService.acquireStaticLock(context);
 		context.startService(new Intent(context, GuideCheck.class));
 	}
 }

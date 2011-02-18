@@ -498,6 +498,22 @@ public class ChainesDbAdapter implements GuideConstants
         return mDb.insert(DATABASE_TABLE_PROGRAMMES, null, initialValues);
     }
     
+    public long updateProgramme(int genre_id, int channel_id, String resum_s, String resum_l, String title, int duree, String datetime_deb, String datetime_fin)
+    {
+
+    	ContentValues updateValues = new ContentValues();
+    	updateValues.put(KEY_PROG_GENRE_ID, genre_id);
+//    	updateValues.put(KEY_PROG_CHANNEL_ID, channel_id);
+        updateValues.put(KEY_PROG_RESUM_S, resum_s);
+        updateValues.put(KEY_PROG_RESUM_L, resum_l);
+        updateValues.put(KEY_PROG_TITLE, title);
+        updateValues.put(KEY_PROG_DUREE, duree);
+//        updateValues.put(KEY_PROG_DATETIME_DEB, datetime_deb);
+        updateValues.put(KEY_PROG_DATETIME_FIN, datetime_fin);
+		return mDb.update(DATABASE_TABLE_PROGRAMMES, updateValues, KEY_PROG_CHANNEL_ID + " = "+channel_id+" AND "+KEY_PROG_DATETIME_DEB+" = '"+datetime_deb+"'", null);
+//        return mDb.insert(DATABASE_TABLE_PROGRAMMES, null, initialValues);
+    }
+    
     public Cursor getNextProgs(int chaineId, String datetime, Integer nb)
     {
 		return mDb.query(
