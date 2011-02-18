@@ -117,54 +117,57 @@ public class EnregistrementsNetwork implements Constants
         
         // SQLite
         EnregistrementsDbAdapter db = new EnregistrementsDbAdapter(c);
-        db.open();
-        db.cleanEnregistrements(bId);
-		do
-		{
-			debut = tableEnregistrements.indexOf(" <form id=\"");
-			
-			if (debut > 0)
+        if (db != null)
+        {
+	        db.open();
+	        db.cleanEnregistrements(bId);
+			do
 			{
-				tableEnregistrements = tableEnregistrements.substring(debut);
-	        	
-	        	// Récupération des infos
-				chaine =		recupererChamp("<strong>", "<");
-				date =			recupererChamp("<strong>", "<");
-				heure =			recupererChamp("<strong>", "<");
-				duree =			recupererChamp("<strong>", "<");
-				interne =		recupererChamp("<strong>", "<");
-				nom =			recupererChamp("<strong>", "<");
-				ide =			recupererChamp("value=\"", "\"");
-				chaine_id =		recupererChamp("value=\"", "\"");
-				service_id =	recupererChamp("value=\"", "\"");
-				date =			recupererChamp("value=\"", "\"");
-				h =				recupererChamp("value=\"", "\"");
-				min =			recupererChamp("value=\"", "\"");
-				dur =			recupererChamp("value=\"", "\"");
-				name =			recupererChamp("value=\"", "\"");
-				where_id =		recupererChamp("value=\"", "\"");
-				repeat_a =		recupererChamp("value=\"", "\"");
+				debut = tableEnregistrements.indexOf(" <form id=\"");
 				
-				if (db.isEnregistrementPresent(Integer.parseInt(ide)) > 0)
+				if (debut > 0)
 				{
-					db.updateEnregistrement(chaine, "", date, heure, duree, nom, ide,
-							chaine_id, service_id, h, min, dur, name, where_id, repeat_a);	
+					tableEnregistrements = tableEnregistrements.substring(debut);
+		        	
+		        	// Récupération des infos
+					chaine =		recupererChamp("<strong>", "<");
+					date =			recupererChamp("<strong>", "<");
+					heure =			recupererChamp("<strong>", "<");
+					duree =			recupererChamp("<strong>", "<");
+					interne =		recupererChamp("<strong>", "<");
+					nom =			recupererChamp("<strong>", "<");
+					ide =			recupererChamp("value=\"", "\"");
+					chaine_id =		recupererChamp("value=\"", "\"");
+					service_id =	recupererChamp("value=\"", "\"");
+					date =			recupererChamp("value=\"", "\"");
+					h =				recupererChamp("value=\"", "\"");
+					min =			recupererChamp("value=\"", "\"");
+					dur =			recupererChamp("value=\"", "\"");
+					name =			recupererChamp("value=\"", "\"");
+					where_id =		recupererChamp("value=\"", "\"");
+					repeat_a =		recupererChamp("value=\"", "\"");
+					
+					if (db.isEnregistrementPresent(Integer.parseInt(ide)) > 0)
+					{
+						db.updateEnregistrement(chaine, "", date, heure, duree, nom, ide,
+								chaine_id, service_id, h, min, dur, name, where_id, repeat_a);	
+					}
+					else
+					{
+					db.createEnregistrement(chaine, "", date, heure, duree, nom, ide,
+							chaine_id, service_id, bId, h, min, dur, name, where_id, repeat_a);
+					}
+					debut = tableEnregistrements.indexOf(" <form id=");
 				}
 				else
 				{
-				db.createEnregistrement(chaine, "", date, heure, duree, nom, ide,
-						chaine_id, service_id, bId, h, min, dur, name, where_id, repeat_a);
+					break;
 				}
-				debut = tableEnregistrements.indexOf(" <form id=");
-			}
-			else
-			{
-				break;
-			}
-		} while (true);
-		db.close();
-		
-		return true;
+			} while (true);
+			db.close();
+			return true;
+        }
+        return false;
     }
     
     /**

@@ -73,7 +73,14 @@ public interface GuideConstants extends Constants
     	"",						// 29
     	"",						// 30
     	"Emission religieuse",	// 31
-    	""						// 32
+    	"Festival",				// 32 n
+    	"Clips musicaux",		// 33 n
+    	"Météo",				// 34 n
+    	"",						// 35
+    	"",						// 36
+    	"Talk Show",			// 37 n
+    	"Télé Réalité",			// 38 n
+    	"Magasine de services"	// 39 n
     	};
     
     public class Categorie implements Comparable<Categorie>

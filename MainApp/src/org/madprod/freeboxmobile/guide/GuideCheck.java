@@ -32,7 +32,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
-import android.os.Bundle;
 import android.os.Environment;
 import android.os.SystemClock;
 import android.util.Log;
@@ -204,7 +203,7 @@ public class GuideCheck extends WakefullIntentService implements GuideConstants
     {
 		Intent i = new Intent(CUR_ACTIVITY, GuideCheck.class);
 		i.putExtra("selectedDate", selectedDate);
-		WakefullIntentService.acquireStaticLock(CUR_ACTIVITY);
+//		WakefullIntentService.acquireStaticLock(CUR_ACTIVITY);
 		CUR_ACTIVITY.startService(i);
     }
 
@@ -334,9 +333,10 @@ public class GuideCheck extends WakefullIntentService implements GuideConstants
 								// Je ne sais pas à quoi correspond le channel_id 173 mais les programmes sont vides
 								// et il n'y a pas de chaine qui corresponde dans la liste des chaines
 								// donc...
+								jHoraireObject = jHorairesObject.getJSONObject(datetime_deb);
 								if (!(db.isProgrammePresent(channel_id, datetime_deb)) && (channel_id != 173))
-								{
-									jHoraireObject = jHorairesObject.getJSONObject(datetime_deb);
+								{									
+//									jHoraireObject = jHorairesObject.getJSONObject(datetime_deb);
 									db.createProgramme(
 										Integer.parseInt(getJSONString(jHoraireObject, "genre_id")),
 										channel_id,
@@ -348,7 +348,54 @@ public class GuideCheck extends WakefullIntentService implements GuideConstants
 										getJSONString(jHoraireObject,"datetime_fin")
 										);
 								}
-								// TODO : sinon rafraichir ?
+								/*
+								else
+								{
+									if (channel_id != 173)
+									{
+										try
+										{
+											Log.d(TAG, "UPDATE : "+Integer.parseInt(getJSONString(jHoraireObject, "id")));
+										}
+										catch (Exception e)
+										{
+											Log.d(TAG, "UPDATE : no ID ! "+getJSONString(jHoraireObject, "id"));
+										}
+										db.updateProgramme(
+												Integer.parseInt(getJSONString(jHoraireObject, "genre_id")),
+												channel_id,
+												getJSONString(jHoraireObject,"resum_s"),
+												getJSONString(jHoraireObject,"resum_l"),
+												getJSONString(jHoraireObject,"title").replaceAll("&amp;","&"),
+												Integer.parseInt(getJSONString(jHoraireObject,"duree")),
+												datetime_deb,
+												getJSONString(jHoraireObject,"datetime_fin")
+												);
+									}
+								}
+*/
+								// TODO : sinon rafraichir ? (ci-dessus)
+								
+								// On affiche les émissions qui auraient un genre non supporté (pour debug)
+								
+								Integer g;
+								try
+								{
+									g = Integer.parseInt(getJSONString(jHoraireObject, "genre_id"));
+									if (
+											(g > 0) &&
+											((g < genres.length) && (genres[g].length() == 0)) ||
+											(g >= genres.length)
+										)
+									{
+										Log.d(TAG, "Genre inconnu "+g+": "+getJSONString(jHoraireObject,"title").replaceAll("&amp;","&"));
+									}
+								}
+								catch (Exception e)
+								{
+									
+								}
+								
 							}
 						}
 						if (duree_h == 4)

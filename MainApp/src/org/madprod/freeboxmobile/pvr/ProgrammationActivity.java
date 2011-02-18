@@ -1247,6 +1247,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 	        	pb.setMax(gigaTotal);
 	        	pb.setProgress(gigaTotal-gigaFree);
 	        }
+	        c.close();
 	        db.close();
     	}
     }

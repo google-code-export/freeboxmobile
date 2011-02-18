@@ -75,6 +75,13 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
 		tracker.trackPageView("Home/Home");
 		
+		/*
+		ProfileManager pm = ProfileManager.getInstance();
+		pm.addProfile("test 1");
+		pm.addProfile("pf 42");
+		pm.listProfiles();
+		*/
+		
 		// TESTS POUR TROUVER OU EST LE BUG HTTPS CHEZ FREE
 		/*
 		List<NameValuePair> postVars = new ArrayList<NameValuePair>();
@@ -265,22 +272,6 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     	Map<String,Object> map;
 
 
-    	if (checkOS(Build.VERSION_CODES.ECLAIR_MR1))
-    	{
-	    	map = new HashMap<String,Object>();
-			map.put(M_ICON, R.drawable.fm_television);
-			map.put(M_TITRE, getString(R.string.buttonTv));
-	        if (isModuleInstalled("org.madprod.freeboxmobile", "org.madprod.freeboxmobile.home.HomeListActivity"))
-	        {
-	        	map.put(M_DESC, "Regardez une sélection de chaînes de TV (BETA)");
-	        }
-	        else
-	        {
-	        	map.put(M_DESC, "Téléchargez le module 'Freebox TV Mobile' afin de regarder une sélection chaînes de TV");	        	
-	        }
-			map.put(M_CLASS, null);
-			modulesList.add(map);
-    	}
 		map = new HashMap<String,Object>();
 		map.put(M_ICON, R.drawable.fm_guide_tv);
 		map.put(M_TITRE, getString(R.string.buttonGuide));
@@ -310,6 +301,22 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		map.put(M_DESC, "Amusez vous avec nos télécommandes\n[BETA]");
 		map.put(M_CLASS, null);
 		modulesList.add(map);
+    	if (checkOS(Build.VERSION_CODES.ECLAIR_MR1))
+    	{
+	    	map = new HashMap<String,Object>();
+			map.put(M_ICON, R.drawable.fm_television);
+			map.put(M_TITRE, getString(R.string.buttonTv));
+	        if (isModuleInstalled("org.madprod.freeboxmobile", "org.madprod.freeboxmobile.home.HomeListActivity"))
+	        {
+	        	map.put(M_DESC, "Regardez une sélection de chaînes de TV (BETA)");
+	        }
+	        else
+	        {
+	        	map.put(M_DESC, "Téléchargez le module 'Freebox TV Mobile' afin de regarder une sélection chaînes de TV (BETA)");	        	
+	        }
+			map.put(M_CLASS, null);
+			modulesList.add(map);
+    	}
 		map = new HashMap<String,Object>();
 		map.put(M_ICON, R.drawable.fm_infos_adsl);
 		map.put(M_TITRE, getString(R.string.buttonLigne));
@@ -717,18 +724,17 @@ public class HomeListActivity extends ListActivity implements HomeConstants
     	t.setLinksClickable(true);
     	t.setAutoLinkMask(Linkify.ALL);
     	t.setText(
-    		"Info : Installation sur carte SD : L'installation sur SD n'est possible sur Android que "+
-    		"pour des applications simples, n'utilisant pas des fonctionnalités avancées. "+
-    		"A cause de ces contraintes liées à Android, cette application n'est pas installable sur SD. "+
-    		"Cependant, certains des modules optionnels sont installables sur SD. "+
+    		"Freebox v6 : si vous avez migré en Freebox Revolution vous devez absolument utiliser la touche menu ici puis faire 'Rafraichir compte'.\n"+
+    		"A cause de ces contraintes liées à Android, le module principal n'est pas installable sur SD. "+
+    		"Cependant, les modules optionnels sont installables sur SD. "+
     		"Consultez la FAQ sur notre site web pour plus d'information.\n\n"+
 			"Site web :\nhttp://www.freeboxmobile.org\n\n"+
 			"Contact :\ncontact@freeboxmobile.org\n\n"+
 			"Version : "+Utils.getFBMVersion(this)+"\n\n"+
 			"Facebook (devenez fan !) :\nhttp://www.facebook.com/search/?q=freeboxmobile\n\n"+
 			"Auteurs :\n"+
-			"- Olivier Rosello : Architecture / Réseau / Home / Info ADSL / Téléphone / Guide des Programmes\n"+
-			"- Clément Beslon : Télécommande Wifi / Actualité Freenautes\n"+
+			"- Olivier Rosello : Architecture / Réseau / Home / Tv / Info ADSL / Téléphone / GuideTv\n"+
+			"- Clément Beslon : Télécommande Wifi / Actualité Freenautes / Téléphone\n"+
 			"- Bruno Alacoque : Skins Télécommande\n"+
 			"- Nacer Laradji : Hébergement, gestion des serveurs\n"+
 			"- Benoit Duffez : Magnétosocope\n"+
