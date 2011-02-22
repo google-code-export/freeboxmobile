@@ -3,6 +3,12 @@
 <wiki:toc max_depth="2" />
 
 = Versions publiques du module !Freebox Tv Mobile =
+== 1.1.1 ==
+Sortie le 22/02/2011<br>
+Release : 7<br>
+Révision : 846
+ * Debug
+
 == 1.1.0 ==
 Sortie le 07/02/2011<br>
 Release : 6<br>
