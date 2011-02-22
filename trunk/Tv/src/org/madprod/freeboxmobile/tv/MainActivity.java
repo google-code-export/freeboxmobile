@@ -203,9 +203,15 @@ public class MainActivity extends ListActivity implements TvConstants
         Log.d(TAG, "LOG : "+listChaines);
         Log.d(TAG, " POS : "+listChaines.get(position));
         Log.d(TAG, " STREAM : "+listChaines.get(position).getStream(Chaine.STREAM_TYPE_INTERNET));
-        callStream(
-        		listChaines.get(position).getFavoriteStream(streamsPrefs).get(Chaine.M_URL),
-        		listChaines.get(position).getFavoriteStream(streamsPrefs).get(Chaine.M_MIME)
+        if ((listChaines != null) &&
+        	(listChaines.get(position) != null) &&
+        	(listChaines.get(position).getFavoriteStream(streamsPrefs) != null) &&
+        	(listChaines.get(position).getFavoriteStream(streamsPrefs).get(Chaine.M_URL) != null) &&
+        	(listChaines.get(position).getFavoriteStream(streamsPrefs).get(Chaine.M_MIME) != null)
+        	)
+	        callStream(
+	        		listChaines.get(position).getFavoriteStream(streamsPrefs).get(Chaine.M_URL),
+	        		listChaines.get(position).getFavoriteStream(streamsPrefs).get(Chaine.M_MIME)
         );
     }
 
@@ -373,41 +379,47 @@ public class MainActivity extends ListActivity implements TvConstants
 					{
 						jChannel = jChannels.getJSONObject(i);
 						Log.i(TAG, "Name : "+jChannel.getString("name"));
-						try
+						if ((jChannel.getBoolean("active") != false) || (modeFull))
 						{
-							c = new Chaine(jChannel.getInt("num"), jChannel.getString("icon"), jChannel.getString("name"));
-							jStreams = jChannel.getJSONArray("streams");
-							nbStreams = jStreams.length();
-							for (int j = 0; j < nbStreams; j++)
+							try
 							{
-								jStream = jStreams.getJSONObject(j);
-								switch (jStream.getInt("type"))
+								c = new Chaine(jChannel.getInt("num"), jChannel.getString("icon"), jChannel.getString("name"));
+								jStreams = jChannel.getJSONArray("streams");
+								nbStreams = jStreams.length();
+								for (int j = 0; j < nbStreams; j++)
 								{
-									case 2:
-										type = Chaine.STREAM_TYPE_INTERNET;
-										break;
-									case 1:
-										type = Chaine.STREAM_TYPE_TVFREEBOX;
-										break;
-									default:
-										type = -1;
-										break;
+									jStream = jStreams.getJSONObject(j);
+									if ((jStream.getBoolean("active") != false) || (modeFull))
+									{
+										switch (jStream.getInt("type"))
+										{
+											case 2:
+												type = Chaine.STREAM_TYPE_INTERNET;
+												break;
+											case 1:
+												type = Chaine.STREAM_TYPE_TVFREEBOX;
+												break;
+											default:
+												type = -1;
+												break;
+										}
+										try
+										{
+											c.addStream(type, jStream.getString("url"), jStream.getString("mime"));
+										}
+										catch (JSONException e)
+										{
+											e.printStackTrace();
+										}
+									}
 								}
-								try
-								{
-									c.addStream(type, jStream.getString("url"), jStream.getString("mime"));
-								}
-								catch (JSONException e)
-								{
-									e.printStackTrace();
-								}
+								mapChaines.put(jChannel.getInt("num"), c);
 							}
-							mapChaines.put(jChannel.getInt("num"), c);
+							catch (JSONException e)
+							{
+								e.printStackTrace();
+							}
 						}
-						catch (JSONException e)
-						{
-							e.printStackTrace();
-						}					
 					}
 				}
 				catch (JSONException e)

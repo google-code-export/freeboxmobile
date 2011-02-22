@@ -10,7 +10,6 @@ public class LaunchActivity extends Activity
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
-
 		super.onCreate(savedInstanceState);
 		Intent i = new Intent();
 		i.setClass(this, MainActivity.class);
