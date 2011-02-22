@@ -17,7 +17,7 @@ public interface TvConstants
     static final String TAG				= "FBMTV";
 //	static final String[] listStreamsKeys={"fav1", "fav2", "fav3"};
 //	static final int[] defaultValues = {Chaine.STREAM_TYPE_MULTIPOSTE_TNTSD, Chaine.STREAM_TYPE_MULTIPOSTE_SD, Chaine.STREAM_TYPE_INTERNET};
-    static final String[] listStreamsKeys={"fav1"};
+    static final String[] listStreamsKeys = {"fav1"};
     static final int[] defaultValues = {Chaine.STREAM_TYPE_INTERNET};
     static final boolean modeFull = false;
 }
