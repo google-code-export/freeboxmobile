@@ -12,6 +12,8 @@ public interface TvConstants
 	static final String KEY_SPLASH_TV = "splashscreen_tv";
     static final String KEY_PREFS_VERSION = "prefs_tv";
     
+	static final String DIR_FBM			= "/freeboxmobile/";
+	static final String FILE_TV_FULL	= "tvfull";
     static final String ANALYTICS_MAIN_TRACKER = "UA-9016955-4";
     static final String KEY_PREFS		= "freeboxmobiletv";
     static final String TAG				= "FBMTV";
@@ -19,5 +21,4 @@ public interface TvConstants
 //	static final int[] defaultValues = {Chaine.STREAM_TYPE_MULTIPOSTE_TNTSD, Chaine.STREAM_TYPE_MULTIPOSTE_SD, Chaine.STREAM_TYPE_INTERNET};
     static final String[] listStreamsKeys = {"fav1"};
     static final int[] defaultValues = {Chaine.STREAM_TYPE_INTERNET};
-    static final boolean modeFull = false;
 }

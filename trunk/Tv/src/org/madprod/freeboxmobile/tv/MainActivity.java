@@ -45,6 +45,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -70,6 +71,7 @@ public class MainActivity extends ListActivity implements TvConstants
 	public static Map<Integer, Chaine> mapChaines = new HashMap<Integer, Chaine>();
 	private static ArrayList<Chaine> listChaines = new ArrayList<Chaine>();
 	static String USER_AGENT = null;
+    static boolean modeFull = false;
 	private static ImageAdapter listAdapter = null; 
 	private static ProgressDialog pd = null;
 	private static long startPlay = 0;
@@ -105,6 +107,12 @@ public class MainActivity extends ListActivity implements TvConstants
 			editor.putInt(KEY_PREFS_VERSION, Utils.getMyCode(this));
 			editor.commit();
 		}
+    	File file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+FILE_TV_FULL);
+    	if (file.exists())
+    	{
+    		Log.d(TAG, "Mode full activé !");
+    		modeFull = true;
+    	}
     }
 
     @Override
