@@ -38,7 +38,7 @@ public class Chaine implements Comparable <Chaine>, TvConstants
 		 * car ils ne sont pas pris en charge sur Android par aucun player
 		 * (pour l'instant)
 		 */
-		if (!modeFull)
+		if (!MainActivity.modeFull)
 		{
 			final String[] SNAME={
 //			"Flux PC",					// STREAM_TYPE_TVFREEBOX
