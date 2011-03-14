@@ -78,7 +78,7 @@ public class FileChooserActivity extends Activity {
 				@Override
 				public boolean accept(File parent, String filename) {
 					//Extensions gérées par le FileChooser
-					final String[] matchingExtensions = new String[]{".pdf",".jpg",".jpeg"};
+					final String[] matchingExtensions = new String[]{".pdf",".jpg",".jpeg",".doc",".xls",".odt", ".ods", ".png", ".txt", ".docx", ".xlsx"};
 					//Issue 134 : On compare dorénavant le filename en lettre minuscule
 					final String lowercaseFilename = filename.toLowerCase();
 					for(int i=0;i<matchingExtensions.length;i++){

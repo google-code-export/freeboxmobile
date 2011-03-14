@@ -199,7 +199,8 @@ public class FaxActivity extends Activity implements FaxConstants {
 			"Le module Fax de Freebox Mobile vous permet d'envoyer des Fax en utilisant votre compte Freebox (donc gratuit vers les numéros de fixe).\n\n"+
 			"Vous devez choisir ou saisir un numéro de fax ainsi qu'un fichier présent sur votre carte mémoire. Les formats supportés sont :\n"+
 			"- pdf\n"+
-			"- jpeg / jpg\n"+
+			"- jpeg / jpg / png\n"+
+			"- doc / docx / xls / xlsx / odt / ods\n"+
 			"- txt\n\n"+
 			"Grâce à Freebox Mobile vous pouvez aussi envoyer des fax directement à partir d'autres applications comme :\n"+
 			"- OI File Manage\n"+
