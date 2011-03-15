@@ -17,6 +17,12 @@ TELECOMMANDE : Le module de télécommande
 
 = Versions publiques de !FreeboxMobile =
 == 0.52.14 ==
+Sortie le 15/03/2011<br>
+Release : 68<br>
+Revision : 850
+ * debug magnéto & fax
+
+== 0.52.14 ==
 Sortie le 18/02/2011<br>
 Release : 67<br>
 Revision : 844
