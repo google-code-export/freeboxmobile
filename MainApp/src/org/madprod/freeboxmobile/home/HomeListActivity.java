@@ -75,13 +75,6 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
 		tracker.trackPageView("Home/Home");
 		
-		/*
-		ProfileManager pm = ProfileManager.getInstance();
-		pm.addProfile("test 1");
-		pm.addProfile("pf 42");
-		pm.listProfiles();
-		*/
-		
 		// TESTS POUR TROUVER OU EST LE BUG HTTPS CHEZ FREE
 		/*
 		List<NameValuePair> postVars = new ArrayList<NameValuePair>();
