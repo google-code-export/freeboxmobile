@@ -983,7 +983,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
         				}
         			}
         			db.close();
-        			return getString(R.string.pvrErreurConsole) + "\n" + msgErreur;
+        			return getString(R.string.pvrErreurConsole) + "\n" + msgErreur+"\nSi ce message n'est pas normal, essayez de faire : touche menu -> tout mettre à jour, puis de réessayer.";
         		}
         		else
         		{
