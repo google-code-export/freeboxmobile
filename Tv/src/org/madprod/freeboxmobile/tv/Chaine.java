@@ -47,7 +47,7 @@ public class Chaine implements Comparable <Chaine>, TvConstants
 //			"Flux Multiposte",			// STREAM_TYPE_MULTIPOSTE_SD
 //			"Flux Multiposte HD",		// STREAM_TYPE_MULTIPOSTE_HD
 //			"Flux Multiposte (Auto)",	// STREAM_TYPE_MULTIPOSTE_AUTO
-//			"Flux Multiposte TNT",		// STREAM_TYPE_MULTIPOSTE_TNTSD
+			"Flux Multiposte TNT",		// STREAM_TYPE_MULTIPOSTE_TNTSD
 //			"Flux Multiposte TNT HD",	// STREAM_TYPE_MULTIPOSTE_TNTHD
 //			"Flux Multiposte 3D",		// STREAM_TYPE_MULTIPOSTE_3D
 			};
@@ -59,7 +59,7 @@ public class Chaine implements Comparable <Chaine>, TvConstants
 //				STREAM_TYPE_MULTIPOSTE_SD,
 //				STREAM_TYPE_MULTIPOSTE_HD,
 //				STREAM_TYPE_MULTIPOSTE_AUTO,
-//				STREAM_TYPE_MULTIPOSTE_TNTSD,
+				STREAM_TYPE_MULTIPOSTE_TNTSD,
 //				STREAM_TYPE_MULTIPOSTE_TNTHD,
 //				STREAM_TYPE_MULTIPOSTE_3D
 			};

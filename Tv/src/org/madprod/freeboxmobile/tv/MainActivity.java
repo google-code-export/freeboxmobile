@@ -2,11 +2,8 @@ package org.madprod.freeboxmobile.tv;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -77,7 +74,7 @@ public class MainActivity extends ListActivity implements TvConstants
 	private static long startPlay = 0;
 	private int networkState = -1;
 	private Map<Integer, Integer> streamsPrefs = new HashMap<Integer, Integer>();
-	
+
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -113,6 +110,10 @@ public class MainActivity extends ListActivity implements TvConstants
     		Log.d(TAG, "Mode full activé !");
     		modeFull = true;
     	}
+    	else
+    	{
+    		modeFull = false;
+    	}
     }
 
     @Override
@@ -121,7 +122,7 @@ public class MainActivity extends ListActivity implements TvConstants
     	super.onDestroy();
     	tracker.stop();
     }
-    
+
     @Override
     protected void onStart()
     {
@@ -260,7 +261,7 @@ public class MainActivity extends ListActivity implements TvConstants
 	private void initDefaultPrefs()
 	{
 		int i = 0;
-		
+
 		SharedPreferences mgr = PreferenceManager.getDefaultSharedPreferences(this);
 		Editor editor = mgr.edit();
 		while (i < listStreamsKeys.length)
@@ -270,13 +271,13 @@ public class MainActivity extends ListActivity implements TvConstants
 		}
 		editor.commit();
 	}
-	
+
 	private void setupStreamsPrefs()
 	{
 		boolean cont = true;
 		int i = 0;
 		String result = null;
-		
+
 		SharedPreferences mgr = PreferenceManager.getDefaultSharedPreferences(this);
 		while ((cont) && (i < listStreamsKeys.length))
 		{
@@ -440,7 +441,7 @@ public class MainActivity extends ListActivity implements TvConstants
 				Log.e(TAG, "Impossible de charger le json !");
 			}
 //	    	if (networkType > 0)
-			if ((modeFull) && (networkType == 3))
+			if ((modeFull) || (networkType == 3))
 	    	{
 	    		InputStreamReader m3u;
 		    	m3u = getUrl("http://mafreebox.freebox.fr/freeboxtv/playlist.m3u");
@@ -602,7 +603,7 @@ public class MainActivity extends ListActivity implements TvConstants
 		});
 		d3.show();
     }
-    
+
     private void checkOS()
     {
     	if (Utils.getPlatformVersion() < Build.VERSION_CODES.ECLAIR_MR1)
@@ -687,7 +688,7 @@ public class MainActivity extends ListActivity implements TvConstants
     		downloadPlayer();
     	}
     }
-    
+
     private void showNetworkRestrictions()
     {
     	AlertDialog d = new AlertDialog.Builder(this).create();
@@ -696,7 +697,7 @@ public class MainActivity extends ListActivity implements TvConstants
     	d.setMessage(
 //    		"En étant connecté au réseau Free (sur une Freebox, réseau FreeWifi, réseau FreeMobile...) vous aurez plus de chaînes à votre disposition.\n\n"+
 //    		"Si vous n'arrivez pas à ouvrir une chaîne, cela peut être dû à un manque de bande passante à l'endroit où vous vous trouvez."
-    		"En étant connecté à une Freebox, vous aurez plus de chaînes à votre disposition."
+    		"En étant connecté à une Freebox v6 avec TNT, vous aurez plus de chaînes à votre disposition."
 		);
 		d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
 		{
@@ -714,8 +715,9 @@ public class MainActivity extends ListActivity implements TvConstants
 		d.setTitle("Important ! Merci de lire");
 		d.setIcon(R.drawable.icon_fbm);
     	d.setMessage(
-    		"Suite à la fermeture par Free du service tv.freebox.fr et de l'impossibilité de lire correctement les flux multiposte avec un player Android (pour l'instant du moins).\n"+
-    		"Cette situation est indépendante de notre volonté. Nous ferons une mise à jour de l'application dès qu'il sera possible de lire les flux multiposte ou si le service tv.freebox.fr reprend..."
+       		"En vous connectant à une Freebox v6 avec la TNT (le scan TNT doit être effectué sur la v6), vous obtiendrez toutes les chaînes de la TNT sur Freebox Mobile !"
+//    		"Suite à la fermeture par Free du service tv.freebox.fr et de l'impossibilité de lire correctement les flux multiposte avec un player Android (pour l'instant du moins).\n"+
+//    		"Cette situation est indépendante de notre volonté. Nous ferons une mise à jour de l'application dès qu'il sera possible de lire les flux multiposte ou si le service tv.freebox.fr reprend..."
 		);
 		d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
 		{
@@ -729,7 +731,7 @@ public class MainActivity extends ListActivity implements TvConstants
 
     private void downloadPlayer()
     {
-    	if (modeFull)
+    	if (!modeFull)
     		showNetworkRestrictions();
     	showGlobalRestrictions();
 		if (!isModuleInstalled("me.abitno.vplayer", "me.abitno.media.explorer.FileExplorer"))
@@ -807,7 +809,7 @@ public class MainActivity extends ListActivity implements TvConstants
 	    	d.show();
 		}
     }
-    
+
 	private boolean isModuleInstalled(String module, String activity)
 	{
 		Intent i = new Intent(Intent.ACTION_MAIN);
@@ -834,7 +836,7 @@ public class MainActivity extends ListActivity implements TvConstants
 			editor.commit();
 		}
 	}
-	
+
 	public static String getPage(InputStreamReader isr)
 	{
 		if (isr == null)
@@ -914,7 +916,7 @@ public class MainActivity extends ListActivity implements TvConstants
 		});
 		d.show();
 	}
-	
+
 	private void showPopupFbm()
 	{
 		AlertDialog d = new AlertDialog.Builder(this).create();
@@ -965,7 +967,7 @@ public class MainActivity extends ListActivity implements TvConstants
 		});
 		d.show();
 	}
-	
+
     private class AsyncGetStreams extends AsyncTask<Void, Void, Void>
     {
     	int networkType = -1;
@@ -1014,28 +1016,29 @@ public class MainActivity extends ListActivity implements TvConstants
 			}
 	        Log.d(TAG, "onPostExecute finished");
 		}
-		
+
 		private void displayNet(int n)
 		{
+			final String pasFreebox = "En vous connectant à une Freebox Révolution avec TNT, plus de chaînes seront disponibles";
 			switch (n)
 			{
 				case -1:
 				case 0:
-					Toast.makeText(MainActivity.this, "Problème réseau... Essayez de rafraichir via la touche menu.", Toast.LENGTH_LONG).show();
+					Toast.makeText(MainActivity.this, "Problème réseau...\n\nEssayez de rafraichir via la touche menu.", Toast.LENGTH_LONG).show();
 				break;
-//				case 1:
+				case 1:
 //					Toast.makeText(MainActivity.this, "En vous connectant au réseau Free, plus de chaînes seront disponibles", Toast.LENGTH_LONG).show();
-//				break;
+					Toast.makeText(MainActivity.this, "Connecté à Internet.\n\n"+pasFreebox, Toast.LENGTH_LONG).show();
+				break;
 				case 2:
-					Toast.makeText(MainActivity.this, "Connecté au réseau Free", Toast.LENGTH_SHORT).show();
+					Toast.makeText(MainActivity.this, "Connecté au réseau Free.\n\n"+pasFreebox, Toast.LENGTH_SHORT).show();
 				break;
 				case 3:
-					Toast.makeText(MainActivity.this, "Connecté à une Freebox", Toast.LENGTH_SHORT).show();
+					Toast.makeText(MainActivity.this, "Connecté à une Freebox.", Toast.LENGTH_SHORT).show();
 				break;
 			}
 		}
-		
-		
+
 		/*
 		 *  Returns :
 		 *  -1 : unknown state (default)
@@ -1044,7 +1047,7 @@ public class MainActivity extends ListActivity implements TvConstants
 		 *  2 : Free network
 		 *  3 : multiposte
 		 */
-		
+
 		private int testNet()
 		{
 			HttpParams params = new BasicHttpParams();

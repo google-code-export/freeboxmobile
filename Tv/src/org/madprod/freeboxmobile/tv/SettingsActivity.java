@@ -52,7 +52,7 @@ public class SettingsActivity extends PreferenceActivity implements TvConstants,
     	super.onDestroy();
     }
 
-    private void clearConfig()
+	private void clearConfig()
     {
 		Editor e = getPreferenceManager().getSharedPreferences().edit();
 		e.clear();
