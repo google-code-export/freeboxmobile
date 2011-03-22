@@ -44,7 +44,7 @@ public class Chaine implements Comparable <Chaine>, TvConstants
 //			"Flux PC",					// STREAM_TYPE_TVFREEBOX
 			"Flux Internet",			// STREAM_TYPE_INTERNET
 //			"Flux Multiposte Bas débit",// STREAM_TYPE_MULTIPOSTE_LD
-//			"Flux Multiposte",			// STREAM_TYPE_MULTIPOSTE_SD
+			"Flux Multiposte",			// STREAM_TYPE_MULTIPOSTE_SD
 //			"Flux Multiposte HD",		// STREAM_TYPE_MULTIPOSTE_HD
 //			"Flux Multiposte (Auto)",	// STREAM_TYPE_MULTIPOSTE_AUTO
 			"Flux Multiposte TNT",		// STREAM_TYPE_MULTIPOSTE_TNTSD
@@ -56,7 +56,7 @@ public class Chaine implements Comparable <Chaine>, TvConstants
 //				STREAM_TYPE_TVFREEBOX,
 				STREAM_TYPE_INTERNET,
 //				STREAM_TYPE_MULTIPOSTE_LD,
-//				STREAM_TYPE_MULTIPOSTE_SD,
+				STREAM_TYPE_MULTIPOSTE_SD,
 //				STREAM_TYPE_MULTIPOSTE_HD,
 //				STREAM_TYPE_MULTIPOSTE_AUTO,
 				STREAM_TYPE_MULTIPOSTE_TNTSD,

@@ -17,8 +17,8 @@ public interface TvConstants
     static final String ANALYTICS_MAIN_TRACKER = "UA-9016955-4";
     static final String KEY_PREFS		= "freeboxmobiletv";
     static final String TAG				= "FBMTV";
-//	static final String[] listStreamsKeys={"fav1", "fav2", "fav3"};
-//	static final int[] defaultValues = {Chaine.STREAM_TYPE_MULTIPOSTE_TNTSD, Chaine.STREAM_TYPE_MULTIPOSTE_SD, Chaine.STREAM_TYPE_INTERNET};
-    static final String[] listStreamsKeys = {"fav1", "fav2"};
-    static final int[] defaultValues = {Chaine.STREAM_TYPE_MULTIPOSTE_TNTSD, Chaine.STREAM_TYPE_INTERNET};
+	static final String[] listStreamsKeys={"fav1", "fav2", "fav3"};
+	static final int[] defaultValues = {Chaine.STREAM_TYPE_MULTIPOSTE_TNTSD, Chaine.STREAM_TYPE_MULTIPOSTE_SD, Chaine.STREAM_TYPE_INTERNET};
+//    static final String[] listStreamsKeys = {"fav1", "fav2"};
+//    static final int[] defaultValues = {Chaine.STREAM_TYPE_MULTIPOSTE_TNTSD, Chaine.STREAM_TYPE_INTERNET};
 }
