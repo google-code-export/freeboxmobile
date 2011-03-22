@@ -2,6 +2,7 @@ package org.madprod.freeboxmobile;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 /**
 *

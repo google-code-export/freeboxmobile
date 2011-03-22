@@ -238,7 +238,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
         SimpleAdapter mList = new SimpleAdapter(this, modulesList, R.layout.home_main_list_row, new String[] {M_ICON, M_TITRE, M_DESC}, new int[] {R.id.home_main_row_img, R.id.home_main_row_titre, R.id.home_main_row_desc});
         setListAdapter(mList);
     }
-    
+
     @Override
     protected void onPause()
     {
