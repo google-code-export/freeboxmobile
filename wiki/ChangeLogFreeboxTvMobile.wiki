@@ -3,6 +3,14 @@
 <wiki:toc max_depth="2" />
 
 = Versions publiques du module !Freebox Tv Mobile =
+== 1.1.3 ==
+Sortie le 22/03/2011<br>
+Release : 9<br>
+Révision : 854
+ * Debug
+ * Accès aux flux multiposte TNT SD
+ * Accès aux flux multiposte ADSL SD
+
 == 1.1.2 ==
 Sortie le 18/03/2011<br>
 Release : 8<br>
