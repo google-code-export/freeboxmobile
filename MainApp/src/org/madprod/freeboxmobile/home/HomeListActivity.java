@@ -149,7 +149,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
         {
     		// Si on est sur une version trop ancienne
             // on rafraichi pas mal d'infos
-    		if (mgr.getInt(KEY_CODE, 0) < 41)
+    		if (mgr.getInt(KEY_CODE, 0) < 69)
         	{
         		Log.d(TAG,"HOME : on rafraichi le compte "+mgr.getString(KEY_FBMVERSION, "0"));
         		refreshCompte();
