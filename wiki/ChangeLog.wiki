@@ -24,7 +24,7 @@ Revision : 857
  * refresh obligatoire au premier lancement de cette version
  * option RAZ dans choix des chaînes du guide
 
-== 0.52.14 ==
+== 0.52.15 ==
 Sortie le 15/03/2011<br>
 Release : 68<br>
 Revision : 850
