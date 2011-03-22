@@ -29,6 +29,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -102,6 +104,27 @@ public class GuideChoixChainesActivity extends GuideUtils implements GuideConsta
     }
 
 	@Override
+    public boolean onCreateOptionsMenu(Menu menu)
+	{
+        super.onCreateOptionsMenu(menu);
+
+        menu.add(0, GUIDE_OPTION_RESET, 0, R.string.guide_option_reset).setIcon(android.R.drawable.ic_menu_close_clear_cancel);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+    	switch (item.getItemId())
+    	{
+    		case GUIDE_OPTION_RESET:
+    			displayReset();
+    			return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+	@Override
 	public void onListItemClick(ListView l, View v, int pos, long id)
 	{
 		super.onListItemClick(l, v, pos, id);
@@ -169,19 +192,33 @@ public class GuideChoixChainesActivity extends GuideUtils implements GuideConsta
     	displayDialog(id, FAVORIS_COMMAND_SUPPR, "Supprimer cette chaîne des favoris ?");
     }
     
+    private void displayReset()
+    {
+    	displayDialog(0, FAVORIS_COMMAND_RESET, "Remise à zéro de la liste des favoris ?");
+    }
+    
     private void displayDialog(final Integer id, final int command, String msg)
     {
-		Cursor chaineCursor = mDbHelper.getGuideChaine(id);
-		chaineCursor.moveToFirst();
-		String image = chaineCursor.getString(chaineCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE));
-		String name = chaineCursor.getString(chaineCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_NAME));
-		chaineCursor.close();
-		String filepath = Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES+image;
-		Drawable draw = Drawable.createFromPath(filepath);
-		
+    	String name;
+    	
     	AlertDialog d = new AlertDialog.Builder(this).create();
+    	if (id != 0)
+    	{
+			Cursor chaineCursor = mDbHelper.getGuideChaine(id);
+			chaineCursor.moveToFirst();
+			String image = chaineCursor.getString(chaineCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_IMAGE));
+			name = chaineCursor.getString(chaineCursor.getColumnIndexOrThrow(ChainesDbAdapter.KEY_GUIDECHAINE_NAME));
+			chaineCursor.close();
+			String filepath = Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES+image;
+			Drawable draw = Drawable.createFromPath(filepath);
+			d.setIcon(draw);
+    	}
+    	else
+    	{
+    		name = "RAZ";
+    	}
+    	
 		d.setTitle(name);
-		d.setIcon(draw);
     	d.setMessage(msg);
 		d.setButton(DialogInterface.BUTTON_POSITIVE, "Oui", new DialogInterface.OnClickListener()
 			{
@@ -275,11 +312,12 @@ public class GuideChoixChainesActivity extends GuideUtils implements GuideConsta
 	                params.add(new BasicNameValuePair("ajax","del_chaine"));
 	            	break;
         	}
-            params.add(new BasicNameValuePair("chaine", ((Integer)param).toString()));
+       		params.add(new BasicNameValuePair("chaine", ((Integer)param).toString()));
         	result = Action(params);
         	switch (command)
         	{
 	        	case FAVORIS_COMMAND_RESET:
+	                mDbHelper.clearHistorique();
 	            	break;
 	        	case FAVORIS_COMMAND_ADD:
 	                mDbHelper.clearHistorique();
@@ -334,7 +372,7 @@ public class GuideChoixChainesActivity extends GuideUtils implements GuideConsta
         
         private boolean Action(ArrayList<NameValuePair> params)
         {
-			Log.d(TAG, "===============> ACTION !");
+			Log.d(TAG, "===============> ACTION ! "+params);
         	String res = FBMHttpConnection.getPage(FBMHttpConnection.getAuthXmlRequest(MAGNETO_URL, params, true, true, "UTF8"));
             if (res != null)
             {

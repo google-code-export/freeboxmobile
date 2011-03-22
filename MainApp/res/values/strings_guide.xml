@@ -5,4 +5,5 @@
 	<string name="guide_option_mode_reduit">Passer en mode réduit</string>
 	<string name="guide_option_mode_etendu">Passer en mode étendu</string>
 	<string name="guide_option_filter">Choisir les catégories</string>
+	<string name="guide_option_reset">RAZ Chaînes Favorites</string>
 </resources>
