@@ -37,7 +37,7 @@ public class GuideMenuActivity extends GuideUtils implements GuideConstants
 	private ChainesDbAdapter mDbHelper;
 	private Spinner jourChaine;
 	GoogleAnalyticsTracker tracker;
-	
+
 	@Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -51,8 +51,6 @@ public class GuideMenuActivity extends GuideUtils implements GuideConstants
 
         mDbHelper = new ChainesDbAdapter(this);
         mDbHelper.openRead();
-//        Log.d(TAG,"Nettoyage des anciens programmes effacés : "+mDbHelper.deleteOldProgs());
-//        Log.d(TAG,"Nettoyage de l'ancienne historique : "+mDbHelper.deleteOldHisto());
     }
 
 	@Override
@@ -264,6 +262,7 @@ public class GuideMenuActivity extends GuideUtils implements GuideConstants
 
         menu.add(0, GUIDE_OPTION_REFRESH_WEEK, 0, R.string.guide_option_refresh_all).setIcon(android.R.drawable.ic_menu_rotate);
         menu.add(0, GUIDE_OPTION_REFRESH, 1, R.string.guide_option_refresh_day).setIcon(android.R.drawable.ic_menu_rotate);
+        menu.add(0, GUIDE_OPTION_RESET, 2, "RAZ du guide").setIcon(android.R.drawable.ic_menu_close_clear_cancel);
         return true;
     }
 
@@ -278,6 +277,10 @@ public class GuideMenuActivity extends GuideUtils implements GuideConstants
     			GuideCheck.refresh(selectedDate);
     			return true;
     		case GUIDE_OPTION_REFRESH_WEEK:
+    			GuideCheck.refresh(null);
+    			return true;
+    		case GUIDE_OPTION_RESET:
+    			mDbHelper.cleanGuideChaine();
     			GuideCheck.refresh(null);
     			return true;
         }

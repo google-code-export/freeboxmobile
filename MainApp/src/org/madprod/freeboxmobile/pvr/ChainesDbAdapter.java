@@ -278,6 +278,7 @@ public class ChainesDbAdapter implements GuideConstants
      * - on met à jour les timestamp des favoris qui existent déjà
      * - on ajoute les nouveaux favoris
      * - puis on supprime les vieux timestamp qui restent (qui correspondent aux chaînes qui ne sont plus en favoris)
+     * return 1 en cas d'insert, 0 sinon
      */
     
 	public long updateFavoris(int fav_id, String datetime)
@@ -287,7 +288,8 @@ public class ChainesDbAdapter implements GuideConstants
 		if (mDb.update(DATABASE_TABLE_FAVORIS, favValues, KEY_FAVORIS_ID + " = "+fav_id, null) == 0)
 		{
 			favValues.put(KEY_FAVORIS_ID, fav_id);
-			mDb.insert(DATABASE_TABLE_FAVORIS, null, favValues);			
+			mDb.insert(DATABASE_TABLE_FAVORIS, null, favValues);
+			return 1;
 		}
 		return 0;
 	}
@@ -302,7 +304,7 @@ public class ChainesDbAdapter implements GuideConstants
 		return mDb.query(DATABASE_TABLE_FAVORIS, new String[] {KEY_FAVORIS_ID},
 		       null, null, null, null, KEY_FAVORIS_ID);    	
 	}
-    
+
 	public long getNbFavoris()
 	{
 		long ret;
@@ -413,7 +415,15 @@ public class ChainesDbAdapter implements GuideConstants
     /*
      * METHODES POUR LES CHAINES DU GUIDE
      */
-    public long createGuideChaine(int fbxid, int id, int canal, String name, String image)
+	
+	// Permet de lancer le retéléchargement des chaînes du guide
+	// En cas de renumérotation de la part de Free
+	public long cleanGuideChaine()
+	{
+		return mDb.delete(DATABASE_TABLE_GUIDECHAINES, null, null);
+	}
+
+	public long createGuideChaine(int fbxid, int id, int canal, String name, String image)
     {
     	ContentValues initialValues = new ContentValues();
         initialValues.put(KEY_GUIDECHAINE_FBXID, fbxid);
@@ -458,7 +468,7 @@ public class ChainesDbAdapter implements GuideConstants
 		        null, null, null, null, KEY_GUIDECHAINE_CANAL);
     }
 
-	public long getNbChaines()
+	public long getNbChainesGuide()
 	{
 		long ret;
 		SQLiteStatement sqls = mDb.compileStatement("SELECT COUNT(*) FROM "+DATABASE_TABLE_GUIDECHAINES);

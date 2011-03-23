@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.madprod.freeboxmobile.FBMHttpConnection;
@@ -86,6 +87,8 @@ public class GuideCheck extends WakefullIntentService implements GuideConstants
 			Log.e(TAG, "Exception appending to log file ",e);
 		}
 
+		checkFavoris(this);
+		
 		if (selectedDate == null)
 		{
 			GuideUtils.makeCalDates();
@@ -99,9 +102,15 @@ public class GuideCheck extends WakefullIntentService implements GuideConstants
 
 	        if (Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED) == true)
 	        {
+	        	Log.d(TAG, "TRACE 1");
+	        	if (mDbHelper.getNbChainesGuide() == 0)
+	        	{
+		        	Log.d(TAG, "TRACE 2");
+		    		getData(this, null, 4, true, false); // To get chaines logos	        		
+	        	}
 		    	if (mDbHelper.getNbFavoris() == 0)
 		    	{
-		    		getData(this, null, 4, true, false); // To get chaines logos
+		        	Log.d(TAG, "TRACE 3");
 		    		showProgress(R.drawable.fm_guide_tv, "Guide TV", "Téléchargement du programme TV...");
 		        	new PvrNetwork(false, false).getData(); // to get favoris list
 		        	closeProgress();
@@ -218,6 +227,82 @@ public class GuideCheck extends WakefullIntentService implements GuideConstants
 		PendingIntent pi = PendingIntent.getBroadcast(c, 0, i, 0);
 		amgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, /*System.currentTimeMillis(),*/SystemClock.elapsedRealtime(),AlarmManager.INTERVAL_HALF_DAY/* AlarmManager.INTERVAL_DAY*/, pi);
 		Log.i(TAG, "GuideTimer set");
+	}
+
+	// Ici on vérifie que la liste des favoris n'a pas changé (mise à jour à partir d'un autre téléphone, du site web...)
+	// Si un favoris a été ajouté, il faudra invalider les caches des programmes
+	// Si un favoris a été supprimé, faut juste supprimer dans la base
+	private Boolean checkFavoris(Context context)
+	{
+		ChainesDbAdapter db;
+		JSONObject jObject;
+		JSONArray jFavorisArray;
+		int max = 0;
+		Boolean mustInvalidateCache = false;
+
+		Log.d(TAG, "CHECK FAVORIS START");
+		showProgress(R.drawable.fm_guide_tv, "Guide TV", "Vérification des favoris...");
+
+		db = new ChainesDbAdapter(context);
+		db.open();
+	    List<NameValuePair> param = new ArrayList<NameValuePair>();
+	    param.add(new BasicNameValuePair("ajax","listes"));
+	    String resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthXmlRequest(MAGNETO_URL, param, true, true, "UTF8"));
+	    if (resultat != null)
+	    {
+	    	Log.d(TAG,"Guide Network start "+new Date());
+	    	try
+	    	{
+				jObject = new JSONObject(resultat);
+				if (jObject.has("redirect"))
+				{
+					Log.d(TAG,"Authentification expirée");
+					if (FBMHttpConnection.connect() == CONNECT_CONNECTED)
+					{
+						resultat = FBMHttpConnection.getPage(FBMHttpConnection.getAuthXmlRequest(MAGNETO_URL, param, true, true, "UTF8"));
+					}
+					if ((FBMHttpConnection.connect() != CONNECT_CONNECTED) || (resultat == null))
+					{
+						db.close();
+						closeProgress();
+						Log.d(TAG,"DATA NOT DOWNLOADED");
+						return (false);
+					}
+					jObject = new JSONObject(resultat);
+				}
+				jFavorisArray = jObject.getJSONArray("chaines");
+				max = jFavorisArray.length();
+				Log.d(TAG, "MAX = "+max);
+				if (myProgressDialog != null)
+				{
+					updateProgress("Vérifications des "+max+" chaînes favorites...", max, 0);
+				}
+	    		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	    		String datetime = sdf.format(new Date());
+				for (int i = 0; i < max; i++)
+				{
+					Log.d(TAG, "FAV ICI : "+jFavorisArray.getInt(i));
+					if (db.updateFavoris(Integer.parseInt(jFavorisArray.getString(i)), datetime) > 0)
+						mustInvalidateCache = true;
+				}
+				db.flushFavoris(datetime);
+	    	}
+	    	catch (JSONException e)
+	    	{
+				Log.e(TAG,"JSONException ! "+e.getMessage());
+				Log.d(TAG,resultat);
+				e.printStackTrace();
+			}
+	    }
+	    Log.d(TAG, "CHECK FAVORIS END");
+	    if (mustInvalidateCache == true)
+	    {
+	    	Log.d(TAG, "NOUVEAU FAVORIS DETECTE, CLEAN HISTORIQUE... !");
+			db.clearHistorique();
+	    }
+		db.close();
+		closeProgress();
+		return mustInvalidateCache;
 	}
 
 	private int getData(Context context, String datetime, Integer duree_h, boolean getChaines, boolean forceRefresh)
@@ -608,13 +693,16 @@ public class GuideCheck extends WakefullIntentService implements GuideConstants
 						closeProgress();
 						myProgressDialog = new ProgressDialog(CUR_ACTIVITY);
 			    		Log.d(TAG, "Progress Dialog open "+myProgressDialog);
-						myProgressDialog.setIcon(icon);
-						myProgressDialog.setTitle(title);
-						myProgressDialog.setMessage(message);
-						myProgressDialog.setCancelable(false);
-						myProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-						if (CUR_ACTIVITY != null) // CUR_ACTIVITY a pu passer à null entre temps
-							myProgressDialog.show();
+			    		if (myProgressDialog != null)
+			    		{
+							myProgressDialog.setIcon(icon);
+							myProgressDialog.setTitle(title);
+							myProgressDialog.setMessage(message);
+							myProgressDialog.setCancelable(false);
+							myProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+							if (CUR_ACTIVITY != null) // CUR_ACTIVITY a pu passer à null entre temps
+								myProgressDialog.show();
+			    		}
 					}
 				});
 		}
