@@ -73,12 +73,10 @@ public abstract class GuideUtils extends ListActivity implements Constants
 		{
 			WrapBitmap.checkAvailable();
 			mNewBitmapAvailable = true;
-        	Log.d(TAG, "NEW VERSION OK");
 		}
 		catch (Throwable t)
 		{
 			mNewBitmapAvailable = false;
-        	Log.d(TAG, "NEW VERSION NOT OK");
 		}
 	}
 	

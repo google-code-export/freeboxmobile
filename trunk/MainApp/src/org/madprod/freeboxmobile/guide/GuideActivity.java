@@ -200,7 +200,7 @@ public class GuideActivity extends GuideUtils implements GuideConstants
 		setFinDateHeure();
 		// TODO : Change that !
         boolean nochaine = getFromDb();
-    	if ((mDbHelper.getNbChaines() == 0) || (nochaine))
+    	if ((mDbHelper.getNbChainesGuide() == 0) || (nochaine))
     	{
     		new GuideActivityNetwork(dt, true, false, false).execute((Void[])null);    		
     	}
