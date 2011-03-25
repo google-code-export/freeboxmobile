@@ -48,6 +48,15 @@
 		<activity android:theme="@style/Theme.FreeboxMobile.NoTitleBar" android:name=".remotecontrol.FindCodesActivity"></activity>
 		<activity android:theme="@style/Theme.FreeboxMobile.TitleBar" android:name=".tv.TvActivity"></activity>
 
+		<!-- Broadcast Receiver that will process Widget Inv updates -->
+		<receiver android:name=".InvWidget" android:label="Innovations Free">
+		    <intent-filter>
+		        <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+		    </intent-filter>
+		    <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_inv" />
+		</receiver>
+		<service android:name=".InvWidget$UpdateService" />
+
 		<receiver android:name=".OnBootReceiver">
 			<intent-filter>
 				<action android:name="android.intent.action.BOOT_COMPLETED" />

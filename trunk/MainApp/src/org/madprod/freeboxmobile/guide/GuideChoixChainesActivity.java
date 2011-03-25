@@ -224,6 +224,10 @@ public class GuideChoixChainesActivity extends GuideUtils implements GuideConsta
 			{
 				public void onClick(DialogInterface dialog, int which)
 				{
+					if (id == 0)
+					{
+						mDbHelper.cleanGuideChaine();
+					}
 					new GuideFavorisActivityNetwork(command, id).execute();
 					dialog.dismiss();
 				}
