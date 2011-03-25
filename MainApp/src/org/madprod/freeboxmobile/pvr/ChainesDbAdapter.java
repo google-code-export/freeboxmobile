@@ -565,10 +565,10 @@ public class ChainesDbAdapter implements GuideConstants
     		}
     	}
     	
-//    	if (c.length() > 0)
-//    	{
-//    		where += " AND ("+c+")";
-//    	}
+    	if (c.length() > 0)
+    	{
+    		where += " AND ("+c+")";
+    	}
 		return mDb.query(DATABASE_TABLE_PROGRAMMES, new String[]
                    {KEY_ROWID, KEY_PROG_GENRE_ID,
 		        	KEY_PROG_CHANNEL_ID, KEY_PROG_RESUM_S, KEY_PROG_RESUM_L, KEY_PROG_TITLE,

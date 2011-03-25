@@ -102,15 +102,12 @@ public class GuideCheck extends WakefullIntentService implements GuideConstants
 
 	        if (Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED) == true)
 	        {
-	        	Log.d(TAG, "TRACE 1");
 	        	if (mDbHelper.getNbChainesGuide() == 0)
 	        	{
-		        	Log.d(TAG, "TRACE 2");
 		    		getData(this, null, 4, true, false); // To get chaines logos	        		
 	        	}
 		    	if (mDbHelper.getNbFavoris() == 0)
 		    	{
-		        	Log.d(TAG, "TRACE 3");
 		    		showProgress(R.drawable.fm_guide_tv, "Guide TV", "Téléchargement du programme TV...");
 		        	new PvrNetwork(false, false).getData(); // to get favoris list
 		        	closeProgress();

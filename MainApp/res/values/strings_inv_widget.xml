@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="template_wotd_title2">"Wiktionary:Word of the day/%%s %%s"</string>
+	<string name="widget_loading">Chargement en cours...</string>
+	<string name="widget_error">Erreur au chargement du widget</string>
+    
+	<string-array name="inv_widget_texts">
+		<item>"2002 : Free lance la Freebox"</item>
+		<item>"19 septembre : Free est le premier opérateur à lancer une box. De plus, le tarif est 33% inférieur à celui de ses concurrents !"</item>
+
+		<item>"2003 : La téléphonie gratuite"</item>
+		<item>"31 juillet : Les Freebox permettent maintenant de téléphoner, qui plus est gratuitement ! Vers tous les fixes en France."</item>
+
+		<item>"2003 : La télévision sur ADSL"</item>
+		<item>"1° décembre : Les abonnés Freebox ont maintenant accès à 100 chaînes de télévision sur ADSL (première mondiale)."</item>
+
+		<item>"2003 : Free double les débits"</item>
+		<item>"12 décembre : Les abonnés non dégroupés ont maintenant 1 Mbps, les abonnés Freebox passent à 2 Mbps, pour le même prix."</item>
+
+		<item>"2004 : Freebox en non dégroupé"</item>
+		<item>"18 mars : Les abonnés non dégroupés peuvent avoir une Freebox v3, et téléphoner gratuitement, comme les dégroupés."</item>
+
+		<item>"2004 : Dégroupé = + de débit"</item>
+		<item>"4 juin : Les abonnés dégroupés voient leur débit maximum passer de 2 Mbps à 5 Mbps pour le même prix."</item>
+
+		<item>"2004 : Freebox = Wifi + routeur"</item>
+		<item>"7 juillet : Les Freebox v3 peuvent maintenant faire routeur et une carte optionnelle Wifi est proposéeà 27€."</item>
+
+		<item>"2004 : Non dégroupé = + de débit"</item>
+		<item>"27 juillet : Le débit maximum des non dégroupés passe de 1 Mbps à 2 Mbps, pour le même prix."</item>
+
+		<item>"2004 : Dégroupé = + de débit"</item>
+		<item>"24 août : Les abonnés dégroupés voient leur débit maximum passer de 5 Mbps à 6 Mbps pour le même prix."</item>
+
+		<item>"2004 : Nouvelle Freebox v4"</item>
+		<item>"20 octobre : La nouvelle Freebox v4 ADSL2+ permet d'obtenir des débits jusqu'à 15 Mbps (contre 6Mbps avant) pour le même prix "</item>
+
+		<item>"2004 : Canal sur Freebox"</item>
+		<item>"25 octobre : Canal + et Canal Satellite deviennent accessibles sur la Freebox."</item>
+
+		<item>"2004 : Coupe de la ligue"</item>
+		<item>"9 novembre : Les 8 rencontres des 16èmes de finale de la coupe de la ligue sont diffusées en simultané sur la Freebox."</item>
+
+		<item>"2004 : La HD sur l'ADSL"</item>
+		<item>"14 décembre : Première mondiale : de la vidéo haute définition est diffusée sur un réseau ADSL (Freebox)."</item>
+
+		<item>"2004 : Coupe de la ligue"</item>
+		<item>"21 décembre : Les 4 rencontres des 8èmes de finale de la coupe de la ligue sont diffusées en simultané sur la Freebox."</item>
+
+		<item>"2005 : Dégroupé = + de débit"</item>
+		<item>"6 janvier : Les abonnés dégroupés voient leur débit passer de 15 Mbps à 20 Mbps pour le même prix."</item>
+
+		<item>"2005 : Non dégroupé = + de débit"</item>
+		<item>"9 février : Le débit maximum des non dégroupés passe de 2 Mbps à 10 Mbps, pour le même prix."</item>
+
+		<item>"2005 : Re-ADSL2"</item>
+		<item>"17 juin : Free lance le READSL2 qui permet aux abonnés ayant une trop longue ligne d'avoir quand même l'ADSL (à 512 kbps)."</item>
+
+		<item>"2005 : Des radios sur la Freebox"</item>
+		<item>"21 juillet : Free lance le premier bouquet de radios (33 stations) sur la Freebox."</item>
+
+		<item>"2005 : Dégroupé = + de débit"</item>
+		<item>"8 novembre : Les abonnés dégroupés voient leur débit maximum passer de 20 Mbps à 24 Mbps pour le même prix."</item>
+
+		<item>"2005 : La Freebox multiposte"</item>
+		<item>"1 décembre : Les abonnés Freebox peuvent regarder les chaînes sur leur ordinateur, en + de leur télévision."</item>
+
+		<item>"2005 : Envoi de gros fichiers"</item>
+		<item>"2 décembre : Avec http://dl.free.fr Free permet aux internautes de s'envoyer de gros fichiers (jusqu'à 1 Go)."</item>
+
+		<item>"2005 : VOD - CanalPlay"</item>
+		<item>"14 décembre : Free et Canal lancent Canal Play, la plus grosse offre de cinéma à la demande sur la télévision."</item>
+
+		<item>"2005 : Appels internationaux"</item>
+		<item>"15 décembre : Les freenautes peuvent maintenant appeler gratuitement les fixes de 14 pays."</item>
+
+		<item>"2006 : Ring Back Tone"</item>
+		<item>"10 avril : Les abonnés peuvent configurer une musique d'attente (mp3) qui remplace la sonnerie entendue par leur correspondants."</item>
+
+		<item>"2006 : Freebox v5"</item>
+		<item>"19 avril : Nouvelle Freebox : double boitier / switch réseau / TV HD / TNT / Wifi Mimo..."</item>
+
+		<item>"2006 : Rolland Garros en HD"</item>
+		<item>"31 mai : Les internationaux de tennis de France est le premier évènement sportif à être diffusé en HD en Europe, grâce à la Freebox."</item>
+
+		<item>"2006 : Coupe du monde de Foot"</item>
+		<item>"9 juin : La coupe du monde de football est visible en HD sur la Freebox v5 grâce à son tunner TNT HD."</item>
+
+		<item>"2006 : 1ère chaîne 100% HD"</item>
+		<item>"20 juin : iConcert est la première chaîne 100% HD française. Elle est diffusée sur la Freebox."</item>
+		
+		<item>"2006 : Dégroupé = + de débit"</item>
+		<item>"26 juillet : Les abonnés dégroupés voient leur débit maximum passer de 24 Mbps à 28 Mbps pour le même prix."</item>
+		
+		<item>"2006 : Magnétoscope numérique"</item>
+		<item>"4 septembre : La Freebox v5 se transforme en magnétoscope numérique : enregistrements, contrôle du direct..."</item>
+
+		<item>"2006: Lancement du FTTH !"</item>
+		<item>"11 septembre : Free lance la construction de la fibre optique jusqu'à l'abonné à Paris et Montpellier."</item>
+
+		<item>"2007 : Appels internationaux"</item>
+		<item>"19 janvier : Les freenautes peuvent maintenant appeler gratuitement les fixes de 49 pays (contre 29 précédemment)."</item>
+
+		<item>"2007 : Un Fax dans la Freebox"</item>
+		<item>"25 avril : Une deuxième ligne dédiée aux Fax est attribuée gratuitement à toutes les Freebox."</item>
+
+		<item>"2007 : Bouquet bas débit"</item>
+		<item>"21 mai : Un bouquet de chaînes MPEG4 bas débit est lancé afin de permettent aux lignes longues de recevoir la télévision."</item>
+
+		<item>"2007 : Free Home Vidéo"</item>
+		<item>"19 juin : Free lance le 1° bouquet de programmes à la demande accessible de façon illimité, par abonnement."</item>
+
+		<item>"2007 : DSL Safe"</item>
+		<item>"21 juin : Une nouvelle technologie, le DSL Safe, permet d'améliorer sensiblement la qualité TV et les débits."</item>
+
+		<item>"2007 : TV Perso"</item>
+		<item>"28 juin : Grâce à leur Freebox HD, les Freenautes peuvent créer leur propre chaîne de télévision (première mondiale)."</item>
+
+		<item>"2007 : TV sur le web"</item>
+		<item>"31 juillet : Un bouquet de chaînes accessibles par le web permet aux non dégroupés d'avoir la télévision."</item>
+
+		<item>"2007 : FTTH"</item>
+		<item>"31 août : Début des premières connexions FTTH à 100 Mbps à Paris et Montpellier."</item>
+
+		<item>"2007 : Appels internationaux"</item>
+		<item>"10 septembre : Les freenautes peuvent maintenant appeler gratuitement les fixes de 70 pays (contre 49 précédemment).."</item>
+
+		<item>"2007 : IPv6"</item>
+		<item>"12 décembre : Free déploie l'IPv6 sur toutes les Freebox dégroupées devenant le plus gros réseau IPv6 au monde."</item>
+
+		<item>"2008 : Le Wifi devient CPL"</item>
+		<item>"22 janvier : Free remplace la connexion Wifi entre les deux boitiers Freebox par du CPL (Freeplugs)."</item>
+
+		<item>"2008 : Non dégroupé = + de débit"</item>
+		<item>"22 janvier : Le débit maximal des non dégroupés passe à 22 Mbps, pour le même prix."</item>
+
+		<item>"2008 : Assistance technique de proximité"</item>
+		<item>"7 août : En cas de problème chez un freenaute dégroupé, un technicien se déplace gratuitement à domicile."</item>
+
+		<item>"2008 : Free rachète Alice"</item>
+		<item>"26 août : Iliad, maison mère de Free, rachète Alice France à Telecom Italia pour 775 millions d'euros."</item>
+
+		<item>"2009 : Appels internationaux"</item>
+		<item>"13 janvier : Les freenautes peuvent maintenant appeler gratuitement les fixes de 87 pays (contre 70 précédemment).."</item>
+
+		<item>"2009 : UPnP sur la Freebox"</item>
+		<item>"14 mai : Avec l'UPnP, Free simplifie la diffusion des contenus numériques sur la télévision."</item>
+
+		<item>"2009 : Ouverture de FreeWifi"</item>
+		<item>"26 mai : Free ouvre le plus grand réseau wifi communautaire du monde avec 3 millions de hotspots wifi."</item>
+
+		<item>"2009 : Candidature Free Mobile"</item>
+		<item>"28 octobre : Free Mobile a déposé sa candidature pour la 4ème licence 3G en France."</item>
+
+		<item>"2009 : Candidature Free Mobile"</item>
+		<item>"28 octobre : Free Mobile a déposé sa candidature pour la 4ème licence 3G en France."</item>
+
+		<item>"2009 : Jeux vidéos sur Freebox"</item>
+		<item>"19 novembre : Free lance un service de jeux vidéos sur la Freebox HD."</item>
+
+		<item>"2009 : Enregistrement distant"</item>
+		<item>"15 décembre : Free lance la possibilité de programmer ses enregistrements TV à distance."</item>
+
+		<item>"2009 : Free Mobile opérateur"</item>
+		<item>"18 décembre : Free Mobile se voit attribuer la 4ème licence de téléphonie mobile 3G."</item>
+
+		<item>"2010 : La 3D sur la Freebox"</item>
+		<item>"10 juin : A l'occasion de la coupe du monde de football, les matchs sont diffusés en 3D sur la Freebox."</item>
+
+		<item>"2010 : Freebox TvReplay"</item>
+		<item>"29 juin : Les programmes de 33 chaînes sont disponibles en télévision de rattrapage sur FreeboxTV."</item>
+
+		<item>"2010 : Freebox Révolution"</item>
+		<item>"14 décembre : La nouvelle Freebox est designée par Philippe Starck et possède un écran tactile OLED."</item>
+
+		<item>"2010 : Freebox Révolution"</item>
+		<item>"14 décembre : La nouvelle Freebox intère un NAS 250 Go, un lecteur bluray, une nouvelle interface HD."</item>
+
+		<item>"2010 : Freebox Révolution"</item>
+		<item>"14 décembre : La nouvelle Freebox inclus les appels gratuits vers mobiles, une base DECT, le WiFi 802.11n."</item>
+
+		<item>"2010 : Freebox Révolution"</item>
+		<item>"14 décembre : La nouvelle Freebox permet de jouer en HD et est fournie avec un gamepad."</item>
+
+		<item>"2010 : Freebox Révolution"</item>
+		<item>"14 décembre : Avec la nouvelle Freebox, on peut accéder à internet sur la TV, brancher un clavier et une souris."</item>
+
+		<item>"2011 : Free Mobile et Orange"</item>
+		<item>"3 mars : Un accord avec Orange permettra aux abonnés Free Mobile d'avoir une couverture 3G nationale dès le lancement."</item>
+
+		<item>"2012 : Ouverture de Free Mobile"</item>
+		<item>"début 2012 : Lancement des offres de téléphonie mobile Free Mobile."</item>
+
+	</string-array>
+	<string-array name="inv_widget_events">
+	</string-array>
+</resources>
