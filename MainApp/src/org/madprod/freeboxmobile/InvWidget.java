@@ -14,8 +14,28 @@ import android.widget.RemoteViews;
 
 import java.util.Random;
 
-public class InvWidget extends AppWidgetProvider
+import com.google.android.apps.analytics.GoogleAnalyticsTracker;
+
+public class InvWidget extends AppWidgetProvider implements Constants
 {
+	GoogleAnalyticsTracker tracker = null;
+
+	@Override
+	public void onEnabled(Context context)
+	{
+		Log.d(TAG, "ON ENABLED !");
+		tracker = GoogleAnalyticsTracker.getInstance();
+		tracker.start(ANALYTICS_MAIN_TRACKER, 20, context);
+		tracker.trackPageView("Widget/Innovations");
+	}
+	
+	@Override
+	public void onDisabled(Context context)
+	{
+		if (tracker != null)
+			tracker.stop();
+	}
+	
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds)
 	{
