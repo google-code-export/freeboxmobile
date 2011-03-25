@@ -351,7 +351,7 @@ public abstract class GuideUtils extends ListActivity implements Constants
 						{
 							Categorie c = categories.get(which);
 							c.checked = what;
-							categories.set(which,categories.get(which));						
+							categories.set(which,categories.get(which));
 						}
 					})
 			.setPositiveButton(getString(R.string.OK),

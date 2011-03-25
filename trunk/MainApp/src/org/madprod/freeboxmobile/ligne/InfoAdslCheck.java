@@ -12,7 +12,6 @@ import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.WakefullIntentService;
 import org.madprod.freeboxmobile.home.HomeListActivity;
-import org.xmlrpc.android.XMLRPCClient;
 
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -63,6 +62,7 @@ public class InfoAdslCheck extends WakefullIntentService implements Constants
 			Log.e(TAG, "Exception appending to log file ",e);
 		}
 
+		/*
 		try
 		{
 			SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
@@ -99,7 +99,7 @@ public class InfoAdslCheck extends WakefullIntentService implements Constants
 			Log.e(TAG, "InfoAdslCheck : " + e.getMessage());
 			e.printStackTrace();
 		}
-		
+*/
 		try
 		{
 			BufferedWriter out = new BufferedWriter (new FileWriter(log.getAbsolutePath(), true));

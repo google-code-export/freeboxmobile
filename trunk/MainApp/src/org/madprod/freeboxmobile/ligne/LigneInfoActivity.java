@@ -13,7 +13,6 @@ import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.Utils;
 import org.madprod.freeboxmobile.home.ComptesDbAdapter;
-import org.xmlrpc.android.XMLRPCClient;
 
 import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 
@@ -149,8 +148,8 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
 
     private void refreshView()
     {
-    	String text1_1;
-    	String text1_2;
+    	String text1_1 = "";
+    	String text1_2 = "";
     	String text2;
     	String text3;
     	Cursor mTicketCursor;
@@ -173,6 +172,7 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
 
         if (lineType.equals("1"))
         {
+        	/*
 	        text1_2 = "\tActuellement ("+DSLAM_Date+") les équipements dont vous dépendez ("+mgr.getString(KEY_DSLAM, "")+") ";
 	        if (DSLAM_ok)
 	        {
@@ -184,6 +184,7 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
 	        	text1_2 += "sont en interruption de service.";
 	        	t1_2.setTextColor(0xffff0000);
 	        }
+	        */
 	        text2 = "Liste des tickets de "+mgr.getString(KEY_DSLAM, "")+" :";
 	        text3 = "Historique de l'état de "+mgr.getString(KEY_DSLAM, "")+" :";
 	        
@@ -321,6 +322,7 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
     	SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
     	String nra = p.nra;
     	String loc = "";
+    	/*
     	try
     	{
 			if (!nra.equals(""))
@@ -333,7 +335,6 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
 				DSLAM_Date = Utils.convertDateTimeHR((String) client.call("getLastDSLAMResultSetDate"));
 				DSLAM_ok = (Boolean) client.call("getDSLAMStatus", mgr.getString(KEY_DSLAM, ""));
 				Object[] response = (Object[]) client.call("getTicketListForDSLAM", mgr.getString(KEY_DSLAM, ""));
-//				Object[] response = (Object[]) client.call("getTicketListForDSLAM", "bas33-1");
 				int i = response.length;
 				LigneInfoDbAdapter mDb = new LigneInfoDbAdapter(LigneInfoActivity.this);
 				mDb.open();
@@ -362,6 +363,7 @@ public class LigneInfoActivity extends Activity implements LigneInfoConstants
 			Log.e(TAG, "updateInfos : " + e.getMessage());
 			e.printStackTrace();
 		}
+		*/
     }
 
     private void saveState(Payload p)
