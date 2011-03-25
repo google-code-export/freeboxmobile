@@ -39,7 +39,7 @@ public class InvWidget extends AppWidgetProvider implements Constants
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds)
 	{
-		Log.d("FBM WIDGET", "ONPUDATE !");
+		Log.d(TAG, "ONPUDATE !");
 		context.startService(new Intent(context, UpdateService.class));
 	}
     
@@ -59,7 +59,12 @@ public class InvWidget extends AppWidgetProvider implements Constants
 
 		public RemoteViews buildUpdate(Context context)
 		{
-			Log.d("FBM WIDGET", "BUILD UPDATE !");
+			Log.d(TAG, "BUILD UPDATE !");
+			GoogleAnalyticsTracker tracker;
+			tracker = GoogleAnalyticsTracker.getInstance();
+			tracker.start(ANALYTICS_MAIN_TRACKER, 20, context);
+			tracker.trackPageView("Widget/InnovationsMAJ");				
+
 			// Pick out month names from resources
 			Resources res = context.getResources();
 			Random r=new java.util.Random( );
@@ -70,7 +75,7 @@ public class InvWidget extends AppWidgetProvider implements Constants
 				ind--;
 			}
 //			ind = 33*2;
-			Log.d("FBM WIDGET", "SIZE : "+texts.length+" - "+ind);
+			Log.d(TAG, "SIZE : "+texts.length+" - "+ind);
 			
 			// Find current month and day
 //			Time today = new Time();
