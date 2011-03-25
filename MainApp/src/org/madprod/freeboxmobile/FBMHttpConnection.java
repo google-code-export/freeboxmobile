@@ -26,7 +26,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.xmlrpc.android.XMLRPCClient;
 
 import android.app.Activity;
 import android.content.ContentValues;
@@ -293,7 +292,7 @@ public class FBMHttpConnection implements Constants
 		if (consoleValues.get(KEY_IP) != "")
 		{
 			URI uri = URI.create(frimousseUrl);
-			XMLRPCClient client = new XMLRPCClient(uri);
+/*			XMLRPCClient client = new XMLRPCClient(uri);
 			try
 			{
 				Object[] response = (Object[]) client.call("getDSLAMListForPool", consoleValues.get(KEY_IP));
@@ -315,6 +314,7 @@ public class FBMHttpConnection implements Constants
 				consoleValues.put(KEY_DSLAM,"");
 				Log.d(TAG,"DSLAM pas trouvé");					
 			}
+			*/
 		}
 		else
 		{
