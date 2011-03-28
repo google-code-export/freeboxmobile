@@ -4,7 +4,8 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:focusable="true"
-    style="@style/WidgetBackground" >
+    android:background="#77777777"
+    tyle="@style/WidgetBackground" android:paddingLeft="5dip">
     
     <ImageView
         android:id="@+id/icon"
@@ -22,7 +23,7 @@
         android:includeFontPadding="false"
         android:singleLine="true"
         android:ellipsize="end"
-        tyle="@style/Text.WordTitle" />
+        style="@style/Text.WordTitle" />
     
     <TextView
         android:id="@+id/word_type"
