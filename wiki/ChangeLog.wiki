@@ -17,6 +17,12 @@ TELECOMMANDE : Le module de télécommande
 
 = Versions publiques de !FreeboxMobile =
 
+== 0.53.0 ==
+Sortie le 28/03/2011<br>
+Release : 71<br>
+Revision : 868
+ * widget "Innovations Free"
+
 == 0.52.17 ==
 Sortie le 23/03/2011<br>
 Release : 70<br>
