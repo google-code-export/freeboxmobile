@@ -74,7 +74,7 @@ public class InvWidget extends AppWidgetProvider implements Constants
 			ind *= 4;
 //			ind = 33*4;
 			Log.d(TAG, "SIZE : "+texts.length+" - "+ind);
-			
+
 			// Find current month and day
 //			Time today = new Time();
 //			today.setToNow();
@@ -83,7 +83,7 @@ public class InvWidget extends AppWidgetProvider implements Constants
 //			String pageName = res.getString(R.string.template_wotd_title, monthNames[today.month], today.monthDay);
 			RemoteViews updateViews = null;
 //			String pageContent = "";
-            
+
 //			try
 //			{
 				// Try querying the Wiktionary API for today's word
@@ -98,7 +98,7 @@ public class InvWidget extends AppWidgetProvider implements Constants
 //			{
 //				Log.e("WordWidget", "Couldn't parse API response", e);
 //			}
-            
+
 			// Use a regular expression to parse out the word and its definition
 //			Pattern pattern = Pattern.compile(SimpleWikiHelper.WORD_OF_DAY_REGEX);
 //			Matcher matcher = pattern.matcher(pageContent);
