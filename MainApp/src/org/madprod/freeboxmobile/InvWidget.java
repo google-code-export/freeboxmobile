@@ -8,6 +8,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.RemoteViews;
@@ -69,12 +70,9 @@ public class InvWidget extends AppWidgetProvider implements Constants
 			Resources res = context.getResources();
 			Random r=new java.util.Random( );
 			String[] texts = res.getStringArray(R.array.inv_widget_texts);
-			int ind = r.nextInt(texts.length);
-			if ((ind % 2) == 1)
-			{
-				ind--;
-			}
-//			ind = 33*2;
+			int ind = r.nextInt(texts.length) / 4;
+			ind *= 4;
+//			ind = 33*4;
 			Log.d(TAG, "SIZE : "+texts.length+" - "+ind);
 			
 			// Find current month and day
@@ -110,16 +108,14 @@ public class InvWidget extends AppWidgetProvider implements Constants
 				// Build an update that holds the updated widget contents
 				updateViews = new RemoteViews(context.getPackageName(), R.layout.widget_inv_word);
 				
-				String wordTitle = "Titre";
-				updateViews.setTextViewText(R.id.word_title, wordTitle);
-				updateViews.setTextViewText(R.id.word_type, texts[ind]);
-				updateViews.setTextViewText(R.id.definition, texts[ind+1]+"\n");
+				updateViews.setTextViewText(R.id.word_title, texts[ind+1]);
+				updateViews.setTextViewText(R.id.word_type, "["+texts[ind]+"]");
+				updateViews.setTextViewText(R.id.definition, texts[ind+2]+"\n");
 
-				// When user clicks on widget, launch to Wiktionary definition page
-//				String definePage = res.getString(R.string.template_define_url, Uri.encode(wordTitle));
-//				Intent defineIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(definePage));
-//				PendingIntent pendingIntent = PendingIntent.getActivity(context, 0 /* no requestCode */, defineIntent, 0 /* no flags */);
-//				updateViews.setOnClickPendingIntent(R.id.widget, pendingIntent);
+				String definePage = "http://docs.google.com/viewer?url="+texts[ind+3];
+				Intent defineIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(definePage));
+				PendingIntent pendingIntent = PendingIntent.getActivity(context, 0 /* no requestCode */, defineIntent, 0 /* no flags */);
+				updateViews.setOnClickPendingIntent(R.id.widget, pendingIntent);
             }
 			else
 			{
