@@ -24,7 +24,6 @@ public class InvWidget extends AppWidgetProvider implements Constants
 	@Override
 	public void onEnabled(Context context)
 	{
-		Log.d(TAG, "ON ENABLED !");
 		tracker = GoogleAnalyticsTracker.getInstance();
 		tracker.start(ANALYTICS_MAIN_TRACKER, 20, context);
 		tracker.trackPageView("Widget/Innovations");
@@ -40,7 +39,6 @@ public class InvWidget extends AppWidgetProvider implements Constants
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds)
 	{
-		Log.d(TAG, "ONPUDATE !");
 		context.startService(new Intent(context, UpdateService.class));
 	}
     
@@ -60,70 +58,31 @@ public class InvWidget extends AppWidgetProvider implements Constants
 
 		public RemoteViews buildUpdate(Context context)
 		{
-			Log.d(TAG, "BUILD UPDATE !");
 			GoogleAnalyticsTracker tracker;
 			tracker = GoogleAnalyticsTracker.getInstance();
 			tracker.start(ANALYTICS_MAIN_TRACKER, 20, context);
 			tracker.trackPageView("Widget/InnovationsMAJ");				
 
-			// Pick out month names from resources
 			Resources res = context.getResources();
-			Random r=new java.util.Random( );
+			Random r = new java.util.Random( );
 			String[] texts = res.getStringArray(R.array.inv_widget_texts);
 			int ind = r.nextInt(texts.length) / 4;
 			ind *= 4;
 //			ind = 33*4;
 			Log.d(TAG, "SIZE : "+texts.length+" - "+ind);
 
-			// Find current month and day
-//			Time today = new Time();
-//			today.setToNow();
-			
-			// Build today's page title, like "Wiktionary:Word of the day/March 21"
-//			String pageName = res.getString(R.string.template_wotd_title, monthNames[today.month], today.monthDay);
 			RemoteViews updateViews = null;
-//			String pageContent = "";
 
-//			try
-//			{
-				// Try querying the Wiktionary API for today's word
-//				SimpleWikiHelper.prepareUserAgent(context);
-//				pageContent = SimpleWikiHelper.getPageContent(pageName, false);
-//			}
-//			catch (ApiException e)
-//			{
-//				Log.e("WordWidget", "Couldn't contact API", e);
-//			}
-//			catch (ParseException e)
-//			{
-//				Log.e("WordWidget", "Couldn't parse API response", e);
-//			}
+			updateViews = new RemoteViews(context.getPackageName(), R.layout.widget_inv_word);
+			
+			updateViews.setTextViewText(R.id.word_title, texts[ind+1]);
+			updateViews.setTextViewText(R.id.word_type, "["+texts[ind]+"]");
+			updateViews.setTextViewText(R.id.definition, texts[ind+2]+"\n");
 
-			// Use a regular expression to parse out the word and its definition
-//			Pattern pattern = Pattern.compile(SimpleWikiHelper.WORD_OF_DAY_REGEX);
-//			Matcher matcher = pattern.matcher(pageContent);
-//			if (matcher.find())
-			if (true)
-			{
-				// Build an update that holds the updated widget contents
-				updateViews = new RemoteViews(context.getPackageName(), R.layout.widget_inv_word);
-				
-				updateViews.setTextViewText(R.id.word_title, texts[ind+1]);
-				updateViews.setTextViewText(R.id.word_type, "["+texts[ind]+"]");
-				updateViews.setTextViewText(R.id.definition, texts[ind+2]+"\n");
-
-				String definePage = "http://docs.google.com/viewer?url="+texts[ind+3];
-				Intent defineIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(definePage));
-				PendingIntent pendingIntent = PendingIntent.getActivity(context, 0 /* no requestCode */, defineIntent, 0 /* no flags */);
-				updateViews.setOnClickPendingIntent(R.id.widget, pendingIntent);
-            }
-			else
-			{
-				// Didn't find word of day, so show error message
-				updateViews = new RemoteViews(context.getPackageName(), R.layout.widget_inv_message);
-				CharSequence errorMessage = context.getText(R.string.widget_error);
-				updateViews.setTextViewText(R.id.message, errorMessage);
-			}
+			String definePage = "http://docs.google.com/viewer?url="+texts[ind+3];
+			Intent defineIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(definePage));
+			PendingIntent pendingIntent = PendingIntent.getActivity(context, 0 /* no requestCode */, defineIntent, 0 /* no flags */);
+			updateViews.setOnClickPendingIntent(R.id.widget, pendingIntent);
 			return updateViews;
 		}
 		
