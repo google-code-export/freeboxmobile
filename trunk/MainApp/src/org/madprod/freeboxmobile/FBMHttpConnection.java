@@ -270,7 +270,7 @@ public class FBMHttpConnection implements Constants
 	{
 		ContentValues consoleValues = new ContentValues();
 		String br = getPage(getAuthRequest(suiviTechUrl, null, true, true, "ISO8859_1"));
-		String offre = parsePage(br, "Raccordée actuellement en offre", "<font", "</font>");
+		String offre = parsePage(br, "Raccordée actuellement en offre", "<font color=\"#CC0000\">", "</font>");
 		switch (type)
 		{
 			case COMPTES_TYPE_ADSL :
@@ -291,7 +291,8 @@ public class FBMHttpConnection implements Constants
     	consoleValues.put(KEY_TEL, parsePage(br, "téléphone Freebox", "<b>", "</b>"));
 		if (consoleValues.get(KEY_IP) != "")
 		{
-			URI uri = URI.create(frimousseUrl);
+			consoleValues.put(KEY_DSLAM,"");
+//			URI uri = URI.create(frimousseUrl);
 /*			XMLRPCClient client = new XMLRPCClient(uri);
 			try
 			{
