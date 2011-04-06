@@ -12,20 +12,40 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
-import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.params.ConnManagerPNames;
+import org.apache.http.conn.params.ConnPerRouteBean;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpParams;
+import org.apache.http.params.HttpProtocolParams;
+import org.madprod.freeboxmobile.utils.EasySSLSocketFactory;
 
 import android.app.Activity;
 import android.content.ContentValues;
@@ -425,7 +445,7 @@ public class FBMHttpConnection implements Constants
 	// TODO : Terminer ici
 	public static boolean checkVersion()
 	{
-		HttpClient httpclient = new DefaultHttpClient();
+		HttpClient httpclient = getHttpClient();
 		HttpGet httpget = new HttpGet("http://check.freeboxmobile.net");
 		httpget.setHeader("User-Agent", USER_AGENT);
         try
@@ -445,17 +465,60 @@ public class FBMHttpConnection implements Constants
 	{
 		URL u = new URL(url);
 		Log.d(TAG,"PREPARECONNECTION : URL["+ u +"]METHOD ["+method+"]");
-		HttpURLConnection c = (HttpURLConnection) u.openConnection();
+		trustAllHosts();
+		HttpsURLConnection c = (HttpsURLConnection) u.openConnection();
+		c.setHostnameVerifier(DO_NOT_VERIFY);
+
 		c.setRequestMethod(method);
 		c.setAllowUserInteraction(false);
 		c.setUseCaches(false);
 		c.setInstanceFollowRedirects(false);
 		c.setRequestProperty("User-Agent", USER_AGENT);
+		
+		
+		
 		// TODO : Check this !
 //		c.setConnectTimeout(30000);
 //		c.setReadTimeout(30000);
 		return (c);
 	}
+	
+	final static HostnameVerifier DO_NOT_VERIFY = new HostnameVerifier() {
+        public boolean verify(String hostname, SSLSession session) {
+                return true;
+        }
+};
+
+/**
+ * Trust every server - dont check for any certificate
+ */
+private static void trustAllHosts() {
+        // Create a trust manager that does not validate certificate chains
+        TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
+                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                        return new java.security.cert.X509Certificate[] {};
+                }
+
+                public void checkClientTrusted(X509Certificate[] chain,
+                                String authType) throws CertificateException {
+                }
+
+                public void checkServerTrusted(X509Certificate[] chain,
+                                String authType) throws CertificateException {
+                }
+        } };
+
+        // Install the all-trusting trust manager
+        try {
+                SSLContext sc = SSLContext.getInstance("TLS");
+                sc.init(null, trustAllCerts, new java.security.SecureRandom());
+                HttpsURLConnection
+                                .setDefaultSSLSocketFactory(sc.getSocketFactory());
+        } catch (Exception e) {
+                e.printStackTrace();
+        }
+}
+
 	
 	/**
 	 * Donwload a file
@@ -592,7 +655,10 @@ public class FBMHttpConnection implements Constants
 			return null;
 		}
 		
-		HttpClient httpclient = new DefaultHttpClient();
+		
+
+		HttpClient httpclient = getHttpClient();
+		
 		HttpGet httpget = new HttpGet(url+"?"+makeStringForPost(p, auth, charset));
 		HttpResponse response;
         try
@@ -931,6 +997,7 @@ public class FBMHttpConnection implements Constants
 			}
 			
 			final URL url = new URL(uploadFaxUrl);
+			trustAllHosts();
 			final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			
 			//Connexion avec le serveur
@@ -1007,5 +1074,23 @@ public class FBMHttpConnection implements Constants
 		}
 		Log.d(TAG,"Connexion impossible pour faxer le fichier "+fileToPost.getName());
 		return null;
+	}
+	
+	public static HttpClient getHttpClient(){
+		SchemeRegistry schemeRegistry = new SchemeRegistry();
+		// http scheme
+		schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+		// https scheme
+		schemeRegistry.register(new Scheme("https", new EasySSLSocketFactory(), 443));
+
+		HttpParams params = new BasicHttpParams();
+		params.setParameter(ConnManagerPNames.MAX_TOTAL_CONNECTIONS, 30);
+		params.setParameter(ConnManagerPNames.MAX_CONNECTIONS_PER_ROUTE, new ConnPerRouteBean(30));
+		params.setParameter(HttpProtocolParams.USE_EXPECT_CONTINUE, false);
+		HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
+
+		ClientConnectionManager cm = new ThreadSafeClientConnManager(params, schemeRegistry);
+		HttpClient httpclient = new DefaultHttpClient(cm, params);
+		return httpclient;		
 	}
 }
