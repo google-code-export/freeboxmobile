@@ -23,6 +23,7 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
@@ -46,6 +47,8 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.madprod.freeboxmobile.utils.EasySSLSocketFactory;
+import org.madprod.freeboxmobile.utils.MyHostNameVerifier;
+import org.madprod.freeboxmobile.utils.MyTrustManager;
 
 import android.app.Activity;
 import android.content.ContentValues;
@@ -467,7 +470,7 @@ public class FBMHttpConnection implements Constants
 		Log.d(TAG,"PREPARECONNECTION : URL["+ u +"]METHOD ["+method+"]");
 		trustAllHosts();
 		HttpsURLConnection c = (HttpsURLConnection) u.openConnection();
-		c.setHostnameVerifier(DO_NOT_VERIFY);
+		c.setHostnameVerifier(new MyHostNameVerifier());
 
 		c.setRequestMethod(method);
 		c.setAllowUserInteraction(false);
@@ -494,19 +497,8 @@ public class FBMHttpConnection implements Constants
  */
 private static void trustAllHosts() {
         // Create a trust manager that does not validate certificate chains
-        TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
-                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                        return new java.security.cert.X509Certificate[] {};
-                }
-
-                public void checkClientTrusted(X509Certificate[] chain,
-                                String authType) throws CertificateException {
-                }
-
-                public void checkServerTrusted(X509Certificate[] chain,
-                                String authType) throws CertificateException {
-                }
-        } };
+        TrustManager[] trustAllCerts = new TrustManager[] { new MyTrustManager()
+         };
 
         // Install the all-trusting trust manager
         try {
@@ -664,7 +656,8 @@ private static void trustAllHosts() {
         	httpget.setHeader("User-Agent", USER_AGENT);
         	response = httpclient.execute(httpget);
         	HttpEntity entity = response.getEntity();
-        	return (new InputStreamReader(entity.getContent(), charset));
+        	InputStream is = entity.getContent();
+        	return (new InputStreamReader(is, charset));
         }
         catch (ClientProtocolException e)
         {
