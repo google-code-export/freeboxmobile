@@ -131,11 +131,7 @@ public class FBMNetTask extends AsyncTask<Void, Integer, Integer> implements Con
 			iProgressDialog.setTitle(title);
 			iProgressDialog.setCancelable(false);
 			iProgressDialog.setMessage(message);
-			try{
-				iProgressDialog.show();
-			}catch(Exception e){
-				Log.e(TAG, "Exception in iProgressDialog.show()");
-			}
+			iProgressDialog.show();
 		}
 	}
 

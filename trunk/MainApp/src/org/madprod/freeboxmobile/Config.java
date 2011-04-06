@@ -1,6 +1,5 @@
 package org.madprod.freeboxmobile;
 
-import org.madprod.freeboxmobile.ligne.InfoAdslCheck; 
 import org.madprod.freeboxmobile.remotecontrol.FindCodesActivity;
 
 import android.app.AlertDialog;
@@ -134,7 +133,7 @@ public class Config extends PreferenceActivity implements OnSharedPreferenceChan
 		{
 			if (value != null)
 			{
-				InfoAdslCheck.changeTimer(Integer.parseInt((String)value), this);
+//				InfoAdslCheck.changeTimer(Integer.parseInt((String)value), this);
 			}
 		}
 

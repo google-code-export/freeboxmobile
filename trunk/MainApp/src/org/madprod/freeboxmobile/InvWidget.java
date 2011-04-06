@@ -41,7 +41,7 @@ public class InvWidget extends AppWidgetProvider implements Constants
 	{
 		context.startService(new Intent(context, UpdateService.class));
 	}
-    
+
 	public static class UpdateService extends Service
 	{
 		@Override
@@ -89,7 +89,6 @@ public class InvWidget extends AppWidgetProvider implements Constants
 		@Override
 		public IBinder onBind(Intent intent)
 		{
-			// We don't need to bind to this service
 			return null;
 		}
 	}

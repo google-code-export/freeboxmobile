@@ -35,7 +35,7 @@ public class EnregistrementsNetwork implements Constants
 		
         // Recup if tv
         String contenu = null;
-    	url = "https://adsls.free.fr/admin/magneto.pl";
+    	url = MAGNETO_URL;
     	List<NameValuePair> param;
     	do
     	{
