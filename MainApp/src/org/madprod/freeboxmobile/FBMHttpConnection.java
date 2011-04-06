@@ -654,8 +654,6 @@ private static void trustAllHosts() {
 		{
 			return null;
 		}
-		
-		
 
 		HttpClient httpclient = getHttpClient();
 		

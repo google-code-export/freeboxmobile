@@ -950,7 +950,7 @@ public class ProgrammationActivity extends Activity implements PvrConstants
 
             	int erreurPos;
         		// Requete HTTP
-        		String url = "https://adsls.free.fr/admin/magneto.pl";
+        		String url = MAGNETO_URL;
        			postVars.add(new BasicNameValuePair("box", ""+mBoitierBID));
         		String resultat = FBMHttpConnection.getPage(FBMHttpConnection.postAuthRequest(url, postVars, true, true));
         		if (resultat == null)
