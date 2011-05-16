@@ -68,7 +68,6 @@ public class InvWidget extends AppWidgetProvider implements Constants
 			String[] texts = res.getStringArray(R.array.inv_widget_texts);
 			int ind = r.nextInt(texts.length) / 4;
 			ind *= 4;
-//			ind = 33*4;
 			Log.d(TAG, "SIZE : "+texts.length+" - "+ind);
 
 			RemoteViews updateViews = null;
@@ -79,7 +78,15 @@ public class InvWidget extends AppWidgetProvider implements Constants
 			updateViews.setTextViewText(R.id.word_type, "["+texts[ind]+"]");
 			updateViews.setTextViewText(R.id.definition, texts[ind+2]+"\n");
 
-			String definePage = "http://docs.google.com/viewer?url="+texts[ind+3];
+			String definePage;
+			if (texts[ind + 3].contains("pdf"))
+			{
+				definePage = "http://docs.google.com/viewer?url="+texts[ind+3];
+			}
+			else
+			{
+				definePage = texts[ind+3];
+			}
 			Intent defineIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(definePage));
 			PendingIntent pendingIntent = PendingIntent.getActivity(context, 0 /* no requestCode */, defineIntent, 0 /* no flags */);
 			updateViews.setOnClickPendingIntent(R.id.widget, pendingIntent);
