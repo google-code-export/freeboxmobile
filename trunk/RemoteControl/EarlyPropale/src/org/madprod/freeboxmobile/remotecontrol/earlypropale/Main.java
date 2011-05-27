@@ -350,7 +350,7 @@ public class Main extends Activity implements Constants{
 				try {
 					if (mRemoteControl.isBoxActivated(item+1)){
 						box = item;
-						dialog.cancel();
+						dialog.dismiss();
 					}else{
 						final AlertDialog.Builder builderProblem = new AlertDialog.Builder(Main.this);
 						builderProblem.setTitle("Boitier non configuré");
@@ -359,7 +359,7 @@ public class Main extends Activity implements Constants{
 
 							@Override
 							public void onClick(DialogInterface dialog, int which) {
-								dialog.cancel();
+								dialog.dismiss();
 							}
 						});
 						AlertDialog alert = builderProblem.create();
@@ -377,7 +377,7 @@ public class Main extends Activity implements Constants{
 			@Override
 			public void onCancel(DialogInterface dialog) {
 				if (box != -1){
-					dialog.cancel();
+					dialog.dismiss();
 				}else{
 					final AlertDialog.Builder builderProblem = new AlertDialog.Builder(Main.this);
 					builderProblem.setTitle("Aucun boitier choisi");
@@ -386,7 +386,7 @@ public class Main extends Activity implements Constants{
 
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
-							dialog.cancel();
+							dialog.dismiss();
 							finish();
 						}
 					});
@@ -394,7 +394,7 @@ public class Main extends Activity implements Constants{
 
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
-							dialog.cancel();
+							dialog.dismiss();
 							alert.show();
 						}
 					});
