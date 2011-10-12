@@ -104,7 +104,7 @@ public class MainActivity extends ListActivity implements TvConstants
 			editor.putInt(KEY_PREFS_VERSION, Utils.getMyCode(this));
 			editor.commit();
 		}
-    	File file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+FILE_TV_FULL);
+/*    	File file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+FILE_TV_FULL);
     	if (file.exists())
     	{
     		Log.d(TAG, "Mode full activé !");
@@ -114,6 +114,7 @@ public class MainActivity extends ListActivity implements TvConstants
     	{
     		modeFull = false;
     	}
+    	*/
     }
 
     @Override
@@ -293,6 +294,7 @@ public class MainActivity extends ListActivity implements TvConstants
 			}
 			i++;
 		}
+		modeFull = mgr.getBoolean("modeFull", false);
 	}
 
 	public void onFBMClick(View v)
@@ -579,12 +581,14 @@ public class MainActivity extends ListActivity implements TvConstants
 			public void onClick(DialogInterface dialog, int which)
 			{
 				dialog.dismiss();
-				checkPhone();
+				//checkPhone();
+				downloadPlayer();
 			}
 		});
 		d3.show();    	
     }
 
+    /*
     private void displayWrongPhone()
     {
 		tracker.trackPageView("TV/DisplayWrongPhone");
@@ -603,18 +607,20 @@ public class MainActivity extends ListActivity implements TvConstants
 		});
 		d3.show();
     }
+    */
 
-    private void checkOS()
-    {
-    	if (Utils.getPlatformVersion() < Build.VERSION_CODES.ECLAIR_MR1)
-    	{
-    		displayWrongOS();
-    	}
-    	else
-    	{
-    		checkPhone();
-    	}
-    }
+	private void checkOS()
+	{
+		if (Utils.getPlatformVersion() < Build.VERSION_CODES.ECLAIR_MR1)
+		{
+			displayWrongOS();
+		}
+		else
+		{
+			//checkPhone();
+			downloadPlayer();
+		}
+	}
 
     /*
      *  Fonctionne sur :
@@ -654,6 +660,7 @@ public class MainActivity extends ListActivity implements TvConstants
      *  - Sony XPeria x10mini
      */
 
+    /*
     private void checkPhone()
     {
 		final Build build = new Build();
@@ -688,7 +695,8 @@ public class MainActivity extends ListActivity implements TvConstants
     		downloadPlayer();
     	}
     }
-
+*/
+    
     private void showNetworkRestrictions()
     {
     	AlertDialog d = new AlertDialog.Builder(this).create();
@@ -697,7 +705,7 @@ public class MainActivity extends ListActivity implements TvConstants
     	d.setMessage(
 //    		"En étant connecté au réseau Free (sur une Freebox, réseau FreeWifi, réseau FreeMobile...) vous aurez plus de chaînes à votre disposition.\n\n"+
 //    		"Si vous n'arrivez pas à ouvrir une chaîne, cela peut être dû à un manque de bande passante à l'endroit où vous vous trouvez."
-    		"En étant connecté à une Freebox v6 avec TNT, vous aurez plus de chaînes à votre disposition."
+    		"En étant connecté à une Freebox, vous aurez plus de chaînes à votre disposition."
 		);
 		d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
 		{
@@ -734,14 +742,14 @@ public class MainActivity extends ListActivity implements TvConstants
     	if (!modeFull)
     		showNetworkRestrictions();
     	showGlobalRestrictions();
-		if (!isModuleInstalled("me.abitno.vplayer", "me.abitno.media.explorer.FileExplorer"))
+		if (!isModuleInstalled("com.daroonsoft.player", "com.daroonsoft.player.HomeActivity"))
 		{
 	    	AlertDialog d = new AlertDialog.Builder(this).create();
 			d.setTitle("Attention ! Merci de lire");
 			d.setIcon(R.drawable.icon_fbm);
 	    	d.setMessage(
-				"Pour utiliser cette fonctionnalité, vous devez installer une application capable de lire les flux vidéos 'TS' comme 'VPlayer' (disponible sur Android 2.1 et +) :\n"+
-				"- Cliquez sur 'Installer' pour installer VPlayer (version market ou version gratuite).\n"+
+				"Pour utiliser cette fonctionnalité, vous devez installer une application capable de lire les flux vidéos 'TS' comme 'Daroon Player' :\n"+
+				"- Cliquez sur 'Installer' pour installer Daroon Player.\n"+
 				"- Cliquez sur 'Continuer' si vous avez déjà installé vplayer ou une autre application capable de lire de tels flux.\n"+
 				"- Cliquez sur 'Annuler' pour ne rien faire et revenir à l'écran précédent.\n"
 			);
@@ -751,44 +759,8 @@ public class MainActivity extends ListActivity implements TvConstants
 				{
 					dialog.dismiss();
 		    		tracker.trackPageView("TV/InstallPlayer");
-		        	AlertDialog d2 = new AlertDialog.Builder(MainActivity.this).create();
-		    		d2.setTitle("Installer VPlayer");
-		    		d2.setIcon(R.drawable.icon_fbm);
-		        	d2.setMessage(
-		        		"Vous pouvez installer VPlayer soit à partir du market (version d'essai ou version payante), soit en téléchargeant l'application en direct (version gratuite).\n"
-		    		);
-		    		d2.setButton(DialogInterface.BUTTON_NEGATIVE, "A partir du market", new DialogInterface.OnClickListener()
-		    		{
-		    			public void onClick(DialogInterface dialog, int which)
-		    			{
-		    				dialog.dismiss();
-		    	    		tracker.trackPageView("TV/InstallPlayer");
-		    				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://search?q=pub:ABitNo")));
-		    			}
-		    		});
-		    		d2.setButton(DialogInterface.BUTTON_POSITIVE, "En téléchargement direct", new DialogInterface.OnClickListener()
-		    		{
-		    			public void onClick(DialogInterface dialog, int which)
-		    			{
-		    				dialog.dismiss();
-		    	    		tracker.trackPageView("TV/InstallPlayerDirect");
-		    	        	AlertDialog d3 = new AlertDialog.Builder(MainActivity.this).create();
-		    	    		d3.setIcon(R.drawable.icon_fbm);
-		    	    		d3.setTitle("Téléchargement de VPlayer");
-		    	    		d3.setMessage("Une fois le téléchargement terminé, cliquer sur sa notification 'VPLayer.apk' dans la barre de notification en haut de l'écran afin d'installer VPlayer.\n");
-		    	    		d3.setButton(DialogInterface.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener()
-		    	    		{
-		    	    			public void onClick(DialogInterface dialog, int which)
-		    	    			{
-		    	    				dialog.dismiss();
-//		    	    				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://files-for-abitno.googlecode.com/files/VPlayer.apk")));
-		    	    				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://tv.freeboxmobile.net/apk/VPlayer.apk")));
-		    	    			}
-		    	    		});
-		    	    		d3.show();
-		    			}
-		    		});
-		    		d2.show();
+//    				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://search?q=pub:Daroonsoft")));
+    				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://market.android.com/details?id=com.daroonsoft.player")));
 				}
 			});
 			d.setButton(DialogInterface.BUTTON_NEUTRAL, "Continuer", new DialogInterface.OnClickListener()
@@ -1034,7 +1006,7 @@ public class MainActivity extends ListActivity implements TvConstants
 					Toast.makeText(MainActivity.this, "Connecté au réseau Free.\n\n"+pasFreebox, Toast.LENGTH_SHORT).show();
 				break;
 				case 3:
-					Toast.makeText(MainActivity.this, "Connecté à une Freebox.", Toast.LENGTH_SHORT).show();
+					Toast.makeText(MainActivity.this, "Connecté à une Freebox\nUn clic long sur une chaîne permet de choisir le type de flux.", Toast.LENGTH_SHORT).show();
 				break;
 			}
 		}
