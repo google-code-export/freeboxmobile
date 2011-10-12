@@ -42,7 +42,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -104,17 +103,6 @@ public class MainActivity extends ListActivity implements TvConstants
 			editor.putInt(KEY_PREFS_VERSION, Utils.getMyCode(this));
 			editor.commit();
 		}
-/*    	File file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+FILE_TV_FULL);
-    	if (file.exists())
-    	{
-    		Log.d(TAG, "Mode full activé !");
-    		modeFull = true;
-    	}
-    	else
-    	{
-    		modeFull = false;
-    	}
-    	*/
     }
 
     @Override
@@ -703,8 +691,6 @@ public class MainActivity extends ListActivity implements TvConstants
 		d.setTitle("Attention ! Merci de lire");
 		d.setIcon(R.drawable.icon_fbm);
     	d.setMessage(
-//    		"En étant connecté au réseau Free (sur une Freebox, réseau FreeWifi, réseau FreeMobile...) vous aurez plus de chaînes à votre disposition.\n\n"+
-//    		"Si vous n'arrivez pas à ouvrir une chaîne, cela peut être dû à un manque de bande passante à l'endroit où vous vous trouvez."
     		"En étant connecté à une Freebox, vous aurez plus de chaînes à votre disposition."
 		);
 		d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
@@ -724,8 +710,6 @@ public class MainActivity extends ListActivity implements TvConstants
 		d.setIcon(R.drawable.icon_fbm);
     	d.setMessage(
        		"En vous connectant à une Freebox v6 avec la TNT (le scan TNT doit être effectué sur la v6), vous obtiendrez toutes les chaînes de la TNT sur Freebox Mobile !"
-//    		"Suite à la fermeture par Free du service tv.freebox.fr et de l'impossibilité de lire correctement les flux multiposte avec un player Android (pour l'instant du moins).\n"+
-//    		"Cette situation est indépendante de notre volonté. Nous ferons une mise à jour de l'application dès qu'il sera possible de lire les flux multiposte ou si le service tv.freebox.fr reprend..."
 		);
 		d.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
 		{
