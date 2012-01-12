@@ -14,8 +14,6 @@ import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,9 +21,7 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -752,18 +748,6 @@ private static void trustAllHosts() {
 			h.disconnect();
 		}
 */		return (null);
-	}
-
-	// TODO : Remove ?
-	public static void makePost_unused(HttpURLConnection h, boolean retour, String params) throws IOException
-	{
-		h.setDoOutput(true);
-		if (retour)
-			h.setDoInput(true);
-		OutputStreamWriter o = new OutputStreamWriter(h.getOutputStream());
-		o.write(params);
-		o.flush();
-		o.close();		
 	}
 	
 	public static InputStreamReader postAuthRequest(String url, List<NameValuePair> p, boolean auth, boolean retour)

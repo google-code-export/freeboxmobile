@@ -189,22 +189,25 @@ public class FBMNetTask extends AsyncTask<Void, Integer, Integer> implements Con
      */
     public static void alertDialogShow(String title, String message, int icon)
     {
-    	if (alertDialog == null)
+    	if (activity != null)
     	{
-    		alertDialog = new AlertDialog.Builder(activity).create();
-    	}
-		alertDialog.setTitle(title);
-		alertDialog.setIcon(icon);
-		alertDialog.setMessage(message);
-		alertDialog.setButton("Ok", new DialogInterface.OnClickListener()
-			{
-				public void onClick(DialogInterface dialog, int which)
+	    	if (alertDialog == null)
+	    	{
+	    		alertDialog = new AlertDialog.Builder(activity).create();
+	    	}
+			alertDialog.setTitle(title);
+			alertDialog.setIcon(icon);
+			alertDialog.setMessage(message);
+			alertDialog.setButton("Ok", new DialogInterface.OnClickListener()
 				{
-					alertDialogDismiss();
+					public void onClick(DialogInterface dialog, int which)
+					{
+						alertDialogDismiss();
+					}
 				}
-			}
-		);
-		alertDialog.show();
+			);
+			alertDialog.show();
+    	}
     }
     
 	protected int getJSONBoolean(JSONObject o, String key)
