@@ -340,15 +340,25 @@
 		<item>"9 mai : Les abonnés Freebox v4 et v5 peuvent appeler gratuitement vers les mobiles (option à 3€/mois)."</item>
 		<item>http://www.universfreebox.com/article14060.html</item>
 
-		<item>"2012"</item>
-		<item>"Ouverture de Free Mobile"</item>
-		<item>"début 2012 : Lancement des offres de téléphonie mobile Free Mobile."</item>
-		<item>http://iliad.fr</item>
+		<item>"2011"</item>
+		<item>"Free option une licence 4G"</item>
+		<item>"22 septembre : Free option une licence 4G. Ouverture en 2013."</item>
+		<item>http://www.iliad.fr/presse/2011/CP_220911.pdf</item>
 
+		<item>"2011"</item>
+		<item>"Accédez à Youtube depuis votre télévision"</item>
+		<item>"18 octobre : Yoputube est disponible sur la Freebox Revolution."</item>
+		<item>http://www.iliad.fr/presse/2011/CP_181011.pdf</item>
+		    
+		<item>"2011"</item>
+		<item>"Accédez à Facebook depuis votre télévision"</item>
+		<item>"6 décembre : Facebook est disponible sur la Freebox Revolution."</item>
+		<item>http://www.iliad.fr/presse/2011/CP_061211.pdf</item>
+		    
 		<item>"2012"</item>
 		<item>"Ouverture de Free Mobile"</item>
-		<item>"début 2012 : Lancement des offres de téléphonie mobile Free Mobile."</item>
-		<item>http://iliad.fr</item>
+		<item>"10 janvier 2012 : Lancement des offres de téléphonie mobile Free."</item>
+		<item>http://www.iliad.fr/presse/2012/CP_D_DAY_100112.pdf</item>
 
 	</string-array>
 	<string-array name="inv_widget_events">
