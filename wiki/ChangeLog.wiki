@@ -18,6 +18,12 @@ TELECOMMANDE : Le module de télécommande
 = Versions publiques de !FreeboxMobile =
 
 == 0.53.2 ==
+Sortie le 13/01/2012<br>
+Release : 74<br>
+Revision : 
+ * Modifications mineures pour préparer une mise à jour plus importante
+
+== 0.53.2 ==
 Sortie le 06/04/2011<br>
 Release : 73<br>
 Revision : 876
