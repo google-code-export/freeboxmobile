@@ -61,7 +61,7 @@ public class InvWidget extends AppWidgetProvider implements Constants
 			GoogleAnalyticsTracker tracker;
 			tracker = GoogleAnalyticsTracker.getInstance();
 			tracker.start(ANALYTICS_MAIN_TRACKER, 20, context);
-			tracker.trackPageView("Widget/InnovationsMAJ");				
+			tracker.trackPageView("Widget/InnovationsMAJ");
 
 			Resources res = context.getResources();
 			Random r = new java.util.Random( );
