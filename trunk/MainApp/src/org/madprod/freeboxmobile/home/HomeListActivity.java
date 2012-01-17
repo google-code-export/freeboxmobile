@@ -308,13 +308,15 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		map.put(M_DESC, "Configurer votre accès FreeWifi afin de pouvoir bénéficier de millions de HotSpots Wifi en France");
 		map.put(M_CLASS, null);
 		modulesList.add(map);
-/*		map = new HashMap<String,Object>();
-		map.put(M_ICON, R.drawable.fm_webmail);
-		map.put(M_TITRE, getString(R.string.buttonWebmail));
-		map.put(M_DESC, "Si vous avez une adresse email en @free.fr, accèdez au webmail ici");
-		map.put(M_CLASS, null);
-		modulesList.add(map);
-		*/
+		if (isModuleInstalled("org.geeek.free", "org.geeek.free.activity.SplashScreenActivity"))
+		{
+			map = new HashMap<String,Object>();
+			map.put(M_ICON, R.drawable.fm_webmail);
+			map.put(M_TITRE, getString(R.string.buttonWebmail));
+			map.put(M_DESC, "Si vous avez une adresse email en @free.fr, accèdez au webmail ici");
+			map.put(M_CLASS, null);
+			modulesList.add(map);
+		}
     	if (!checkOS(Build.VERSION_CODES.ECLAIR_MR1))
     	{
 	    	map = new HashMap<String,Object>();
