@@ -18,6 +18,9 @@ import org.madprod.freeboxmobile.Utils;
 import org.madprod.freeboxmobile.fax.FaxActivity;
 import org.madprod.freeboxmobile.guide.GuideMenuActivity;
 
+import static org.madprod.freeboxmobile.StaticConstants.TAG;
+import static org.madprod.freeboxmobile.StaticConstants.KEY_PREFS;
+
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.ActivityNotFoundException;
@@ -49,6 +52,8 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import com.google.android.apps.analytics.GoogleAnalyticsTracker;
+
+import org.madprod.freeboxmobile.utils.ApnCheck;
 
 /**
 *
@@ -135,6 +140,11 @@ public class HomeListActivity extends ListActivity implements HomeConstants
         // Si on est sur un premier lancement de la nouvelle version :
 		if (!mgr.getString(KEY_SPLASH, "0").equals(Utils.getFBMVersion(this)))
 		{
+			// On check les APN Free, pour les ajouter si nécessaire au cas où
+			ApnCheck ac = new ApnCheck(this);
+			ac.checkApn(ApnCheck.APN_TYPE_INTERNET);
+			ac.checkApn(ApnCheck.APN_TYPE_MMS);
+
 			// Si on avait l'ancienne structure pour stocker les logos des chaînes, on migre :
 			File of = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+OLDDIR_CHAINES);
         	File file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES);

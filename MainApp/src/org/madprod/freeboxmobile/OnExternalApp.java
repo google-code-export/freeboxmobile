@@ -1,15 +1,12 @@
 package org.madprod.freeboxmobile;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-
 import org.madprod.freeboxmobile.guide.GuideCheck; 
+
+import static org.madprod.freeboxmobile.StaticConstants.TAG;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.sax.StartElementListener;
 import android.util.Log;
 
 /**
@@ -19,7 +16,7 @@ import android.util.Log;
  * 
  */
 
-public class OnExternalApp extends BroadcastReceiver implements Constants
+public class OnExternalApp extends BroadcastReceiver
 {
 	String[] packages = new String[]{"org.madprod.infofreenautes", "org.madprod.mevo"};
 

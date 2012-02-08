@@ -7,6 +7,9 @@ import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.guide.GuideCheck;
 
+import static org.madprod.freeboxmobile.StaticConstants.TAG;
+import static org.madprod.freeboxmobile.StaticConstants.KEY_PREFS;
+
 import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 
 import android.app.ListActivity;

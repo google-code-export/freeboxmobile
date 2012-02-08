@@ -2,6 +2,8 @@ package org.madprod.freeboxmobile.ligne;
 
 import org.madprod.freeboxmobile.FBMHttpConnection;
 
+import static org.madprod.freeboxmobile.StaticConstants.TAG;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;

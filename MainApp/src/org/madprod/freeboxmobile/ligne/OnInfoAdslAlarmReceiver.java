@@ -1,7 +1,8 @@
 package org.madprod.freeboxmobile.ligne;
 
-import org.madprod.freeboxmobile.Constants;
 import org.madprod.freeboxmobile.WakefullIntentService;
+
+import static org.madprod.freeboxmobile.StaticConstants.TAG;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -15,7 +16,7 @@ import android.util.Log;
 * 
 */
 
-public class OnInfoAdslAlarmReceiver extends BroadcastReceiver implements Constants
+public class OnInfoAdslAlarmReceiver extends BroadcastReceiver
 {
 	@Override
 	public void onReceive(Context context, Intent intent)

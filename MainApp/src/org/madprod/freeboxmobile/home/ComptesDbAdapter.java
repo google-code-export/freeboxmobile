@@ -10,6 +10,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import static org.madprod.freeboxmobile.StaticConstants.TAG;
+
 /**
 *
 * @author Olivier Rosello

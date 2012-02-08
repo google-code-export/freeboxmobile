@@ -10,6 +10,9 @@ import java.util.HashSet;
 import org.apache.http.client.ClientProtocolException;
 import org.madprod.freeboxmobile.Constants;
 
+import static org.madprod.freeboxmobile.StaticConstants.TAG;
+import static org.madprod.freeboxmobile.StaticConstants.KEY_PREFS;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -17,7 +20,7 @@ import android.os.Handler;
 import android.util.Log;
 
 @SuppressWarnings("serial")
-public class CommandManager extends Activity implements Constants{
+public class CommandManager extends Activity {
 	private static CommandManager cm = new CommandManager();
 	static final String TAG	= "FBM";
 	private static String[] adresses = new String[]{"hd1.freebox.fr", "hd2.freebox.fr"};

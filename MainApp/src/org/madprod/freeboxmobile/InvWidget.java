@@ -1,5 +1,7 @@
 package org.madprod.freeboxmobile;
 
+import static org.madprod.freeboxmobile.StaticConstants.TAG;
+
 import android.app.PendingIntent;
 import android.app.Service;
 import android.appwidget.AppWidgetManager;

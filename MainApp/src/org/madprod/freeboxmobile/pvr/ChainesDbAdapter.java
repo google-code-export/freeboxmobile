@@ -9,6 +9,8 @@ import org.madprod.freeboxmobile.Constants;
 import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.guide.GuideConstants;
 
+import static org.madprod.freeboxmobile.StaticConstants.TAG;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;

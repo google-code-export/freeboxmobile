@@ -13,6 +13,8 @@ import java.util.Date;
 
 import org.madprod.freeboxmobile.FBMHttpConnection;
 
+import static org.madprod.freeboxmobile.StaticConstants.TAG;
+
 import android.app.Activity;
 import android.app.IntentService;
 import android.content.Intent;

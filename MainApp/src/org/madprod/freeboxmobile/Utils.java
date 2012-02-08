@@ -9,6 +9,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.io.*;
 
+import static org.madprod.freeboxmobile.StaticConstants.TAG;
+
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -22,7 +24,7 @@ import android.util.Log;
 * 
 */
 
-public class Utils implements Constants
+public class Utils
 {
 	private static String FBMVersion = null;
 	private static int FBMCode = 0;

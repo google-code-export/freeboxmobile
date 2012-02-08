@@ -14,6 +14,8 @@ import org.madprod.freeboxmobile.WrapBitmap;
 import org.madprod.freeboxmobile.guide.GuideConstants.Categorie;
 import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
 
+import static org.madprod.freeboxmobile.StaticConstants.TAG;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ListActivity;

@@ -8,6 +8,8 @@ import org.apache.http.message.BasicNameValuePair;
 import org.madprod.freeboxmobile.Constants;
 import org.madprod.freeboxmobile.FBMHttpConnection;
 
+import static org.madprod.freeboxmobile.StaticConstants.TAG;
+
 import android.content.Context;
 import android.util.Log;
 

@@ -1,6 +1,9 @@
 package org.madprod.freeboxmobile;
 
-import org.madprod.freeboxmobile.guide.GuideCheck; 
+import static org.madprod.freeboxmobile.StaticConstants.TAG;
+import static org.madprod.freeboxmobile.StaticConstants.KEY_PREFS;
+
+import org.madprod.freeboxmobile.guide.GuideCheck;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

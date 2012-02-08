@@ -18,6 +18,8 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
+import static org.madprod.freeboxmobile.StaticConstants.TAG;
+
 public class MevoProvider extends ContentProvider implements MevoConstants{
 	
 	

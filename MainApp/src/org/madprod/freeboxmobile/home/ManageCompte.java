@@ -8,6 +8,9 @@ import org.madprod.freeboxmobile.pvr.ProgrammationActivity;
 import org.madprod.freeboxmobile.pvr.PvrNetwork;
 import org.madprod.freeboxmobile.R;
 
+import static org.madprod.freeboxmobile.StaticConstants.TAG;
+import static org.madprod.freeboxmobile.StaticConstants.KEY_PREFS;
+
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;

@@ -7,14 +7,16 @@ import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.util.Log;
 
+import static org.madprod.freeboxmobile.StaticConstants.TAG;
+
 /**
 *
 * @author Olivier Rosello
-* $Id$
+* $Id: WakefullIntentService.java 874 2011-04-06 10:15:56Z olivier@rosello.eu $
 * 
 */
 
-public class WakefullIntentService extends IntentService implements Constants
+public class WakefullIntentService extends IntentService
 {
 	public static final String LOCK_NAME_STATIC = "org.madprod.freeboxmobile.mevo.AppService.static";
 	public static final String LOCK_NAME_LOCAL = "org.madprod.freeboxmobile.mevo.AppService.local";

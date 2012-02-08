@@ -3,6 +3,9 @@ package org.madprod.freeboxmobile;
 import org.madprod.freeboxmobile.guide.GuideCheck; 
 //import org.madprod.freeboxmobile.mvv.MevoSync;
 
+import static org.madprod.freeboxmobile.StaticConstants.TAG;
+import static org.madprod.freeboxmobile.StaticConstants.KEY_PREFS;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
