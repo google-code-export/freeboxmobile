@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout 
+	xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+	
+	<LinearLayout 
+    	android:orientation="vertical"
+    	android:layout_width="fill_parent"
+    	android:layout_height="fill_parent"
+    	android:layout_above="@+id/admob"
+	>
+
+    	<LinearLayout style="@style/TitleBar">
+        	<ImageButton style="@style/TitleBarLogo"
+        	    android:src="@drawable/title_logo" 
+        	    android:id="@+id/btn_fbm"
+        	    android:onClick="onFBMClick"
+        	    android:background="#00000000"
+			/>
+	       <View style="@style/TitleBarSpring" />
+
+			<TextView style="@style/ModuleVersion"
+				android:id="@+id/module_version" />
+			
+	
+    	    <ImageView style="@style/TitleBarSeparator" />
+        	<ImageButton style="@style/TitleBarAction"
+        	    android:id="@+id/btn_title_refresh"
+        	    android:src="@drawable/ic_title_refresh"
+        	    android:onClick="onRefreshClick" />
+            
+			<ProgressBar 
+				style="@style/TitleBarProgressIndicator"
+           		android:id="@+id/title_refresh_progress"
+            	android:visibility="gone" 
+            />
+
+        	<ImageView 
+        		style="@style/TitleBarSeparator" 
+        	/>
+        	<ImageButton 
+        		style="@style/TitleBarAction"
+            	android:src="@drawable/ic_title_settings"
+            	android:onClick="onSettings" 
+				android:id="@+id/btn_title_settings"
+            />
+    	</LinearLayout>
+
+<GridView
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:id="@+id/gridview"
+    android:verticalSpacing="10dp"
+    android:horizontalSpacing="10dp"
+
+    android:stretchMode="columnWidth"
+    android:gravity="center"
+  
+        	android:longClickable="true"
+        	android:background="#00000000"
+        	android:cacheColorHint="#00000000" style="@style/FMGrid">
+</GridView>
+
+    	<TextView
+        	android:id="@+id/noMessage"
+        	android:layout_width="fill_parent"
+        	android:layout_height="fill_parent" 
+        	android:text="Pas de messages"
+        	android:gravity="center"
+        	android:textStyle="bold"
+        	android:visibility="gone"
+        	android:textSize="20dip"
+        />
+        
+	</LinearLayout>
+
+</RelativeLayout>
