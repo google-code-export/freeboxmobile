@@ -119,6 +119,11 @@ public class Chaine implements Comparable <Chaine>, TvConstants
 		streamsList.put(type, map);
     }
 
+    public int getNbStreams()
+    {
+    	return streamsList.size();
+    }
+    
     public Integer getChannelId()
     {
     	return channelId;

@@ -1,7 +1,6 @@
 package org.madprod.freeboxmobile.tv;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -26,6 +25,7 @@ import org.json.JSONObject;
 
 import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
@@ -50,10 +50,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.widget.AdapterView;
+import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 
 /**
  * @author olivier rosello
@@ -61,7 +65,7 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
  * 
  */
 
-public class MainActivity extends ListActivity implements TvConstants
+public class MainActivity extends /*List*/Activity implements TvConstants
 {
 	GoogleAnalyticsTracker tracker;
 	public static Map<Integer, Chaine> mapChaines = new HashMap<Integer, Chaine>();
@@ -73,17 +77,113 @@ public class MainActivity extends ListActivity implements TvConstants
 	private static long startPlay = 0;
 	private int networkState = -1;
 	private Map<Integer, Integer> streamsPrefs = new HashMap<Integer, Integer>();
-
+	GridView gridview;
+	
+	final static int NETWORK_TYPE_UNKNOWN = -1;
+	final static int NETWORK_TYPE_PROBLEM = 0;
+	final static int NETWORK_TYPE_INTERNET = 1;
+	final static int NETWORK_TYPE_FREE = 2;
+	final static int NETWORK_TYPE_MULTIPOSTE = 3;
+	
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-		setContentView(R.layout.tv_main_list);
+//		setContentView(R.layout.tv_main_list);
+		setContentView(R.layout.tv_main_grid);
 		tracker = GoogleAnalyticsTracker.getInstance();
 		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
 		tracker.trackPageView("Tv/HomeTv");
 		TextView t = (TextView) findViewById(R.id.module_version);
 		t.setText(getString(R.string.module_name)+" "+Utils.getMyVersion(this));
+		gridview = (GridView) findViewById(R.id.gridview);
+		
+		gridview.setOnItemClickListener(
+			new OnItemClickListener()
+			{
+				public void onItemClick(AdapterView<?> parent, View v, int position, long id)
+				{
+			        Log.d(TAG, "LOG : "+listChaines);
+			        Log.d(TAG, " POS : "+listChaines.get(position));
+			        Log.d(TAG, " STREAM : "+listChaines.get(position).getStream(Chaine.STREAM_TYPE_INTERNET));
+			        if ((listChaines != null) &&
+			        	(listChaines.get(position) != null) &&
+			        	(listChaines.get(position).getFavoriteStream(streamsPrefs) != null) &&
+			        	(listChaines.get(position).getFavoriteStream(streamsPrefs).get(Chaine.M_URL) != null) &&
+			        	(listChaines.get(position).getFavoriteStream(streamsPrefs).get(Chaine.M_MIME) != null)
+			        	)
+				        callStream(
+				        		listChaines.get(position).getFavoriteStream(streamsPrefs).get(Chaine.M_URL),
+				        		listChaines.get(position).getFavoriteStream(streamsPrefs).get(Chaine.M_MIME)
+			        );
+//					Toast.makeText(MainActivity.this, "" + position, Toast.LENGTH_SHORT).show();
+				}
+			}
+			);
+
+		gridview.setOnItemLongClickListener(
+			new OnItemLongClickListener()
+			{
+				public boolean onItemLongClick(AdapterView<?> parent, View v, int position, long id)
+				{
+			        Log.d(TAG, "LOOOONNNNNNNNNNNNNNNNNGGGGGGGGGGGGGGGGG :!!!!!!!!!!!!!!!");
+			        Log.d(TAG, "LOG : "+listChaines);
+			        Log.d(TAG, " POS : "+listChaines.get(position));
+				    int max = Chaine.STREAM_NAME.length;
+			        Log.d(TAG, " MAX : "+max);
+			        //CharSequence[] items;// = {"Red", "Green", "Blue"};
+			        //items = new CharSequence[max];
+			        ArrayList<CharSequence> items = new ArrayList<CharSequence>(); 
+			        Integer i = 0;
+				    while (i<max)
+				    {
+				    	Log.d(TAG, "i = "+i);
+//				    	Log.d(TAG, "i:"+i+" NAME:"+Chaine.STREAM_NAME[i]+" TYPE:"+Chaine.STREAM_TYPE[i]);
+					    if (listChaines.get(position).getStream(Chaine.STREAM_TYPE[i]) != null)
+					    {
+					    	Log.d(TAG, "Name = "+Chaine.STREAM_NAME[i]);
+					    	items.add(Chaine.STREAM_NAME[i]);// = Chaine.STREAM_NAME[i];
+//					    	Log.d(TAG, "Item i = "+items[i]);
+//						    menu.add(0, Chaine.STREAM_TYPE[i], i, Chaine.STREAM_NAME[i]);
+					    }
+				    	i++;
+				    }
+
+				    Log.d(TAG, "OUTSIDE loop !");
+			        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+				    Log.d(TAG, "OUTSIDE loop 2 !");
+			        builder.setTitle("Pick a color");
+				    Log.d(TAG, "OUTSIDE loop 3 ! ");
+
+				    final CharSequence[] it = new CharSequence[items.size()];//(CharSequence[]) items.toArray();
+				    for (i = 0; i < items.size(); i++)
+				    {
+				    	Log.d(TAG, "COPY "+i);
+				    	it[i] = items.get(i);
+				    }
+			        builder.setItems(it, new DialogInterface.OnClickListener()
+			        {
+			        	public void onClick(DialogInterface dialog, int item)
+			            {
+			                Toast.makeText(getApplicationContext(), "Res : "+item+" - "+it[item], Toast.LENGTH_SHORT).show();
+			            }
+			        });
+				    Log.d(TAG, "OUTSIDE loop  4 !");
+
+			        AlertDialog alert = builder.create();
+				    Log.d(TAG, "OUTSIDE loop 5 !");
+
+//			        alert.setTitle("Sélectionnez le flux pour "+listChaines.get(position).getName());
+			        alert.setTitle("Sélectionnez le flux pour ");
+				    Log.d(TAG, "OUTSIDE loop 6 !");
+
+			        alert.show();
+				    Log.d(TAG, "OUTSIDE loop 7 !");
+
+					return true;
+				}
+			}
+			);
 
 		SharedPreferences mgr = getSharedPreferences(KEY_PREFS, MODE_PRIVATE);
 		if (!mgr.getString(KEY_SPLASH_TV, "0").equals(Utils.getMyVersion(this)))
@@ -139,8 +239,9 @@ public class MainActivity extends ListActivity implements TvConstants
 	    	}
 	    	else
 	    	{
-	    		setListAdapter(MainActivity.listAdapter);
-	            registerForContextMenu(getListView());
+	    		gridview.setAdapter(MainActivity.listAdapter);	    		
+//	    		setListAdapter(MainActivity.listAdapter);
+//	            registerForContextMenu(getListView());
 	    	}
 	    	if ((Calendar.getInstance().getTimeInMillis() - startPlay) < (10 * 1000))
 	    	{
@@ -192,7 +293,7 @@ public class MainActivity extends ListActivity implements TvConstants
         }
         return super.onOptionsItemSelected(item);
     }
-
+/*
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id)
     {
@@ -212,7 +313,7 @@ public class MainActivity extends ListActivity implements TvConstants
 	        		listChaines.get(position).getFavoriteStream(streamsPrefs).get(Chaine.M_MIME)
         );
     }
-
+*/
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View view, ContextMenuInfo menuInfo)
 	{
@@ -431,7 +532,7 @@ public class MainActivity extends ListActivity implements TvConstants
 				Log.e(TAG, "Impossible de charger le json !");
 			}
 //	    	if (networkType > 0)
-			if ((modeFull) || (networkType == 3))
+			if ((modeFull) || (networkType == NETWORK_TYPE_MULTIPOSTE))
 	    	{
 	    		InputStreamReader m3u;
 		    	m3u = getUrl("http://mafreebox.freebox.fr/freeboxtv/playlist.m3u");
@@ -489,12 +590,14 @@ public class MainActivity extends ListActivity implements TvConstants
 												c.addStream(Chaine.STREAM_TYPE_MULTIPOSTE_SD, line, "video/mp2");
 												mapChaines.put(cnum, c);
 											}
-											if (line.contains("flavour=ld"))
+											// modeFull here because currently player doesn't play mp4 streams
+											if ((modeFull) && (line.contains("flavour=ld")))
 											{
 												c.addStream(Chaine.STREAM_TYPE_MULTIPOSTE_LD, line, "video/mp4");
 												mapChaines.put(cnum, c);
 											}
-											if (line.contains("flavour=hd"))
+											// modeFull here because currently player doesn't play mp4 streams
+											if ((modeFull) && (line.contains("flavour=hd")))
 											{
 												c.addStream(Chaine.STREAM_TYPE_MULTIPOSTE_HD, line, "video/mp4");
 												mapChaines.put(cnum, c);
@@ -509,9 +612,13 @@ public class MainActivity extends ListActivity implements TvConstants
 												}
 												else
 												{
-//													Log.d(TAG, "adding TNTHD : "+channelTitle);
-													c.addStream(Chaine.STREAM_TYPE_MULTIPOSTE_TNTHD, line, "video/mp4");
-													mapChaines.put(cnum, c);													
+													// modeFull here because currently player doesn't play mp4 streams
+													if (modeFull)
+													{
+	//													Log.d(TAG, "adding TNTHD : "+channelTitle);
+														c.addStream(Chaine.STREAM_TYPE_MULTIPOSTE_TNTHD, line, "video/mp4");
+														mapChaines.put(cnum, c);
+													}
 												}
 											}
 										}
@@ -521,7 +628,7 @@ public class MainActivity extends ListActivity implements TvConstants
 										Log.d(TAG, "pb conversion num chaine : "+num);
 									}
 								}
-						          sb.append(line+"\n");
+								sb.append(line+"\n");
 						    }
 							while ((line = reader.readLine()) != null);
 						}
@@ -963,8 +1070,12 @@ public class MainActivity extends ListActivity implements TvConstants
 			if (listAdapter == null)
 			{
 				MainActivity.listAdapter = new ImageAdapter(MainActivity.this, listChaines);
-		        setListAdapter(MainActivity.listAdapter);
-		        registerForContextMenu(getListView());
+
+				Log.d(TAG, "gv : "+gridview);
+				Log.d(TAG, "la : "+MainActivity.listAdapter);
+	    		gridview.setAdapter(MainActivity.listAdapter);	    		
+//		        setListAdapter(MainActivity.listAdapter);
+//		        registerForContextMenu(getListView());
 			}
 			else
 			{
@@ -1007,8 +1118,8 @@ public class MainActivity extends ListActivity implements TvConstants
 		private int testNet()
 		{
 			HttpParams params = new BasicHttpParams();
-			HttpConnectionParams.setConnectionTimeout(params, 500);
-			HttpConnectionParams.setSoTimeout(params, 500);
+			HttpConnectionParams.setConnectionTimeout(params, 1000);
+			HttpConnectionParams.setSoTimeout(params, 1000);
 			HttpConnectionParams.setStaleCheckingEnabled(params, true);
 			HttpClient client = new DefaultHttpClient(params);
 	        HttpGet request = new HttpGet("http://mafreebox.freebox.fr/freeboxtv/playlist.m3u");
@@ -1018,7 +1129,7 @@ public class MainActivity extends ListActivity implements TvConstants
 	            if (response.getStatusLine().getStatusCode() == 200)
 	            {
 	    			Log.d(TAG, "Multiposte network");
-	    			networkState = 3;
+	    			networkState = NETWORK_TYPE_MULTIPOSTE;
 	    			return networkState;
 	            }
 	        }
@@ -1026,9 +1137,9 @@ public class MainActivity extends ListActivity implements TvConstants
 	        {
 				Log.d(TAG, "network problem while checking multiposte");
 				e.printStackTrace();
-				networkState = 0;
+		        networkState = NETWORK_TYPE_PROBLEM;
 	        }
-	        networkState = 1;
+	        networkState = NETWORK_TYPE_INTERNET;
 /*
  * Commented because tv.freebox.fr is now closed :-(
 			HttpConnectionParams.setConnectionTimeout(params, 5000);
