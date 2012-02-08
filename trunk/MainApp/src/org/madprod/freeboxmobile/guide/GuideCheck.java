@@ -26,6 +26,8 @@ import org.madprod.freeboxmobile.home.HomeListActivity;
 import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
 import org.madprod.freeboxmobile.pvr.PvrNetwork;
 
+import static org.madprod.freeboxmobile.StaticConstants.TAG;
+
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;

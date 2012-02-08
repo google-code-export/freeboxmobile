@@ -4,14 +4,14 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URI;
 import java.util.Date;
 
 import org.madprod.freeboxmobile.Constants;
-import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.WakefullIntentService;
 import org.madprod.freeboxmobile.home.HomeListActivity;
+
+import static org.madprod.freeboxmobile.StaticConstants.TAG;
 
 import android.app.Activity;
 import android.app.AlarmManager;

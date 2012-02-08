@@ -14,6 +14,9 @@ import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
 
+import static org.madprod.freeboxmobile.StaticConstants.TAG;
+import static org.madprod.freeboxmobile.StaticConstants.KEY_PREFS;
+
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;

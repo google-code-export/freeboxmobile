@@ -9,6 +9,8 @@ import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.ServiceUpdateUIListener;
 import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
 
+import static org.madprod.freeboxmobile.StaticConstants.TAG;
+
 import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 
 import android.app.AlertDialog;

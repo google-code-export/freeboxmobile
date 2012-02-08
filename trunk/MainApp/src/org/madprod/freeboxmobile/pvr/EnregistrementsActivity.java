@@ -34,6 +34,8 @@ import org.madprod.freeboxmobile.FBMHttpConnection;
 import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
 
+import static org.madprod.freeboxmobile.StaticConstants.TAG;
+
 import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 
 /**

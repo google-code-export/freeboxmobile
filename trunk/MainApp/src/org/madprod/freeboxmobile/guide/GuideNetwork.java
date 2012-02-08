@@ -20,6 +20,8 @@ import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.Utils;
 import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
 
+import static org.madprod.freeboxmobile.StaticConstants.TAG;
+
 import android.content.Context;
 import android.os.Environment;
 import android.util.Log;

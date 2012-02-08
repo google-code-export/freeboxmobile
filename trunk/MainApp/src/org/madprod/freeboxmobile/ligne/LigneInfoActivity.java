@@ -1,6 +1,5 @@
 package org.madprod.freeboxmobile.ligne;
 
-import java.net.URI; 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -13,6 +12,9 @@ import org.madprod.freeboxmobile.FBMNetTask;
 import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.Utils;
 import org.madprod.freeboxmobile.home.ComptesDbAdapter;
+
+import static org.madprod.freeboxmobile.StaticConstants.TAG;
+import static org.madprod.freeboxmobile.StaticConstants.KEY_PREFS;
 
 import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 

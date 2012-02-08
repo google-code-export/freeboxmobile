@@ -11,6 +11,9 @@ import org.madprod.freeboxmobile.mvv.MevoConstants;
 import org.madprod.freeboxmobile.mvv.MevoDbAdapter;
 import org.madprod.freeboxmobile.mvv.MevoSync;
 
+import static org.madprod.freeboxmobile.StaticConstants.TAG;
+import static org.madprod.freeboxmobile.StaticConstants.KEY_PREFS;
+
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;

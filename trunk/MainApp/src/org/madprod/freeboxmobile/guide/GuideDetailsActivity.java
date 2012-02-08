@@ -10,6 +10,8 @@ import org.madprod.freeboxmobile.R;
 import org.madprod.freeboxmobile.pvr.ChainesDbAdapter;
 import org.madprod.freeboxmobile.pvr.ProgrammationActivity;
 
+import static org.madprod.freeboxmobile.StaticConstants.TAG;
+
 import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 
 import android.app.Activity;

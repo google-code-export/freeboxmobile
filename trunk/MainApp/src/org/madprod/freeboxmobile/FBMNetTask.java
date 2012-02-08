@@ -1,5 +1,7 @@
 package org.madprod.freeboxmobile;
 
+import static org.madprod.freeboxmobile.StaticConstants.TAG;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -10,7 +12,7 @@ import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.util.Log;
 
-public class FBMNetTask extends AsyncTask<Void, Integer, Integer> implements Constants
+public class FBMNetTask extends AsyncTask<Void, Integer, Integer>
 {
 	static private Activity activity = null;
 	static private AlertDialog alertDialog = null;

@@ -1,5 +1,8 @@
 package org.madprod.freeboxmobile;
 
+import static org.madprod.freeboxmobile.StaticConstants.TAG;
+import static org.madprod.freeboxmobile.StaticConstants.KEY_PREFS;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
