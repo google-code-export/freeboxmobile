@@ -48,7 +48,14 @@ public class Utils implements TvConstants
 
     	Intent intent = packageManager.getLaunchIntentForPackage(packageName);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        context.startActivity(intent);
+        try
+        {
+        	context.startActivity(intent);
+        }
+        catch (Exception e)
+        {
+        	Log.e(TAG, e.getLocalizedMessage());
+        }
     }
 
 	// Code from enh project (enh.googlecode.com)
