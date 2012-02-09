@@ -39,7 +39,7 @@ public class SettingsActivity extends PreferenceActivity implements TvConstants,
         SharedPreferences pref = getPreferenceManager().getSharedPreferences();
         pref.registerOnSharedPreferenceChangeListener(this);
 		tracker = GoogleAnalyticsTracker.getInstance();
-		tracker.start(ANALYTICS_MAIN_TRACKER, 20, this);
+		tracker.startNewSession(ANALYTICS_MAIN_TRACKER, 20, this);
 		tracker.trackPageView("Tv/SettingsTv");
 //		clearConfig();
 		setupLists(null);
@@ -48,7 +48,7 @@ public class SettingsActivity extends PreferenceActivity implements TvConstants,
     @Override
     protected void onDestroy()
     {
-    	tracker.stop();
+    	tracker.stopSession();
     	super.onDestroy();
     }
 
@@ -121,8 +121,11 @@ public class SettingsActivity extends PreferenceActivity implements TvConstants,
 			    	if (!found)
 			    	{
 			    		Log.d(TAG, "i:"+i+" selectListNumber:"+selectListNumber+" j:"+j);
-				    	streamNames[selectListNumber] = Chaine.STREAM_NAME[j];
-				    	streamTypes[selectListNumber] = Chaine.STREAM_TYPE[j].toString();
+			    		if (streamNames.length > selectListNumber)
+			    		{
+					    	streamNames[selectListNumber] = Chaine.STREAM_NAME[j];
+					    	streamTypes[selectListNumber] = Chaine.STREAM_TYPE[j].toString();
+			    		}
 				    	selectListNumber++;
 			    	}
 			    	j++;
