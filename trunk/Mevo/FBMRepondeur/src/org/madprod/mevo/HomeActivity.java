@@ -80,7 +80,7 @@ public class HomeActivity extends ListActivity implements TrackerConstants , Det
 				d.setIcon(R.drawable.fm_repondeur);
 				d.setMessage(
 						"Pour utiliser cette fonctionnalitée, vous devez installer Freebox Mobile'.\n\n"+
-						"Cliquez sur 'Continuer' pour l'installer ou sur 'Annuler' pour quitter Actu Freenautes"
+						"Cliquez sur 'Continuer' pour l'installer ou sur 'Annuler' pour quitter."
 
 				);
 				d.setButton(DialogInterface.BUTTON_POSITIVE, "Continuer", new DialogInterface.OnClickListener()

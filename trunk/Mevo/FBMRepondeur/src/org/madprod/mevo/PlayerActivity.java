@@ -38,7 +38,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
-@SuppressWarnings("deprecation")
+//@SuppressWarnings("deprecation")
 public class PlayerActivity extends Activity implements Constants, SensorEventListener{
 
 	private GoogleAnalyticsTracker tracker;
