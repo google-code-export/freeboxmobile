@@ -70,7 +70,7 @@ public class MevoSync extends IntentService implements Constants
 		else
 		{
 			amgr.cancel(pi);
-			Log.i(TAG,"MevoTimer canceled");			
+			Log.i(TAG,"MevoTimer canceled");
 		}
 	}
 
@@ -83,7 +83,6 @@ public class MevoSync extends IntentService implements Constants
 	public static ResultReceiver receiver = null;
 	private boolean binded = false;
 
-
 	public MevoSync() {
 		super(TAG);
 	}
@@ -92,7 +91,6 @@ public class MevoSync extends IntentService implements Constants
 	public void onCreate() {
 		super.onCreate();
 	}
-
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
