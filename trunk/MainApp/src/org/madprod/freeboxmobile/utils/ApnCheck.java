@@ -154,7 +154,7 @@ public class ApnCheck
 			if (apnVersion < 75)
 			{
 				Log.d(TAG, "Nouvelle version : ancienne = "+apnVersion+" - nouvelle = "+pinfo.versionCode);
-				if (Build.VERSION.SDK_INT < BUILD_ICS)
+				if (Build.VERSION.RELEASE.equals("1.5") || (Build.VERSION.SDK_INT < BUILD_ICS))
 				{
 					deleteApn(APN_TYPE_INTERNET);
 					deleteApn(APN_TYPE_MMS);
