@@ -535,19 +535,19 @@ private static void trustAllHosts() {
         {
         	connected = CONNECT_CONNECTED;
         }
-//		Log.d(TAG,"->DOWNLOADING FILE : "+url);
+		Log.d(TAG,"->DOWNLOADING FILE : "+url);
         try
         {
 			if (connected == CONNECT_CONNECTED)
 			{
-//				Log.d(TAG,"GETFILE : VERIF SI ON EST AUTHENTIFIE");
-				c = prepareConnection(url+"?"+makeStringForPost(p, auth, null), "GET");
+				Log.d(TAG,"GETFILE : VERIF SI ON EST AUTHENTIFIE");
+				c = prepareConnection(url+(((p!=null)&&(auth==false))?"?"+makeStringForPost(p, auth, null):""), "GET");
 				c.setDoInput(true);
 				Log.d(TAG,"HEADERS : "+c.getHeaderFields());
 				Log.d(TAG,"RESPONSE : "+c.getResponseCode()+" "+c.getResponseMessage());
 				if (c.getResponseMessage() == null) // Contournement du bug https : si null, on reconnecte
 				{
-					c = prepareConnection(url+"?"+makeStringForPost(p, auth, null), "GET");
+					c = prepareConnection(url+(((p!=null)&&(auth==false))?"?"+makeStringForPost(p, auth, null):""), "GET");
 				}
 				if (c.getHeaderFields().get("location") != null)
 				{
@@ -566,13 +566,13 @@ private static void trustAllHosts() {
 				if (connected == CONNECT_CONNECTED)
 				{
 					Log.d(TAG,"GETFILE : REAUTHENTIFICATION OK");
-					c = prepareConnection(url+"?"+makeStringForPost(p, auth, null), "GET");
+					c = prepareConnection(url+(((p!=null)&&(auth==false))?"?"+makeStringForPost(p, auth, null):""), "GET");
 					c.setDoInput(true);
 					Log.d(TAG,"HEADERS : "+c.getHeaderFields());
 					Log.d(TAG,"RESPONSE : "+c.getResponseCode()+" "+c.getResponseMessage());
 					if (c.getResponseMessage() == null) // Contournement du bug https : si null, on reconnecte
 					{
-						c = prepareConnection(url+"?"+makeStringForPost(p, auth, null), "GET");
+						c = prepareConnection(url+(((p!=null)&&(auth==false))?"?"+makeStringForPost(p, auth, null):""), "GET");
 					}
 				}
 			}
