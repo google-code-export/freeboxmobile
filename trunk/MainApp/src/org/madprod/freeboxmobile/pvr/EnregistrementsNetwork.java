@@ -34,7 +34,7 @@ public class EnregistrementsNetwork implements Constants
 		int nbBoitiers = 0;
 		int bNum = 0;
 		boolean succesChargement = false;
-		
+
         // Recup if tv
         String contenu = null;
     	url = MAGNETO_URL;
@@ -45,9 +45,11 @@ public class EnregistrementsNetwork implements Constants
 //	    	param.add(new BasicNameValuePair("sommaire","television"));
 	    	param.add(new BasicNameValuePair("box", ""+boitier));
 	    	param.add(new BasicNameValuePair("liste", "1"));
+	    	Log.d(TAG, "BOX NUMERO : "+boitier);
 	    	contenu = FBMHttpConnection.getPage(FBMHttpConnection.getAuthRequest(url, param, true, true, "ISO8859_1"));
 	    	if (contenu == null)
 	    	{
+	    		Log.d(TAG, "==============> RETURN FALSE : "+ boitier);
 	    		// TODO : Dans le cas de plusieurs boitiers, le fait qu'un des boitiers
 	    		// soit null (donc eteind) ne doit pas tout interrompre
 	    		return false;
@@ -94,7 +96,7 @@ public class EnregistrementsNetwork implements Constants
 			}
 			// Pour chaque boitier, on récupère la liste des enregistrements
 	    	int debut = contenu.indexOf("<div class=\"table block\">") + 25;
-	    	int fin = contenu.indexOf("<div class=\"clearer\"></div>");
+	    	int fin = contenu.indexOf("<div id=\"bottom\">");
 	
 	    	if (debut > 25 && fin > 0)
 	    	{
