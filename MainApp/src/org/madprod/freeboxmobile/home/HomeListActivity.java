@@ -24,6 +24,7 @@ import static org.madprod.freeboxmobile.StaticConstants.KEY_PREFS;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -35,6 +36,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.telephony.TelephonyManager;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -141,9 +143,13 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 		if (!mgr.getString(KEY_SPLASH, "0").equals(Utils.getFBMVersion(this)))
 		{
 			// On check les APN Free, pour les ajouter si nécessaire au cas où
-//			ApnCheck ac = new ApnCheck(this);
-//			ac.checkApn(ApnCheck.APN_TYPE_INTERNET);
-//			ac.checkApn(ApnCheck.APN_TYPE_MMS);
+			TelephonyManager tel = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+			if (! tel.getSimOperator().equals("20815"))
+			{
+				ApnCheck ac = new ApnCheck(this);
+				ac.checkApn(ApnCheck.APN_TYPE_ALL);
+				ac.checkApn(ApnCheck.APN_TYPE_MMS);
+			}
 
 			// Si on avait l'ancienne structure pour stocker les logos des chaînes, on migre :
 			File of = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+OLDDIR_CHAINES);
