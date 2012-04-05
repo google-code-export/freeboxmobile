@@ -4,6 +4,8 @@ import static org.madprod.freeboxmobile.StaticConstants.KEY_PREFS;
 import static org.madprod.freeboxmobile.StaticConstants.TAG;
 import static org.madprod.freeboxmobile.StaticConstants.PREFS_APN_VERSION;
 
+import java.lang.reflect.Field;
+
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -151,13 +153,23 @@ public class ApnCheck
 		try
 		{
 			pinfo = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), 0);
-			if (apnVersion < 75)
+			if (apnVersion < 750)
 			{
-				Log.d(TAG, "Nouvelle version : ancienne = "+apnVersion+" - nouvelle = "+pinfo.versionCode);
-				if (Build.VERSION.RELEASE.equals("1.5") || (Build.VERSION.SDK_INT < BUILD_ICS))
+				Log.d(TAG, "OS "+Build.VERSION.RELEASE+" Nouvelle version : ancienne = "+apnVersion+" - nouvelle = "+pinfo.versionCode);
+
+				if (Build.VERSION.RELEASE.equals("1.5"))
 				{
 					deleteApn(APN_TYPE_INTERNET);
 					deleteApn(APN_TYPE_MMS);
+				}
+				else
+				{
+					// Crash on 1.5
+					if (Build.VERSION.SDK_INT < BUILD_ICS)
+					{
+						deleteApn(APN_TYPE_INTERNET);
+						deleteApn(APN_TYPE_MMS);						
+					}
 				}
 		    	Editor editor = mgr.edit();
 				editor.putInt(PREFS_APN_VERSION, pinfo.versionCode);
@@ -264,11 +276,13 @@ public class ApnCheck
 				}
 				catch (Exception e)
 				{
+					Log.e(TAG, e.getMessage());
 					status = STATUS_APN_ADD_ERROR;
-					if (Build.VERSION.SDK_INT >= BUILD_ICS)
-					{
-						needManualConfig = true;
-					}
+					if (! Build.VERSION.RELEASE.equals("1.5"))
+						if (Build.VERSION.SDK_INT >= BUILD_ICS)
+						{
+							needManualConfig = true;
+						}
 				}
 			}
 		}

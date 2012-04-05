@@ -34,7 +34,7 @@
 	<string name="comptes_edit_login">Identifiant :</string>
 	<string name="comptes_edit_password">Mot de passe :</string>
 	<string name="comptes_edit_nom_desc">Ce nom sera affiché par FreeboxMobile pour identifier ce compte. Entrez ce que vous voulez.</string>
-	<string name="comptes_edit_login_desc_adsl">Le numéro de téléphone de la ligne</string>
+	<string name="comptes_edit_login_desc_adsl">Le numéro de téléphone de la ligne Freebox</string>
 	<string name="comptes_edit_login_desc_fo">Saisissez les 7 chiffres qui suivent FO</string>
 	<string name="comptes_edit_password_desc">Le mot de passe Freebox.</string>
 	<string name="comptes_button_cancel">Annuler</string>

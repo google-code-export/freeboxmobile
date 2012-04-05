@@ -25,6 +25,7 @@ import android.util.Log;
 /**
  *
  * @author Clément Beslon
+ * Modified by Olivier Rosello on 2012-04-04
  * $Id: NewsSync.java 71 2010-12-07 08:41:46Z clement $
  * 
  */
@@ -34,7 +35,8 @@ public class MevoSync extends IntentService implements MevoConstants
 
 
 	private static MevoDbAdapter mDbHelper;
-	private static final String mevoUrl = "https://adsls.free.fr/admin/tel/";
+//	private static final String mevoUrl = "https://adsls.free.fr/admin/tel/";
+	private static final String mevoUrl = "https://adsls.free.fr/";
 	private static final String mevoListPage = "notification_tel.pl";
 
 	public MevoSync() {
@@ -189,8 +191,10 @@ public class MevoSync extends IntentService implements MevoConstants
 							file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+FBMHttpConnection.getIdentifiant()+DIR_MEVO,name+".wav");
 							if (file.exists() == false)
 							{
-								filet = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+FBMHttpConnection.getIdentifiant()+DIR_MEVO,name+"_temp");
+//								filet = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+FBMHttpConnection.getIdentifiant()+DIR_MEVO,name+"_temp");
+								filet = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+FBMHttpConnection.getIdentifiant()+DIR_MEVO,name+".wav");
 								FBMHttpConnection.getFile(filet, mevoUrl+link, null, false);
+								/* TRY TO NOT CONVERT
 								FileInputStream is = new FileInputStream(filet);
 								try
 								{
@@ -257,6 +261,7 @@ public class MevoSync extends IntentService implements MevoConstants
 								{
 									Log.e(TAG,"Error while converting data "+e.getMessage());
 								}
+								*/
 							}
 							presence = 4;
 							curs = mDbHelper.fetchMessage(name+".wav");
