@@ -138,8 +138,6 @@ public class HomeListActivity extends ListActivity implements HomeConstants
         	}
         }
 		ApnCheck ac = new ApnCheck(this);
-		ac.checkApn(ApnCheck.APN_TYPE_INTERNET);
-		ac.checkApn(ApnCheck.APN_TYPE_MMS);
         // Si on est sur un premier lancement de la nouvelle version :
 		if (!mgr.getString(KEY_SPLASH, "0").equals(Utils.getFBMVersion(this)))
 		{

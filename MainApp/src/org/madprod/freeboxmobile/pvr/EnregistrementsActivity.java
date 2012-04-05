@@ -240,13 +240,15 @@ public class EnregistrementsActivity extends ExpandableListActivity implements C
 			return Boolean.TRUE;
         }
         
-        protected void onPostExecute(Boolean succes) {
+        protected void onPostExecute(Boolean succes)
+        {
         	if (succes == Boolean.TRUE)
         	{
 	            updateEnregistrementsFromDb();
 	            afficherEnregistrements();
         	}
-        	else {
+        	else
+        	{
             	erreur("Impossible de se connecter à la console Free\n");
         	}
         	
@@ -308,9 +310,11 @@ public class EnregistrementsActivity extends ExpandableListActivity implements C
      			details.add("Boitier");
 //     			details.add("Boitier "+(listCursor.getInt(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_BOITIER_ID))+1));
      			boitiersCursor.moveToPosition(listCursor.getInt(listCursor.getColumnIndex(EnregistrementsDbAdapter.KEY_BOITIER_ID)));
-     			details.add(boitiersCursor.getString(boitiersCursor.getColumnIndex(ChainesDbAdapter.KEY_BOITIER_NAME)));
-     			listeEnregistrements.ajouter(item, details);
-     			
+     			if (boitiersCursor.getCount() > 0)
+     			{
+     				details.add(boitiersCursor.getString(boitiersCursor.getColumnIndex(ChainesDbAdapter.KEY_BOITIER_NAME)));
+     				listeEnregistrements.ajouter(item, details);
+     			}
             } while (listCursor.moveToNext());
 		}
 		
