@@ -153,7 +153,7 @@ public class ApnCheck
 		try
 		{
 			pinfo = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), 0);
-			if (apnVersion < 750)
+			if (apnVersion < 82)
 			{
 				Log.d(TAG, "OS "+Build.VERSION.RELEASE+" Nouvelle version : ancienne = "+apnVersion+" - nouvelle = "+pinfo.versionCode);
 
