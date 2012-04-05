@@ -137,16 +137,14 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 				editor.commit();
         	}
         }
-		ApnCheck ac = new ApnCheck(this);
         // Si on est sur un premier lancement de la nouvelle version :
 		if (!mgr.getString(KEY_SPLASH, "0").equals(Utils.getFBMVersion(this)))
 		{
 			// On check les APN Free, pour les ajouter si nécessaire au cas où
 //			ApnCheck ac = new ApnCheck(this);
-			ac.checkApn(ApnCheck.APN_TYPE_INTERNET);
-			ac.checkApn(ApnCheck.APN_TYPE_MMS);
+//			ac.checkApn(ApnCheck.APN_TYPE_INTERNET);
+//			ac.checkApn(ApnCheck.APN_TYPE_MMS);
 
-			
 			// Si on avait l'ancienne structure pour stocker les logos des chaînes, on migre :
 			File of = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+OLDDIR_CHAINES);
         	File file = new File(Environment.getExternalStorageDirectory().toString()+DIR_FBM+DIR_CHAINES);
