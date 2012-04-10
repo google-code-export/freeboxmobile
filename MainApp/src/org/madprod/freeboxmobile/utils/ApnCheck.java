@@ -35,7 +35,7 @@ public class ApnCheck
 	
 	public boolean needManualConfig = false;
 
-	static final String[] apnNames = {"free", "mmsfree"};
+	static final String[] apnNames = {"free", "mmsfree", "free"};
 	
 	static final short BUILD_ICS = 14;
 	

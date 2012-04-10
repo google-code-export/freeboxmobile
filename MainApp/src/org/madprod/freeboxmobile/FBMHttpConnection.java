@@ -39,6 +39,7 @@ import org.apache.http.conn.params.ConnPerRouteBean;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.message.BasicNameValuePair;
@@ -1055,12 +1056,29 @@ private static void trustAllHosts() {
 		Log.d(TAG,"Connexion impossible pour faxer le fichier "+fileToPost.getName());
 		return null;
 	}
-	
+
 	public static HttpClient getHttpClient(){
 		SchemeRegistry schemeRegistry = new SchemeRegistry();
 		// http scheme
 		schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
 		// https scheme
+		
+		if (Build.VERSION.RELEASE.equals("1.5"))
+		{
+			schemeRegistry.register(new Scheme("https", new EasySSLSocketFactory(), 443));
+		}
+		else
+		{
+			if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.FROYO)
+			{
+				schemeRegistry.register(new Scheme("https", new EasySSLSocketFactory(), 443));
+			}
+			else
+			{
+				schemeRegistry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+			}
+		}
+
 		schemeRegistry.register(new Scheme("https", new EasySSLSocketFactory(), 443));
 
 		HttpParams params = new BasicHttpParams();
