@@ -42,7 +42,6 @@ public class EnregistrementsNetwork implements Constants
     	do
     	{
 	    	param = new ArrayList<NameValuePair>();
-//	    	param.add(new BasicNameValuePair("sommaire","television"));
 	    	param.add(new BasicNameValuePair("box", ""+boitier));
 	    	param.add(new BasicNameValuePair("liste", "1"));
 	    	Log.d(TAG, "BOX NUMERO : "+boitier);
