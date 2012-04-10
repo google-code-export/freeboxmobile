@@ -27,8 +27,9 @@ import android.util.Log;
 public class MevoService extends Service implements MevoConstants{
 
 
-	private static final String mevoUrl = "https://adsls.free.fr/admin/tel/";
+//	private static final String mevoUrl = "https://adsls.free.fr/admin/tel/";
 	private static final String mevoDelPage = "efface_message.pl";
+	private static final String mevoUrl = "https://adsls.free.fr/";
 
 	final RemoteCallbackList<IRemoteControlServiceCallback> callbacks = new RemoteCallbackList<IRemoteControlServiceCallback>(); 
 	final static Object lock = new Object();

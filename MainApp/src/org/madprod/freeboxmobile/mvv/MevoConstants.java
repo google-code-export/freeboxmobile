@@ -58,7 +58,7 @@ public interface MevoConstants extends Constants
 	public static final String KEY_NAME = "name";
 	public static final String KEY_ROWID = "_id";
 
-	// utilis� dans MevoMessage.java
+	// utilisé dans MevoMessage.java
 	public static final String KEY_CALLER = "caller";
 	public static final String KEY_PLAY_STATUS = "img_status";
 	public static final String KEY_NB_TYPE = "nb_type";
