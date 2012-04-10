@@ -17,6 +17,13 @@ TELECOMMANDE : Le module de télécommande
 
 = Versions publiques de !FreeboxMobile =
 
+== 0.53.11 ==
+Sortie le 10/04/2012<br>
+Release : 83<br>
+Revision : 910
+ * MEVO : correction de bug (sur effacement de messages)
+ * FAX : correction de bug, fonctionne avec la nouvelle console Free
+
 == 0.53.10 ==
 Sortie le 05/04/2012<br>
 Release : 82<br>
