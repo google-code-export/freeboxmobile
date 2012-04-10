@@ -1033,7 +1033,8 @@ private static void trustAllHosts() {
 			ds.close();
 	
 			//Test du code de retour
-			if (conn.getResponseCode() != expectedHttpStatus){
+			if ((conn.getResponseCode() != expectedHttpStatus) && (conn.getResponseCode() != HttpURLConnection.HTTP_OK))
+			{
 				Log.d(TAG,"Mauvais code Http retourné lors du post multipart : "+conn.getResponseCode()+" au lieu de "+expectedHttpStatus);
 				return null;
 			}
@@ -1043,7 +1044,8 @@ private static void trustAllHosts() {
 			final InputStream is = conn.getInputStream();
 			final byte[] data = new byte[bufferSize];
 			int leng = -1;
-			while ((leng = is.read(data)) != -1) {
+			while ((leng = is.read(data)) != -1)
+			{
 				b.append(new String(data, 0, leng));
 			}
 			final String result = b.toString();

@@ -354,16 +354,24 @@ public class FaxActivity extends Activity implements FaxConstants {
 				params.add(new BasicNameValuePair("email_ack","1"));
 			}
 			params.add(new BasicNameValuePair("destinataire",numberBox.getText().toString().trim()));
-			try {
+			try
+			{
 				return FBMHttpConnection.postFileAuthRequest(UPLOAD_FAX_URL,params,file,HttpURLConnection.HTTP_MOVED_TEMP,true);
-			} catch (FileNotFoundException fileNotFound){
+			}
+			catch (FileNotFoundException fileNotFound)
+			{
+				Log.e(TAG, fileNotFound.getMessage());
 				return null;
-			} catch (IOException e) {
+			}
+			catch (IOException e)
+			{
+				Log.e(TAG, e.getMessage());
 				return null;
 			}
 		}
 		
-		private void notifyResult(String message){
+		private void notifyResult(String message)
+		{
 			final int icon = R.drawable.icon_fbm;
 			final long when = System.currentTimeMillis();
 			final Notification notification = new Notification(icon, message, when);
@@ -377,12 +385,20 @@ public class FaxActivity extends Activity implements FaxConstants {
     	protected void onPostExecute(String payload)
     	{
 			views.setViewVisibility(R.id.notificationProgressBarContainer,View.INVISIBLE);
-			if(payload == null){
+			if(payload == null)
+			{
 				notifyResult(getString(R.string.faxError,fileName));
-			}else if(!"".equals(payload.trim())){
-				notifyResult(getString(R.string.faxError,fileName));
-			}else{
-				notifyResult(getString(R.string.faxSuccess,fileName));
+			}
+			else
+			{
+//				if(!"".equals(payload.trim()))
+//				{
+//					notifyResult(getString(R.string.faxError,fileName));
+//				}
+//				else
+//				{
+					notifyResult(getString(R.string.faxSuccess,fileName));
+//				}
 			}
     	}
     }
