@@ -122,22 +122,14 @@ public class GuideActivity extends GuideUtils implements GuideConstants
 		spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		datesSpinner.setAdapter(spinnerAdapter);
 
+		initDateHeure(0);
+		
         datesSpinner.setOnItemSelectedListener(new OnItemSelectedListener()
         {
 			@Override
 			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3)
 			{
-				Calendar cal = Calendar.getInstance();
-				String sdate = GuideUtils.calDates.get(arg2).split("-")[2];
-				int jour = Integer.parseInt(sdate);
-				if (cal.get(Calendar.DAY_OF_MONTH) == jour)
-				{
-					heuresAdapter = GuideUtils.remplirHeuresSpinner(GuideActivity.this, cal.get(Calendar.HOUR_OF_DAY), R.id.HeuresSpinner);
-				}
-				else
-				{
-					heuresAdapter = GuideUtils.remplirHeuresSpinner(GuideActivity.this, 0, R.id.HeuresSpinner);
-				}
+				initDateHeure(arg2);
 			}
 
 			@Override
@@ -185,6 +177,7 @@ public class GuideActivity extends GuideUtils implements GuideConstants
 	        	}
 	        }
 			String s = mHeure.split(":")[0];
+			Log.d(TAG, "heuresAdapter : "+heuresAdapter);
 	        for (i=0; i<heuresAdapter.getCount(); i++)
 	        {
 				String sHeure = heuresAdapter.getItem(i).split("h")[0];
@@ -220,6 +213,21 @@ public class GuideActivity extends GuideUtils implements GuideConstants
 			displayHelp();
 		}
     }
+	
+	private void initDateHeure(int arg)
+	{
+		Calendar cal = Calendar.getInstance();
+		String sdate = GuideUtils.calDates.get(arg).split("-")[2];
+		int jour = Integer.parseInt(sdate);
+		if (cal.get(Calendar.DAY_OF_MONTH) == jour)
+		{
+			heuresAdapter = GuideUtils.remplirHeuresSpinner(GuideActivity.this, cal.get(Calendar.HOUR_OF_DAY), R.id.HeuresSpinner);
+		}
+		else
+		{
+			heuresAdapter = GuideUtils.remplirHeuresSpinner(GuideActivity.this, 0, R.id.HeuresSpinner);
+		}
+	}
 	
     @Override
     public void onStart()
