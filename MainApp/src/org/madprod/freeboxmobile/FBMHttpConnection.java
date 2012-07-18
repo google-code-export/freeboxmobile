@@ -79,7 +79,7 @@ public class FBMHttpConnection implements Constants
 	
 	private static final String serverUrl = "https://subscribes.free.fr/login/login.pl";
 	private static final String assistanceUrl = "https://assistance.free.fr/compte/auth_i.php";
-	private static final String suiviTechUrl = "https://adsls.free.fr/suivi/suivi_techgrrr.pl";
+	private static final String suiviTechUrl = "https://adsls.free.fr/suivi_techgrrr.pl";
 	public static final String frimousseUrl = "http://www.frimousse.org/outils/xmlrpc";
 
 	/**
@@ -485,32 +485,38 @@ public class FBMHttpConnection implements Constants
 //		c.setReadTimeout(30000);
 		return (c);
 	}
-	
-	final static HostnameVerifier DO_NOT_VERIFY = new HostnameVerifier() {
-        public boolean verify(String hostname, SSLSession session) {
-                return true;
+
+	final static HostnameVerifier DO_NOT_VERIFY = new HostnameVerifier()
+	{
+		public boolean verify(String hostname, SSLSession session)
+		{
+			return true;
+		}
+	};
+
+	/**
+	 * Trust every server - dont check for any certificate
+	 */
+	private static void trustAllHosts()
+	{
+		// Create a trust manager that does not validate certificate chains
+		TrustManager[] trustAllCerts = new TrustManager[]
+				{
+					new MyTrustManager()
+				};
+
+		// Install the all-trusting trust manager
+		try
+		{
+			SSLContext sc = SSLContext.getInstance("TLS");
+			sc.init(null, trustAllCerts, new java.security.SecureRandom());
+			HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
         }
-};
-
-/**
- * Trust every server - dont check for any certificate
- */
-private static void trustAllHosts() {
-        // Create a trust manager that does not validate certificate chains
-        TrustManager[] trustAllCerts = new TrustManager[] { new MyTrustManager()
-         };
-
-        // Install the all-trusting trust manager
-        try {
-                SSLContext sc = SSLContext.getInstance("TLS");
-                sc.init(null, trustAllCerts, new java.security.SecureRandom());
-                HttpsURLConnection
-                                .setDefaultSSLSocketFactory(sc.getSocketFactory());
-        } catch (Exception e) {
-                e.printStackTrace();
-        }
-}
-
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
 	
 	/**
 	 * Donwload a file
