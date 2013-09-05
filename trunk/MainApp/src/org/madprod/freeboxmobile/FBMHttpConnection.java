@@ -187,7 +187,7 @@ public class FBMHttpConnection implements Constants
 			return (defValue);
 	}
 
-	public static ContentValues connectFreeCheck(String l, String p, int type)
+	public static ContentValues connectFreeCheck(String l, String p/*, int type*/)
 	{
 		String mLogin;
 		String mPassword;
@@ -208,7 +208,7 @@ public class FBMHttpConnection implements Constants
 
 			login = l;
 			password = p;
-			v = parseConsole(l, p, type);
+			v = parseConsole(l, p/*, type*/);
 			v.put(KEY_FBMVERSION, Utils.getFBMVersion(null));
 			Log.d(TAG,"connectFreeCheck : "+v);
 
@@ -289,23 +289,18 @@ public class FBMHttpConnection implements Constants
 	 * @param l : login du compte à parser
 	 * @param p : mot de passe du compte à parser
 	 */
-	private static ContentValues parseConsole(String l, String p, int type)
+	private static ContentValues parseConsole(String l, String p/*, int type*/)
 	{
 		ContentValues consoleValues = new ContentValues();
 		String br = getPage(getAuthRequest(suiviTechUrl, null, true, true, "ISO8859_1"));
 		String offre = parsePage(br, "Raccordée actuellement en offre", "<font color=\"#CC0000\">", "</font>");
-		switch (type)
-		{
-			case COMPTES_TYPE_ADSL :
-				if (offre.contains("Freebox dégroupé"))
-			    	consoleValues.put(KEY_LINETYPE, LINE_TYPE_FBXDEGROUPE);
-				else
-					consoleValues.put(KEY_LINETYPE, LINE_TYPE_FBXIPADSL);
-				break;
-			case COMPTES_TYPE_FO :
+		if (offre.contains("Freebox dégroupé"))
+			consoleValues.put(KEY_LINETYPE, LINE_TYPE_FBXDEGROUPE);
+		else
+			if (offre.contains("optique"))
 				consoleValues.put(KEY_LINETYPE, LINE_TYPE_FBXOPTIQUE);
-				break;
-		}
+			else			
+				consoleValues.put(KEY_LINETYPE, LINE_TYPE_FBXIPADSL);
     	Log.d(TAG,"type:"+consoleValues.get(KEY_LINETYPE));
     	consoleValues.put(KEY_NRA, parsePage(br, "NRA :", "\">", "</"));
     	consoleValues.put(KEY_LINELENGTH, parsePage(br, "Longueur :", "red\">", " mètres"));

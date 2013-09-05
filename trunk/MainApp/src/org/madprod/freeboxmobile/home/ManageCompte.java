@@ -35,7 +35,7 @@ public class ManageCompte extends FBMNetTask implements Constants// AsyncTask<Co
 	@Override
 	protected Integer doInBackground(Void...params)
 	{
-		payload.result = FBMHttpConnection.connectFreeCheck(payload.login, payload.password, payload.type);
+		payload.result = FBMHttpConnection.connectFreeCheck(payload.login, payload.password/*, payload.type*/);
 		if ((payload.result != null) /*&& (payload.refresh)*/)
 		{
 	    	dProgressSet("Importation", "", R.drawable.fm_magnetoscope);

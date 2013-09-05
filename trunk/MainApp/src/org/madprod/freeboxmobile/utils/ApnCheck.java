@@ -4,8 +4,6 @@ import static org.madprod.freeboxmobile.StaticConstants.KEY_PREFS;
 import static org.madprod.freeboxmobile.StaticConstants.TAG;
 import static org.madprod.freeboxmobile.StaticConstants.PREFS_APN_VERSION;
 
-import java.lang.reflect.Field;
-
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -17,7 +15,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
-import android.widget.Toast;
 
 public class ApnCheck
 {
@@ -186,105 +183,112 @@ public class ApnCheck
 		ContentValues values = new ContentValues();
 		Cursor cursor = null;
 
-		if ((type == APN_TYPE_INTERNET) || (type == APN_TYPE_ALL))
+		try
 		{
-			// First we check if the selected APN is "free". If it is, we don't need to add it.
-			cursor = mContext.getContentResolver().query(contentUri, new String[] {COL_APN}, "current=1", null, null); 
-			if (cursor != null)
+			if ((type == APN_TYPE_INTERNET) || (type == APN_TYPE_ALL))
 			{
-				try
+				// First we check if the selected APN is "free". If it is, we don't need to add it.
+				cursor = mContext.getContentResolver().query(contentUri, new String[] {COL_APN}, "current=1", null, null); 
+				if (cursor != null)
 				{
-					if (cursor.moveToFirst())
-					{ 
-						if (cursor.getString(0).equals("free"))
-						{
-							currentApnIsFree = true;
-							status = STATUS_APN_WORKING;
-	//						Toast.makeText(mContext, statusMsg, Toast.LENGTH_SHORT).show();
+					try
+					{
+						if (cursor.moveToFirst())
+						{ 
+							if (cursor.getString(0).equals("free"))
+							{
+								currentApnIsFree = true;
+								status = STATUS_APN_WORKING;
+		//						Toast.makeText(mContext, statusMsg, Toast.LENGTH_SHORT).show();
+							}
 						}
 					}
+					finally
+					{
+						if (cursor != null)
+							cursor.close();
+					}
 				}
-				finally
+			}
+	
+			// If current apn is not "free", we need to check if it exists
+			if (currentApnIsFree == false)
+			{
+				cursor = resolver.query(contentUri, new String[]{COL_NAME, COL_APN}, COL_APN+"='"+apnNames[type]+"'", null, null);
+				if (cursor != null)
 				{
-					if (cursor != null)
+					try
+					{
+						if (cursor.moveToFirst())
+						{
+							freeApnFound = true;
+							status = STATUS_APN_PRESENT;
+						}
+					}
+					finally
+					{
 						cursor.close();
+					}
+				}
+	
+				if (freeApnFound == false)
+				{
+					switch (type)
+					{
+						case APN_TYPE_INTERNET:
+							values.put(COL_NAME, "Free");
+							values.put(COL_MCC, 208);
+							values.put(COL_MNC, 15);
+							values.put(COL_APN, "free");
+							values.put(COL_NUMERIC, 20815);
+							values.put(COL_AUTHTYPE, -1);
+							values.put(COL_CURRENT, 1);
+							values.put(COL_TYPE, "default, supl");
+							break;
+						case APN_TYPE_MMS:
+							values.put(COL_NAME, "Free MMS");
+							values.put(COL_MCC, 208);
+							values.put(COL_MNC, 15);
+							values.put(COL_APN, "mmsfree");
+							values.put(COL_NUMERIC, 20815);
+							values.put(COL_AUTHTYPE, -1);
+							values.put(COL_TYPE, "mms");
+							values.put(COL_MMSC, "http://212.27.40.225");
+	//						values.put(COL_MMSC, "http://mms.free.fr");
+							break;
+						case APN_TYPE_ALL:
+							values.put(COL_NAME, "Free");
+							values.put(COL_MCC, 208);
+							values.put(COL_MNC, 15);
+							values.put(COL_APN, "free");
+							values.put(COL_NUMERIC, 20815);
+							values.put(COL_AUTHTYPE, -1);
+							values.put(COL_CURRENT, 1);
+							values.put(COL_MMSC, "http://mms.free.fr");
+							values.put(COL_TYPE, "default, supl, mms");
+							break;
+					}
+					try
+					{
+						resolver.insert(contentUri, values);
+						status = STATUS_APN_ADDED;
+					}
+					catch (Exception e)
+					{
+						Log.e(TAG, e.getMessage());
+						status = STATUS_APN_ADD_ERROR;
+						if (! Build.VERSION.RELEASE.equals("1.5"))
+							if (Build.VERSION.SDK_INT >= BUILD_ICS)
+							{
+								needManualConfig = true;
+							}
+					}
 				}
 			}
 		}
-
-		// If current apn is not "free", we need to check if it exists
-		if (currentApnIsFree == false)
+		catch (Exception e)
 		{
-			cursor = resolver.query(contentUri, new String[]{COL_NAME, COL_APN}, COL_APN+"='"+apnNames[type]+"'", null, null);
-			if (cursor != null)
-			{
-				try
-				{
-					if (cursor.moveToFirst())
-					{
-						freeApnFound = true;
-						status = STATUS_APN_PRESENT;
-					}
-				}
-				finally
-				{
-					cursor.close();
-				}
-			}
-
-			if (freeApnFound == false)
-			{
-				switch (type)
-				{
-					case APN_TYPE_INTERNET:
-						values.put(COL_NAME, "Free");
-						values.put(COL_MCC, 208);
-						values.put(COL_MNC, 15);
-						values.put(COL_APN, "free");
-						values.put(COL_NUMERIC, 20815);
-						values.put(COL_AUTHTYPE, -1);
-						values.put(COL_CURRENT, 1);
-						values.put(COL_TYPE, "default, supl");
-						break;
-					case APN_TYPE_MMS:
-						values.put(COL_NAME, "Free MMS");
-						values.put(COL_MCC, 208);
-						values.put(COL_MNC, 15);
-						values.put(COL_APN, "mmsfree");
-						values.put(COL_NUMERIC, 20815);
-						values.put(COL_AUTHTYPE, -1);
-						values.put(COL_TYPE, "mms");
-						values.put(COL_MMSC, "http://212.27.40.225");
-//						values.put(COL_MMSC, "http://mms.free.fr");
-						break;
-					case APN_TYPE_ALL:
-						values.put(COL_NAME, "Free");
-						values.put(COL_MCC, 208);
-						values.put(COL_MNC, 15);
-						values.put(COL_APN, "free");
-						values.put(COL_NUMERIC, 20815);
-						values.put(COL_AUTHTYPE, -1);
-						values.put(COL_CURRENT, 1);
-						values.put(COL_MMSC, "http://mms.free.fr");
-						values.put(COL_TYPE, "default, supl, mms");
-						break;
-				}
-				try
-				{
-					resolver.insert(contentUri, values);
-					status = STATUS_APN_ADDED;
-				}
-				catch (Exception e)
-				{
-					Log.e(TAG, e.getMessage());
-					status = STATUS_APN_ADD_ERROR;
-					if (! Build.VERSION.RELEASE.equals("1.5"))
-						if (Build.VERSION.SDK_INT >= BUILD_ICS)
-						{
-							needManualConfig = true;
-						}
-				}
-			}
+			Log.e(TAG, e.getLocalizedMessage());
 		}
 		return status;
 	}
