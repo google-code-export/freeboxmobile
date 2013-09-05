@@ -244,7 +244,7 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 	        		mgr.getString(KEY_TITLE, ""),
 	        		mgr.getString(KEY_USER, ""),
 	        		mgr.getString(KEY_PASSWORD, ""),
-	        		(mgr.getString(KEY_LINETYPE, "0").equals(LINE_TYPE_FBXOPTIQUE) ? COMPTES_TYPE_FO : COMPTES_TYPE_ADSL),
+	        		/*(mgr.getString(KEY_LINETYPE, "0").equals(LINE_TYPE_FBXOPTIQUE) ? COMPTES_TYPE_FO : COMPTES_TYPE_ADSL),*/
 	        		null, true)).execute();
     	}
     }
@@ -318,12 +318,6 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 //		map.put(M_CLASS, AssistanceActivity.class);
 		map.put(M_CLASS, null);
 		modulesList.add(map);
-		map = new HashMap<String,Object>();
-		map.put(M_ICON, R.drawable.fm_freewifi);
-		map.put(M_TITRE, getString(R.string.buttonFreeWifi));
-		map.put(M_DESC, "Configurer votre accès FreeWifi afin de pouvoir bénéficier de millions de HotSpots Wifi en France");
-		map.put(M_CLASS, null);
-		modulesList.add(map);
 		if (isModuleInstalled("org.geeek.free", "org.geeek.free.activity.SplashScreenActivity"))
 		{
 			map = new HashMap<String,Object>();
@@ -342,18 +336,6 @@ public class HomeListActivity extends ListActivity implements HomeConstants
 			map.put(M_CLASS, null);
 			modulesList.add(map);
     	}
-    	map = new HashMap<String,Object>();
-		map.put(M_ICON, R.drawable.fm_radios);
-		map.put(M_TITRE, getString(R.string.buttonMusique));
-		map.put(M_DESC, "Ecoutez la musique présente chez vous\n\nCette fonctionnalité n'est pas encore disponible");
-		map.put(M_CLASS, null);
-		modulesList.add(map);
-		map = new HashMap<String,Object>();
-		map.put(M_ICON, R.drawable.icon_fbm);
-		map.put(M_TITRE, "Medias");
-		map.put(M_DESC, "Accédez aux vidéos, enregistrements et musiques qui sont chez vous\n\nCette fonctionnalité n'est pas encore disponible");
-		map.put(M_CLASS, null);
-		modulesList.add(map);
     }
 
     @Override
